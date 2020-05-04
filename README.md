@@ -15,5 +15,5 @@ Installation:
 6. For other OS than Windows select the Check-box "Individuellen Pfad zur ARDUINO IDE verwenden and select the path to the ARDUINO IDE - the name in Windows is "ARDUINO_DEBUG.exe" for all other OS "arduino"
 7. Do not forget to save the changed parameters with the button "geänderte Einstellungen übernehmen"
 
-Further information can be found in the MobaLedLib Wiki: https://wiki.mobaledlib.de/anleitungen/spezial/testseite
+Further information can be found in the MobaLedLib Wiki: https://wiki.mobaledlib.de/anleitungen/spezial/pyprogramgenerator
 
