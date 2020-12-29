@@ -998,9 +998,9 @@
         "Hide": "",
         "Min": "0",
         "Max": "255",
-        "Default": "1",
+        "Default": "3",
         "Input Text": "Digital System",
-        "Hint": "Digitalsystem, mit dem die MobaLedLib gesteuert wird (noch nicht implementiert ...)"
+        "Hint": "Digitalsystem, mit dem die MobaLedLib gesteuert wird"
     },
     "MacroStartPageText": {
         "ParName": "MacroStartPageText",

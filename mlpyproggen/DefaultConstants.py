@@ -56,7 +56,7 @@
 # * License: http://creativecommons.org/licenses/by-sa/3.0/
 # ***************************************************************************
 
-PROG_VERSION ="V02.91 29.12.2020"
+PROG_VERSION ="V02.92 29.12.2020"
 LARGE_FONT= ("Verdana", 12)
 VERY_LARGE_FONT = ("Verdana", 14)
 NORMAL_FONT = ("Verdana", 10)
