@@ -16,7 +16,7 @@ Installation option 1: Via MLL Program Generator Excel file
 Installation option 2: Exe File
 1. search for the MLL-subfolder LEDs_Autoprog - this folder must contain the file "LEDs_AutoProg.ino"
 2. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
-3. download the .exe file to the Subfolder LEDs_Autoprog\pyProg_Generator_MobaLedLib
+3. download the pyProg_Generator_MobaLedLib.exe file to the Subfolder LEDs_Autoprog\pyProg_Generator_MobaLedLib
 4. open the folder MobaLedLib\V2.x.xpyLEDs_Autoprog\pyProg_Generator_MobaLedLib
 5. start the program file: pyProg_Generator_MobaLedLib.exe
 6. continue with first configuration described below
