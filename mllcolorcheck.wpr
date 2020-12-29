@@ -162,6 +162,7 @@ debug.breakpoints = {loc('../../../../MobaLedCheckColors/mlcolorcheck/ToolTips.p
         None,
         1,
         0)},
+
                      loc('mlpyproggen/ColorCheckPage.py'): {1029L: (0,
         None,
         1,
@@ -194,6 +195,7 @@ debug.breakpoints = {loc('../../../../MobaLedCheckColors/mlcolorcheck/ToolTips.p
                 None,
                 1,
                 0)},
+
                      loc('pyProg_Generator_MobaLedLib.py'): {2263L: (0,
         None,
         1,
@@ -411,6 +413,62 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('../../../../MobaLedCheckColors/MobaLedCheckColors.py'),
                       'app')]},
+
+        loc('../../../../MobaLedCheckColors/tkcolorpicker/colorwheel.py'): {'e'\
+        'xpanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': [('class def',
+                      loc('../../../../MobaLedCheckColors/tkcolorpicker/colorwheel.py'),
+                      'ColorWheel')]},
+        loc('../../../../MobaLedCheckColors_V06/MobaLedCheckColorst.py'): {'e'\
+        'xpanded-nodes': [],
+        'selected-nodes': [[('generic attribute',
+                             loc('../../../../MobaLedCheckColors_V06/MobaLedCheckColorst.py'),
+                             'app')]],
+        'top-node': [('generic attribute',
+                      loc('../../../../MobaLedCheckColors_V06/MobaLedCheckColorst.py'),
+                      'app')]},
+        loc('../../../../MobaLedCheckColors_coltab.py'): {'expanded-nodes': [],
+        'selected-nodes': [[('generic attribute',
+                             loc('../../../../MobaLedCheckColors_coltab.py'),
+                             'app')]],
+        'top-node': [('generic attribute',
+                      loc('../../../../MobaLedCheckColors_coltab.py'),
+                      'app')]},
+        loc('../../../../MobaLedCheckColorst.py'): {'expanded-nodes': [],
+        'selected-nodes': [[('function def',
+                             loc('../../../../MobaLedCheckColorst.py'),
+                             '_')]],
+        'top-node': [('generic attribute',
+                      loc('../../../../MobaLedCheckColorst.py'),
+                      'app')]},
+        loc('MobaLedTest_macrodef.json'): {'expanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': None},
+        loc('mlpyproggen/ARDUINOMonitorPage.py'): {'expanded-nodes': [[('cla'\
+        'ss def',
+        loc('mlpyproggen/ARDUINOMonitorPage.py'),
+        'ARDUINOMonitorPage')]],
+        'selected-nodes': [[('class def',
+                             loc('mlpyproggen/ARDUINOMonitorPage.py'),
+                             'ARDUINOMonitorPage')]],
+        'top-node': [('class def',
+                      loc('mlpyproggen/ARDUINOMonitorPage.py'),
+                      'ARDUINOMonitorPage')]},
+        loc('mlpyproggen/ConfigurationPage.py'): {'expanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': [('class def',
+                      loc('mlpyproggen/ConfigurationPage.py'),
+                      'ConfigurationPage')]},
+        loc('mlpyproggen/DCC_KeyboardPage.py'): {'expanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': [('generic attribute',
+                      loc('mlpyproggen/DCC_KeyboardPage.py'),
+                      'BUTTONLABELWIDTH')]},
+        u'By Module': {'expanded-nodes': [],
+                       'selected-nodes': [None],
+                       'top-node': None},
+
         loc('../../../../MobaLedCheckColors/serial/serialwin32.py'): {'expan'\
         'ded-nodes': [],
         'selected-nodes': [[('class def',
@@ -419,12 +477,14 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('class def',
                       loc('../../../../MobaLedCheckColors/serial/serialwin32.py'),
                       'Serial')]},
+
         loc('../../../../MobaLedCheckColors/tkcolorpicker/colorwheel.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('class def',
                       loc('../../../../MobaLedCheckColors/tkcolorpicker/colorwheel.py'),
                       'ColorWheel')]},
+
         loc('../../../../MobaLedCheckColors/tkcolorpicker/functions.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [[('function def',
@@ -439,6 +499,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('class def',
                       loc('../../../../MobaLedCheckColors/tkcolorpicker/lightgradientbar.py'),
                       'LightGradientBar')]},
+
         loc('../../../../MobaLedCheckColors_V06/MobaLedCheckColorst.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [[('generic attribute',
@@ -454,6 +515,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('../../../../MobaLedCheckColorst.py'),
                       'app')]},
+
         loc('../../../../MobaLedCheckColorst_with_LED_List.py'): {'expanded-'\
         'nodes': [],
         'selected-nodes': [],
@@ -527,6 +589,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('../../../../MobaLedCheckColors_coltab.py'),
                       'app')]},
+
         loc('../../../../Vegas Application Extensions/Python37/Lib/tkinter/__init__.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [[('generic attribute',
@@ -535,6 +598,14 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('class def',
                       loc('../../../../Vegas Application Extensions/Python37/Lib/tkinter/__init__.py'),
                       'BaseWidget')]},
+
+        loc('../../../../Vegas Application Extensions/Python37/test4.py'): {'e'\
+        'xpanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': [('function def',
+                      loc('../../../../Vegas Application Extensions/Python37/test4.py'),
+                      'main')]},
+
         loc('../../../../Vegas Application Extensions/Python37/untitled-1.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
@@ -549,6 +620,14 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('../../../../Vegas Application Extensions/Python37/untitled-3.py'),
                       'd')]},
+
+        loc('../../../../Vegas Application Extensions/VEGASPython_PN/Add_2_Second_Gap.py'): {'e'\
+        'xpanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': [('function def',
+                      loc('../../../../Vegas Application Extensions/VEGASPython_PN/Add_2_Second_Gap.py'),
+                      'FromVegas')]},
+
         loc('../../../../Vegas Application Extensions/VEGASPython_PN/Add_Markers_At_Interval.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
@@ -563,6 +642,15 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('function def',
                       loc('../../../../Vegas Application Extensions/VEGASPython_PN/VegasSceneDetect.py'),
                       'checkTLandMPselected')]},
+
+        loc('../../../../Wing-pi/ScriptPortal/Vegas.pyi'): {'expanded-nodes': [],
+        'selected-nodes': [[('class def',
+                             loc('../../../../Wing-pi/ScriptPortal/Vegas.pyi'),
+                             'XmlSettings')]],
+        'top-node': [('class def',
+                      loc('../../../../Wing-pi/ScriptPortal/Vegas.pyi'),
+                      'AppChangeFlag')]},
+
         loc('../../../../cx_freez_test/cx_freeze_test1.py'): {'expanded-node'\
         's': [],
         'selected-nodes': [None],
@@ -573,12 +661,15 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('../../../../d_share/Harold/python/scrollable_table1.py'),
                       'app')]},
+
         loc('MobaLedTest_macrodef.json'): {'expanded-nodes': [],
+
         'selected-nodes': [],
         'top-node': None},
         loc('MobaLedTest_macroparamdef.json'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': None},
+
         loc('mlpyproggen/ARDUINOMonitorPage.py'): {'expanded-nodes': [[('cla'\
         'ss def',
         loc('mlpyproggen/ARDUINOMonitorPage.py'),
@@ -589,11 +680,13 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('class def',
                       loc('mlpyproggen/ARDUINOMonitorPage.py'),
                       'ARDUINOMonitorPage')]},
+
         loc('mlpyproggen/ColorCheckPage.py'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('class def',
                       loc('mlpyproggen/ColorCheckPage.py'),
                       'ColorCheckPage')]},
+
         loc('mlpyproggen/ConfigurationPage.py'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('class def',
@@ -604,6 +697,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('mlpyproggen/DCC_KeyboardPage.py'),
                       'BUTTONLABELWIDTH')]},
+
         loc('mlpyproggen/DefaultConstants.py'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('generic attribute',
@@ -677,6 +771,13 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('function def',
                       loc('../../../../threading_test2.py'),
                       'consumer')]},
+
+        loc('../../../../tk_test.py'): {'expanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': [('generic attribute',
+                      loc('../../../../tk_test.py'),
+                      'app')]},
+
         loc('../../../../tkcolorpicker/__init__.py'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('generic attribute',
@@ -746,6 +847,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         loc('../../../../webbrowsertest1.py'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': None},
+
         loc('unknown:<untitled> #9'): {'expanded-nodes': [],
                                        'selected-nodes': [[('generic attribu'\
         'te',
@@ -761,6 +863,24 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('generic attribute',
                       loc('unknown:<untitled> #11'),
                       'frame')]}},
+=======
+        loc('unknown:<untitled> #3'): {'expanded-nodes': [],
+                                       'selected-nodes': [[('generic attribu'\
+        'te',
+        loc('unknown:<untitled> #1'),
+        'date_time')]],
+                                       'top-node': [('generic attribute',
+        loc('unknown:<untitled> #2'),
+        'd')]},
+        loc('unknown:<untitled> #6'): {'expanded-nodes': [],
+                                       'selected-nodes': [[('generic attribu'\
+        'te',
+        loc('unknown:<untitled> #4'),
+        'root')]],
+                                       'top-node': [('generic attribute',
+        loc('unknown:<untitled> #5'),
+        'frame')]}},
+
                                 'browse_mode': u'Current Module',
                                 'follow-selection': False,
                                 'sort_mode': 'Alphabetically',
@@ -885,6 +1005,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                       'wide',
                       1,
                       {})],
+
         'primary_view_state': {'editor_states': ({'bookmarks': ([[loc('unknown:<untitled> #13'),
         {'attrib-starts': [],
          'code-line': 'fdc1cb8f (Harold Linke      2020-12-28 19:45:04 +0100'\
@@ -1433,6 +1554,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         u'mlpyproggen/EffectMacroPage.py',
         u'mlpyproggen/EffectTestPage.py',
         u'MobaLedTest_macroparamdef.json']},
+
         'saved_notebook_display': None,
         'split_percents': {0: 0.47215722976134766},
         'splits': 2,
@@ -1449,6 +1571,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                                     1),
                                    1588849390.454),
                  'user_data': {}},
+
         'window-alloc': (21,
                          -1,
                          2540,
@@ -1458,6 +1581,7 @@ guimgr.recent-documents = [loc('MobaLedTest_macroparamdef.json'),
                            loc('mlpyproggen/EffectMacroPage.py'),
                            loc('MobaLedTest_macrodef.json'),
                            loc('pyProg_Generator_MobaLedLib.py')]
+
 guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/Shared/Python37_64/Lib/tkinter/__init__.py'): {'a'\
         'ttrib-starts': [('BaseWidget|0|',
                           2250),
@@ -3053,6 +3177,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_start': 0L,
         'zoom': 0L},
                        loc('MobaLedTest_macrodef.json'): {'attrib-starts': [],
+
         'code-line': '\t"HelpPageURL" : "https://wiki.mobaledlib.de/anleitun'\
                      'gen/spezial/testseite"\r\n',
         'first-line': 6L,
@@ -3071,6 +3196,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 2556L,
         'selection_end': 2583L,
         'selection_start': 2583L,
+
         'zoom': 0L},
                        loc('mlcolorcheck/ColorCheckPage.py'): {'attrib-start'\
         's': [('ColorCheckPage|0|',
@@ -3097,6 +3223,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_end': 2171L,
         'selection_start': 2171L,
         'zoom': 0L},
+
                        loc('mlpyproggen/ARDUINOMonitorPage.py'): {'attrib-st'\
         'arts': [('ARDUINOMonitorPage|0|',
                   71),
@@ -3132,6 +3259,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 13119L,
         'selection_end': 13159L,
         'selection_start': 13159L,
+
         'zoom': 0L},
                        loc('mlpyproggen/ConfigurationPage_old.py'): {'attrib'\
         '-starts': [],
@@ -3144,6 +3272,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_start': 0L,
         'zoom': 0L},
                        loc('mlpyproggen/DCC_KeyboardPage.py'): {'attrib-star'\
+
         'ts': [('DCCKeyboardPage|0|',
                 107),
                ('DCCKeyboardPage|0|.__init__|0|',
@@ -3166,6 +3295,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 2512L,
         'selection_end': 2533L,
         'selection_start': 2533L,
+
         'zoom': 0L},
                        loc('mlpyproggen/DefaultData.py'): {'attrib-starts': [],
         'code-line': '# -*- coding: utf-8 -*-\r\n',
@@ -3177,6 +3307,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_start': 0L,
         'zoom': 0L},
                        loc('mlpyproggen/EffectMacroPage.py'): {'attrib-start'\
+
         's': [('EffectMacroPage|0|',
                95),
               ('EffectMacroPage|0|.__init__|0|',
@@ -3202,6 +3333,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 84001L,
         'selection_end': 84001L,
         'selection_start': 84001L,
+
         'zoom': 0L},
                        loc('mlpyproggen/Generaltools.py'): {'attrib-starts': [('c'\
         'reate_macroparam_content|0|',
@@ -3229,6 +3361,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_end': 4660L,
         'selection_start': 4629L,
         'zoom': 0L},
+
                        loc('mlpyproggen/LedEffectTable.py'): {'attrib-starts': [('l'\
         'edeffecttable_class|0|',
         249),
@@ -3264,6 +3397,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 18077L,
         'selection_end': 18084L,
         'selection_start': 18084L,
+
         'zoom': 0L},
                        loc('mlpyproggen/SoundCheckPage.py'): {'attrib-starts': [('S'\
         'oundCheckPage|0|',
@@ -3279,6 +3413,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_end': 6183L,
         'selection_start': 6183L,
         'zoom': 0L},
+
                        loc('mlpyproggen/StartPage.py'): {'attrib-starts': [('S'\
         'tartPage|0|',
         84),
@@ -3293,6 +3428,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 3729L,
         'selection_end': 3747L,
         'selection_start': 3747L,
+
         'zoom': 0L},
                        loc('mlpyproggen/ToolTips.py'): {'attrib-starts': [],
         'code-line': '# # # # # # # # # # # # # # # # # # # # # # # # # # # '\
@@ -3304,6 +3440,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_end': 0L,
         'selection_start': 0L,
         'zoom': 0L},
+
                        loc('mlpyproggen/Z21MonitorPage.py'): {'attrib-starts': [('Z'\
         '21MonitorPage|0|',
         258),
@@ -3317,6 +3454,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 14709L,
         'selection_end': 14709L,
         'selection_start': 14709L,
+
         'zoom': 0L},
                        loc('mlpyproggen/__init__.py'): {'attrib-starts': [],
         'code-line': '# -*- coding: utf-8 -*-\n',
@@ -3337,6 +3475,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_start': 0L,
         'zoom': 0L},
                        loc('mlpyproggen/configfile.py'): {'attrib-starts': [],
+
         'code-line': 'import json\r\n',
         'first-line': 42L,
         'folded-linenos': [],
@@ -3344,6 +3483,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 2388L,
         'selection_end': 2399L,
         'selection_start': 2388L,
+
         'zoom': 0L},
                        loc('mlpyproggen/demo.py'): {'attrib-starts': [],
         'code-line': 'import traceback, tkinter as tk, tkinter.ttk as ttk, t'\
@@ -3410,6 +3550,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'selection_start': 16051L,
         'zoom': 0L},
                        loc('pyProg_Generator_MobaLedLib.py'): {'attrib-start'\
+
         's': [('LEDColorTest|0|',
                158),
               ('LEDColorTest|0|.process_serialx|0|',
@@ -3421,6 +3562,7 @@ guimgr.visual-state = {loc('file:C:/Program Files (x86)/Microsoft Visual Studio/
         'sel-line-start': 103622L,
         'selection_end': 103622L,
         'selection_start': 103622L,
+
         'zoom': 0L},
                        loc('scrolledFrame/ScrolledFrame.py'): {'attrib-start'\
         's': [('ScrolledFrame|0|',
