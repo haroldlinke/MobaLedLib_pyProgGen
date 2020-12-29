@@ -16,8 +16,8 @@ Installation option 1: Exe File
 7. Do not forget to save the changed parameters with the button "geänderte Einstellungen übernehmen"
 
 Installation option 2: Python files
-1. Download ZIP-Archive 
-2. unzip the Archive into the Subfolder LEDs_Autoprog of the MobaLedLib\V2.x.x
+1. Download complete directory pyProgGen_MobaLedLib into the Subfolder LEDs_Autoprog of the MobaLedLib\V2.x.x
+2. The folder pyProgGen_MobaLedLib must be in the folder LEDs_Autoprog and must contain the file "LEDs_AutoProg.ino"
 3. open the folder pyProg_Generator_MobaLedLib
 4. start the Python file: pyProg_Generator_MobaLedLib.py
 5. open the tab "Einstellungen" and select the COM-Port of the ARDUINO and the ARDUINO Type - save the changes - if the com-port is not included in the list it is possible to enter the port string by hand
