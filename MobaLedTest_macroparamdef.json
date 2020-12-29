@@ -979,6 +979,7 @@
         "ParName": "MLL_DigitalSystem",
         "Cnt": "1",
         "Type": "Combo",
+        "Persistent": "True",
         "Values": [
             "None",
             "CAN",
