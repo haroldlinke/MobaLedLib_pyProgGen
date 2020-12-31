@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 *.pyc
 mlpyproggen/__pycache__/DefaultConstants.cpython-37.pyc
+logfile.log
