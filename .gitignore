@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 *.pyc
 *.pyc
+*.pyc
+*.pyc
+mlpyproggen/__pycache__/DefaultConstants.cpython-37.pyc

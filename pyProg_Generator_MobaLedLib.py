@@ -1547,9 +1547,10 @@ class LEDColorTest(tk.Tk):
                     
                 if param_type == "": # number value param
                     
-                    label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
-                    label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-                    self.ToolTip(label, text=param_tooltip)
+                    if not param_hide:
+                        label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
+                        label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
+                        self.ToolTip(label, text=param_tooltip)
                     if param_max == "":
                         param_max = 255
                     paramvar = LimitVar(param_min, param_max, parent_frame)
@@ -1563,7 +1564,8 @@ class LEDColorTest(tk.Tk):
 
                     s_paramvar.delete(0, 'end')
                     s_paramvar.insert(0, param_default)
-                    s_paramvar.grid(row=row+valuerow, column=column+valuecolumn, padx=2, pady=2, sticky=STICKY)
+                    if not param_hide:
+                        s_paramvar.grid(row=row+valuerow, column=column+valuecolumn, padx=2, pady=2, sticky=STICKY)
                     s_paramvar.key = paramkey
                     
                     param_bind_up   = paramconfig_dict.get("Key_Up","")
@@ -1633,10 +1635,10 @@ class LEDColorTest(tk.Tk):
                         row=row+deltarow
                 
                 elif param_type == "BigEntry": # Text value param
-                    
-                    label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,font=self.fontlabel)
-                    label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-                    self.ToolTip(label, text=param_tooltip)
+                    if not param_hide:
+                        label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,font=self.fontlabel)
+                        label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
+                        self.ToolTip(label, text=param_tooltip)
                     paramvar = tk.Entry(parent_frame,width=PARAMENTRWIDTH*3,font=self.fontentry)
                     
                     if param_value_change_event:
@@ -1644,7 +1646,8 @@ class LEDColorTest(tk.Tk):
                                         
                     paramvar.delete(0, 'end')
                     paramvar.insert(0, param_default)
-                    paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
+                    if not param_hide:
+                        paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
                     paramvar.key = paramkey
                     paramvar.macro = macro
                 
@@ -1689,11 +1692,11 @@ class LEDColorTest(tk.Tk):
                 elif param_type == "Checkbutton": # Checkbutton param
                     paramvar = tk.IntVar()
                     paramvar.key = paramkey
-                     
-                    label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,variable=paramvar,font=self.fontlabel)
-                    label.grid(row=row+valuerow, column=column, columnspan=2,sticky=STICKY, padx=2, pady=2)
-                    self.ToolTip(label, text=param_tooltip)                
-                
+                    if not param_hide:
+                        label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,variable=paramvar,font=self.fontlabel)
+                        label.grid(row=row+valuerow, column=column, columnspan=2,sticky=STICKY, padx=2, pady=2)
+                        self.ToolTip(label, text=param_tooltip)                
+                    
                     self.set_macroparam_var(macro, paramkey, paramvar)                
         
                     column = column + deltacolumn
@@ -1798,54 +1801,55 @@ class LEDColorTest(tk.Tk):
                 
         
                 elif param_type == "Multipleparams": # Multiple params
-                    logging.info ("%s - %s",macro,param_type)
-                    if row >1 or column>0: 
-                        row += deltarow
-                        column = 0
-                    
-                    label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
-                    label.grid(row=row+titlerow, column=column+titlecolumn, rowspan=2, sticky=STICKY, padx=2, pady=2)
-                    self.ToolTip(label, text=param_tooltip)
-                    
-                    repeat_number = paramconfig_dict.get("Repeat","")
-                    
-                    if repeat_number == "":
-                    
-                        multipleparam_frame = ttk.Frame(parent_frame)
-                        multipleparam_frame.grid(row=row,column=column+1 ,columnspan=6,sticky='nesw', padx=0, pady=0)
+                    if not param_hide:
+                        logging.info ("%s - %s",macro,param_type)
+                        if row >1 or column>0: 
+                            row += deltarow
+                            column = 0
                         
-                        multipleparams = paramconfig_dict.get("MultipleParams",[])
+                        label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
+                        label.grid(row=row+titlerow, column=column+titlecolumn, rowspan=2, sticky=STICKY, padx=2, pady=2)
+                        self.ToolTip(label, text=param_tooltip)
                         
-                        if multipleparams != []:
-                            if style != "CONFIGPage":
-                                self.create_macroparam_content(multipleparam_frame,macro, multipleparams,extratitleline=extratitleline,maxcolumns=maxcolumns-1,minrow=0,style=style)
-                                separator = ttk.Separator (parent_frame, orient = tk.HORIZONTAL)
-                                separator.grid (row = row+2, column = 0, columnspan= 10, padx=2, pady=2, sticky = "ew")
-                            else:
-                                self.create_macroparam_content(multipleparam_frame,macro, multipleparams,extratitleline=extratitleline,maxcolumns=6,minrow=0,style=style)
-                                
-               
-                        column = 0
-                        row=row+3
+                        repeat_number = paramconfig_dict.get("Repeat","")
                         
-                    else:
-                        repeat_number_int = int(repeat_number)
+                        if repeat_number == "":
                         
-                        repeat_max_columns = 6
-                        
-                        for i in range(repeat_number_int):
-                            repeat_macro=macro+"."+paramkey+"."+str(i)
-    
                             multipleparam_frame = ttk.Frame(parent_frame)
-                            multipleparam_frame.grid(row=row,column=column+1 ,columnspan=10,sticky='nesw', padx=0, pady=0)
+                            multipleparam_frame.grid(row=row,column=column+1 ,columnspan=6,sticky='nesw', padx=0, pady=0)
                             
                             multipleparams = paramconfig_dict.get("MultipleParams",[])
                             
                             if multipleparams != []:
-                                self.create_macroparam_content(multipleparam_frame,repeat_macro, multipleparams,extratitleline=extratitleline,maxcolumns=repeat_max_columns,minrow=0,style=style)
+                                if style != "CONFIGPage":
+                                    self.create_macroparam_content(multipleparam_frame,macro, multipleparams,extratitleline=extratitleline,maxcolumns=maxcolumns-1,minrow=0,style=style)
+                                    separator = ttk.Separator (parent_frame, orient = tk.HORIZONTAL)
+                                    separator.grid (row = row+2, column = 0, columnspan= 10, padx=2, pady=2, sticky = "ew")
+                                else:
+                                    self.create_macroparam_content(multipleparam_frame,macro, multipleparams,extratitleline=extratitleline,maxcolumns=6,minrow=0,style=style)
+                                    
                    
                             column = 0
-                            row=row+1
+                            row=row+3
+                            
+                        else:
+                            repeat_number_int = int(repeat_number)
+                            
+                            repeat_max_columns = 6
+                            
+                            for i in range(repeat_number_int):
+                                repeat_macro=macro+"."+paramkey+"."+str(i)
+        
+                                multipleparam_frame = ttk.Frame(parent_frame)
+                                multipleparam_frame.grid(row=row,column=column+1 ,columnspan=10,sticky='nesw', padx=0, pady=0)
+                                
+                                multipleparams = paramconfig_dict.get("MultipleParams",[])
+                                
+                                if multipleparams != []:
+                                    self.create_macroparam_content(multipleparam_frame,repeat_macro, multipleparams,extratitleline=extratitleline,maxcolumns=repeat_max_columns,minrow=0,style=style)
+                       
+                                column = 0
+                                row=row+1
                     
                 elif param_type == "Color": # Color value param
                     
