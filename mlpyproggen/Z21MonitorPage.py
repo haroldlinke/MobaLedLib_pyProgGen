@@ -419,12 +419,13 @@ class Z21MonitorPage(tk.Frame):
             for line in matches:
                 line1 = line[searchstring_len+3:]
                 line2 = line1.replace(" ","")
-                number = int(line2) - self.start_switches_1+1
+                number = int(line2) - self.start_switches_1+1   
                 adress = 1 + int( (number-1) /8 )
                 port = 1 + ( (number-1) % 8 )
                 self.add_text_to_textwindow(line[:searchstring_len+3]+" Adresse: "+str(adress)+" Eingang: "+ str(port))        
         
     def show_key_adresses(self,event=None):
+        
         filename = "..\\LEDs_AutoProg.h"
         filedir = self.controller.mainfile_dir
         filepath1 = os.path.join(filedir, filename)
@@ -437,23 +438,23 @@ class Z21MonitorPage(tk.Frame):
             self.file_data = []
             self.add_text_to_textwindow("Datei: "+filepath + " nicht gefunden")
             return
-        
             
         searchstring = "#define START_SWITCHES_1"
             
         matches = [match for match in self.file_data if searchstring in match]
-        
-        searchstring_len = len(searchstring)
-        st1 = matches[0]
-        
-              
-        st2 = st1[searchstring_len:searchstring_len+3]
-        st2 = st2.replace(" ","")
-               
-        self.start_switches_1 = int(st2)
-        
-        self.show_key_adress_for_switch("#define SwitchB")
-        self.show_key_adress_for_switch("#define SwitchD")
+        if matches == []:
+            self.add_text_to_textwindow("Keine Taster definiert")
+        else:
+            searchstring_len = len(searchstring)
+            st1 = matches[0]
+                  
+            st2 = st1[searchstring_len:searchstring_len+3]
+            st2 = st2.replace(" ","")
+                   
+            self.start_switches_1 = int(st2)
+            
+            self.show_key_adress_for_switch("#define SwitchB")
+            self.show_key_adress_for_switch("#define SwitchD")
         
     def add_text_to_textwindow(self,text):
         self.text.insert("end", text+"\n")

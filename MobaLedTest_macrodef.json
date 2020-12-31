@@ -3589,7 +3589,7 @@
         "Button_2": "Stop Simulator",
         "Button_3": "Zeige Taster-Adressen",
         "Kurzbeschreibung": "Z21 Simulation",
-        "Ausführliche Beschreibung": "Die Z21 Simulation ermöglicht die direkte Steuerung des ARDUINOS von Modellbahnsteuerungsprogrammen aus (z.B. Rocrail, iTrain, Traincontroller, WinDigiPet). Die Simulation verhält sich gegenüber dem Steuerprogramm wie eine Roco Z21 Zentrale. Wenn das Steuerproramm auf demselben Rechner läuft, findet das Steuerprogramm die Z21 Simulation unter der IP Adresse 127.0.0.1. Das Textfeld zeigt alle ausgetauschten Kommmandos an. Unter <Einstellungen> kann man bis zu 4 ARDUINOS einrichten, die von der Simulation angesprochen werden können.",
+        "Ausführliche Beschreibung": "Die Z21 Simulation ermöglicht die direkte Steuerung des ARDUINOS von Modellbahnsteuerungsprogrammen aus (z.B. Rocrail, iTrain, Traincontroller, WinDigiPet). Die Simulation verhält sich gegenüber dem Steuerprogramm wie eine Roco Z21 Zentrale. Wenn das Steuerproramm auf demselben Rechner läuft, findet das Steuerprogramm die Z21 Simulation unter der IP Adresse 127.0.0.1. Das Textfeld zeigt alle gesendeten und empfangenen Kommmandos an.",
         "Params": [
             "Z21KeyTestInput"
             ]

@@ -1307,6 +1307,7 @@
         "Min": "0",
         "Max": "255",
         "Default": "1",
+        "Hide": "True",
         "Input Text": "RMBUS-Interval (x 100ms)",
         "Hint": "Definiert die Wartezeit zwischen zwei Abfragen der Taster am ARDUINO (x 100ms) - Standard = 1 entsprich 100ms",
         "Implementation comment": ""
@@ -1842,6 +1843,7 @@
         "Min": "1",
         "Max": "255",
         "Default": "",
+        "Hide": "True",
         "ValueChangeEvent": "True",
         "Input Text": "ARDUINO Testeingabe",
         "Hint": "Simulation von Meldungen des ARDUINOs",
