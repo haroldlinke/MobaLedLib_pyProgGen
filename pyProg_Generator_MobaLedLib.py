@@ -382,8 +382,13 @@ class LEDColorTest(tk.Tk):
         #self.statusmessage.pack(side="bottom", fill="x")
         self.ToolTip(self.statusmessage, text="Zeigt Meldungen und Fehler an")
         
+        if COMMAND_LINE_ARG_DICT.get("z21simulator","")=="True":
+            # start the Z21 simulator
+            frame = self.tabdict["Z21MonitorPage"]
+            frame.start_process_Z21()           
+        
         self.focus_set()
-        self.wait_visibility()
+        #self.wait_visibility()
 
         self.lift()
         self.grab_set()
