@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 mlpyproggen/__pycache__/DefaultConstants.cpython-37.pyc
 logfile.log
+*.pyc

@@ -321,7 +321,7 @@ class ColorCheckPage(tk.Frame):
         label = ttk.Label(title_frame, text=self.title, font=self.fonttitle)
         label.pack(padx=5,pady=(5,5))
         
-        config_frame = self.controller.create_macroparam_frame(self.tab_main_frame,self.tabClassName, maxcolumns=4,startrow =1,style="CONFIGPage")
+        config_frame = self.controller.create_macroparam_frame(self.tab_main_frame,self.tabClassName, maxcolumns=4,startrow =1,style="CONFIGPage",hidecondition=not self.controller.setcoltab_only)
         
         self.parent = parent
         self.ledhighlight = False
@@ -981,6 +981,10 @@ class ColorCheckPage(tk.Frame):
             if answer == None:
                 return # no cancelation
             if answer:
+                if not self.controller.paramDataChanged:
+                    answer = tk.messagebox.askyesno ('Zurück zur ColTab','Sie haben keine Daten geändert.\nIst das richtig (<ja> ancklicken)\n oder haben Sie vergessen, die Änderungen in der Palette zu speichern und möchten dies nachholen - mit <Rechter Maustaste>? (<Nein> ancklicken)',default='yes')
+                    if answer == False:
+                        return # no cancelation                   
                 self.controller.cancel()
                 return
             else:

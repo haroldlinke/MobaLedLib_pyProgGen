@@ -422,8 +422,10 @@
         "Min": "",
         "Max": "",
         "Default": "",
-        "Input Text": "Palette an Excel übergeben",
-        "Hint": "Die aktuelle Palette wird an Set_ColTab übergeben",
+        "Hide": "Cond",
+        "ParamLabelWidth": "40",
+        "Input Text": "Palette an SetColTab-Macro übergeben und Farbtester beenden",
+        "Hint": "Die aktuelle Palette wird an Set_ColTab übergeben und er Farbtester beendet",
         "Implementation comment": ""
     },
     "CtrMode": {
