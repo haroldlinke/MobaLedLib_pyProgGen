@@ -183,18 +183,19 @@ class SerialMonitorPage(tk.Frame):
         # binding
         #self.input.bind("T",self.dummy)
         #self.input.bind("t",self.dummy)
- 
+
         self.queue = queue.Queue()
         self.monitor_serial = False
-        self.Z21page = self.controller.tabdict["Z21MonitorPage"]
-        self.RMBUS_request_timer_confvalue_str = self.controller.getConfigData("RMbusTimer")
-        if self.RMBUS_request_timer_confvalue_str == "":
-            self.RMBUS_request_timer_confvalue = 0
-        else:
-            self.RMBUS_request_timer_confvalue = int(self.RMBUS_request_timer_confvalue_str)
-        self.RMBUS_request_timer = self.RMBUS_request_timer_confvalue
+        
+        self.Z21page = self.controller.tabdict.get("Z21MonitorPage",None)
         self.check_RMBUS = False
-            
+        if self.Z21page:
+            self.RMBUS_request_timer_confvalue_str = self.controller.getConfigData("RMbusTimer")
+            if self.RMBUS_request_timer_confvalue_str == "":
+                self.RMBUS_request_timer_confvalue = 0
+            else:
+                self.RMBUS_request_timer_confvalue = int(self.RMBUS_request_timer_confvalue_str)
+            self.RMBUS_request_timer = self.RMBUS_request_timer_confvalue
 
     def tabselected(self):
         logging.debug("Tabselected: %s",self.tabname)
@@ -264,7 +265,8 @@ class SerialMonitorPage(tk.Frame):
                         self.text.yview("end")
                         if readtext.startswith("JSON:"):
                             json_str = readtext[5:]
-                            self.Z21page.notifyZ21_RMBUS_DATA(json_str)
+                            if self.z21page:
+                                self.Z21page.notifyZ21_RMBUS_DATA(json_str)
                         else:
                             self.controller.set_ARDUINOmessage(textmessage)
                     except IOError:
