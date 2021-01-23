@@ -4,7 +4,7 @@ Python based Programgenerator for the MobaLedLib
 Version für den Betatest.
 
 Requirements:
-MobaledLib 2.0.0 has to be installed
+MobaledLib 2.1.3 has to be installed
 
 Installation option 1: Via MLL Program Generator Excel file
 1. Open the MLL Prog_Generator Excel file
