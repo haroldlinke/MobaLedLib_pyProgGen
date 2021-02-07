@@ -111,12 +111,12 @@ class ConfigFile():
                     print(jsondata.keys())
                     logging.error ("ERROR: JSON Error in Config File %s - wrong key in config-file",self.filepath)
                     logging.error(jsondata)
-                    jsondata = {}                
+                    self.data.update(jsondata)
 
         except:
             logging.error ("Error in Config File %s",self.filepath)
             logging.error(self.data)
-            self.data = default_data.copy()
+            self.data = default_config.copy()
         
         create_sorted=False
         

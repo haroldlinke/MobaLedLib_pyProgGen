@@ -321,7 +321,7 @@ class ColorCheckPage(tk.Frame):
         label = ttk.Label(title_frame, text=self.title, font=self.fonttitle)
         label.pack(padx=5,pady=(5,5))
         
-        config_frame = self.controller.create_macroparam_frame(self.tab_main_frame,self.tabClassName, maxcolumns=4,startrow =1,style="CONFIGPage",hidecondition=not self.controller.setcoltab_only)
+        config_frame = self.controller.create_macroparam_frame(self.tab_main_frame,self.tabClassName, maxcolumns=4,startrow =1,style="CONFIGPage",hidecondition=not self.controller.show_setcoltab_save_button)
         
         self.parent = parent
         self.ledhighlight = False

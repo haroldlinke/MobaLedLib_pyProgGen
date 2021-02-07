@@ -165,7 +165,13 @@ class LEDColorTest(tk.Tk):
         self.arduino = None
         self.mainfile_dir = os.path.dirname(os.path.realpath(__file__))
         caller = COMMAND_LINE_ARG_DICT.get("caller","")
-        self.setcoltab_only = (caller == "SetColTab")
+        self.setcoltab_only = False
+        caller_setcoltab = (caller == "SetColTab")
+        self.colortest_only = COMMAND_LINE_ARG_DICT.get("colortest_only","")== "True"
+        
+        self.show_colorcheckpage_only = caller_setcoltab
+        self.show_setcoltab_save_button = caller_setcoltab or not self.colortest_only
+        
         self.queue = queue.Queue(maxsize=100)
         self.readConfigData()
         self.ARDUINO_current_portname = ""
@@ -356,7 +362,7 @@ class LEDColorTest(tk.Tk):
         self.tabdict = dict()
         self.tabdict_frames = dict()
         
-        if self.setcoltab_only:
+        if self.show_colorcheckpage_only:
             tabClassList = tabClassList_SetColTab
         else:
             tabClassList = tabClassList_all
@@ -2387,7 +2393,7 @@ if sys.hexversion < 0x30700F0:
 
 COMMAND_LINE_ARG_DICT = {}
 
-parser = argparse.ArgumentParser(description='Generate MLL Programs')
+parser = argparse.ArgumentParser(description='Generate MLL Programs',exit_on_error=False)
 parser.add_argument('--loglevel',choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"],help="Logginglevel to be printed inot the logfile")
 parser.add_argument('--logfile',help="Logfilename")
 parser.add_argument('--startpage',choices=['StartPage', 'EffectTestPage', 'EffectMacroPage', 'ColorCheckPage', 'SoundCheckPage', 'DCCKeyboardPage', 'ServoTestPage', 'Z21MonitorPage', 'SerialMonitorPage', 'ARDUINOMonitorPage', 'ConfigurationPage'],help="Name of the first page shown after start")
@@ -2395,7 +2401,10 @@ parser.add_argument('--port',help="Name of the port where the ARDUINO is connect
 parser.add_argument('--z21simulator',choices=["True","False"],help="if <True> the Z21simulator will be started automatically")
 parser.add_argument('--caller',choices=["SetColTab",""],help="Only for MLL-ProgrammGenerator: If <SetColTab> only the Colorcheckpage is available and the chnage coltab is returned after closing the program")
 
-args = parser.parse_args()
+try:
+    args = parser.parse_args()
+except argparse.ArgumentError:
+    print('Catching an argumentError')
 
 format = "%(asctime)s: %(message)s"
 
@@ -2425,7 +2434,7 @@ if args.loglevel:
         logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.CRITICAL,datefmt="%H:%M:%S")
 else:
     logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.DEBUG,datefmt="%H:%M:%S")
-
+logging.info("Python Version: %s",sys.version)
 logging.info("MLL Proggenerator started %s", PROG_VERSION)
 logging.info(" Platform: %s",platform.platform())
 logging.debug("Installationfolder %s",filedir)
@@ -2454,13 +2463,12 @@ try: #check if a COLORTESTONLY_FILE is in the main Dir
     open(filepath1, 'r').close()
     colortest_only = True
 except BaseException as e:
-    logging.debug(e)        
+    logging.debug(e)
     colortest_only = False
     pass
 
 if colortest_only:
-    COMMAND_LINE_ARG_DICT["caller"]= "SetColTab"
-    COMMAND_LINE_ARG_DICT["startpagename"]='ColorCheckPage'    
+    COMMAND_LINE_ARG_DICT["colortest_only"]= "True"
     
 logging.info("Commandline args: %s",repr(COMMAND_LINE_ARG_DICT))
 
