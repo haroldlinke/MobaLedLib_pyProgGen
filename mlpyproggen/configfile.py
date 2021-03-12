@@ -101,7 +101,7 @@ class ConfigFile():
             
         try:
             self.data = default_config.copy()
-            if self.data == {}:
+            if True: #self.data == {}:
                 self.data.update(jsondata)
             else:
                 if all(elem in self.data.keys() for elem in jsondata.keys()):

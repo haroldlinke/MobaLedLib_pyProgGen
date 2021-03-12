@@ -2386,100 +2386,111 @@ def img_resource_path(relative_path):
 
 #-------------------------------------------
 
-if sys.hexversion < 0x30700F0:
-    tk.messagebox.showerror("Wrong Python Version","You need Python Version > 3.7 to run this Program")
-    exit()
-    
-
 COMMAND_LINE_ARG_DICT = {}
 
-parser = argparse.ArgumentParser(description='Generate MLL Programs',exit_on_error=False)
-parser.add_argument('--loglevel',choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"],help="Logginglevel to be printed inot the logfile")
-parser.add_argument('--logfile',help="Logfilename")
-parser.add_argument('--startpage',choices=['StartPage', 'EffectTestPage', 'EffectMacroPage', 'ColorCheckPage', 'SoundCheckPage', 'DCCKeyboardPage', 'ServoTestPage', 'Z21MonitorPage', 'SerialMonitorPage', 'ARDUINOMonitorPage', 'ConfigurationPage'],help="Name of the first page shown after start")
-parser.add_argument('--port',help="Name of the port where the ARDUINO is connected to")
-parser.add_argument('--z21simulator',choices=["True","False"],help="if <True> the Z21simulator will be started automatically")
-parser.add_argument('--caller',choices=["SetColTab",""],help="Only for MLL-ProgrammGenerator: If <SetColTab> only the Colorcheckpage is available and the chnage coltab is returned after closing the program")
-
-try:
-    args = parser.parse_args()
-except argparse.ArgumentError:
-    print('Catching an argumentError')
-
-format = "%(asctime)s: %(message)s"
-
-filedir = os.path.dirname(os.path.realpath(__file__))
-if args.logfile:
-    logfilename1=args.logfile
-else:
-    logfilename1=LOG_FILENAME
+def main_entry():
     
-if logfilename1 == "stdout":
-    logfilename=""
-else:
-    logfilename = os.path.join(filedir, logfilename1)
-
-if args.loglevel:
-    logging_level = args.loglevel.upper()
-    COMMAND_LINE_ARG_DICT["logging_level"]=logging_level
-    if logging_level=="DEBUG":
-        logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.DEBUG,datefmt="%H:%M:%S")
-    elif logging_level=="INFO":
-        logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.INFO,datefmt="%H:%M:%S")
-    elif logging_level=="WARNING":
-        logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.WARNING,datefmt="%H:%M:%S")
-    elif logging_level=="ERROR":
-        logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.ERROR,datefmt="%H:%M:%S")
-    else:
-        logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.CRITICAL,datefmt="%H:%M:%S")
-else:
-    logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.DEBUG,datefmt="%H:%M:%S")
-logging.info("Python Version: %s",sys.version)
-logging.info("MLL Proggenerator started %s", PROG_VERSION)
-logging.info(" Platform: %s",platform.platform())
-logging.debug("Installationfolder %s",filedir)
-
-if args.startpage:
-    COMMAND_LINE_ARG_DICT["startpagename"]=args.startpage
-else:
-    COMMAND_LINE_ARG_DICT["startpagename"]="StartPage"
+    global COMMAND_LINE_ARG_DICT
+    
+    if sys.hexversion < 0x30700F0:
+        tk.messagebox.showerror("Wrong Python Version","You need Python Version > 3.7 to run this Program")
+        exit()
         
-if args.port:
-    COMMAND_LINE_ARG_DICT["serportname"]=args.port
     
-if args.z21simulator:
-    COMMAND_LINE_ARG_DICT["z21simulator"]=args.z21simulator
+    COMMAND_LINE_ARG_DICT = {}
     
-if args.caller:
-    COMMAND_LINE_ARG_DICT["caller"]=args.caller
-    if (args.caller == "SetColTab"):
-        COMMAND_LINE_ARG_DICT["caller"]= "SetColTab"
-        COMMAND_LINE_ARG_DICT["startpagename"]='ColorCheckPage'
+    parser = argparse.ArgumentParser(description='Generate MLL Programs',exit_on_error=False)
+    parser.add_argument('--loglevel',choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"],help="Logginglevel to be printed inot the logfile")
+    parser.add_argument('--logfile',help="Logfilename")
+    parser.add_argument('--startpage',choices=['StartPage', 'EffectTestPage', 'EffectMacroPage', 'ColorCheckPage', 'SoundCheckPage', 'DCCKeyboardPage', 'ServoTestPage', 'Z21MonitorPage', 'SerialMonitorPage', 'ARDUINOMonitorPage', 'ConfigurationPage'],help="Name of the first page shown after start")
+    parser.add_argument('--port',help="Name of the port where the ARDUINO is connected to")
+    parser.add_argument('--z21simulator',choices=["True","False"],help="if <True> the Z21simulator will be started automatically")
+    parser.add_argument('--caller',choices=["SetColTab",""],help="Only for MLL-ProgrammGenerator: If <SetColTab> only the Colorcheckpage is available and the chnage coltab is returned after closing the program")
     
-# check if colortest only is needed
-try: #check if a COLORTESTONLY_FILE is in the main Dir 
+    try:
+        args = parser.parse_args()
+    except argparse.ArgumentError:
+        print('Catching an argumentError')
+    
+    format = "%(asctime)s: %(message)s"
+    
     filedir = os.path.dirname(os.path.realpath(__file__))
-    filepath1 = os.path.join(filedir, COLORTESTONLY_FILE)
-    open(filepath1, 'r').close()
-    colortest_only = True
-except BaseException as e:
-    logging.debug(e)
-    colortest_only = False
-    pass
-
-if colortest_only:
-    COMMAND_LINE_ARG_DICT["colortest_only"]= "True"
+    if args.logfile:
+        logfilename1=args.logfile
+    else:
+        logfilename1=LOG_FILENAME
+        
+    if logfilename1 == "stdout":
+        logfilename=""
+    else:
+        logfilename = os.path.join(filedir, logfilename1)
     
-logging.info("Commandline args: %s",repr(COMMAND_LINE_ARG_DICT))
+    if args.loglevel:
+        logging_level = args.loglevel.upper()
+        COMMAND_LINE_ARG_DICT["logging_level"]=logging_level
+        if logging_level=="DEBUG":
+            logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.DEBUG,datefmt="%H:%M:%S")
+        elif logging_level=="INFO":
+            logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.INFO,datefmt="%H:%M:%S")
+        elif logging_level=="WARNING":
+            logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.WARNING,datefmt="%H:%M:%S")
+        elif logging_level=="ERROR":
+            logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.ERROR,datefmt="%H:%M:%S")
+        else:
+            logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.CRITICAL,datefmt="%H:%M:%S")
+    else:
+        logging.basicConfig(format=format, filename=logfilename,filemode="w",level=logging.DEBUG,datefmt="%H:%M:%S")
+    logging.info("Python Version: %s",sys.version)
+    logging.info("MLL Proggenerator started %s", PROG_VERSION)
+    logging.info(" Platform: %s",platform.platform())
+    logging.debug("Installationfolder %s",filedir)
+    
+    if args.startpage:
+        COMMAND_LINE_ARG_DICT["startpagename"]=args.startpage
+    else:
+        COMMAND_LINE_ARG_DICT["startpagename"]="StartPage"
+        
+    logging.info(" Startpage: %s",COMMAND_LINE_ARG_DICT["startpagename"])        
+    if args.port:
+        COMMAND_LINE_ARG_DICT["serportname"]=args.port
+        
+    if args.z21simulator:
+        COMMAND_LINE_ARG_DICT["z21simulator"]=args.z21simulator
+        
+    if args.caller:
+        COMMAND_LINE_ARG_DICT["caller"]=args.caller
+        if (args.caller == "SetColTab"):
+            COMMAND_LINE_ARG_DICT["caller"]= "SetColTab"
+            COMMAND_LINE_ARG_DICT["startpagename"]='ColorCheckPage'
+        
+    # check if colortest only is needed
+    try: #check if a COLORTESTONLY_FILE is in the main Dir 
+        filedir = os.path.dirname(os.path.realpath(__file__))
+        filepath1 = os.path.join(filedir, COLORTESTONLY_FILE)
+        open(filepath1, 'r').close()
+        colortest_only = True
+    except BaseException as e:
+        logging.debug(e)
+        colortest_only = False
+        pass
+    
+    if colortest_only:
+        COMMAND_LINE_ARG_DICT["colortest_only"]= "True"
+        
+    logging.info("Commandline args: %s",repr(COMMAND_LINE_ARG_DICT))
+    
+    app = LEDColorTest()
+    
+    app.setroot(app)
+    
+    app.protocol("WM_DELETE_WINDOW", app.cancel)
+    
+    app.startup_system()
+    
+    app.mainloop()
+    
 
-app = LEDColorTest()
-
-app.setroot(app)
-
-app.protocol("WM_DELETE_WINDOW", app.cancel)
-
-app.startup_system()
-
-app.mainloop()
+if __name__ == "__main__":
+    main_entry()
 
 

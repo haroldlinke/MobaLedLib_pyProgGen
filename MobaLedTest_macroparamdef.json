@@ -1537,7 +1537,7 @@
         "Cnt": "",
         "Type": "",
         "Min": "0",
-        "Max": "255",
+        "Max": "1200",
         "Default": "0",
         "Persistent": "True",
         "ValueChangeEvent": "True",
