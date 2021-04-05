@@ -693,7 +693,7 @@ class ColorCheckPage(tk.Frame):
         #self.controller.currentTabClass = self.tabClassName
         #self.controller.send_to_ARDUINO("#BEGIN")
         #time.sleep(ARDUINO_WAITTIME)
-        self.controller.connect()
+        #self.controller.connect()
         self.controller.ARDUINO_begin_direct_mode()
        
         self.lednum.set(int(self.controller.lednum_int/3))
@@ -732,7 +732,8 @@ class ColorCheckPage(tk.Frame):
     
     def cancel(self,_event=None):
         try:
-            self.led_off()
+            #self.led_off()
+            pass
         except:
             pass
         self.setConfigData("lastLed"     , self.lednum.get())
@@ -1183,7 +1184,9 @@ class ColorCheckPage(tk.Frame):
     def led_off(self,_event=None):
     # switch off all LED
         self.ledhighlight = False
-        message = "#L00 00 00 00 FF\n"
+        
+        #message = "#L00 00 00 00 FF\n"
+        message = "#L 00 00 00 00 FFFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -1198,7 +1201,8 @@ class ColorCheckPage(tk.Frame):
         
     def _update_led(self, lednum, ledcount, red, green, blue, color_hex):
         self._update_ledtable(lednum, ledcount, color_hex)
-        message = "#L" + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
+        lednum += self.controller.LED_baseadress
+        message = "#L " + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
         self.controller.send_to_ARDUINO(message)
         
     def _update_ledtable(self, lednum, ledcount, rgb_hex):
@@ -1225,7 +1229,8 @@ class ColorCheckPage(tk.Frame):
         
     def _send_ledcolor_to_ARDUINO(self, lednum, ledcount, ledcolor):
         lednum_int = int(lednum)
-        message = "#L" + '{:02x}'.format(lednum_int) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(ledcount) + "\n"
+        lednum_int += self.controller.LED_baseadress
+        message = "#L " + '{:02x}'.format(lednum_int) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(ledcount) + "\n"
         self.controller.send_to_ARDUINO(message)
         time.sleep(ARDUINO_WAITTIME)
             

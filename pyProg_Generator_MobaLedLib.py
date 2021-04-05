@@ -212,6 +212,8 @@ class LEDColorTest(tk.Tk):
         self.buttonlist= []
         self.lednum_int = 0
         self.ledcount_int = 1
+        self.max_ledcnt_list = []
+        self.LED_baseadress = 0
         
         #self.fontdict={}
         #self.fontdict["FontGeneral"] = ("Verdana", int(8 * self.getConfigData("FontGeneral")/100))
@@ -469,7 +471,9 @@ class LEDColorTest(tk.Tk):
 
     def SwitchoffallLEDs(self):
         # switch off all LED
-        message = "#L00 00 00 00 FF\n"
+        #message = "#L00 00 00 00 FF\n"
+        message = "#L 00 00 00 00 FFFF\n"          
+        #message = "#L00 00 00 00 FF\n"
         self.send_to_ARDUINO(message)        
         
     def ExitProg(self):
@@ -708,7 +712,8 @@ class LEDColorTest(tk.Tk):
             except:
                 logging.debug("Connect: Error Reset ARDUINO!")
             
-            no_of_trails = 5
+            no_of_trails = 25
+            emptyline_no = 0
             for i in range(no_of_trails):
                 try:
                     text=""
@@ -716,7 +721,13 @@ class LEDColorTest(tk.Tk):
                     text = self.arduino.readline()
                     timeout_error = False
                     # check if feedback is from MobaLedLib
-                    text_string = str(text) #.decode('utf-8')
+                    text_string = str(text.decode('utf-8'))
+                    if text_string == "":
+                        emptyline_no +=1
+                        if emptyline_no>2:
+                            read_error = True
+                            logging.debug("Connect Error: %s - trial:%s",text_string,i+1)                            
+                            break
                     
                     if not SerialIF_teststring1 in text_string:
                         read_error = True
@@ -724,6 +735,7 @@ class LEDColorTest(tk.Tk):
                     else:
                         self.queue.put(text_string)
                         logging.debug("Connect message: %s", text_string)
+                        read_error = False
                         break
                 except (IOError,UnicodeDecodeError) as e:
                     logging.debug(e)
@@ -769,7 +781,12 @@ class LEDColorTest(tk.Tk):
                                                   "ARDUINO" : self.arduino}
                     logging.info(" %s added to Z21 list",port)
                             
-                self.set_connectstatusmessage("Verbunden mit "+ self.ARDUINO_current_portname + " - Warten auf korrekte Antwort von ARDUINO ...",fg="orange")
+                #self.set_connectstatusmessage("Verbunden mit "+ self.ARDUINO_current_portname + " - Warten auf korrekte Antwort von ARDUINO ...",fg="orange")
+                
+                self.set_connectstatusmessage("Verbunden mit "+ self.ARDUINO_current_portname + " - EFFECT Mode",fg="green")
+                self.connection_startup = False
+                self.connection_startup_answer = True
+                self.ARDUINO_status = "Connected"                
                 return True
             return False
         else:
@@ -899,8 +916,8 @@ class LEDColorTest(tk.Tk):
         if self.arduino:
             for key in self.tabdict:
                 self.tabdict[key].disconnect()
-            message = "#END\n"
-            self.send_to_ARDUINO(message)
+            #message = "#END\n"
+            #self.send_to_ARDUINO(message)
             self.arduino.close()
             self.arduino = None
             self.ARDUINO_current_portname=""
@@ -917,6 +934,7 @@ class LEDColorTest(tk.Tk):
     def checkconnection(self):
         #logging.debug("Check_connection")
         textmessage = ""
+        #self.connection_startup = False
         if self.connection_startup:
             # checks if in the first messages from ARDUINO the string "#Color Test LED" is included
             self.connection_startup_time -= 1 # is called every 100ms
@@ -959,6 +977,11 @@ class LEDColorTest(tk.Tk):
                             #self.led_off()                                # 02.01.20:  Disabled because it generates sometimes a "Buffer overrun" on the Arduino
                             #self.led_off()                                #            In addition it doesn't work with out a "#begin"
                             break
+                        else:
+                            self.set_connectstatusmessage("Verbunden mit "+ self.ARDUINO_current_portname + " - EFFECT Mode",fg="green")
+                            self.connection_startup = False
+                            self.ARDUINO_status = "Connected"
+                            break
                     except BaseException as e:
                         logging.debug(e)
                         pass
@@ -967,7 +990,8 @@ class LEDColorTest(tk.Tk):
     def ARDUINO_begin_direct_mode(self):
         if self.arduino and self.arduino.isOpen():
             logging.debug("ARDUINO_Begin_direct_mode")
-            self.send_to_ARDUINO("#BEGIN\n")
+            #self.send_to_ARDUINO("#BEGIN\n")
+            self.send_to_ARDUINO("#?\n")
             time.sleep(ARDUINO_WAITTIME)
             self.set_connectstatusmessage("Verbunden "+ self.ARDUINO_current_portname + " - DIRECT Mode",fg="green")
 
@@ -975,7 +999,8 @@ class LEDColorTest(tk.Tk):
         if self.arduino and self.arduino.isOpen():
             logging.debug("ARDUINO_End_direct_mode")
             self.set_connectstatusmessage("Verbunden "+ self.ARDUINO_current_portname + " - EFFECT Mode",fg="green")
-            self.send_to_ARDUINO("#END\n")
+            #self.send_to_ARDUINO("#END\n")
+            self.send_to_ARDUINO("#X\n")
         
     def set_connectstatusmessage(self,status_text,fg="black"):
         logging.debug("set_connectstatusmessage: %s",status_text)
@@ -1206,8 +1231,9 @@ class LEDColorTest(tk.Tk):
         
     def led_off(self,_event=None):
     # switch off all LED
-        message = "#L00 00 00 00 FF\n"
-        self.send_to_ARDUINO(message)
+        #message = "#L00 00 00 00 FF\n"
+        #self.send_to_ARDUINO(message)
+        pass
         
     def onCheckDisconnectFile(self):
         # checks every 1 Second if the file DISCONNECT_FILENAME is found.

@@ -1038,6 +1038,17 @@
         "Input Text": "maximale Anzahl LED",
         "Hint": "maximale Anzahl LED"
     },
+    "LEDchannel": {
+        "ParName": "LEDchannel",
+        "Cnt": "1",
+        "Type": "",
+        "ConfigName": "LEDchannel",
+        "Min": "0",
+        "Max": "255",
+        "Default": "0",
+        "Input Text": "LED Kanal",
+        "Hint": "Kanalnummer, an die die LEDs-Geraete angeschlossen sind, die bearbeitet werden sollen"
+    },
     "MaxOn": {
         "ParName": "MaxOn",
         "Cnt": "2",

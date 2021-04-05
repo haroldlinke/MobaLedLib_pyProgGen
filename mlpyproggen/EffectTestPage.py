@@ -450,7 +450,8 @@ class EffectTestPage(tk.Frame):
  
     def cancel(self,_event=None):
         try:
-            self.led_off()
+            #self.led_off()
+            pass
         except:
             pass
         self.setConfigData("old_effect"  , self.effect)
@@ -502,7 +503,7 @@ class EffectTestPage(tk.Frame):
         self.controller.bind("<Control-y>",self.controller.MenuRedo)
         self.update_ledtable_complete()
         
-        self.controller.connect()
+        #self.controller.connect()
         self.controller.ARDUINO_begin_direct_mode()
         
         #self.controller.send_to_ARDUINO("#BEGIN")
@@ -1820,7 +1821,8 @@ class EffectTestPage(tk.Frame):
     def led_off(self,_event=None):
     # switch off all LED
         self.ledhighlight = False
-        message = "#L00 00 00 00 FF\n"
+        #message = "#L00 00 00 00 FF\n"
+        message = "#L 00 00 00 00 FFFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -2187,25 +2189,25 @@ class EffectTestPage(tk.Frame):
         ar_channel = (lednum_int % 3) + 1
         if ar_channel ==1:
             if ledcount == 1:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " 00 00 01\n"
+                message = "#L " + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " 00 00 01\n"
             elif ledcount == 2:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " 00 01\n"
+                message = "#L " + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " 00 01\n"
             else:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(int(ledcount/3)) + "\n"
+                message = "#L " + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(int(ledcount/3)) + "\n"
         if ar_channel ==2:
             if ledcount == 1:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " 00 " + ledcolor[3:5] + " 00 01\n"
+                message = "# L" + '{:02x}'.format(ar_lednum) + " 00 " + ledcolor[3:5] + " 00 01\n"
             elif ledcount == 2:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " 00" + ledcolor[3:5] + " " + ledcolor[5:7] + " 01\n"
+                message = "# L" + '{:02x}'.format(ar_lednum) + " 00" + ledcolor[3:5] + " " + ledcolor[5:7] + " 01\n"
             else:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(int(ledcount/3)) + "\n"                
+                message = "# L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(int(ledcount/3)) + "\n"                
         if ar_channel ==3:
             if ledcount == 1:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " 00 00 " + ledcolor[5:7] + " 01\n"
+                message = "# L" + '{:02x}'.format(ar_lednum) + " 00 00 " + ledcolor[5:7] + " 01\n"
             elif ledcount == 2:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " 00 00 " + ledcolor[5:7] + " 01\n"
+                message = "# L" + '{:02x}'.format(ar_lednum) + " 00 00 " + ledcolor[5:7] + " 01\n"
             else:
-                message = "#L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(int(ledcount/3)) + "\n"                    
+                message = "# L" + '{:02x}'.format(ar_lednum) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(int(ledcount/3)) + "\n"                    
         self.controller.send_to_ARDUINO(message)
         time.sleep(ARDUINO_WAITTIME)
             

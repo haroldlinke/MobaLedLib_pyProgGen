@@ -367,10 +367,10 @@ class ColorPicker(tk.Toplevel):
         
         if ledcount >0:
 
-#        message = "#L" + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
-            message = "#L" + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + " " + '{:02x}'.format(self.ledcount.get()) + "\n"  
+#        message = "#L " + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
+            message = "#L " + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + " " + '{:02x}'.format(self.ledcount.get()) + "\n"  
         else:
-            message = "#L" + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
+            message = "#L " + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
             
         if self.serport:
             self.serport.write(message.encode())
@@ -614,7 +614,8 @@ class ColorPicker(tk.Toplevel):
 
         # switch off all LED
 
-        message = "#L00 00 00 00 FF\n"  
+        #message = "#L00 00 00 00 FF\n"
+        message = "#L 00 00 00 00 FFFF\n"  
 
         if self.serport:
             self.serport.write(message.encode())
@@ -626,7 +627,8 @@ class ColorPicker(tk.Toplevel):
 
         # switch off all LED
 
-        message = "#L00 00 00 00 FF\n"  
+        #message = "#L00 00 00 00 FF\n"
+        message = "#L 00 00 00 00 FFFF\n"   
 
         if self.serport:
             self.serport.write(message.encode())

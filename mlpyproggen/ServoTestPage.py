@@ -385,7 +385,7 @@ class ServoTestPage(tk.Frame):
         #self.controller.currentTabClass = self.tabClassName
         #self.controller.send_to_ARDUINO("#BEGIN")
         #time.sleep(ARDUINO_WAITTIME)
-        self.controller.connect()
+        #self.controller.connect()
         self.controller.ARDUINO_begin_direct_mode()
         #self.controller.bind("<Control-Down>",self.s_servo_address.invoke_buttonup)
         #self.controller.bind("<Control-Up>",self.s_servo_address.invoke_buttondown)
@@ -595,7 +595,7 @@ class ServoTestPage(tk.Frame):
     def led_off(self,_event=None):
     # switch off all LED
         self.ledhighlight = False
-        message = "#L00 00 00 00 FF\n"
+        message = "#L 00 00 00 00 FFFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -620,7 +620,7 @@ class ServoTestPage(tk.Frame):
         self._update_servos(servo_address,code,0,0)        
         
     def _update_servos(self, lednum, servo_0, servo_1, servo_2):
-        message = "#L" + '{:02x}'.format(lednum) + " " + '{:02x}'.format(servo_0) + " " + '{:02x}'.format(servo_1) + " " + '{:02x}'.format(servo_2) + " " + '{:02x}'.format(1) + "\n"
+        message = "#L " + '{:02x}'.format(lednum) + " " + '{:02x}'.format(servo_0) + " " + '{:02x}'.format(servo_1) + " " + '{:02x}'.format(servo_2) + " " + '{:02x}'.format(1) + "\n"
         self.controller.send_to_ARDUINO(message)
         time.sleep(0.2)
 
