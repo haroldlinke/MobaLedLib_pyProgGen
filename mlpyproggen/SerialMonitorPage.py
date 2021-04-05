@@ -201,7 +201,7 @@ class SerialMonitorPage(tk.Frame):
         logging.debug("Tabselected: %s",self.tabname)
         #self.controller.currentTabClass = self.tabClassName
         logging.info(self.tabname)
-        self.controller.connect()
+        #self.controller.connect()
         pass
     
     def tabunselected(self):
@@ -267,6 +267,18 @@ class SerialMonitorPage(tk.Frame):
                             json_str = readtext[5:]
                             if self.z21page:
                                 self.Z21page.notifyZ21_RMBUS_DATA(json_str)
+                        elif readtext.startswith("#?"):
+                            temp_list = readtext.split(",")
+                            self.controller.max_ledcnt_list = temp_list[1:]
+                            ledchannel_str = self.getConfigData("LEDchannel")
+                            if ledchannel_str != "":
+                                self.controller.LEDchannel = int(ledchannel_str)
+                            else:
+                                self.controller.LEDchannel = 0
+                            self.controller.set_maxLEDcnt(int(self.controller.max_ledcnt_list[self.controller.LEDchannel]))
+                            self.controller.LED_baseadress = 0
+                            for i in range (0,self.controller.LEDchannel):
+                                self.controller.LED_baseadress+=int(self.controller.max_ledcnt_list[i])
                         else:
                             self.controller.set_ARDUINOmessage(textmessage)
                     except IOError:
@@ -293,6 +305,7 @@ class SerialMonitorPage(tk.Frame):
             self.controller.send_to_ARDUINO("?+\r\n")
         else:
             self.controller.send_to_ARDUINO("?-\r\n")
+            pass
     
     
     def start_process_serial(self):

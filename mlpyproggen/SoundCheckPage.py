@@ -140,7 +140,8 @@ class SoundCheckPage(tk.Frame):
          
     def cancel(self,_event=None):
         try:
-            self.led_off()
+            #self.led_off()
+            pass
         except:
             pass
 
@@ -239,14 +240,14 @@ class SoundCheckPage(tk.Frame):
         sound1 = '{:02x}'.format(red)
         sound2 = '{:02x}'.format(green)
         sound3 = '{:02x}'.format(blue)
-        message = "#L" + soundmodul + " " + sound1 + " " + sound2 + " " + sound3 + " " + '{:02x}'.format(1) + "\n"
+        message = "#L " + soundmodul + " " + sound1 + " " + sound2 + " " + sound3 + " " + '{:02x}'.format(1) + "\n"
         self.controller.send_to_ARDUINO(message)
         self.after(soundImpulsLength,self.onstopImpuls)
         
             
     def onstopImpuls(self):
         soundmodul = '{:02x}'.format(self.controller.get_macroparam_val(self.tabClassName, "SoundAddress"))
-        message = "#L" + soundmodul + " 00 00 00 01" + "\n"
+        message = "#L " + soundmodul + " 00 00 00 01" + "\n"
         self.controller.send_to_ARDUINO(message)        
 
 

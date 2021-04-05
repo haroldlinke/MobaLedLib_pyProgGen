@@ -343,7 +343,7 @@ class ARDUINOConfigPage(tk.Frame):
             port_found=False
             for comport in updated_comports_list:
                 if not show_entry:
-                    check_entry = self.check_string(comport[1],["ARDUINO","CH340","USB Serial Port","ttyACM","USB"])                
+                    check_entry = self.check_string(comport[1],["ARDUINO","CH340","USB Serial Port","ttyACM","USB","Silicon Labs CP210x"])                
                 if port == comport[0] and (show_entry or check_entry):
                     port_found = True
                     break
@@ -356,7 +356,7 @@ class ARDUINOConfigPage(tk.Frame):
             if not port in self.old_ports:
                 
                 if not show_entry:
-                    check_entry = self.check_string(comport[1],["ARDUINO","CH340","USB Serial Port","ttyACM","USB"])
+                    check_entry = self.check_string(comport[1],["ARDUINO","CH340","USB Serial Port","ttyACM","USB","Silicon Labs CP210x"])
                 if show_entry or check_entry:
                     new_ports_list.append(port)
                     self.arduino_portlist[port]={
@@ -554,6 +554,8 @@ class ARDUINOConfigPage(tk.Frame):
                 logging.debug("getdeviceinformation: %s",str(DeviceSignatur))
                 if DeviceSignatur == b'\x1E\x95\x0F':
                     logging.info("ATMEGA328P")
+                else:
+                    logging.info("Device Signatur: %s",str(DeviceSignatur))
         
         #Data = self.transact(Cmnd_STK_GET_PARAMETER + Parm_STK_HW_VER, 3)
         #if len(Data)==3:
