@@ -132,25 +132,14 @@ class SerialMonitorPage(tk.Frame):
 
         self.send_button = ttk.Button(button_frame, text=button1_text,width=30, command=self.send)
         self.send_button.pack(side="left", padx=4, pady=(4, 1))
-        #self.stop_button = ttk.Button(button_frame, text=button2_text,width=30, command=self.stop)
-        #self.stop_button.pack(side="left", padx=4, pady=(4, 1))
-        
-        #self.input.bind("<Return>",self.send)
-
         text_frame = tk.Frame(self.main_frame, padx=10, pady= 10)
-
-        #self.text = tk.Text(frameLabel, wrap='word', bg=self.cget('bg'), height=25, width=70)         # 04.12.19: Old: height=10, width=50
         self.text = tk.Text(text_frame, wrap='word', bg=self.cget('bg'),height=25,width=100)         # 04.12.19: Old: height=10, width=50
-        
-        # add a vertical scroll bar to the text area
         scroll=tk.Scrollbar(text_frame)
         self.text.configure(yscrollcommand=scroll.set)
         scroll.config(command=self.text.yview)
-
         #pack everything
         self.text.pack(side=tk.LEFT,fill=tk.BOTH,expand=1)
         scroll.pack(side=tk.RIGHT,fill=tk.Y)
-        
         # locate frames in main_frame
         # Tabframe
         self.frame.grid(row=0,column=0)
@@ -158,35 +147,14 @@ class SerialMonitorPage(tk.Frame):
         # scroll_main_frame
         self.main_frame.grid(row=0,column=0)
         # main_frame                
-        
         title_frame.grid(row=0, column=0, columnspan=2, pady=(4, 10), padx=10)
         config_frame.grid(row=1, columnspan=2, pady=(20, 30), padx=10)
         button_frame.grid(row=2, column=0,padx=10, pady=(10, 4))
         text_frame.grid(row=3, column=0,padx=10, pady=(10, 4),sticky="nesw")
-        
         self.main_frame.grid_columnconfigure(0,weight=1)
         self.main_frame.grid_rowconfigure(3,weight=1)                
- 
-        #input_frame = ttk.Frame(self.main_frame)
-
-        #self.input = ttk.Entry(input_frame, justify="center", width=30, name='entry')
-        #self.input.insert(0, "")
-        #ttk.Label(input_frame, text="Senden").pack(side="left", padx=4, pady=(4, 1))
-        #self.input.pack(side="left", padx=6, pady=(4, 1), fill='x', expand=True)
-        #self.send_button = ttk.Button(input_frame, text=_("Senden"),width=10, command=self.send)
-        #self.send_button.pack(side="left", padx=4, pady=(4, 1))
-
-        #input_frame.grid(row=1, column=0,padx=10, pady=(10, 4))
-        
-        #self.input.bind("<Return>",self.send)
-
-        # binding
-        #self.input.bind("T",self.dummy)
-        #self.input.bind("t",self.dummy)
-
         self.queue = queue.Queue()
         self.monitor_serial = False
-        
         self.Z21page = self.controller.tabdict.get("Z21MonitorPage",None)
         self.check_RMBUS = False
         if self.Z21page:
@@ -199,24 +167,18 @@ class SerialMonitorPage(tk.Frame):
 
     def tabselected(self):
         logging.debug("Tabselected: %s",self.tabname)
-        #self.controller.currentTabClass = self.tabClassName
         logging.info(self.tabname)
-        #self.controller.connect()
-        pass
     
     def tabunselected(self):
         logging.debug("Tabunselected: %s",self.tabname)
-        pass 
     
     def _update_value(self,paramkey):
         logging.info("SerialMonitorPage - update_value: %s",paramkey)
         message = self.controller.get_macroparam_val(self.tabClassName, "SerialMonitorInput")+"\r\n" #self.input.get() +"\r\n"
         self.controller.send_to_ARDUINO(message)        
-        
 
     def getConfigData(self, key):
         return self.controller.getConfigData(key)
-    
     
     def readConfigData(self):
         self.controller.readConfigData()
@@ -235,14 +197,12 @@ class SerialMonitorPage(tk.Frame):
     
     def dummy(self,event):
         logging.info("dummy")
-        
 
     def send(self,event=None):
         message = self.controller.get_macroparam_val(self.tabClassName, "SerialMonitorInput")+"\r\n" #self.input.get() +"\r\n"
         self.controller.send_to_ARDUINO(message)
 
     def process_serial(self):
-
         #print("process_serial: Start")
         textmessage = self.controller.checkconnection()
         if textmessage:
@@ -288,7 +248,6 @@ class SerialMonitorPage(tk.Frame):
             if self.RMBUS_request_timer == 0:
                 self.controller.send_to_ARDUINO("?*\r\n")
                 self.RMBUS_request_timer = self.RMBUS_request_timer_confvalue
-        
         if self.monitor_serial:
             self.after(100, self.process_serial)
 
@@ -303,10 +262,10 @@ class SerialMonitorPage(tk.Frame):
         
         if value:
             self.controller.send_to_ARDUINO("?+\r\n")
+            pass
         else:
             self.controller.send_to_ARDUINO("?-\r\n")
             pass
-    
     
     def start_process_serial(self):
         global ThreadEvent
@@ -326,7 +285,6 @@ class SerialMonitorPage(tk.Frame):
         self.RMBUS_request_timer = self.RMBUS_request_timer_confvalue        
         self.RMBUS_request_timer = self.RMBUS_request_timer_confvalue
 
-
     def stop_process_serial(self):
         global ThreadEvent
         self.monitor_serial = False
@@ -342,7 +300,6 @@ class SerialMonitorPage(tk.Frame):
     
     def disconnect (self):
         self.stop_process_serial()
-        
         
 class ReadLine:
     def __init__(self, s):
@@ -398,7 +355,6 @@ class ReadLine:
             result = ""
             return result
 
-
 class SerialThread(threading.Thread):
     def __init__(self, p_queue, p_serialport,p_serialportname=""):
         #global serialport
@@ -414,20 +370,7 @@ class SerialThread(threading.Thread):
         if self.serialport:
 
             while not ThreadEvent.is_set() and self.serialport.is_open:
-                # print("Event:",ThreadEvent.is_set())
-                # print("Serialport:", serialport)
-                # logging.info("SerialThread while loop")
-                #logging.info("SerialThread running")
-                #try:
-
                 text = self.rl.readline()
-                    
-                    #text = self.serialport.readline()
-                #except:
-                #    logging.debug("Serial Thread readline error: %s",text)
-                #    text = ""
-                #    if not self.serialport.is_open:
-                #        logging.debug("SerialThread: %s closed unexpectedly",self.serialport_name)
                 if text != None:
                     if len(text)>0:
                         try:
@@ -435,7 +378,6 @@ class SerialThread(threading.Thread):
                         except:
                             self.queue.put(text)
                             pass
-                        logging.info("SerialThread (%s) got message: %s", self.serialport_name,text)
-
+                        logging.info("SerialThread (%s) got message: %s", self.serialport_name,text.decode('utf-8'))
         logging.info("SerialThread (%s) received event. Exiting", self.serialport_name)
 

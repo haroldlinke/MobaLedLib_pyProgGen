@@ -77,6 +77,7 @@ class ColorPicker(tk.Toplevel):
         
         self.serport = serport
         tk.Toplevel.__init__(self, parent)
+        self.controller = parent
 
         self.title(title)
         self.transient(self.master)
@@ -362,15 +363,19 @@ class ColorPicker(tk.Toplevel):
         """Update color preview."""
         color = self.hexa.get()
         self.color_preview.configure(background=color)
+
+        if self.controller.mobaledlib_version == 1:
+            startcode = "#L"
+        else:
+            startcode = "#L "
         
         ledcount = self.ledcount.get()
         
         if ledcount >0:
-
 #        message = "#L " + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
-            message = "#L " + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + " " + '{:02x}'.format(self.ledcount.get()) + "\n"  
+            message = startcode + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + " " + '{:02x}'.format(self.ledcount.get()) + "\n"  
         else:
-            message = "#L " + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
+            message = startcode + '{:02x}'.format(self.lednum.get()) + " " + '{:02x}'.format(self.red.get()) + " " + '{:02x}'.format(self.green.get()) + " " + '{:02x}'.format(self.blue.get()) + "\n"  
             
         if self.serport:
             self.serport.write(message.encode())
@@ -613,9 +618,10 @@ class ColorPicker(tk.Toplevel):
     def led_off(self,_event=None):
 
         # switch off all LED
-
-        #message = "#L00 00 00 00 FF\n"
-        message = "#L 00 00 00 00 FFFF\n"  
+        if self.controller.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\n"  
 
         if self.serport:
             self.serport.write(message.encode())
@@ -626,9 +632,10 @@ class ColorPicker(tk.Toplevel):
     def cancel(self,_event=None):
 
         # switch off all LED
-
-        #message = "#L00 00 00 00 FF\n"
-        message = "#L 00 00 00 00 FFFF\n"   
+        if self.controller.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\n"   
 
         if self.serport:
             self.serport.write(message.encode())

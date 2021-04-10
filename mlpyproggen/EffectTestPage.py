@@ -1821,8 +1821,10 @@ class EffectTestPage(tk.Frame):
     def led_off(self,_event=None):
     # switch off all LED
         self.ledhighlight = False
-        #message = "#L00 00 00 00 FF\n"
-        message = "#L 00 00 00 00 FFFF\n"
+        if self.controller.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -2143,8 +2145,11 @@ class EffectTestPage(tk.Frame):
         
     def _update_led(self, lednum, ledcount, red, green, blue, color_hex, effect,macro, name ):
         self._update_ledtable(lednum, ledcount, color_hex, effect, macro, name)
-        #message = "#L" + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
-        #self.controller.send_to_ARDUINO(message)
+        if self.controller.mobaledlib_version == 1:
+            message = "#L" + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
+        else:
+            message = "#L " + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
+        self.controller.send_to_ARDUINO(message)
         
     def _update_ledtable(self, lednum, ledcount,rgb_hex,effect,macro, name, params = {}):
         

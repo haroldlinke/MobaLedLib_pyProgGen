@@ -56,7 +56,7 @@
 # * License: http://creativecommons.org/licenses/by-sa/3.0/
 # ***************************************************************************
 
-PROG_VERSION ="V03.03 24.03.2021"
+PROG_VERSION ="V03.07 09.04.2021"
 LARGE_FONT= ("Verdana", 12)
 VERY_LARGE_FONT = ("Verdana", 14)
 NORMAL_FONT = ("Verdana", 10)
@@ -78,7 +78,7 @@ INVERT_WHEEL = True
 
 LOG_FILENAME = 'logfile.log'
 PARAM_FILENAME = 'MobaLedTest_param.json'
-CONFIG_FILENAME = '../MobaLedTest_config.json'
+CONFIG_FILENAME = '../../MobaLedTest_config.json'
 MACRODEF_FILENAME = 'MobaLedTest_macrodef.json'
 MACROPARAMDEF_FILENAME = 'MobaLedTest_macroparamdef.json'
 DISCONNECT_FILENAME = 'MobaLedTest_disconnect.txt'

@@ -98,11 +98,13 @@
         "Values": [
             "NanoOld",
             "NanoNew",
+            "ESP32",
             "IDE"
         ],
         "ValuesText": [
             "Nano/Uno (alt)",
             "Nano/Uno (neu)",
+            "ESP32",
             "Typ von Arduino IDE"
         ],
         "ConfigName": [
@@ -112,6 +114,7 @@
         "Values2Params": [
             "arduino:avr:nano:cpu=atmega328old",
             "arduino:avr:nano:cpu=atmega328",
+            "ESP32",
             " "
         ],
         "Min": "0",

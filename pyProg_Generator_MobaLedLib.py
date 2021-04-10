@@ -214,6 +214,7 @@ class LEDColorTest(tk.Tk):
         self.ledcount_int = 1
         self.max_ledcnt_list = []
         self.LED_baseadress = 0
+        self.mobaledlib_version = 0
         
         #self.fontdict={}
         #self.fontdict["FontGeneral"] = ("Verdana", int(8 * self.getConfigData("FontGeneral")/100))
@@ -471,8 +472,10 @@ class LEDColorTest(tk.Tk):
 
     def SwitchoffallLEDs(self):
         # switch off all LED
-        #message = "#L00 00 00 00 FF\n"
-        message = "#L 00 00 00 00 FFFF\n"          
+        if self.controller.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\n"          
         #message = "#L00 00 00 00 FF\n"
         self.send_to_ARDUINO(message)        
         
@@ -648,7 +651,7 @@ class LEDColorTest(tk.Tk):
                     
                     self.showFramebyName("ARDUINOConfigPage") 
             else:
-                self.connect()    
+                self.connect()
         
     # ----------------------------------------------------------------
     # LEDColorTest connect ARDUINO
@@ -711,7 +714,10 @@ class LEDColorTest(tk.Tk):
                 pass
             except:
                 logging.debug("Connect: Error Reset ARDUINO!")
-            
+            #time.sleep(1)
+            self.send_to_ARDUINO("#?\r\n")
+            print("send #?")
+            time.sleep(0.250)            
             no_of_trails = 25
             emptyline_no = 0
             for i in range(no_of_trails):
@@ -719,6 +725,7 @@ class LEDColorTest(tk.Tk):
                     text=""
                     timeout_error = True
                     text = self.arduino.readline()
+                    print(text)
                     timeout_error = False
                     # check if feedback is from MobaLedLib
                     text_string = str(text.decode('utf-8'))
@@ -733,19 +740,23 @@ class LEDColorTest(tk.Tk):
                         read_error = True
                         logging.debug("Connect Error: %s - trial:%s",text_string,i+1)
                     else:
+                        if "MobaLedLib" in text_string:
+                            self.mobaledlib_version = 1
+                        else:
+                            self.mobaledlib_version = 2
                         self.queue.put(text_string)
                         logging.debug("Connect message: %s", text_string)
                         read_error = False
                         break
                 except (IOError,UnicodeDecodeError) as e:
                     logging.debug(e)
-                    logging.debug("Connect Error:%s",text)
+                    logging.debug("Connect Error:%s",text_string)
                     read_error = True
-                
+            self.send_to_ARDUINO("#X\r\n")
             if read_error:         
                 messagebox.showerror("Error when reading Arduino answer",
                                      "Wrong answer from ARDUINO:\n"
-                                     " '" + str(text) + "'\n"
+                                     " '" + str(text_string) + "'\n"
                                      "\n"
                                      "Check if the correct MobaLedLib program is loaded to the arduino.\nYou can upload the MobaLedLib program using the 'send to ARDUINO' Button in the ProgrammGenerator page"
                                      )
@@ -894,6 +905,7 @@ class LEDColorTest(tk.Tk):
     # LEDColorTest disconnect ARDUINO
     # ----------------------------------------------------------------
     def disconnect_Z21(self,port):
+        self.disconnect()
         logging.debug("disconnect Z21 serial port: %s", port)
         arduino = None
         port_dcc_data = self.serial_port_dict.get(port,{})
@@ -911,13 +923,15 @@ class LEDColorTest(tk.Tk):
     # LEDColorTest disconnect ARDUINO
     # ----------------------------------------------------------------
     def disconnect(self):
-        self.led_off()    
+        self.led_off()
         logging.debug("disconnect")
         if self.arduino:
             for key in self.tabdict:
                 self.tabdict[key].disconnect()
             #message = "#END\n"
             #self.send_to_ARDUINO(message)
+            message = "#X\r\n"
+            self.send_to_ARDUINO(message)                      
             self.arduino.close()
             self.arduino = None
             self.ARDUINO_current_portname=""
@@ -990,17 +1004,22 @@ class LEDColorTest(tk.Tk):
     def ARDUINO_begin_direct_mode(self):
         if self.arduino and self.arduino.isOpen():
             logging.debug("ARDUINO_Begin_direct_mode")
-            #self.send_to_ARDUINO("#BEGIN\n")
-            self.send_to_ARDUINO("#?\n")
+            if self.mobaledlib_version == 1:
+                self.send_to_ARDUINO("#BEGIN\n")
+            else:
+                self.send_to_ARDUINO("#?\n")
             time.sleep(ARDUINO_WAITTIME)
+            self.led_off()
             self.set_connectstatusmessage("Verbunden "+ self.ARDUINO_current_portname + " - DIRECT Mode",fg="green")
 
     def ARDUINO_end_direct_mode(self):
         if self.arduino and self.arduino.isOpen():
             logging.debug("ARDUINO_End_direct_mode")
             self.set_connectstatusmessage("Verbunden "+ self.ARDUINO_current_portname + " - EFFECT Mode",fg="green")
-            #self.send_to_ARDUINO("#END\n")
-            self.send_to_ARDUINO("#X\n")
+            if self.mobaledlib_version == 1:
+                self.send_to_ARDUINO("#END\n")
+            else:
+                self.send_to_ARDUINO("#X\n")
         
     def set_connectstatusmessage(self,status_text,fg="black"):
         logging.debug("set_connectstatusmessage: %s",status_text)
@@ -1022,7 +1041,7 @@ class LEDColorTest(tk.Tk):
             try:
                 arduino.write(message.encode())
                 logging.debug("Message send to ARDUINO: %s",message)
-                time.sleep(ARDUINO_WAITTIME)
+                time.sleep(2*ARDUINO_WAITTIME)
                 self.queue.put( ">> " + str(message))
             except BaseException as e:
                 logging.debug("Error write message to ARDUINO %s",message)
@@ -1164,7 +1183,7 @@ class LEDColorTest(tk.Tk):
         
         self.correct_led_correction_values()
         
-        logging.debug("ReadConfig: %s",repr(self.ConfigData.data))
+        logging.debug("ReadConfig: %s %s\n\r%s",CONFIG_FILENAME,filedir,repr(self.ConfigData.data))
         
         macrodef_filename_str = MACRODEF_FILENAME
         macroparamdef_filename_str = MACROPARAMDEF_FILENAME
@@ -1231,8 +1250,11 @@ class LEDColorTest(tk.Tk):
         
     def led_off(self,_event=None):
     # switch off all LED
-        #message = "#L00 00 00 00 FF\n"
-        #self.send_to_ARDUINO(message)
+        if self.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\r\n"
+        self.send_to_ARDUINO(message)
         pass
         
     def onCheckDisconnectFile(self):
@@ -1241,6 +1263,8 @@ class LEDColorTest(tk.Tk):
         #logging.info("onCheckDisconnectFile running")
         if os.path.isfile(DISCONNECT_FILENAME):
             self.led_off()
+            message = "#X\r\n"
+            self.send_to_ARDUINO(message)            
             self.disconnect()
 
             # delete the file to avoid a series of disconnects

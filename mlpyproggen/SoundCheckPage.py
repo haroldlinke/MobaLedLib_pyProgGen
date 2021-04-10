@@ -150,7 +150,7 @@ class SoundCheckPage(tk.Frame):
         #self.controller.currentTabClass = self.tabClassName
         #self.controller.send_to_ARDUINO("#BEGIN")
         #time.sleep(ARDUINO_WAITTIME)
-        self.controller.connect()
+        #self.controller.connect()
         self.controller.ARDUINO_begin_direct_mode()
         paramdict = self.controller.bind_keys_dict.get(self.tabClassName,{})
         if paramdict != {}:
@@ -240,14 +240,20 @@ class SoundCheckPage(tk.Frame):
         sound1 = '{:02x}'.format(red)
         sound2 = '{:02x}'.format(green)
         sound3 = '{:02x}'.format(blue)
-        message = "#L " + soundmodul + " " + sound1 + " " + sound2 + " " + sound3 + " " + '{:02x}'.format(1) + "\n"
+        if self.controller.mobaledlib_version == 1:
+            message = "#L" + soundmodul + " " + sound1 + " " + sound2 + " " + sound3 + " " + '{:02x}'.format(1) + "\n"
+        else:
+            message = "#L " + soundmodul + " " + sound1 + " " + sound2 + " " + sound3 + " " + '{:02x}'.format(1) + "\n"
         self.controller.send_to_ARDUINO(message)
         self.after(soundImpulsLength,self.onstopImpuls)
         
             
     def onstopImpuls(self):
         soundmodul = '{:02x}'.format(self.controller.get_macroparam_val(self.tabClassName, "SoundAddress"))
-        message = "#L " + soundmodul + " 00 00 00 01" + "\n"
+        if self.controller.mobaledlib_version == 1:
+            message = "#L" + soundmodul + " 00 00 00 01" + "\n"
+        else:
+            message = "#L " + soundmodul + " 00 00 00 01" + "\n"
         self.controller.send_to_ARDUINO(message)        
 
 
