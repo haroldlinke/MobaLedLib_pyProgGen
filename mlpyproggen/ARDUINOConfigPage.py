@@ -300,7 +300,8 @@ class ARDUINOConfigPage(tk.Frame):
     b'\x1E\x96\x09':"ATmega644",
     b'\x1E\x97\x02':"ATmega128",
     b'\x1E\x97\x03':"ATmega1280",
-    b'\x1E\x98\x01':"ATmega2560"}
+    b'\x1E\x98\x01':"ATmega2560",
+    "ESP32"        :"ESP32"}
     
     def on_comport_value_changed(self,event):
         combobox_var = event.widget
@@ -369,7 +370,6 @@ class ARDUINOConfigPage(tk.Frame):
             logging.debug("determine_new_and_removed_ports %s",repr(new_ports_list))
         if removed_ports_list != []:
             logging.debug("determine_new_and_removed_ports %s",repr(removed_ports_list))            
-
         return new_ports_list,removed_ports_list
 
     def update_ARDUINO_data(self,update_comport=False):
@@ -387,19 +387,20 @@ class ARDUINOConfigPage(tk.Frame):
         if port_found:
             new_ARDUINO_port = ARDUINO_port
         self.controller.set_macroparam_val(self.tabClassName, "ARDUINOConnected", conarduino_str,disable=True)
-        
         takeover = self.controller.get_macroparam_val("ARDUINOConfigPage","ARDUINOTakeOver")
-        if takeover and update_comport:
+        if update_comport:
             comport_valuelist = sorted(self.arduino_portlist.keys())
             comport_valuelist[:0] = ["NO DEVICE"]
-            self.controller.update_combobox_valuelist("ARDUINOConfigPage","ARDUINO Port",comport_valuelist,value=new_ARDUINO_port)
+            self.controller.update_combobox_valuelist("ARDUINOConfigPage","ARDUINO Port",comport_valuelist,value=new_ARDUINO_port)            
+        if takeover and update_comport:
+            #comport_valuelist = sorted(self.arduino_portlist.keys())
+            #comport_valuelist[:0] = ["NO DEVICE"]
+            #self.controller.update_combobox_valuelist("ARDUINOConfigPage","ARDUINO Port",comport_valuelist,value=new_ARDUINO_port)
             
             paramconfig_dict = self.controller.MacroParamDef.data.get("Z21Data",{})
             mp_repeat  = paramconfig_dict.get("Repeat","")
             for i in range(int(mp_repeat)):            
                 self.controller.update_combobox_valuelist("ConfigurationPage.Z21Data.{:1}".format(i),"ARDUINO Port",comport_valuelist,value="")
-
-            
             portdata = self.arduino_portlist.get(new_ARDUINO_port,{})
             if portdata != {}:
                 baudrate = portdata.get("Baudrate","115200")
@@ -408,7 +409,9 @@ class ARDUINOConfigPage(tk.Frame):
                     if baudrate == "115200":
                         self.controller.set_macroparam_val("ARDUINOConfigPage","ARDUINO Type",1)
                     else:
-                        self.controller.set_macroparam_val("ARDUINOConfigPage","ARDUINO Type",0)            
+                        self.controller.set_macroparam_val("ARDUINOConfigPage","ARDUINO Type",0)
+                if port_data["DeviceSignature"] == "ESP32":
+                    self.controller.set_macroparam_val("ARDUINOConfigPage","ARDUINO Type",2)
     
     def on_update_ARDUINO_data(self):
         if self.monitor_arduino_ports:
@@ -426,10 +429,12 @@ class ARDUINOConfigPage(tk.Frame):
                 logging.debug("Try to add Port %s to ARDUINO portlist",port)
                 self.controller.set_macroparam_val(self.tabClassName, "ARDUINOMessage", "Teste Port: "+port+ "...",disable=True)
                 self.controller.update()
-                
-                baudrate, DeviceSignature = self.Get_Arduino_Baudrate(port)
-                
                 portlist_data = self.arduino_portlist.get(port,{})
+                if not "Silicon Labs CP210x USB to UART Bridge" in portlist_data["Description"]:
+                    baudrate, DeviceSignature = self.Get_Arduino_Baudrate(port)
+                else:
+                    baudrate = 115200
+                    DeviceSignature = "ESP32"
                 if portlist_data == {}:
                     self.arduino_portlist[port]={
                                             "Description"    : port,
@@ -438,7 +443,6 @@ class ARDUINOConfigPage(tk.Frame):
                                             "Status"         : "new"
                                            }
                 else:
-                    #portlist_data["Description"]     = port
                     portlist_data["Baudrate"]        = str(baudrate)
                     portlist_data["DeviceSignature"] = DeviceSignature
                     portlist_data["Status"]          = "new"
@@ -472,7 +476,6 @@ class ARDUINOConfigPage(tk.Frame):
         #         -2: can't create com port file
         #         -3: can't reset arduino
         # DeviceSignature
-        
         if Start_Baudrate == 1:
             Baudrate = 115200
         elif Start_Baudrate == 2:
@@ -480,7 +483,6 @@ class ARDUINOConfigPage(tk.Frame):
         else:
             Baudrate = Start_Baudrate
         #if not Baudrate in [115200,57600]: Baudrate = 115200
-        
         for i in range(trials):
             logging.debug("Trying COM %s with Baudrate %s",ComPort,Baudrate)
             Res, DeviceSignatur = self.detect_arduino(ComPort, Baudrate,No_of_trials=int(trials/2)) 
@@ -514,17 +516,10 @@ class ARDUINOConfigPage(tk.Frame):
             else: 
                 Baudrate=115200 #Check again with the other baudrate
         return 0, b''
-        
     
     def transact(self,bytemessage,nNumberOfBytesToRead=10):
         
-        #clear outputbuffer
         bytemessage += Sync_CRC_EOP
-        #self.controller.arduino.reset_input_buffer()
-        #self.controller.arduino.reset_output_buffer()                   
-        #self.controller.arduino.cancel_read()
-        #self.controller.arduino.cancel_write()
-            
         # write message to serport
         nbytes_written = self.controller.arduino.write(bytemessage)
         if nbytes_written != len(bytemessage):
@@ -556,20 +551,6 @@ class ARDUINOConfigPage(tk.Frame):
                     logging.info("ATMEGA328P")
                 else:
                     logging.info("Device Signatur: %s",str(DeviceSignatur))
-        
-        #Data = self.transact(Cmnd_STK_GET_PARAMETER + Parm_STK_HW_VER, 3)
-        #if len(Data)==3:
-        #    if Data[2].to_bytes(1,byteorder="little") == Resp_STK_OK:
-        #        HWVersion = Data[1]
-        #Data = self.transact(Cmnd_STK_GET_PARAMETER + Parm_STK_SW_MAJOR, 3)
-        #if len(Data)==3:
-        #    if Data[2].to_bytes(1,byteorder="little") == Resp_STK_OK:
-        #        SWMajorVersion = Data[1]
-        #Data = self.transact(Cmnd_STK_GET_PARAMETER + Parm_STK_SW_MINOR, 3)
-        #if len(Data)==3:
-        #    if Data[2].to_bytes(1,byteorder="little") == Resp_STK_OK:
-        #        SWMinorVersion = Data[1]
-        #logging.debug("DeviceSignatur: %s, HWVersion: %s, SW_Major_Version: %s SW_Minor_Version: %s",DeviceSignatur,HWVersion,SWMajorVersion,SWMinorVersion)
         return DeviceSignatur
 
     
@@ -629,30 +610,8 @@ class ARDUINOConfigPage(tk.Frame):
     def save_config(self):
         self.setConfigData("pos_x",self.winfo_x())
         self.setConfigData("pos_y",self.winfo_y())
-        #self.setConfigData("serportnumber", self.combo.current())
-        #self.setConfigData("serportname", self.combo.get())
-        
-        #self.setConfigData("maxLEDcount", self.s_ledmaxcount.get())
-        #self.controller.set_maxLEDcnt(self.s_ledmaxcount.get())
-        
-        #self.setConfigData("colorview", self.comboview.current())
-
-        #self.setConfigData("wheeldir", self.combodir.current())
-        #self.setConfigData("startpage", "-1") # not used anymore
-        #startindex = self.combopage.current()
-        #startpagename = self.controller.getStartPageName(startindex)
-        #self.setConfigData("startpagename", startpagename)
-        
-        #self.setConfigData("baudrate", self.comboBd.get())
-        
-        #self.setConfigData("led_correction_r", self.cs_red.get())
-        #self.setConfigData("led_correction_g", self.cs_green.get())
-        #self.setConfigData("led_correction_b", self.cs_blue.get())
-        
         self.setConfigData("startcmd_filename", self.startcmd_filename)
-        
         param_values_dict = self.get_macroparam_var_values(self.tabClassName)
-        
         self.setConfigDataDict(param_values_dict)
         
         self.store_old_config()

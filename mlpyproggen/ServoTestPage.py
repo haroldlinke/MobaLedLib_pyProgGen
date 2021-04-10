@@ -595,7 +595,10 @@ class ServoTestPage(tk.Frame):
     def led_off(self,_event=None):
     # switch off all LED
         self.ledhighlight = False
-        message = "#L 00 00 00 00 FFFF\n"
+        if self.controller.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -620,7 +623,10 @@ class ServoTestPage(tk.Frame):
         self._update_servos(servo_address,code,0,0)        
         
     def _update_servos(self, lednum, servo_0, servo_1, servo_2):
-        message = "#L " + '{:02x}'.format(lednum) + " " + '{:02x}'.format(servo_0) + " " + '{:02x}'.format(servo_1) + " " + '{:02x}'.format(servo_2) + " " + '{:02x}'.format(1) + "\n"
+        if self.controller.mobaledlib_version == 1:
+            message = "#L" + '{:02x}'.format(lednum) + " " + '{:02x}'.format(servo_0) + " " + '{:02x}'.format(servo_1) + " " + '{:02x}'.format(servo_2) + " " + '{:02x}'.format(1) + "\n"
+        else:
+            message = "#L " + '{:02x}'.format(lednum) + " " + '{:02x}'.format(servo_0) + " " + '{:02x}'.format(servo_1) + " " + '{:02x}'.format(servo_2) + " " + '{:02x}'.format(1) + "\n"
         self.controller.send_to_ARDUINO(message)
         time.sleep(0.2)
 

@@ -569,6 +569,9 @@ class ColorCheckPage(tk.Frame):
 
         self.lednum.set(self.getConfigData("lastLed"))
         self.ledcount.set(self.getConfigData("lastLedCount"))
+        
+        self.ledcount.trace("w",self._update_led_count)
+        self.lednum.trace("w",self._update_led_num)
 
         self.s_led = Spinbox(led_frame, from_=0, to=255, width=5, name='spinbox',
                         textvariable=self.lednum, command=self._update_led_num,font=self.fontspinbox)
@@ -1139,9 +1142,9 @@ class ColorCheckPage(tk.Frame):
                 self.square.set_colorcorrection(self.cor_red,self.cor_green,self.cor_blue)
                 self._palette_redraw_colors()
 
-    def _update_led_num(self, event=None):
+    def _update_led_num(self, event=None,b="",c=""):
         """Update display after a change in the LED spinboxes."""
-        if event is None or event.widget.old_value != event.widget.get():
+        if True: #event is None or event.widget.old_value != event.widget.get():
             led = int(self.lednum.get())
             ledcount = int(self.ledcount.get())
             ledcnt_max = int(self.controller.get_maxLEDcnt())
@@ -1150,9 +1153,9 @@ class ColorCheckPage(tk.Frame):
                 self.lednum.set(led)
             self._highlight_led(led, self.ledcount.get())
 
-    def _update_led_count(self, event=None):
+    def _update_led_count(self, event=None,b="",c=""):
         """Update display after a change in the LED count spinboxes."""
-        if event is None or event.widget.old_value != event.widget.get():
+        if True: #event is None or event.widget.old_value != event.widget.get():
             led = int(self.lednum.get())
             ledcount = int(self.ledcount.get())
             ledcnt_max = int(self.controller.get_maxLEDcnt())
@@ -1184,9 +1187,10 @@ class ColorCheckPage(tk.Frame):
     def led_off(self,_event=None):
     # switch off all LED
         self.ledhighlight = False
-        
-        #message = "#L00 00 00 00 FF\n"
-        message = "#L 00 00 00 00 FFFF\n"
+        if self.controller.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 FFFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -1200,9 +1204,13 @@ class ColorCheckPage(tk.Frame):
             self._highlight_led(lednum, ledcount)
         
     def _update_led(self, lednum, ledcount, red, green, blue, color_hex):
-        self._update_ledtable(lednum, ledcount, color_hex)
         lednum += self.controller.LED_baseadress
-        message = "#L " + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
+        self._update_ledtable(lednum, ledcount, color_hex)
+        if self.controller.mobaledlib_version == 1:
+            message="#L"
+        else:
+            message="#L "
+        message = message + '{:02x}'.format(lednum) + " " + '{:02x}'.format(red) + " " + '{:02x}'.format(green) + " " + '{:02x}'.format(blue) + " " + '{:02x}'.format(ledcount) + "\n"
         self.controller.send_to_ARDUINO(message)
         
     def _update_ledtable(self, lednum, ledcount, rgb_hex):
@@ -1214,15 +1222,17 @@ class ColorCheckPage(tk.Frame):
     def _restore_led_colors(self, lednum, ledcount):
         if self.ledhighlight: # reset all colors
             self.ledhighlight = False
-            for i in range(ledcount):
-                lednum_str = '{:03}'.format(self.on_lednum+i)
-                keycolor = self._get_color_from_ledtable(lednum_str) 
-                self._send_ledcolor_to_ARDUINO(lednum_str,1,keycolor)                
-                time.sleep(ARDUINO_WAITTIME)    
+            self.led_off()
+            #for i in range(ledcount):
+            #    lednum_str = '{:03}'.format(self.on_lednum+i)
+            #    keycolor = self._get_color_from_ledtable(lednum_str) 
+            #    self._send_ledcolor_to_ARDUINO(lednum_str,1,keycolor)                
+            #    time.sleep(ARDUINO_WAITTIME)    
                 
     def _get_color_from_ledtable(self,lednum):
-        lednum = int(lednum)
-        lednum_str = '{:03}'.format(lednum)
+        lednum_int = int(lednum)
+        lednum_int += self.controller.LED_baseadress
+        lednum_str = '{:03}'.format(lednum_int)
         keydata = self.controller.ledeffecttable.get(lednum_str,{})
         keycolor = keydata.get("color","#000000")          
         return keycolor
@@ -1230,18 +1240,23 @@ class ColorCheckPage(tk.Frame):
     def _send_ledcolor_to_ARDUINO(self, lednum, ledcount, ledcolor):
         lednum_int = int(lednum)
         lednum_int += self.controller.LED_baseadress
-        message = "#L " + '{:02x}'.format(lednum_int) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(ledcount) + "\n"
+        if self.controller.mobaledlib_version == 1:
+            message="#L"
+        else:
+            message="#L "
+        message = message + '{:02x}'.format(lednum_int) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(ledcount) + "\n"
         self.controller.send_to_ARDUINO(message)
         time.sleep(ARDUINO_WAITTIME)
             
     def _highlight_led(self,lednum, ledcount):
         if self.ledhighlight: # onblink is already running, change only lednum and ledcount
             # reset all blinking led with their colors
-            for i in range(self.on_ledcount):
-                lednum_str = '{:03}'.format(self.on_lednum+i)
-                self._send_ledcolor_to_ARDUINO(lednum_str,1,self.controller.ledtable.get(lednum_str,"#000000"))
-                time.sleep(ARDUINO_WAITTIME)
+            #for i in range(self.on_ledcount):
+            #    lednum_str = '{:03}'.format(self.on_lednum+i)
+            #    self._send_ledcolor_to_ARDUINO(lednum_str,1,self.controller.ledtable.get(lednum_str,"#000000"))
+            #    time.sleep(ARDUINO_WAITTIME)
             #set the blinking led to highlight
+            self._send_ledcolor_to_ARDUINO(self.on_lednum,self.on_ledcount,"#000000")
             self._send_ledcolor_to_ARDUINO(lednum, ledcount, "#FFFFFF")
             # save current lednum and led count
             self.on_lednum = lednum
