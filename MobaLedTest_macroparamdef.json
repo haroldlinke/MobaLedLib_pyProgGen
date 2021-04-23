@@ -380,7 +380,7 @@
         "ConfigName": "led_correction_b",
         "Min": "0",
         "Max": "255",
-        "Default": "1",
+        "Default": "239",
         "Input Text": "Blue",
         "Hint": "Blue"
     },
@@ -391,7 +391,7 @@
         "ConfigName": "led_correction_g",
         "Min": "0",
         "Max": "255",
-        "Default": "1",
+        "Default": "175",
         "Input Text": "Green",
         "Hint": "Green"
     },
@@ -402,7 +402,7 @@
         "ConfigName": "led_correction_r",
         "Min": "0",
         "Max": "255",
-        "Default": "1",
+        "Default": "255",
         "Input Text": "RED",
         "Hint": "RED"
     },
