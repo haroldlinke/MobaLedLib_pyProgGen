@@ -1498,6 +1498,17 @@
         "Hint": "Typ des Schalters: S_ONOFF, B_RED, B_GREEN",
         "Implementation comment": ""
     },
+    "ShowProgramGenerator": {
+        "ParName": "ShowProgramGenerator",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "ShowProgramGenerator",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Python Programmgenerator anzeigen",
+        "Hint": "Python Programmgenerator anzeigen (verlangsamt die Anzeige)"
+    },
     "SerialMonitorInput": {
         "ParName": "SerialMonitorInput",
         "Cnt": "1",
