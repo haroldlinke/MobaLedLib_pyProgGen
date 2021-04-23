@@ -476,6 +476,7 @@
         "Ausführliche Beschreibung": "pyProgramGenerator Einstellungen\n\r\n\rHier können Sie die Grundeinstellungen für das Programm an Ihre Wünsche anpassen.",
         "Params": [
             "Farbauswahl",
+            "ShowProgramGenerator",
             "Startseite",
             "LEDchannel",
             "MaxLEDcnt",

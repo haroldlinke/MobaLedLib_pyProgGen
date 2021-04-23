@@ -1173,18 +1173,23 @@ class EffectTestPage(tk.Frame):
         return paramconfig_dict
 
     def create_macroparam_hidden_frames(self,parent_frame, macrogroup):
-        macroparam_hiddenframe = ttk.Frame(parent_frame, relief="ridge", borderwidth=0)
+        self.macroparam_hiddenframe = ttk.Frame(parent_frame, relief="ridge", borderwidth=0)
         supportmacrolist = self.macro_tab_dict.get(macrogroup,{})
         row = 0
         for supportmacro in supportmacrolist:
-            macro_paramframe = self.create_macroparam_frame(macroparam_hiddenframe, supportmacro)
+            macro_paramframe = self.create_macroparam_frame(self.macroparam_hiddenframe, supportmacro)
             macro_paramframe.grid(row=0,column=0, columnspan=2, pady=4, padx=4, sticky="nsew")
-            #macro_paramframe.columnconfigure(0,weight=1)
-            #macroparam_hiddenframe.columnconfigure(0,weight=1)
             self.macroparam_frame_dict[supportmacro] = macro_paramframe
+        return self.macroparam_hiddenframe
         
-        return macroparam_hiddenframe
-        
+    def get_macroparam_frame(self,macrokey):
+        macro_paramframe = self.macroparam_frame_dict.get(macrokey,None)
+        if macro_paramframe == None:
+            macro_paramframe = self.create_macroparam_frame(self.macroparam_hiddenframe, macrokey)
+            macro_paramframe.grid(row=0,column=0, columnspan=2, pady=4, padx=4, sticky="nsew")
+            self.macroparam_frame_dict[macrokey] = macro_paramframe
+            self.update()
+        return macro_paramframe
     
     def create_macrolist_frame(self,parent_frame, macrogroup):
         
@@ -1656,7 +1661,8 @@ class EffectTestPage(tk.Frame):
         macrokey = label.key
         self.macro = macrokey
         macroparams = self.get_all_macroparam_val(macrokey)
-        macroparam_frame = self.macroparam_frame_dict.get(macrokey,None)
+        #macroparam_frame = self.macroparam_frame_dict.get(macrokey,None)
+        macroparam_frame = self.get_macroparam_frame(macrokey)
         if macroparam_frame:
             macroparam_frame.lift()
         self.group_name_str = macroparams.get("Group_Name","")
@@ -1719,9 +1725,9 @@ class EffectTestPage(tk.Frame):
         # show tab for group macro
         self.container.select(self.tabdict[groupmacro]["macro_frame"])
         
-        
     def show_macroparam_frame(self,macro):
-        macroparam_frame = self.macroparam_frame_dict.get(macro,None)
+        #macroparam_frame = self.macroparam_frame_dict.get(macro,None)
+        macroparam_frame = self.get_macroparam_frame(macro)
         if macroparam_frame:
             macroparam_frame.lift()
         macrodata = self.controller.MacroDef.data.get(macro,{})

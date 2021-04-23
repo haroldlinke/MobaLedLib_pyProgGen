@@ -132,13 +132,13 @@ def _(text):
 
 # ------------------------------
 
-# ********************************************************************************
-# *
-# * definition of different tab dictionaries defining the relationship between tabname, pagename, page classes and index
-# * in fact only one table would be needed, and all others could begenerate automatically, but for clarity it is done here explicitely
 
 tabClassList_all = ( StartPage, EffectTestPage, EffectMacroPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_mll_only = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 tabClassList_SetColTab = (ColorCheckPage, SerialMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+
+#tabClassList_all = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+
 
 # for compatibility with the "old" startpagenumber in the config file
 # if startpagenumber is in this list the corresponding start page is opened, otherwise "ColorCheckPage"
@@ -236,8 +236,10 @@ class LEDColorTest(tk.Tk):
         
         self.cor_red = self.getConfigData("led_correction_r")
         self.cor_green = self.getConfigData("led_correction_g")
-        self.cor_blue = self.getConfigData("led_correction_b")        
+        self.cor_blue = self.getConfigData("led_correction_b")
         macrodata = self.MacroDef.data.get("StartPage",{})
+        
+        self.show_pyPrgrammGenerator = self.getConfigData("ShowProgramGenerator")
         
         self.tempLedeffecttableFilname = macrodata.get("TEMP_LEDEFFECTTABLE_FILENAME","StartPage")
 
@@ -368,7 +370,10 @@ class LEDColorTest(tk.Tk):
         if self.show_colorcheckpage_only:
             tabClassList = tabClassList_SetColTab
         else:
-            tabClassList = tabClassList_all
+            if self.show_pyPrgrammGenerator:
+                tabClassList = tabClassList_all
+            else:
+                tabClassList = tabClassList_mll_only
         
         for tabClass in tabClassList:
             frame = tabClass(self.container,self)
@@ -1388,12 +1393,15 @@ class LEDColorTest(tk.Tk):
             param_configname = paramconfig_dict.get("ConfigName",var.key)
             valuedict[param_configname] = value
         elif param_type in ["Checkbutton"]:
-            value = var.get()
             param_configname = paramconfig_dict.get("ConfigName",var.key)
-            if value==0:
+            try:
+                value = var.get()
+                if value==0:
+                    valuedict[param_configname] = False
+                else:
+                    valuedict[param_configname] = True
+            except:
                 valuedict[param_configname] = False
-            else:
-                valuedict[param_configname] = True
         return
 
             
@@ -1776,13 +1784,13 @@ class LEDColorTest(tk.Tk):
                         row=row+deltarow
                         
                 elif param_type == "Checkbutton": # Checkbutton param
-                    paramvar = tk.IntVar()
+                    paramvar = tk.IntVar(value=0)
                     paramvar.key = paramkey
                      
-                    label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,variable=paramvar,font=self.fontlabel)
+                    label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,variable=paramvar,font=self.fontlabel,onvalue = 1, offvalue = 0)
                     label.grid(row=row+valuerow, column=column, columnspan=2,sticky=STICKY, padx=2, pady=2)
-                    self.ToolTip(label, text=param_tooltip)                
-                
+                    self.ToolTip(label, text=param_tooltip)
+                                    
                     self.set_macroparam_var(macro, paramkey, paramvar)                
         
                     column = column + deltacolumn
