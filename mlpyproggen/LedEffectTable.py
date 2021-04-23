@@ -704,13 +704,13 @@ class ledeffecttable_class:
                                 
             ignoreled = lednum_dict.get("ignore","False")
 
-            maxledcnt = self.controller.get_maxLEDcnt()
+            maxledcnt = int(self.controller.get_maxLEDcnt())
             if lednum_int >= maxledcnt*3:
                 ignoreled = True
                 
             if ignoreled == "False":
                 lednum_effect = lednum_dict.get("effect","")
-                ledtype      = lednum_dict.get("type","RGB")
+                ledtype       = lednum_dict.get("type","RGB")
                 lednum_params_dict = lednum_dict.get("params",{})
                 
                 lednum_setmacro_dict = lednum_dict.get("setmacro", {})
