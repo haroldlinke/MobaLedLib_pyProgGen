@@ -480,7 +480,7 @@ class LEDColorTest(tk.Tk):
         if self.controller.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\n"          
+            message = "#L 00 00 00 00 7FFF\n"          
         #message = "#L00 00 00 00 FF\n"
         self.send_to_ARDUINO(message)        
         
@@ -1258,7 +1258,7 @@ class LEDColorTest(tk.Tk):
         if self.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\r\n"
+            message = "#L 00 00 00 00 7FFF\n"
         self.send_to_ARDUINO(message)
         pass
         

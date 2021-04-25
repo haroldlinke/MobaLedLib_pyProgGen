@@ -1830,7 +1830,7 @@ class EffectTestPage(tk.Frame):
         if self.controller.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\n"
+            message = "#L 00 00 00 00 7FFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
@@ -2226,12 +2226,13 @@ class EffectTestPage(tk.Frame):
         if self.ledhighlight_switch:
             if self.ledhighlight: # onblink is already running, change only lednum and ledcount
                 # reset all blinking led with their colors
-                for i in range(self.on_ledcount):
-                    lednum_str = '{:03}'.format(self.on_lednum+i)
-                    keycolor = "#000000" #self._get_color_from_ledtable(lednum_str)              
-                    self._send_ledcolor_to_ARDUINO(lednum_str,1,keycolor)
-                    time.sleep(ARDUINO_WAITTIME)
+                #for i in range(self.on_ledcount):
+                #    lednum_str = '{:03}'.format(self.on_lednum+i)
+                #    keycolor = "#000000" #self._get_color_from_ledtable(lednum_str)              
+                #    self._send_ledcolor_to_ARDUINO(lednum_str,1,keycolor)
+                #    time.sleep(ARDUINO_WAITTIME)
                 #set the blinking led to highlight
+                self._send_ledcolor_to_ARDUINO(self.on_lednum, self.on_ledcount, "#000000")
                 self._send_ledcolor_to_ARDUINO(lednum, ledcount, "#FFFFFF")
                 # save current lednum and led count
                 self.on_lednum = lednum

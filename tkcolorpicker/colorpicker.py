@@ -621,7 +621,7 @@ class ColorPicker(tk.Toplevel):
         if self.controller.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\n"  
+            message = "#L 00 00 00 00 7FFF\n"  
 
         if self.serport:
             self.serport.write(message.encode())
@@ -635,7 +635,7 @@ class ColorPicker(tk.Toplevel):
         if self.controller.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\n"   
+            message = "#L 00 00 00 00 7FFF\n"   
 
         if self.serport:
             self.serport.write(message.encode())

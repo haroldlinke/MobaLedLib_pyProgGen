@@ -598,7 +598,7 @@ class ServoTestPage(tk.Frame):
         if self.controller.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\n"
+            message = "#L 00 00 00 00 7FFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         
