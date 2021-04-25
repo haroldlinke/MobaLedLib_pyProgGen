@@ -570,8 +570,8 @@ class ColorCheckPage(tk.Frame):
         self.lednum.set(self.getConfigData("lastLed"))
         self.ledcount.set(self.getConfigData("lastLedCount"))
         
-        self.ledcount.trace("w",self._update_led_count)
-        self.lednum.trace("w",self._update_led_num)
+        #self.ledcount.trace("w",self._update_led_count)
+        #self.lednum.trace("w",self._update_led_num)
 
         self.s_led = Spinbox(led_frame, from_=0, to=255, width=5, name='spinbox',
                         textvariable=self.lednum, command=self._update_led_num,font=self.fontspinbox)
@@ -1190,7 +1190,7 @@ class ColorCheckPage(tk.Frame):
         if self.controller.mobaledlib_version == 1:
             message = "#L00 00 00 00 FF\n"
         else:
-            message = "#L 00 00 00 00 FFFF\n"
+            message = "#L 00 00 00 00 7FFF\n"
         self.controller.send_to_ARDUINO(message)
         #self.controller.ledtable.clear()
         

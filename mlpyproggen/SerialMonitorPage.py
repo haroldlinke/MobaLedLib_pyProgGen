@@ -235,6 +235,8 @@ class SerialMonitorPage(tk.Frame):
                                 self.controller.LEDchannel = int(ledchannel_str)
                             else:
                                 self.controller.LEDchannel = 0
+                            if len(self.controller.max_ledcnt_list)<=self.controller.LEDchannel:
+                                self.controller.LEDchannel = 0
                             self.controller.set_maxLEDcnt(int(self.controller.max_ledcnt_list[self.controller.LEDchannel]))
                             self.controller.LED_baseadress = 0
                             for i in range (0,self.controller.LEDchannel):
