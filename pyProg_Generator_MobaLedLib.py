@@ -599,6 +599,7 @@ class LEDColorTest(tk.Tk):
             pass
         self.disconnect()
         self.continueCheckDisconnectFile = False
+        logging.debug("Destroy")
         self.destroy()        
         
     # ----------------------------------------------------------------
@@ -721,7 +722,7 @@ class LEDColorTest(tk.Tk):
                 logging.debug("Connect: Error Reset ARDUINO!")
             #time.sleep(1)
             self.send_to_ARDUINO("#?\r\n")
-            print("send #?")
+            logging.debug ("send #?")
             time.sleep(0.250)            
             no_of_trails = 25
             emptyline_no = 0
@@ -730,7 +731,7 @@ class LEDColorTest(tk.Tk):
                     text=""
                     timeout_error = True
                     text = self.arduino.readline()
-                    print(text)
+                    logging.debug (text)
                     timeout_error = False
                     # check if feedback is from MobaLedLib
                     text_string = str(text.decode('utf-8'))
@@ -928,15 +929,17 @@ class LEDColorTest(tk.Tk):
     # LEDColorTest disconnect ARDUINO
     # ----------------------------------------------------------------
     def disconnect(self):
-        self.led_off()
-        logging.debug("disconnect")
+        logging.debug("disconnect start")
         if self.arduino:
+            self.led_off()
             for key in self.tabdict:
                 self.tabdict[key].disconnect()
             #message = "#END\n"
             #self.send_to_ARDUINO(message)
             message = "#X\r\n"
-            self.send_to_ARDUINO(message)                      
+            self.send_to_ARDUINO(message)
+            logging.debug("close ARDUINO port %s",self.arduino.portstr)
+            time.sleep(10*ARDUINO_WAITTIME)
             self.arduino.close()
             self.arduino = None
             self.ARDUINO_current_portname=""
@@ -2468,7 +2471,7 @@ def main_entry():
     try:
         args = parser.parse_args()
     except argparse.ArgumentError:
-        print('Catching an argumentError')
+        logging.debug ('Catching an argumentError')
     
     format = "%(asctime)s: %(message)s"
     
@@ -2547,6 +2550,8 @@ def main_entry():
     
     app.mainloop()
     
+    
+    logging.info("Program End")
 
 if __name__ == "__main__":
     main_entry()

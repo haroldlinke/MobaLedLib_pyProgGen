@@ -57,6 +57,7 @@
 # ***************************************************************************
 
 import tkinter as tk
+import traceback
 from tkinter import ttk,messagebox
 #from tkcolorpicker.functions import tk, ttk, round2, create_checkered_image, \
 #    overlay, hsv_to_rgb, hexa_to_rgb, rgb_to_hexa, col2hue, rgb_to_hsv, convert_K_to_RGB
@@ -288,9 +289,11 @@ class SerialMonitorPage(tk.Frame):
         self.RMBUS_request_timer = self.RMBUS_request_timer_confvalue
 
     def stop_process_serial(self):
+        logging.debug("stop_process_serial")
         global ThreadEvent
         self.monitor_serial = False
         if ThreadEvent:
+            logging.debug("Set ThreadEvent")
             ThreadEvent.set()
         #time.sleep(1)
         
@@ -317,7 +320,7 @@ class ReadLine:
             self.buf = self.buf[i+1:]
             return r
         try:
-            while self.s.is_open:
+            while not ThreadEvent.is_set() and self.s != None and self.s.is_open:
                 i = max(1, min(2048, self.s.in_waiting))
                 data = self.s.read(1)
                 i = data.find(b"\n")
@@ -330,7 +333,6 @@ class ReadLine:
                     if data >= b"x7F":
                         if toRead >0 :
                             logging.debug("SerialThread error in Feedback-String:"+str(data).hex)
-                        
                         chkSum = int.from_bytes(data,byteorder = "big")
                         toReadbyte = self.s.read(1)
                         toRead = int.from_bytes(toReadbyte,byteorder = "big")
@@ -352,8 +354,11 @@ class ReadLine:
                             #logging.debug("Received from ARDUINO: " + result)
                             return result
                     self.buf.extend(data)
-        except:
+        except BaseException as e:
             logging.debug("Readline exception")
+            logging.debug(e)
+            traceback.print_exc()
+            logging.debug("------------------")
             result = ""
             return result
 
@@ -370,16 +375,16 @@ class SerialThread(threading.Thread):
         #global serialport
         logging.info("SerialThread started:"+self.serialport_name)
         if self.serialport:
-
             while not ThreadEvent.is_set() and self.serialport.is_open:
-                text = self.rl.readline()
-                if text != None:
-                    if len(text)>0:
-                        try:
-                            self.queue.put(text.decode('utf-8'))
-                        except:
-                            self.queue.put(text)
-                            pass
-                        logging.info("SerialThread (%s) got message: %s", self.serialport_name,text.decode('utf-8'))
+                if self.serialport and self.serialport.is_open:
+                    text = self.rl.readline()
+                    if text != None:
+                        if len(text)>0:
+                            try:
+                                self.queue.put(text.decode('utf-8'))
+                            except:
+                                self.queue.put(text)
+                                pass
+                            logging.info("SerialThread (%s) got message: %s", self.serialport_name,text.decode('utf-8'))
         logging.info("SerialThread (%s) received event. Exiting", self.serialport_name)
 

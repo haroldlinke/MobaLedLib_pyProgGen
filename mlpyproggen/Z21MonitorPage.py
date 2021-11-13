@@ -384,7 +384,8 @@ class Z21MonitorPage(tk.Frame):
         self.client_turnout_info_dict = {}
         self.client_broadcast_flag_dict = {}
         self.client_RMBUS_GETDATA_dict = {}
-        self.RMBUS_DATA_bytearray = {0: bytearray(10)}        
+        self.RMBUS_DATA_bytearray = {0: bytearray(10)}
+        logging.debug("reset_z21_data-end")
         
     def send_command_to_ARDUINO(self,dccaddress,channel,activate):
         logging.debug("send_command_to_ARDUINO entry: %s - %s",dccaddress,channel)
@@ -410,6 +411,7 @@ class Z21MonitorPage(tk.Frame):
         self.start_process_Z21()
         
     def stop(self,event=None):
+        logging.debug ("Z21_Stop")
         self.stop_process_Z21()
         
     def show_key_adress_for_switch(self,searchstring):
@@ -647,14 +649,18 @@ class Z21MonitorPage(tk.Frame):
         self.add_text_to_textwindow(textmessage)            
 
     def stop_process_Z21(self):
+        logging.debug ("Stop_process_Z21")
         global ThreadEvent_Z21
         self.monitor_serial = False
         if ThreadEvent_Z21:
             ThreadEvent_Z21.set()
+        logging.debug ("Stop_process_Z21 - disconnect_all_serial_interfaces")
         self.disconnect_all_serial_interfaces()
+        logging.debug ("Stop_process_Z21 - reset_z21_data")
         self.reset_z21_data()
         time.sleep(1)
         try:
+            logging.debug ("Stop_process_Z21 - socket.close")
             self.socket.close()
         except:
             pass

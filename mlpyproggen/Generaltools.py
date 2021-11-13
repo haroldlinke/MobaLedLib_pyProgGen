@@ -305,7 +305,7 @@ def create_macroparam_content(self,parent_frame, macro, macroparams,extratitleli
         
 
         if param_type == "Multipleparams": # Multiple params
-            print (macro,param_type)
+            logging.debug  (macro,param_type)
             if row >1 or column>0: 
                 row += deltarow
                 column = 0

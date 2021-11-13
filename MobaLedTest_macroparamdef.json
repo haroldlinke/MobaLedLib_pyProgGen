@@ -1530,8 +1530,13 @@
         "Max": "9999",
         "Persistent": "True",
         "Default": "1",
+<<<<<<< Updated upstream
         "Input Text": "Servo Modul Adresse",
         "Hint": "Adresse des Servo Moduls (LED-Nummer des Anschlusses)"
+=======
+        "Input Text": "Servo Modul Addresse",
+        "Hint": "Addresse des Servomoduls (LED-Nummer des Anschlusses)"
+>>>>>>> Stashed changes
     },
     "ServoChannel": {
         "ParName": "ServoChannel",

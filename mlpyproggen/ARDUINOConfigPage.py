@@ -562,7 +562,7 @@ class ARDUINOConfigPage(tk.Frame):
         #         -2: can't close and assign port
         #         -3: can't reset arduino
         
-        print("detect_arduino:",port)
+        logging.debug ("detect_arduino: %s",port)
         no_port=None
         try: # close the port if it is open and reopen it with DTR = False
             if self.controller.arduino and self.controller.arduino.is_open:

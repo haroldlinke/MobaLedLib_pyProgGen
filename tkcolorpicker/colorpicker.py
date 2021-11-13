@@ -379,9 +379,9 @@ class ColorPicker(tk.Toplevel):
             
         if self.serport:
             self.serport.write(message.encode())
-            print("Message send to ARDUINO: ",message)
+            logging.debug ("Message send to ARDUINO: ",message)
 #            cc=str(self.serport.readline())
-#            print("ARDUINO Feedback:",cc[2:][:-5])        
+#            logging.debug ("ARDUINO Feedback:",cc[2:][:-5])        
 
     def _reset_preview(self, event):
         """Respond to user click on a palette item."""
@@ -625,9 +625,9 @@ class ColorPicker(tk.Toplevel):
 
         if self.serport:
             self.serport.write(message.encode())
-            print("Message send to ARDUINO: ",message)
+            logging.debug ("Message send to ARDUINO: ",message)
             cc=str(self.serport.readline())
-            print("ARDUINO Feedback:",cc[2:][:-5])                
+            logging.debug ("ARDUINO Feedback:",cc[2:][:-5])                
 
     def cancel(self,_event=None):
 
@@ -639,9 +639,9 @@ class ColorPicker(tk.Toplevel):
 
         if self.serport:
             self.serport.write(message.encode())
-            print("Message send to ARDUINO: ",message)
+            logging.debug ("Message send to ARDUINO: ",message)
             cc=str(self.serport.readline())
-            print("ARDUINO Feedback:",cc[2:][:-5])
+            logging.debug ("ARDUINO Feedback:",cc[2:][:-5])
         
         self.destroy()
 
