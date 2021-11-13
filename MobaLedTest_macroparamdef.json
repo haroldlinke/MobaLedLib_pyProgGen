@@ -1530,8 +1530,8 @@
         "Max": "9999",
         "Persistent": "True",
         "Default": "1",
-        "Input Text": "Servo Addresse",
-        "Hint": "Addresse des Servos (LED-Nummer des Anschlusses)"
+        "Input Text": "Servo Modul Adresse",
+        "Hint": "Adresse des Servo Moduls (LED-Nummer des Anschlusses)"
     },
     "ServoChannel": {
         "ParName": "ServoChannel",
