@@ -123,7 +123,7 @@ class LEDListPage(tk.LabelFrame):
 
     def tabselected(self):
         #self.controller.currentTabClass = self.tabClassName
-        print(self.tabname)
+        logging.debug (self.tabname)
         self.canvas.delete()
         self.create_content(self.parent, self.controller)
         pass

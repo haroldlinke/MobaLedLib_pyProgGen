@@ -1328,7 +1328,7 @@ class ledeffecttable_class:
                                                     logging.debug("Import_String: %s Template_string:%s",import_str,template_str)
                                                     m=re.match(template_str,import_str)
                                                     if m:
-                                                        print("Match:",m.groupdict())
+                                                        logging.debug ("Match:",m.groupdict())
                                                 except BaseException as e:
                                                     logging.debug(e)
                                             

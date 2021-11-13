@@ -107,8 +107,8 @@ class ConfigFile():
                 if all(elem in self.data.keys() for elem in jsondata.keys()):
                     self.data.update(jsondata)
                 else:
-                    print(self.data.keys())
-                    print(jsondata.keys())
+                    logging.debug (self.data.keys())
+                    logging.debug (jsondata.keys())
                     logging.error ("ERROR: JSON Error in Config File %s - wrong key in config-file",self.filepath)
                     logging.error(jsondata)
                     self.data.update(jsondata)
