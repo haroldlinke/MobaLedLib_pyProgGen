@@ -12,9 +12,10 @@ Installation option 3: Python files - e.g. for LINUX and MAC
 2. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
 3. create a subfolder Python
 4. Clone MobaLedLib_PyProgGen to the folder pyProg_Generator_MobaLedLib/Python - the file pyProg_Generator_MobaLedLib.py must be in this folder
-5. open the folder pyProg_Generator_MobaLedLib/Python
-6. start the Python file: pyProg_Generator_MobaLedLib.py
-7. continue with first configuration described below
+5. or download the branch as ZIP-file: unpack the ZIP file and copy the contents of the folder MobaLedLib_pyProgGen-4.0 into the folder pyProg_Generator_MobaLedLib/Python
+6. open the folder pyProg_Generator_MobaLedLib/Python
+7. start the Python file: pyProg_Generator_MobaLedLib.py
+8. continue with first configuration described below
 
 First configuration of PyProgGen:
 1. open the tab "ARDUINO Einstellungen" - pyProgGen tries to find the connected ARDUINOs and determines the typ and COM port. If only one ARDUINO is found the com port is automatically selected. You can change this selection of the ARDUINO and the ARDUINO Type - save the changes - if the com-port is not included in the list it is possible to enter the port string by hand
