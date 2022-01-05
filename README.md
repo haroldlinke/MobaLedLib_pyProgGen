@@ -1,4 +1,4 @@
-# MobaLedLib_pyProgGen
+# MobaLedLib_pyProgGen Proof of Concept
 Python based Programgenerator for the MobaLedLib
 
 Version für den Betatest.
