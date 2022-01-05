@@ -162,7 +162,7 @@ class CWorkbook:
                     {"Name":"DCC",
                      "Filename"  : "\\csv\\dcc.csv",
                      "Fieldnames": ("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q"),
-                     "Formating" : { "HideCells"      : ((0,0),),
+                     "Formating" : { "HideCells"      : ((0,"*"),),
                                     "ProtectedCells"  : ((0,"*"),(1,"*"), ("*",12),("*",13),("*",14),("*",15),("*",16)),
                                     "FontColor"       : { "1": {
                                                                 "font"     : ("Arial",10),
