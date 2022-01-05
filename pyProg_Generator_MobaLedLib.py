@@ -171,6 +171,10 @@ class LEDColorTest(tk.Tk):
         self.setcoltab_only = False
         caller_setcoltab = (caller == "SetColTab")
         self.colortest_only = COMMAND_LINE_ARG_DICT.get("colortest_only","")== "True"
+        self.coltab = None
+        self.checkcolor_callback = None
+        
+        self.oldTabName = ""
         
         self.show_colorcheckpage_only = caller_setcoltab
         self.show_setcoltab_save_button = caller_setcoltab or not self.colortest_only
@@ -622,17 +626,17 @@ class LEDColorTest(tk.Tk):
     # ----------------------------------------------------------------        
     def TabChanged(self,_event=None):
         
-        oldtab_name = self.currentTabClass
-        if oldtab_name != "":
-            oldtab = self.nametowidget(oldtab_name)
-            oldtab.tabunselected()
+        self.oldTabName = self.currentTabClass
+        if self.oldTabName != "":
+            self.oldtab = self.nametowidget(self.oldTabName)
+            self.oldtab.tabunselected()
         newtab_name = self.container.select()
         if newtab_name != "":
             newtab = self.nametowidget(newtab_name)
             self.currentTabClass = newtab_name
             self.current_tab = newtab
             newtab.tabselected()
-        logging.debug("TabChanged %s - %s",oldtab_name,newtab_name)
+        logging.debug("TabChanged %s - %s",self.oldTabName,newtab_name)
 
     # ----------------------------------------------------------------
     # setParamDataChanged

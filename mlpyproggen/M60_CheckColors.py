@@ -34,6 +34,7 @@
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
+from vb2py.vbconstants import *
 
 import mlpyproggen.M02_Public as M02
 import mlpyproggen.M03_Dialog as M03
@@ -58,6 +59,7 @@ import mlpyproggen.M70_Exp_Libraries as M70
 import mlpyproggen.M80_Create_Mulitplexer as M80
 
 import mlpyproggen.P01_Workbook as P01
+import mlpyproggen.Prog_Generator as PG
 
 from mlpyproggen.X01_Excel_Consts import *
 
@@ -107,6 +109,7 @@ __PYTHON_DOWNLOADP = 'https://www.python.org/downloads/'
 __FINISHEDTXT_FILE = __CHECKCOL_EXE_DIR + 'Finished.txt'
 __COLTAB_SIZE = 17
 __NamesList = 'ROOM_COL0,' + 'ROOM_COL1,' + 'ROOM_COL2,' + 'ROOM_COL3,' + 'ROOM_COL4,' + 'ROOM_COL5,' + 'GAS_LIGHT D,' + 'GAS LIGHT,' + 'NEON_LIGHT D,' + 'NEON_LIGHT M,' + 'NEON_LIGHT,' + 'ROOM_TV0 A,' + 'ROOM_TV0 B,' + 'ROOM_TV1 A,' + 'ROOM_TV1 B,' + 'SINGLE_LED,' + 'SINGLE_LED D'
+
 class RGB_T:
     def __init__(self):
        
@@ -120,6 +123,8 @@ __Smiley_Cnt = int()
 __Proc_CheckColors_Form_Callback = String()
 __ColTab_Dest_Sheet = String()
 __ColTab_Dest_Row = int()
+ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
+
 
 def __VerStr_to_long(Str):
     fn_return_value = None
@@ -262,12 +267,12 @@ def Write_ColTest_Only_File():
 def __Delete_ColTest_Only_File():
     Name = String()
     #-------------------------------------
-    Name = ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR + __COLTEST_ONLYFILE
+    Name = P01.ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR + __COLTEST_ONLYFILE
     if Dir(Name) != '':
         Kill(Name)
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ColTab - ByRef 
-def __Set_Default_ColTab(ColTab):
+def __Set_Default_ColTab():
     #------------------------------------------------------
     ColTab[0].r = 15
     ColTab[0].g = 13
@@ -320,6 +325,8 @@ def __Set_Default_ColTab(ColTab):
     ColTab[16].r = 50
     ColTab[16].g = 50
     ColTab[16].b = 50
+    
+    return ColTab
 
 def __Dec_2_Hex2(d):
     fn_return_value = None
@@ -376,7 +383,7 @@ def Write_Default_CheckColors_Parameter_File():
     VBFiles.writeText(fp, '    "led_correction_b": "94",', '\n')
     VBFiles.writeText(fp, '    "use_led_correction": 1,', '\n')
     VBFiles.writeText(fp, '    "old_color": "#FFA8C7",', '\n')
-    __Set_Default_ColTab(ColTab)
+    ColTab = __Set_Default_ColTab()
     __Write_ColTab(fp, ColTab)
     VBFiles.writeText(fp, '    "autoconnect": true', '\n')
     VBFiles.writeText(fp, '}', '\n')
@@ -435,7 +442,7 @@ def __Insert_ColTab_to_ConfigFile(ColTab):
 
 def __Insert_Default_ColTab_to_ConfigFile():
     fn_return_value = None
-    ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
+    
 
     FileName = String()
 
@@ -449,7 +456,7 @@ def __Insert_Default_ColTab_to_ConfigFile():
 
     ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
     #----------------------------------------------------------------
-    __Set_Default_ColTab(ColTab)
+    ColTab = __Set_Default_ColTab()
     fn_return_value = __Insert_ColTab_to_ConfigFile(ColTab)
     ## VB2PY (CheckDirective) VB directive took path 1 on False
     if not __Open_Cfg_File_and_Get_Sp_and_Ep(Txt, Sp, Ep, FileName):
@@ -458,7 +465,7 @@ def __Insert_Default_ColTab_to_ConfigFile():
     # VB2PY (UntranslatedCode) On Error GoTo WriteError
     VBFiles.openFile(fp, FileName, 'w') 
     VBFiles.writeText(fp, Left(Txt, Sp - 1))
-    __Set_Default_ColTab(ColTab)
+    ColTab = __Set_Default_ColTab()
     __Write_ColTab(fp, ColTab)
     VBFiles.writeText(fp, Mid(Txt, Ep + Len(__ENDE_PALETTE_TXT) + 2))
     VBFiles.closeFile(fp)
@@ -489,6 +496,7 @@ def __Replace_in_String_from_To(Txt, FromTxt, ToTxt, ReplaceTxt, FileName):
     return fn_return_value
 
 def __Change_Comport_in_ConfigFile(ComNr):
+    return True
     fn_return_value = None
     FileName = String()
 
@@ -496,8 +504,8 @@ def __Change_Comport_in_ConfigFile(ComNr):
 
     fp = Integer()
     #-------------------------------------------------------------------------
-    FileName = ThisWorkbook.Path + '\\' + __CHECKCOL_DAT_DIR + __CONFIG_FILE_NAME
-    Txt = Read_File_to_String(FileName)
+    FileName = P01.ThisWorkbook.Path + '\\' + __CHECKCOL_DAT_DIR + __CONFIG_FILE_NAME
+    Txt = M30.Read_File_to_String(FileName)
     if Txt == '#ERROR#':
         return fn_return_value
     if not __Replace_in_String_from_To(Txt, __START_SERPORT_NR, ',', ' ' + ComNr, FileName):
@@ -519,7 +527,7 @@ def __Test_Change_Comport_in_ConfigFile():
     __Change_Comport_in_ConfigFile()(4)
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ColTab - ByRef 
-def __Read_ColTab_from_Config_File(ColTab):
+def __Read_ColTab_from_Config_File():
     fn_return_value = None
     FileName = String()
 
@@ -535,8 +543,8 @@ def __Read_ColTab_from_Config_File(ColTab):
 
     Line = Variant()
     #--------------------------------------------------------------------------------
-    if not __Open_Cfg_File_and_Get_Sp_and_Ep(Txt, Sp, Ep, FileName):
-        return fn_return_value
+    #if not __Open_Cfg_File_and_Get_Sp_and_Ep(Txt, Sp, Ep, FileName):
+    #    return fn_return_value
     Sp = Sp + Len(__START_PALETTETXT) + 1
     ColTabList = Split(Mid(Txt, Sp, Ep - Sp), vbCr)
     for Line in ColTabList:
@@ -547,6 +555,21 @@ def __Read_ColTab_from_Config_File(ColTab):
             ColTab[Nr].b = '&H' + Mid(ColStr, 6, 2)
             Nr = Nr + 1
     return fn_return_value
+
+# VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ColTab - ByRef 
+def __Read_ColTab_from_palette(palette):
+    global ColTab
+    
+    Nr = 0
+    for key in palette:
+        Line = palette.get(key,"")
+        ColStr = Line
+        ColTab[Nr].r = '&H' + Mid(ColStr, 2, 2)
+        ColTab[Nr].g = '&H' + Mid(ColStr, 4, 2)
+        ColTab[Nr].b = '&H' + Mid(ColStr, 6, 2)
+        Nr = Nr + 1
+    return ColTab
+
 
 def __Test_Read_ColTab_from_Config_File():
     ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
@@ -585,19 +608,21 @@ def __ColTab_to_C_String(ColTab):
     #               50,  50,   8, //  ROOM_TV1 B
     #              255, 255, 255, //  SINGLE_LED
     #               50,  50,  50) //  SINGLE_LED D
-    __Set_Default_ColTab(DefColTab)
+    DefColTab = __Set_Default_ColTab()
     Names = Split(__NamesList, ',')
     Res = '// Set_ColTab(Red Green Blue)      ' + vbLf + 'Set_ColTab('
     for Nr in vbForRange(0, __COLTAB_SIZE - 1):
-        Res = Res + Right('   ' + ColTab(Nr).r, 3) + ', '
-        Res = Res + Right('   ' + ColTab(Nr).g, 3) + ', '
-        Res = Res + Right('   ' + ColTab(Nr).b, 3)
+        Res = Res + Right('   ' + str(ColTab(Nr).r), 3) + ', '
+        Res = Res + Right('   ' + str(ColTab(Nr).g), 3) + ', '
+        Res = Res + Right('   ' + str(ColTab(Nr).b), 3)
         if DefColTab(Nr).r != ColTab(Nr).r or DefColTab(Nr).g != ColTab(Nr).g or DefColTab(Nr).b != ColTab(Nr).b:
             Comment = ' // *'
+        else:
             Comment = ' //  '
         Comment = Comment + Names(Nr)
         if Nr < __COLTAB_SIZE - 1:
             Res = Res + ',' + Comment + vbLf + '           '
+        else:
             Res = Res + ')' + Comment
     fn_return_value = Res
     return fn_return_value
@@ -610,9 +635,10 @@ def __TestColTab_to_C_String():
     #ActiveCell = ColTab_to_C_String(ColTab)
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ColTab - ByRef 
-def __C_String_to_ColTab(C_Str, ColTab):
+def __C_String_to_ColTab(C_Str):
     fn_return_value = None
     Line = Variant()
+    ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
 
     Nr = int()
     #----------------------------------------------------------------------------
@@ -621,11 +647,11 @@ def __C_String_to_ColTab(C_Str, ColTab):
             Parts = Split(Trim(Replace(Line, 'Set_ColTab(', '')), ',')
             if Nr < __COLTAB_SIZE:
                 with_0 = ColTab(Nr)
-                with_0.r = val(Trim(Parts(0)))
-                with_0.g = val(Trim(Parts(1)))
-                with_0.b = val(Trim(Parts(2)))
+                with_0.r = P01.val(Trim(Parts(0)))
+                with_0.g = P01.val(Trim(Parts(1)))
+                with_0.b = P01.val(Trim(Parts(2)))
             Nr = Nr + 1
-    return fn_return_value
+    return ColTab
 
 def __Test_C_String_to_ColTab():
     ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
@@ -637,16 +663,19 @@ def __Test_C_String_to_ColTab():
     __C_String_to_ColTab()(C_Str, ColTab)
     #ColTab(1).g = 212 ' Simulate an error
     Debug.Print('Vergleich: ' +  ( C_Str == __ColTab_to_C_String(ColTab) ))
+    
 
-def __Show_Wait_CheckColors_Form():
+def __Show_Wait_CheckColors_Form(callback =None):
     #---------------------------------------
-    Application.EnableEvents = True
-    Wait_CheckColors_Form.Activity_Label = 'J'
-    __Smiley_Direction = 0
-    __Smiley_Cnt = 0
-    Wait_CheckColors_Form.Show()
-    Application.OnTime(Now + TimeValue('00:00:03'), 'Update_Wait_CheckColors_Form')
+    P01.Application.EnableEvents = True
+    #Wait_CheckColors_Form.Activity_Label = 'J'
+    #__Smiley_Direction = 0
+    #__Smiley_Cnt = 0
+    #Wait_CheckColors_Form.Show()
+    #Application.OnTime(Now + TimeValue('00:00:03'), 'Update_Wait_CheckColors_Form')
     #Debug.Print "*Show_Wait_CheckColors_Form()"
+    PG.dialog_parent.checkcolor(ColTab,callback=callback)
+    
 
 def __Update_Wait_CheckColors_Form():
     Step = 3
@@ -691,37 +720,39 @@ def __Update_Wait_CheckColors_Form():
         if Wait_CheckColors_Form.Visible:
             Application.OnTime(Now + TimeValue('00:00:01'), 'Update_Wait_CheckColors_Form')
 
-def __Set_ColTab_Callback():
-    ColTab = vbObjectInitialize((__COLTAB_SIZE,), RGB_T)
+def __Set_ColTab_Callback(palette):
+    global ColTab
     #--------------------------------
     # Is called if the Python ColorCheck program is closed to set the color table
     Debug.Print('Set_ColTab_Callback')
-    __Read_ColTab_from_Config_File()(ColTab)
-    ThisWorkbook.Activate()
-    Sheets(__ColTab_Dest_Sheet).Select()
-    Make_sure_that_Col_Variables_match()
-    P01.CellDict[__ColTab_Dest_Row, Config__Col] = __ColTab_to_C_String(ColTab)
-    Cells(__ColTab_Dest_Row, LEDs____Col).ClearContents()
-    Cells(__ColTab_Dest_Row, M25.InCnt___Col).ClearContents()
-    Cells(__ColTab_Dest_Row, LocInCh_Col).ClearContents()
+    ColTab = __Read_ColTab_from_palette(palette)
+    #P01.ThisWorkbook.Activate()
+    P01.Sheets(__ColTab_Dest_Sheet).Select()
+    M25.Make_sure_that_Col_Variables_match()
+    P01.CellDict[__ColTab_Dest_Row, M25.Config__Col] = __ColTab_to_C_String(ColTab)
+    P01.Cells(__ColTab_Dest_Row, M25.LEDs____Col).Value = "" #.ClearContents()
+    P01.Cells(__ColTab_Dest_Row, M25.InCnt___Col).Value = "" #.ClearContents()
+    P01.Cells(__ColTab_Dest_Row, M25.LocInCh_Col).Value = "" #.ClearContents()
 
 def Open_MobaLedCheckColors_and_Insert_Set_ColTab_Macro():
     #UT-------------------------------------------------------------
-    Open_MobaLedCheckColors('Set_ColTab_Callback', P01.ActiveSheet.Name, ActiveCell.Row)
+    Open_MobaLedCheckColors(__Set_ColTab_Callback, P01.ActiveSheet.Name, P01.ActiveCell().Row)
 
 def Open_MobaLedCheckColors(Callback, Dest_Sheet=VBMissingArgument, Dest_Row=VBMissingArgument):
+    global __Proc_CheckColors_Form_Callback, __ColTab_Dest_Sheet, __ColTab_Dest_Row, ColTab
     ProgDir = String()
 
     Exe_Exists = Boolean()
 
     ExistingVer = String()
 
-    Res = Boolean()
+    Res = True # Boolean()
     #---------------------------------------------------------------------------------------------------------------
     __Proc_CheckColors_Form_Callback = Callback
     __ColTab_Dest_Sheet = Dest_Sheet
     __ColTab_Dest_Row = Dest_Row
-    ProgDir = ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR
+    """
+    ProgDir = P01.ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR
     if Dir(ProgDir, vbDirectory) == '':
         #MsgBox Get_Language_Str("Fehler das Verzeichnis existiert nicht:") & vbCr & "  '" & ProgDir & "'", vbCritical, Get_Language_Str("CheckColors Verzeichnis nicht vorhanden")
         CreateFolder(ProgDir)
@@ -767,45 +798,49 @@ def Open_MobaLedCheckColors(Callback, Dest_Sheet=VBMissingArgument, Dest_Row=VBM
                 return
             else:
                 return
+    """
     # Com Port detection
-    Make_sure_that_Col_Variables_match()
-    if Check_USB_Port_with_Dialog(COMPort_COL) == False:
+    M25.Make_sure_that_Col_Variables_match()
+    ColTab = __Set_Default_ColTab()
+    if M07.Check_USB_Port_with_Dialog(M25.COMPort_COL) == False:
         return
         # 04.05.20: Added exit (Prior Check_USB_Port_with_Dialog ends the program in case of an error)
-    __Change_Comport_in_ConfigFile()(Cells(SH_VARS_ROW, COMPort_COL))
+    __Change_Comport_in_ConfigFile(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL))
     # Color table
-    if Callback != '':
+    if Callback != None:
         __Delete_ColTest_Only_File()
-        if InStr(Cells(Dest_Row, Config__Col), 'Set_ColTab') > 0:
-            __C_String_to_ColTab()(Cells(Dest_Row, Config__Col), ColTab)
-            __Insert_ColTab_to_ConfigFile()(ColTab)
+        if InStr(P01.Cells(Dest_Row, M25.Config__Col), 'Set_ColTab') > 0:
+            ColTab = __C_String_to_ColTab(P01.Cells(Dest_Row, M25.Config__Col))
+            #*HL __Insert_ColTab_to_ConfigFile()(ColTab)
             # Moved up
             # ATTENTION: This Message box is necessary to generate the delay which prevents the CheckColor
             #            program to be closed by the "Close" File which has been written above
             #            But it doesn't help if the user closes the message to fast because the current version
             #            of the CheckColor program in not writing the "Close" imidiately
-            select_3 = MsgBox(Get_Language_Str('Soll die Standard Farbtabelle geladen werden oder die zuletzt ' + 'benutzte Tabelle benutzt werden?' + vbCr + vbCr + 'Ja: Standard Farbtabelle laden' + vbCr + 'Nein: Letzte Farbtabelle verwenden'), vbQuestion + vbYesNoCancel + vbDefaultButton2, Get_Language_Str('Standard oder letzte Benutzer Farbtabelle verwenden?'))
+            select_3 = P01.MsgBox(M09.Get_Language_Str('Soll die Standard Farbtabelle geladen werden oder die zuletzt ' + 'benutzte Tabelle benutzt werden?' + vbCr + vbCr + 'Ja: Standard Farbtabelle laden' + vbCr + 'Nein: Letzte Farbtabelle verwenden'), vbQuestion + vbYesNoCancel + vbDefaultButton2, M09.Get_Language_Str('Standard oder letzte Benutzer Farbtabelle verwenden?'))
             if (select_3 == vbYes):
-                if not __Insert_Default_ColTab_to_ConfigFile():
-                    return
+                ColTab = __Set_Default_ColTab()
+                #*HL if not __Insert_Default_ColTab_to_ConfigFile():
+                #*HL     return
             elif (select_3 == vbNo):
                 pass
             elif (select_3 == vbCancel):
                 return
     else:
-        Write_ColTest_Only_File()
-        StatusMsg_UserForm.Set_ActSheet_Label('Please wait')
-        StatusMsg_UserForm.Show()
-        Sleep(( 500 ))
-        U01.Unload(StatusMsg_UserForm)
-    __Delete_CheckColors_CloseFile()
-    if Dir(ThisWorkbook.Path + '\\' + __FINISHEDTXT_FILE) != '':
-        Kill(ThisWorkbook.Path + '\\' + __FINISHEDTXT_FILE)
+        pass
+        #Write_ColTest_Only_File()
+        #StatusMsg_UserForm.Set_ActSheet_Label('Please wait')
+        #StatusMsg_UserForm.Show()
+        #Sleep(( 500 ))
+        #U01.Unload(StatusMsg_UserForm)
+    #__Delete_CheckColors_CloseFile()
+    #if Dir(ThisWorkbook.Path + '\\' + __FINISHEDTXT_FILE) != '':
+    #    Kill(ThisWorkbook.Path + '\\' + __FINISHEDTXT_FILE)
     # Start the CheckColors program
-    if Exe_Exists:
-        Res = __Start_MobaLedCheckColors_exe()
-        Res = __Start_MobaLedCheckColors_py()
+    #if Exe_Exists:
+    #    Res = __Start_MobaLedCheckColors_exe()
+    #    Res = __Start_MobaLedCheckColors_py()
     if Res:
-        __Show_Wait_CheckColors_Form()
+        __Show_Wait_CheckColors_Form(callback=Callback)
 
 # VB2PY (UntranslatedCode) Option Explicit

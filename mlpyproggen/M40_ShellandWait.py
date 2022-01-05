@@ -147,11 +147,7 @@ def ShellAndWait(ShellCommand, TimeOutSeconds, ShellWindowState, BreakKey):
     #               a ?Continue message. This happens only if BreakKey is set to
     #               ActionOnBreak.PromptUser.
     #''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    
-    PG.dialog_parent.upload_to_ARDUINO()
-    fn_return_value = __STATUS_WAIT_0
-    return fn_return_value
-    
+        
     ## VB2PY (CheckDirective) VB directive took path 1 on Win64
     if Trim(ShellCommand) == vbNullString:
         fn_return_value = InvalidParameter

@@ -121,7 +121,6 @@ def get_global_controller():
 
 def get_dialog_parent():
     return dialog_parent
-
 ThreadEvent = None
 
 BUTTONLABELWIDTH = 10
@@ -552,7 +551,11 @@ class Prog_GeneratorPage(tk.Frame):
                 self.after(500, self.start_ARDUINO_program_Popen)
             else:
                 self.after(500, self.start_ARDUINO_program_Run)
-    
+
+    def checkcolor(self,ColorTable,callback=None):
+        self.controller.coltab = ColorTable
+        self.controller.checkcolor_callback = callback
+        self.controller.showFramebyName("ColorCheckPage")    
     
     
         

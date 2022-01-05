@@ -648,12 +648,12 @@ def Create_Header_Entry(r, AddrStr):
         Create_Start_Value_Entry(r)
         # Calculate the next input channel number
         if P01.Cells(r, M25.InCnt___Col).Value != '':
-            if not IsNumeric(P01.Cells(r, M25.InCnt___Col).Value) or P01.Cells(r, M25.InCnt___Col).Value < 0 or P01.Cells(r, M25.InCnt___Col).Value > 100:
+            if not IsNumeric(P01.Cells(r, M25.InCnt___Col).Value) or P01.val(P01.Cells(r, M25.InCnt___Col).Value) < 0 or P01.val(P01.Cells(r, M25.InCnt___Col).Value) > 100:
                 P01.Cells(r, M25.InCnt___Col).Select()
                 P01.MsgBox(M09.Get_Language_Str('Fehler: Eintrag \'') + P01.Cells(r, M25.InCnt___Col).Value + M09.Get_Language_Str('\' in InCnt Spalte ist ungültig'), vbCritical, M09.Get_Language_Str('Falscher InCnt Eintrag'))
                 M30.EndProg()
             else:
-                Channel = Channel + P01.Cells(r, M25.InCnt___Col).Value
+                Channel = Channel + P01.val(P01.Cells(r, M25.InCnt___Col).Value)
     fn_return_value = True
     return fn_return_value
 

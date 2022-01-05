@@ -595,7 +595,7 @@ def __Move_Cursor_to_visible_Macro_Cell(Row):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Str - ByVal 
 def Find_Macro_in_Lib_Macros_Sheet(Str):
-    _ret = None
+    _ret = 0
     #r = Range()
 
     #c = Range()
@@ -604,6 +604,8 @@ def Find_Macro_in_Lib_Macros_Sheet(Str):
     Str = Replace(Str, 'HouseT(', 'House(')
     if InStr(Str, '(') > 0:
         Str = Split(Str, '(')(0) + '('
+        if Str[:3]=="// ":
+            Str=Str[3:]
     r = _with3.Range(_with3.Cells(M02.SM_DIALOGDATA_ROW1, M02.SM_Name__COL), _with3.Cells(M30.LastUsedRowIn(P01.ThisWorkbook.Sheets(M02.LIBMACROS_SH)), M02.SM_Name__COL))
     for c in r.Rows: #*HL
         # Find the line

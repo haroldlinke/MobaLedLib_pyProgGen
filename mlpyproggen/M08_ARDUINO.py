@@ -88,6 +88,8 @@ import mlpyproggen.M40_ShellandWait as M40
 
 import mlpyproggen.P01_Workbook as P01
 
+import mlpyproggen.Prog_Generator as PG
+
 """ Die MobaLedLib wird nur dann Installiert wenn sie nicht vorhanden ist
  - Das Excel sheet würde sich selber überschreiben
  Comma separeted list of libraries (Case sensitive => check the library.property file
@@ -937,23 +939,20 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
     else:
         CPUType = 'atmega328p'
     CommandStr = '"' + Create_Cmd_file(ResFile, ComPort, BuildOptions, InoName, Mode, SrcDir, CPUType) + '"'
+    """
     # Disable "serial.SerialDiscovery" trial 2                                ' 16.03.20:
     # Problem: Change the background color to Red is not working
     #CommandStr = CommandStr & " 2>&1 | find /v "" StatusLogger "" | find /v ""serial.SerialDiscovery"" | find /v ""fungsvorgang..."""
     
-    """
+    #if CommandStr == '' or CommandStr == '""':
+    #    #U01.Unload(StatusMsg_UserForm)
+    #    M30.EndProg()
+    #Start = Time
+    #if Dir(SrcDir + InoName) == '':
+    #    #*HLU01.Unload(StatusMsg_UserForm)
+    #    P01.MsgBox(M09.Get_Language_Str('Fehler das Programm ') + InoName + M09.Get_Language_Str(' ist nicht vorhanden in: ') + vbCr + '  \'' + SrcDir + '\'', vbCritical, M09.Get_Language_Str('Fehler Ino-Programm nicht vorhanden'))
+    #    M30.EndProg()
     
-    if CommandStr == '' or CommandStr == '""':
-        #U01.Unload(StatusMsg_UserForm)
-        M30.EndProg()
-    Start = Time
-    if Dir(SrcDir + InoName) == '':
-        #*HLU01.Unload(StatusMsg_UserForm)
-        P01.MsgBox(M09.Get_Language_Str('Fehler das Programm ') + InoName + M09.Get_Language_Str(' ist nicht vorhanden in: ') + vbCr + '  \'' + SrcDir + '\'', vbCritical, M09.Get_Language_Str('Fehler Ino-Programm nicht vorhanden'))
-        M30.EndProg()
-    
-    """    
-    CommandStr = ""
     #*HL ChDrive(SrcDir)
     #*HL ChDir(SrcDir)
     if Use_Excel_Console():
@@ -963,8 +962,10 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         #Stop_Compile_Time_Display()
         #Res = UserForm_RunProgram.ShellExecute(CommandStr, 0, Replace(Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + ' - ' + FileNameExt(InoName), PromptUser, 0x800000, TextColor, Get_Language_Str('Senden zum Arduino abbrechen?'))
     else:
-        PromptUser = ""
-        Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
+        PromptUser = "" #*HL
+        #*HL Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
+        PG.dialog_parent.upload_to_ARDUINO()
+        Res = M40.Success
         Stop_Compile_Time_Display()
     # Bring Excel to the top                                                ' 19.05.20:
     # Is not working if an other application has be moved above Excel with Alt+Tab
