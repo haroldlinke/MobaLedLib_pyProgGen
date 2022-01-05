@@ -309,7 +309,7 @@ class EffectTestPage(tk.Frame):
         self.container = ttk.Notebook(self.macro_effect_frame)
         self.tabdict = dict()
         self.macro_tab_dict = self.generate_macro_tab_dict()
-        for tabName in [" Start","House","GasLights","Light Macros","Signal Macros","Sound Macros","Set Macros","Import"]:
+        for tabName in [" Start","House","GasLights","Light Macros","Sound Macros","Set Macros","Import"]:
             macro_frame = ttk.Frame(self.container, relief="ridge", borderwidth=2)
             self.tabdict[tabName] = {}
             self.tabdict[tabName]["macro_frame"] = macro_frame
@@ -364,27 +364,28 @@ class EffectTestPage(tk.Frame):
                     #text_scroll.pack(side=tk.RIGHT,fill=tk.Y)
                     text_widget.config(state=tk.DISABLED)
             else:
-                scroll_macroparamframe = True
-                if scroll_macroparamframe:
-                    self.scrolledmacroparamframe = HorizontalScrolledFrame(macro_frame)
-                    macroparam_frame = self.create_macroparam_hidden_frames(self.scrolledmacroparamframe.interior, tabName)
-                    self.scrolledmacroparamframe.grid(row=0,column=0, pady=(2, 2), padx=2, sticky="nesw")
-                    #self.scrolledmacroparamframe.grid_columnconfigure(0,weight=1)
-                else:   
-                    macroparam_frame = self.create_macroparam_hidden_frames(macro_frame, tabName)
-                #macroparam_frame.grid_rowconfigure(0,weight=1)
-                #macroparam_frame.grid_columnconfigure(0,weight=1)                                
-                #macroparam_frame = self.create_macroparam_hidden_frames(macro_frame, tabName)
-                self.tabdict[tabName]["macroparam_frame"] = macroparam_frame
-                #macrolist_scrollframe = VerticalScrolledFrame(macro_frame)
-                macrolist_scrollframe = ScrolledFrame(macro_frame)                    
-                macrolist_frame = self.create_macrolist_frame(macrolist_scrollframe.interior, tabName)
-                self.tabdict[tabName]["macrolist_frame"] = macrolist_frame
-                self.tabdict[tabName]["macrolist_scrollframe"] = macrolist_scrollframe
-                macrolist_scrollframe.grid(row=1,column=0,sticky="nesw", pady=(2, 2), padx=2)
-                macrolist_frame.grid(row=0,column=0, columnspan=1, pady=(2, 2), padx=2, sticky="nesw")
-                #macrolist_scrollframe.grid_rowconfigure(0,weight=1)
-                macroparam_frame.grid(row=0,column=0, columnspan=1, pady=(2, 2), padx=2, sticky="nesw")
+                if True:
+                    scroll_macroparamframe = True
+                    if scroll_macroparamframe:
+                        self.scrolledmacroparamframe = HorizontalScrolledFrame(macro_frame)
+                        macroparam_frame = self.create_macroparam_hidden_frames(self.scrolledmacroparamframe.interior, tabName)
+                        self.scrolledmacroparamframe.grid(row=0,column=0, pady=(2, 2), padx=2, sticky="nesw")
+                        #self.scrolledmacroparamframe.grid_columnconfigure(0,weight=1)
+                    else:   
+                        macroparam_frame = self.create_macroparam_hidden_frames(macro_frame, tabName)
+                    #macroparam_frame.grid_rowconfigure(0,weight=1)
+                    #macroparam_frame.grid_columnconfigure(0,weight=1)                                
+                    #macroparam_frame = self.create_macroparam_hidden_frames(macro_frame, tabName)
+                    self.tabdict[tabName]["macroparam_frame"] = macroparam_frame
+                    #macrolist_scrollframe = VerticalScrolledFrame(macro_frame)
+                    macrolist_scrollframe = ScrolledFrame(macro_frame)                    
+                    macrolist_frame = self.create_macrolist_frame(macrolist_scrollframe.interior, tabName)
+                    self.tabdict[tabName]["macrolist_frame"] = macrolist_frame
+                    self.tabdict[tabName]["macrolist_scrollframe"] = macrolist_scrollframe
+                    macrolist_scrollframe.grid(row=1,column=0,sticky="nesw", pady=(2, 2), padx=2)
+                    macrolist_frame.grid(row=0,column=0, columnspan=1, pady=(2, 2), padx=2, sticky="nesw")
+                    #macrolist_scrollframe.grid_rowconfigure(0,weight=1)
+                    macroparam_frame.grid(row=0,column=0, columnspan=1, pady=(2, 2), padx=2, sticky="nesw")
             macro_frame.grid_rowconfigure(0, weight=0)
             macro_frame.grid_rowconfigure(1, weight=1)
             macro_frame.grid_columnconfigure(0, weight=1)
@@ -1176,10 +1177,11 @@ class EffectTestPage(tk.Frame):
         self.macroparam_hiddenframe = ttk.Frame(parent_frame, relief="ridge", borderwidth=0)
         supportmacrolist = self.macro_tab_dict.get(macrogroup,{})
         row = 0
-        for supportmacro in supportmacrolist:
-            macro_paramframe = self.create_macroparam_frame(self.macroparam_hiddenframe, supportmacro)
-            macro_paramframe.grid(row=0,column=0, columnspan=2, pady=4, padx=4, sticky="nsew")
-            self.macroparam_frame_dict[supportmacro] = macro_paramframe
+        if True:
+            for supportmacro in supportmacrolist:
+                macro_paramframe = self.create_macroparam_frame(self.macroparam_hiddenframe, supportmacro)
+                macro_paramframe.grid(row=0,column=0, columnspan=2, pady=4, padx=4, sticky="nsew")
+                self.macroparam_frame_dict[supportmacro] = macro_paramframe
         return self.macroparam_hiddenframe
         
     def get_macroparam_frame(self,macrokey):
@@ -2093,21 +2095,26 @@ class EffectTestPage(tk.Frame):
             with open(self.filepath, "w") as write_file:
                 print("// This file contains the DCC and LED definitions.",file=write_file)
                 print("//",file=write_file)
-                print("// It was automatically generated by the program Prog_Generator_MobaLedLib.xlsm Ver. 2.0.0      by Hardi",file=write_file)
+                print("// It was automatically generated by the program Prog_Generator_MobaLedLib.xlsm Ver. 3.1.0      by Hardi",file=write_file)
                 print("// File creation: 19.01.2020 16:50:22",file=write_file)
                 print("// (Attention: The display in the Arduino IDE is not updated if Options/External Editor is disabled)",file=write_file)
                 print("",file=write_file)
                 print("#ifndef __LEDS_AUTOPROG_H__",file=write_file)
                 print("#define __LEDS_AUTOPROG_H__",file=write_file)
                 print("",file=write_file)
+                print("#ifndef ARDUINO_RASPBERRY_PI_PICO",file=write_file)
                 print("#define FASTLED_INTERNAL       // Disable version number message in FastLED library (looks like an error)",file=write_file)
                 print("#include <FastLED.h>           // The FastLED library must be installed in addition if you got the error message ""..fatal error: FastLED.h: No such file or directory""",file=write_file)
                 print("                               // Arduino IDE: Sketch / Include library / Manage libraries                    Deutsche IDE: Sketch / Bibliothek einbinden / Bibliothek verwalten",file=write_file)
                 print("                               //              Type ""FastLED"" in the ""Filter your search..."" field                          ""FastLED"" in das ""Grenzen Sie ihre Suche ein"" Feld eingeben",file=write_file)
                 print("                               //              Select the entry and click ""Install""                                         Gefundenen Eintrag auswaehlen und ""Install"" anklicken",file=write_file)
-                print("#include <MobaLedLib.h>",file=write_file)
+                print("#else",file=write_file)
+                print("#include <PicoFastLED.h>       // Juergens minimum version or FastLED for Raspberry Pico",file=write_file)                
+                print("#endif",file=write_file)                
                 print("",file=write_file)
-                print("#define START_MSG \"LEDs_AutoProg Ver 1: MobaLedLib_1.0.1 19.01.20 16:50\"",file=write_file)
+                print("#include <MobaLedLib.h>",file=write_file)
+                                                                
+                print("#define START_MSG \"LEDs_AutoProg Ver 1: MobaLedLib_3.1.0 19.01.20 16:50\"",file=write_file)
                 print("",file=write_file)
                 if digital_system == "Selectrix":
                     print("#define TWO_BUTTONS_PER_ADDRESS 0      // One button is used (Selectrix)",file=write_file)
@@ -2115,19 +2122,21 @@ class EffectTestPage(tk.Frame):
                     print("#define TWO_BUTTONS_PER_ADDRESS 1      // Two buttons (Red/Green) are used (DCC/CAN)",file=write_file)
                     
                 print("#ifdef NUM_LEDS",file=write_file)
-                print("  #warning \"NUM_LEDS\" definition in the main program is replaced by the included \"LEDs_AutoProg.h\" with 33",file=write_file)
+                print("  #warning \"NUM_LEDS\" definition in the main program is replaced by the included \"LEDs_AutoProg.h\" with 20",file=write_file)
                 print("  #undef NUM_LEDS",file=write_file)
                 print("#endif",file=write_file)
                 print("",file=write_file)
-                print(f"#define NUM_LEDS {max_led_count}                    // Number of LEDs (Maximal 256 RGB LEDs could be used)",file=write_file)
+                print("#define NUM_LEDS ",max_led_count,"                    // Number of LEDs (Maximal 256 RGB LEDs could be used)",file=write_file)
                 print("",file=write_file)
+                print("#define LEDS_PER_CHANNEL ',20'",file=write_file)
                 print("",file=write_file)
                 print("#define RECEIVE_LED_COLOR_PER_RS232",file=write_file)
                 
                 print("",file=write_file)
                 print("// Input channel defines for local inputs and expert users",file=write_file)
                 print("",file=write_file)
-                print("",file=write_file)
+                print("/*********************/",file=write_file)
+               
                 print("",file=write_file)
                 print("//*******************************************************************",file=write_file)
                 print("// *** Configuration array which defines the behavior of the LEDs ***",file=write_file)
@@ -2135,14 +2144,19 @@ class EffectTestPage(tk.Frame):
                 macro_str = self.generate_macros(init_arduino=init_arduino)
                 print(macro_str,file=write_file)
 
-                #print("//*******************************************************************",file=write_file)
-                #print("",file=write_file)
-                #print("//---------------------------------------------",file=write_file)
-                #print("void Set_Start_Values(MobaLedLib_C &MobaLedLib)",file=write_file)
-                #print("//---------------------------------------------                ",file=write_file)
-                #print("{",file=write_file)
-                #print("}",file=write_file)
+                print("//*******************************************************************",file=write_file)
                 print("",file=write_file)
+               
+                
+                print("// No macros used which are stored to the EEPROM => Disable the ENABLE_STORE_STATUS flag in case it was set in the excel sheet",file=write_file)
+                print("#ifdef ENABLE_STORE_STATUS",file=write_file)
+                print("    #undef ENABLE_STORE_STATUS",file=write_file)
+                print("#endif",file=write_file)
+                
+                print("",file=write_file)
+                print("",file=write_file)
+                print("",file=write_file)
+                
                 print("#endif // __LEDS_AUTOPROG_H__",file=write_file)               
                 
  

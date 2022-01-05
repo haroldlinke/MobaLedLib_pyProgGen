@@ -1408,6 +1408,15 @@ const PROGMEM Ext_Addr_T Ext_Addr[] =
             define_str = "// Input channel defines for local inputs and expert users\n" + define_str
             final_macro_str = final_macro_str + define_str + "\n"
             
+        setup_fastled_str = "/*********************/"
+        setup_fastled_str += "#define SETUP_FASTLED() \ \n"
+        setup_fastled_str += "/*********************/                                                       \ \n"
+        setup_fastled_str += "CLEDController& controller0 = FastLED.addLeds<NEOPIXEL,  6>(leds+  0, 20);    \ \n"
+        setup_fastled_str += "                                                                              \ \n"
+        setup_fastled_str += "  controller0.clearLeds(256);                                                 \ \n"
+        setup_fastled_str += "/*End*/ \n"
+
+        final_macro_str += setup_fastled_str
         final_macro_str += "MobaLedLib_Configuration()\n  {\n"
             
         final_macro_str = final_macro_str + macro_str
@@ -1416,14 +1425,6 @@ const PROGMEM Ext_Addr_T Ext_Addr[] =
         
         final_start_value_str = """
 //*******************************************************************
-
-/*********************/
-#define SETUP_FASTLED()                                                      \
-/*********************/                                                      \
-  CLEDController& controller0 = FastLED.addLeds<NEOPIXEL,  6>(leds+  0, 20); \
-                                                                             \
-  controller0.clearLeds(256);                                                \
-/*End*/
 
 //---------------------------------------------
 void Set_Start_Values(MobaLedLib_C &MobaLedLib)

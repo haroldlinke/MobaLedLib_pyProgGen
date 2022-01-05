@@ -1,0 +1,30 @@
+;DCC;0;DE;3;;AutoDet --board arduino:avr:nano:cpu=atmega328 --pref programmer=arduino:arduinoisp;R OK;;;COM?;AutoDet --board arduino:avr:nano:cpu=atmega328old --pref programmer=arduino:arduinoisp;19;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0
+;Aktiv;Filter;Adresse oder Name;Typ;Start- wert;Beschreibung;Verteiler- Nummer;Stecker- Nummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;"LED/ 
+Sound
+Kanal";;;;;;;;;;;;
+;?;;;;;LED auf dem Mainboard ;;;;Heartbeat LED;RGB_Heartbeat(#LED);0;1;0;0;0;;;;;;;;;;;;
+;?;;;;;;;;;Belebtes Haus;HouseT(#LED, #InCh, 3, 7, 1, 5, ROOM_DARK, ROOM_BRIGHT, ROOM_WARM_W, ROOM_RED, ROOM_D_RED, ROOM_COL0, ROOM_COL1, ROOM_COL2, ROOM_COL3, ROOM_COL4);1;10;1;0;0;;;;;;;;;;;;
+;?;;100;AnAus;;Test Strassenlaterne;V1;S4;;Straﬂenbeleuchtung;GasLights(#LED, #InCh, NEON_LIGHT, NEON_LIGHT, NEON_LIGHT, NEON_LIGHT, NEON_DEF_D, NEON_LIGHT, NEON_LIGHT, NEON_LIGHT);11;8;1;0;0;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -61,6 +61,7 @@ from mlpyproggen.ColorCheckPage import ColorCheckPage
 from mlpyproggen.EffectTestPage import EffectTestPage
 from mlpyproggen.EffectMacroPage import EffectMacroPage
 from mlpyproggen.DCC_KeyboardPage import DCCKeyboardPage
+from mlpyproggen.Prog_Generator import Prog_GeneratorPage
 from mlpyproggen.ServoTestPage import ServoTestPage
 from mlpyproggen.Z21MonitorPage import Z21MonitorPage
 from mlpyproggen.ARDUINOMonitorPage import ARDUINOMonitorPage
@@ -133,9 +134,11 @@ def _(text):
 # ------------------------------
 
 
-tabClassList_all = ( StartPage, EffectTestPage, EffectMacroPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_all = ( StartPage, Prog_GeneratorPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 tabClassList_mll_only = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 tabClassList_SetColTab = (ColorCheckPage, SerialMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_pyProg_only = ( StartPage, Prog_GeneratorPage,EffectTestPage, EffectMacroPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+
 
 #tabClassList_all = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 
@@ -266,7 +269,7 @@ class LEDColorTest(tk.Tk):
             SIZEFACTOR_width = screen_width/1280
             window_width=screen_width
         else:
-            window_width = 1280
+            window_width = 1400 # 1280
         
         if screen_height < 900:
             window_height=screen_height

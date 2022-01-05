@@ -380,7 +380,7 @@
         "ConfigName": "led_correction_b",
         "Min": "0",
         "Max": "255",
-        "Default": "239",
+        "Default": "1",
         "Input Text": "Blue",
         "Hint": "Blue"
     },
@@ -391,7 +391,7 @@
         "ConfigName": "led_correction_g",
         "Min": "0",
         "Max": "255",
-        "Default": "175",
+        "Default": "1",
         "Input Text": "Green",
         "Hint": "Green"
     },
@@ -402,7 +402,7 @@
         "ConfigName": "led_correction_r",
         "Min": "0",
         "Max": "255",
-        "Default": "255",
+        "Default": "1",
         "Input Text": "RED",
         "Hint": "RED"
     },
@@ -1530,13 +1530,8 @@
         "Max": "9999",
         "Persistent": "True",
         "Default": "1",
-<<<<<<< Updated upstream
         "Input Text": "Servo Modul Adresse",
-        "Hint": "Adresse des Servo Moduls (LED-Nummer des Anschlusses)"
-=======
-        "Input Text": "Servo Modul Addresse",
-        "Hint": "Addresse des Servomoduls (LED-Nummer des Anschlusses)"
->>>>>>> Stashed changes
+        "Hint": "Moduladresse des Servos (LED-Nummer des Anschlusses)"
     },
     "ServoChannel": {
         "ParName": "ServoChannel",

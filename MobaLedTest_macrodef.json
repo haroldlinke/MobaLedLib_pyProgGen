@@ -97,7 +97,7 @@
         "Macro": "AndreaskrRGB(  LED,InCh)",
         "Find Name for detection of actual macro": "AndreaskrRGB(",
         "Name": "AndreaskrRGB",
-        "Kurzbeschreibung": "Generiert das abwechselnd Blinkenden Lampen in Andreaskreuzen  zu Demonstrationszwecken mit einer RGB LED.",
+        "Kurzbeschreibung": "Generiert das abwechselnd Blinken der Lampen in Andreaskreuzen  zu Demonstrationszwecken mit einer RGB LED.",
         "Ausführliche Beschreibung": "",
         "MacroStr": "AndreaskrRGB({LED},{InCh})",
         "Params": [
@@ -1407,6 +1407,21 @@
             "Timeout"
         ]
     },
+    "ProgGeneratorPage": {
+        "Typ": "ProgGeneratorPage",
+        "Name": "ProgGeneratorPage",
+        "MTabName": "ProgGeneratorPage",
+        "Title": "ProgGeneratorPage",
+        "Button_1": "",
+        "Button_2": "",
+        "Button_3": "",
+        "Kurzbeschreibung": "DCC Keyboard Simulator",
+        "Ausführliche Beschreibung": "Der DCC Keyboard Simulator schickt an den ARDUINO direkt Kommandos, die den Kommandos entsprechen, die der DCC-ARDUINO an den LED-ARDUINO schicken würde. damt kann man die Funktion der DCC Schalter austesten.\nACHTUNG: Beim ersten Tastendruck kann es etwas dauern, da der ARDUINO den Modus umschalten muss und eventuell neu verbunden wird. Manchmal reagiert der ARDUINO auch erst auf den 2ten Tastendruck",
+        "Params": [
+            "DCC BaseAddress"
+        ]
+    },
+    
     "PushButton_w_LED_0_3": {
         "Typ": "",
         "Mode": "E",
