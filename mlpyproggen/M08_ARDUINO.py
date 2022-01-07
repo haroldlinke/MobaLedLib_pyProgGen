@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -23,7 +20,7 @@
 # *
 # * MobaLedCheckColors is distributed in the hope that it will be useful,
 # * but WITHOUT ANY WARRANTY; without even the implied warranty of
-# * MERCHANTABILITY or FITNESS for A PARTICULAR PURPOSE.  See the
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # * GNU General Public License for more details.
 # *
 # * You should have received a copy of the GNU General Public License
@@ -32,20 +29,16 @@
 # *
 # ***************************************************************************
 
-
-#' Die MobaLedLib wird nur dann Installiert wenn sie nicht vorhanden ist
-#' - Das Excel sheet würde sich selber überschreiben
-
-#' Comma separeted list of libraries (Case sensitive => check the library.property file
-#' The MCP_CAN lib can't be installed from the IDE because
-#'  - it's not available in the library manager
-#'  - the debug mode is enabled in the version on GitHub
-#' => It's included to the program directory
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
 
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
 
 #from mlpyproggen.M02_Public import *
 #from mlpyproggen.M06_Write_Header_LED2Var import *

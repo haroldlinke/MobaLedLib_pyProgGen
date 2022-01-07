@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,32 +29,40 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
+
+
+import mlpyproggen.M02_Public as M02
+#import mlpyproggen.M03_Dialog as M03
+#import mlpyproggen.M06_Write_Header as M06
+#import mlpyproggen.M06_Write_Header_LED2Var as M06LED
+#import mlpyproggen.M06_Write_Header_Sound as M06Sound
+#import mlpyproggen.M06_Write_Header_SW as M06SW
+#import mlpyproggen.M07_COM_Port as M07
+#import mlpyproggen.M08_ARDUINO as M08
+import mlpyproggen.M09_Language as M09
+#import mlpyproggen.M09_Select_Macro as M09SM
+#import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
+#import mlpyproggen.M10_Par_Description as M10
+#import mlpyproggen.M20_PageEvents_a_Functions as M20
+#import mlpyproggen.M25_Columns as M25
+#import mlpyproggen.M27_Sheet_Icons as M27
+#import mlpyproggen.M28_divers as M28
+import mlpyproggen.M30_Tools as M30
+#import mlpyproggen.M31_Sound as M31
+#import mlpyproggen.M37_Inst_Libraries as M37
+#import mlpyproggen.M60_CheckColors as M60
+#import mlpyproggen.M70_Exp_Libraries as M70
+#import mlpyproggen.M80_Create_Mulitplexer as M80
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
 
-import mlpyproggen.M02_Public as M02
-import mlpyproggen.M03_Dialog as M03
-import mlpyproggen.M06_Write_Header as M06
-import mlpyproggen.M06_Write_Header_LED2Var as M06LED
-import mlpyproggen.M06_Write_Header_Sound as M06Sound
-import mlpyproggen.M06_Write_Header_SW as M06SW
-import mlpyproggen.M07_COM_Port as M07
-import mlpyproggen.M08_ARDUINO as M08
-import mlpyproggen.M09_Language as M09
-import mlpyproggen.M09_Select_Macro as M09SM
-import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
-import mlpyproggen.M10_Par_Description as M10
-import mlpyproggen.M20_PageEvents_a_Functions as M20
-import mlpyproggen.M25_Columns as M25
-import mlpyproggen.M27_Sheet_Icons as M27
-import mlpyproggen.M28_divers as M28
-import mlpyproggen.M30_Tools as M30
-import mlpyproggen.M31_Sound as M31
-import mlpyproggen.M37_Inst_Libraries as M37
-import mlpyproggen.M60_CheckColors as M60
-import mlpyproggen.M70_Exp_Libraries as M70
-import mlpyproggen.M80_Create_Mulitplexer as M80
 
 from mlpyproggen.X01_Excel_Consts import *
 import mlpyproggen.P01_Workbook as P01
@@ -133,21 +138,9 @@ def Get_Par_Data(ParName):
     return Typ, Min, Max, Def, Opt, InpTxt, Hint
 
 def __Test_Get_Par_Data():
-    Typ = String()
 
-    Min = String()
-
-    Max = String()
-
-    Def = String()
-
-    Opt = String()
-
-    InpTxt = String()
-
-    Hint = String()
     #UT----------------------------
-    Get_Par_Data('Pin_List', Typ, Min, Max, Def, Opt, InpTxt, Hint)
+    Typ, Min, Max, Def, Opt, InpTxt, Hint = Get_Par_Data('Pin_List')
     Debug.Print('Typ:' + Typ, 'Min:' + Min + ' Max:' + Max + ' Def:' + Def + ' Opt:' + Opt + vbCr + 'InpTxt:' + InpTxt + vbCr + 'Hint:' + Hint)
 
 # VB2PY (UntranslatedCode) Option Explicit

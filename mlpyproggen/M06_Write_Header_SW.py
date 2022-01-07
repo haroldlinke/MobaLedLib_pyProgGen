@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,6 +28,12 @@
 # *
 # *
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:,ByRef check done - first PoC release
+
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
@@ -310,9 +313,9 @@ def __Is_Switch_Var_then_Add_to_Ctr(Var_Name):
 
 def __First_Scan_of_Data_Rows():
     
-    global Switch_Damping_Fact, DMX_LedChan,Read_LDR,Store_Status_Enabled,__Use_WS2811
+    global Switch_Damping_Fact, DMX_LedChan,Read_LDR,Store_Status_Enabled,__Use_WS2811, SwitchA_InpLst, SwitchB_InpLst, SwitchC_InpLst, SwitchD_InpLst, CLK_Pin_Number, RST_Pin_Number, LDR_Pin_Number, LED_PINNr_List, DMX_LedChan,Read_LDR
     
-    _ret = None
+    _ret = False
     r = int()
 
     Var_COL = int()
@@ -337,21 +340,29 @@ def __First_Scan_of_Data_Rows():
             if Trim(Config_Entry) != '':
                 for Line in Split(Config_Entry, vbLf):
                     Line = Trim(Line)
-                    if Set_PinNrLst_if_Matching(Line, '// Set_SwitchA_InpLst(', SwitchA_InpLst, 'A', 5) == False:
+                    fret, SwitchA_InpLst = Set_PinNrLst_if_Matching(Line, '// Set_SwitchA_InpLst(', SwitchA_InpLst, 'A', 5)
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_SwitchB_InpLst(', SwitchB_InpLst, 'I', 12) == False:
+                    fret, SwitchB_InpLst = Set_PinNrLst_if_Matching(Line, '// Set_SwitchB_InpLst(', SwitchB_InpLst, 'I', 12) 
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_SwitchC_InpLst(', SwitchC_InpLst, 'I', 12) == False:
+                    fret, SwitchC_InpLst = Set_PinNrLst_if_Matching(Line, '// Set_SwitchC_InpLst(', SwitchC_InpLst, 'I', 12)
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_SwitchD_InpLst(', SwitchD_InpLst, 'Pu', 12) == False:
+                    fret, SwitchD_InpLst = Set_PinNrLst_if_Matching(Line, '// Set_SwitchD_InpLst(', SwitchD_InpLst, 'Pu', 12)
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_CLK_Pin_Number(', CLK_Pin_Number, 'O', 1) == False:
+                    fret, CLK_Pin_Number = Set_PinNrLst_if_Matching(Line, '// Set_CLK_Pin_Number(', CLK_Pin_Number, 'O', 1)
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_RST_Pin_Number(', RST_Pin_Number, 'O', 1) == False:
+                    fret, RST_Pin_Number = Set_PinNrLst_if_Matching(Line, '// Set_RST_Pin_Number(', RST_Pin_Number, 'O', 1)
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_LDR_Pin_Number(', LDR_Pin_Number, 'A', 1) == False:
+                    fret, LDR_Pin_Number = Set_PinNrLst_if_Matching(Line, '// Set_LDR_Pin_Number(', LDR_Pin_Number, 'A', 1)
+                    if fret == False:
                         return _ret
-                    if Set_PinNrLst_if_Matching(Line, '// Set_LED_OutpPinLst(', LED_PINNr_List, 'O', M02.LED_CHANNELS) == False:
+                    fret, LED_PINNr_List = Set_PinNrLst_if_Matching(Line, '// Set_LED_OutpPinLst(', LED_PINNr_List, 'O', M02.LED_CHANNELS)
+                    if fret == False:
                         return _ret
                     if Line == '// Use_DMX512()':
                         DMX_LedChan = P01.val(P01.Cells(r, M25.LED_Cha_Col))
@@ -407,7 +418,7 @@ def Check_Switch_Lists_for_SPI_Pins():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Dest_InpLst - ByRef 
 def Set_PinNrLst_if_Matching(Line, Name, Dest_InpLst, PinTyp, MaxCnt):
-    _ret = None
+    _ret = False
     NrStr="" #*HL
     ValidPins = String()
 
@@ -434,7 +445,7 @@ def Set_PinNrLst_if_Matching(Line, Name, Dest_InpLst, PinTyp, MaxCnt):
         if p == 0:
             # VB2PY (UntranslatedCode) GoTo PrintError
             P01.MsgBox(Replace(M09.Get_Language_Str('Fehler beim Lesen der Pin Nummern in Zeile:' + vbCr + '  \'#1#\''), "#1#", Line), vbCritical, M09.Get_Language_Str('Fehler beim Lesen der Pin Nummern'))
-            return _ret            
+            return _ret, Dest_InpLst            
             
         NrStr = Mid(Line, 1 + Len(Name), p - 1 - Len(Name))
         NrStr = Trim(Replace(NrStr, ',', ' '))
@@ -442,25 +453,25 @@ def Set_PinNrLst_if_Matching(Line, Name, Dest_InpLst, PinTyp, MaxCnt):
         if NrStr == '':
             # VB2PY (UntranslatedCode) GoTo PrintError
             P01.MsgBox(Replace(M09.Get_Language_Str('Fehler beim Lesen der Pin Nummern in Zeile:' + vbCr + '  \'#1#\''), "#1#", Line), vbCritical, M09.Get_Language_Str('Fehler beim Lesen der Pin Nummern'))
-            return _ret            
+            return _ret, Dest_InpLst            
            
         NrArr = Split(NrStr, ' ')
         if UBound(NrArr) + 1 > MaxCnt:
             # VB2PY (UntranslatedCode) GoTo PrintError
             P01.MsgBox(Replace(M09.Get_Language_Str('Fehler beim Lesen der Pin Nummern in Zeile:' + vbCr + '  \'#1#\''), "#1#", Line), vbCritical, M09.Get_Language_Str('Fehler beim Lesen der Pin Nummern'))
-            return _ret            
+            return _ret, Dest_InpLst            
             
         # Check if valid pins names / numbers are used
         NrStr = ''
         for OnePin in NrArr:
             if InStr(ValidPins, ' ' + M30.AliasToPin(OnePin) + ' ') == 0:
                 P01.MsgBox(M09.Replace(Replace(M09.Get_Language_Str('Fehler: Der Pin \'#1#\' ist nicht gültig im' + vbCr + '  \'#2#\' Befehl'), "#1#", OnePin), '#2#', Replace(Line, '// ', '')), vbCritical, M09.Get_Language_Str('Ungültige Arduino Pin Nummer'))
-                return _ret
+                return _ret, Dest_InpLst
             # Check Duplicate Pins
             p = InStr(' ' + Line + ' ', ' ' + M30.AliasToPin(OnePin) + ' ')
             if InStr(p + 1, ' ' + Line + ' ', ' ' + OnePin + ' ') > 0:
                 P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler: Der Pin \'#1#\' wird mehrfach verwendet im' + vbCr + '  \'#2#\' Befehl'), "#1#", OnePin), '#2#', Replace(Line, '// ', '')), vbCritical, M09.Get_Language_Str('Mehrfach verwendeter Arduino Pin'))
-                return _ret
+                return _ret, Dest_InpLst
             if NrStr != '':
                 NrStr = NrStr + ' '
                 # 14.10.21: Juergen
@@ -470,7 +481,7 @@ def Set_PinNrLst_if_Matching(Line, Name, Dest_InpLst, PinTyp, MaxCnt):
     if NrStr != '':
         Debug.Print('Set_PinNrLst_if_Matching(' + Name + '=' + NrStr + ')')
         # Debug
-    return _ret
+    return _ret, Dest_InpLst
     
 
 def __Get_Arguments(Line):
@@ -660,7 +671,7 @@ def __Add_Cx_to_DstVars(Org_Macro, Line, Cnt, r):
     # Example: PushButton_w_LED_0_2(B_LED, B_LED_Cx, InCh, DstVar1, Rotate, Timeout)
     Arg1 = __Get_Matching_Arg(Org_Macro, Line, 'DstVar1')
     if Arg1 != '':
-        StartNr = __Get_Nr_From_Var(Arg1, TxtLen)
+        StartNr, TxtLen = __Get_Nr_From_Var(Arg1, TxtLen)
         if StartNr < 0:
             P01.MsgBox(Replace(Replace(Replace(M09.Get_Language_Str('Fehler: Die Zielvariable \'#1#\' in Zeile #2# muss eine Zahl am Ende haben ' + 'weil sie Teil einer Sequenz ist.' + vbCr + '  Beispiel: #3#'), "#1#", Arg1), '#2#', r), '#3#', Arg1 + '0'), vbCritical, M09.Get_Language_Str('Fehler: Zielvariable ungültig für Sequenz'))
             return _ret
@@ -914,7 +925,7 @@ def __Make_sure_that_Channel_is_divisible_by_4(Channel):
 def Write_Switches_Header_File_Part_A(fp, Channel):
     global __DstVar_List
     
-    _ret = None
+    _ret = False
     Ana_But_Pin_Array = vbObjectInitialize(objtype=String)
 
     ACh = int()
@@ -940,12 +951,12 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         Ana_But_Pin_Array = Split(SwitchA_InpLst, ' ')
         if SwitchA_InpCnt >  ( UBound(Ana_But_Pin_Array) + 1 )  * 10:
             P01.MsgBox(M09.Get_Language_Str('Fehler: Es wurden mehr analoge Taster verwendet als möglich sind. ' + 'Es müssen weitere analoge Eingänge zum einlesen definiert werden.' + vbCr + 'Das wird mit dem Befehl \'Set_SwitchA_InpLst()\' in der Makro Spalte gemacht.'), vbCritical, M09.Get_Language_Str('Fehler: Nicht genügend analoge Eingänge zum einlesen der Taster definiert'))
-            return _ret
+            return _ret, Channel
         VBFiles.writeText(fp, '//*** Analog switches ***', '\n')
         VBFiles.writeText(fp, '', '\n')
         if M02.Get_BoardTyp() == 'AM328':
             if M70.Make_Sure_that_AnalogScanner_Library_Exists() == False:
-                return _ret
+                return _ret, Channel
             VBFiles.writeText(fp, '#include <AnalogScanner.h>   // Interrupt driven analog reading library. The library has to be installed manually from https://github.com/merose/AnalogScanner', '\n')
             VBFiles.writeText(fp, 'AnalogScanner scanner;       // Creates an instance of the analog pin scanner.', '\n')
         elif M02.Get_BoardTyp() == 'ESP32':
@@ -986,7 +997,7 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
     if SwitchD_InpCnt >  ( UBound(Split(SwitchD_InpLst, ' ')) + 1 ) :
         # Todo: Activate the corrosponding cell. Therefore a list has to be generated where each switch is used the first time
         P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: Es wurden mehr SwitchD Schalter verwendet als Pins definiert sind. ' + 'Es müssen weitere Eingänge zum einlesen definiert werden.' + vbCr + 'Das wird mit dem Befehl \'Set_SwitchD_InpLst()\' in der Makro Spalte gemacht.' + vbCr + 'Letzter möglicher Schalter: \'SwitchD#1#\''), "#1#", UBound(Split(SwitchD_InpLst, ' ')) + 1), vbCritical, M09.Get_Language_Str('Fehler: Nicht genügend Eingänge zum einlesen der Schalter definiert'))
-        return _ret
+        return _ret, Channel
     if SwitchD_InpCnt > 0:
         VBFiles.writeText(fp, '//*** Direct connected switches ***', '\n')
         VBFiles.writeText(fp, '', '\n')
@@ -1036,11 +1047,11 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
                         DMX_Pin_Number = LED_PINNr_Arr(LEDCh)
                         if ( M06.LEDs_per_Channel(LEDCh) > 100 ) :
                             P01.MsgBox(M09.Get_Language_Str('Fehler: Das DMX Senden ist auf 100 Leds (300 DMX Kanäle) limitiert.'), vbCritical, P01.ActiveSheet.Name)
-                            return _ret
+                            return _ret, Channel
             Cnt = Cnt + M06.LEDs_per_Channel(LEDCh)
         if ExpOutPins > UBound(LED_PINNr_Arr):
             P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: Es sind nicht genügend Ausgangs Pins zur Ansteuerung der LEDs vorhanden. ' + 'Die LED Pins müssen mit dem Befehl "Set_LED_OutpPinLst()" definiert werden.' + vbCr + 'Es müssen #1# Arduino Ausgänge definiert sein.'), "#1#", str(ExpOutPins + 1)), vbCritical, M09.Get_Language_Str('Mehr LED Gruppen verwendet als LED Ausgangspins definiert'))
-            return _ret
+            return _ret, Channel
         VBFiles.writeText(fp, '                                                                             \\', '\n')
         for LEDCh in vbForRange(0, M02.LED_CHANNELS - 1):
             if M06.LEDs_per_Channel(LEDCh) > 0 and LEDCh <= UBound(LED_PINNr_Arr) and  ( LEDCh != DMX_LedChan ) :
@@ -1111,7 +1122,7 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
             VBFiles.writeText(fp, '      MobaLedLib.Set_Input(SwitchD1 + i, !digitalRead(pgm_read_byte_near(&SwitchD_Pins[i])));\\', '\n')
         VBFiles.writeText(fp, '}', '\n')
     _ret = True
-    return _ret
+    return _ret, Channel
 
 def Write_LowProrityLoop_Header_File(fp):
     _ret = None

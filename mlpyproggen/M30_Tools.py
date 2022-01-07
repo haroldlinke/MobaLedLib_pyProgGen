@@ -3,16 +3,18 @@
 #         Write header
 #
 # * Version: 1.21
+# -*- coding: utf-8 -*-
+#
+#         Write header
+#
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,11 +33,19 @@
 # *
 # *
 # ***************************************************************************
-import subprocess
-import zipfile
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
+import subprocess
+import zipfile
+
 from mlpyproggen.X01_Excel_Consts import *
 #from mlpyproggen.M02_Public import Get_BoardTyp
 
@@ -153,7 +163,7 @@ def LastColumnDatSheet():
     return fn_return_value
 
 def LastUsedRowIn(Sheet):
-    Sh:P01.CWorksheet = Variant()
+    #Sh:P01.CWorksheet = Variant()
     #-----------------------------------------------
     # return the last used row in the given sheet.
     # The sheet could be given as sheet name or as worksheets variable.
@@ -168,7 +178,7 @@ def LastUsedRowIn(Sheet):
 
 def LastUsedColumnInRow(Sh:P01.CWorksheet, Row):
     #---------------------------------------------------------------
-    fn_return_value = Sh.Cells(Row, Sh.Columns.Count).End #*HL(xlToLeft).Column
+    fn_return_value = Sh.Cells(Row, Sh.Columns.Count).Column #*HL .End(xlToLeft).Column
     return fn_return_value
 
 def LastUsedColumnIn(Sheet):
@@ -178,12 +188,12 @@ def LastUsedColumnIn(Sheet):
         Sh = P01.Sheets(Sheet)
     else:
         Sh = Sheet
-    fn_return_value = Sh.UsedRange.Columns(Sh.UsedRange.Columns.Count).Column
+    fn_return_value = Sh.LastUsedColumn #*HLSh.UsedRange.Columns(Sh.Columns.Count).Column
     Sh = None
     return fn_return_value
 
 def LastFilledRowIn(Sh, CheckCol):
-    Row = int()
+    #Row = int()
     #------------------------------------------------------------------
     Row = LastUsedRowIn(Sh)
     with_variable0 = Sh
@@ -563,9 +573,9 @@ def FileName(Name):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: FullName - ByVal 
 def Same_Name_already_open(FullName):
-    w = Variant()
+    #w = Variant()
 
-    Name = String()
+    #Name = String()
     #-------------------------------------------------------------------
     # Check if a workbook with the same name is already opened
     Name = FileNameExt(FullName)
@@ -599,7 +609,7 @@ def ColumnLettersFromNr(Colunm):
     return fn_return_value
 
 def DisableFiltersInSheet(s):
-    obj = Variant()
+    #obj = Variant()
     #----------------------------------------
     if s.AutoFilterMode:
         if s.FilterMode:
@@ -733,7 +743,8 @@ def DeleteElementAt(Index, prLst):
     for i in vbForRange(Index + 1, UBound(prLst)):
         prLst[i - 1] = prLst(i)
     # Shrink the array by one, removing the last one
-    prLst = vbObjectInitialize((UBound(prLst) - 1,), Variant, prLst)
+    #prLst = vbObjectInitialize((UBound(prLst) - 1,), Variant, prLst)
+    prLst.delete()
 
 def Test_DeleteElementAt():
     Arr = vbObjectInitialize(objtype=String)
@@ -948,6 +959,7 @@ def Test_SplitEx():
     if isInitialised(t):
         for N in vbForRange(LBound(t), UBound(t)):
             Debug.Print(N, t(N))
+    else:
         Debug.Print(r'Empty')
 
 def Get_Primary_Monitor_Pixel_Cnt_X():
@@ -1214,7 +1226,7 @@ def Get_OperatingSystem():
         return fn_return_value
     # VB2PY (UntranslatedCode) On Error Resume Next
     return fn_return_value
-    MsgBox(r'The following error has occured.' + vbCrLf + vbCrLf + r'Error Number: ' + Err.Number + vbCrLf + r'Error Source: getOperatingSystem' + vbCrLf + r'Error Description: ' + Err.Description, vbCritical, r'An Error has Occured!')
+    P01.MsgBox(r'The following error has occured.' + vbCrLf + vbCrLf + r'Error Number: ' + Err.Number + vbCrLf + r'Error Source: getOperatingSystem' + vbCrLf + r'Error Description: ' + Err.Description, vbCritical, r'An Error has Occured!')
     # VB2PY (UntranslatedCode) Resume Error_Handler_Exit
     return fn_return_value
 
@@ -1254,6 +1266,7 @@ def Test_Select_LastusedCol():
     P01.Cells(1, LastUsedColumn()).Select()
 
 def Clear_Platform_Parameter_Cache():
+    global PlatformParams
     PlatformParams = None
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ParName - ByVal 

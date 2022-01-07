@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,9 +29,16 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
+
 
 import mlpyproggen.D05_SelectMacrosTreeForm as D05
 
@@ -119,41 +123,6 @@ Build 026.4
 """
 
 
-
-def __Test_Icon():
-    Pic = StdPicture()
-
-    Res = Boolean()
-
-    iPic = StdPicture()
-
-    hCopy = Variant()
-    #----------------------
-    if __ufForm is None:
-        __ufForm = SelectMacrosTreeForm()
-    Res = __ufForm.Get_Icon('Andreaskreuz', Pic)
-    if not Res:
-        MsgBox('Error reading the picture from the UserForm')
-        return
-    #Set iPic = Me.Picture
-    iPic = Pic
-    OpenClipboard(0)
-    EmptyClipboard()
-    hCopy = SetClipboardData(2, iPic.handle)
-    CloseClipboard()
-    if hCopy:
-        ActiveSheet.Cells(15, 5).Select()
-        ActiveSheet.Paste()
-        # Save picture as file (Metafichier -> c:\xxx.wmf)
-        #SavePicture iPic, "c:\xxx.bmp"
-    #DestroyIcon iPic.handle
-    iPic = None
-    #  Cells(26,1) pic.
-    #  pic.CopyPicture xlScreen, xlBitmap
-    #Range("J10").Select
-    #ActiveSheet.Image1.Picture
-    #ActiveSheet.Pictures.Insert pic
-
 def SelectMacro_TreeView_Test():
     #UT-----------------------------------
     SelectMacro_TreeView('')
@@ -177,7 +146,7 @@ def __ClassCounts():
         Debug.Print('clsTreeView', gClsTreeViewInit, gClsTreeViewTerm, gClsTreeViewInit - gClsTreeViewTerm)
         Debug.Print('clsNode', gClsNodeInit, gClsNodeTerm, gClsNodeInit - gClsNodeTerm)
         Debug.Print('gFormInit', gFormInit, gFormTerm, gFormInit - gFormTerm)
-        MsgBox('NOT all Classes were terminated !' + vbCr + 'see Immediate window')
+        P01.MsgBox('NOT all Classes were terminated !' + vbCr + 'see Immediate window')
     gClsTreeViewInit = 0
     gClsTreeViewTerm = 0
     gClsNodeInit = 0

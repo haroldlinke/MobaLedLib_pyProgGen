@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 #
 #         Write header
+# -*- coding: utf-8 -*-
 #
-# * Version: 1.21
+#         Write header
+#
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,9 +32,20 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
+from mlpyproggen.P01_Workbook import (TimeValue, ActiveCell, create_workbook, IsError, Cells, Range, Sheets, Rows, Columns, IsEmpty, val, VarType, ChDrive, Format, 
+                                        MsgBox, InputBox, CWorkbook, CWorksheet, CRange, CRectangles, CSelection, CRow, CEntireRow, CColumn, CEntireColumn, CCell, CCellDict, CWorksheetFunction, CApplication, CFont, CActiveWindow, SoundLines, Run)
+#from mlpyproggen.M09_Language import (Get_Language_Str)
+
 
 import mlpyproggen.M02_Public as M02
 import mlpyproggen.M03_Dialog as M03
@@ -180,7 +191,7 @@ def __Start_MobaLedCheckColors_py():
     OldDir = String()
     #--------------------------------------------------------
     OldDir = CurDir
-    DstDir = ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR
+    DstDir = P01.ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR
     # VB2PY (UntranslatedCode) On Error GoTo DirError
     ChDrive(DstDir)
     ChDir(DstDir)
@@ -202,7 +213,7 @@ def __Start_MobaLedCheckColors_exe():
     OldDir = String()
     #---------------------------------------------------------
     OldDir = CurDir
-    DstDir = ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR
+    DstDir = P01.ThisWorkbook.Path + '\\' + __CHECKCOL_EXE_DIR
     # VB2PY (UntranslatedCode) On Error GoTo DirError
     ChDrive(DstDir)
     ChDir(DstDir)
@@ -740,11 +751,11 @@ def Open_MobaLedCheckColors_and_Insert_Set_ColTab_Macro():
 
 def Open_MobaLedCheckColors(Callback, Dest_Sheet=VBMissingArgument, Dest_Row=VBMissingArgument):
     global __Proc_CheckColors_Form_Callback, __ColTab_Dest_Sheet, __ColTab_Dest_Row, ColTab
-    ProgDir = String()
+    #ProgDir = String()
 
-    Exe_Exists = Boolean()
+    #Exe_Exists = Boolean()
 
-    ExistingVer = String()
+    #ExistingVer = String()
 
     Res = True # Boolean()
     #---------------------------------------------------------------------------------------------------------------

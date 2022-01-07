@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,6 +28,12 @@
 # *
 # *
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
+
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
@@ -91,7 +94,7 @@ def Init_HeaderFile_Generation_LED2Var():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Cmd - ByRef 
 def Add_LED2Var_Entry(Cmd, LEDNr):
-    fn_return_value = None
+    fn_return_value = False
     Parts = vbObjectInitialize(objtype=String)
 
     Typ = String()
@@ -119,7 +122,7 @@ def Add_LED2Var_Entry(Cmd, LEDNr):
     __LED2Var_Tab = __LED2Var_Tab + '        { ' + M30.AddSpaceToLen(Parts(0) + ',', 20) + M30.AddSpaceToLen(LEDNr + Offset // 3 + ',', 7) + M30.AddSpaceToLen('(' + Offset % 3, 5) + '<< 3) | ' + M30.AddSpaceToLen(Typ + ', ', 19) + M30.AddSpaceToLen(Parts(3), 4) + '},' + vbCr
     Cmd = '// ' + Cmd
     fn_return_value = True
-    return fn_return_value
+    return fn_return_value, Cmd
 
 def Write_Header_File_LED2Var(fp):
     global __LED2Var_Tab

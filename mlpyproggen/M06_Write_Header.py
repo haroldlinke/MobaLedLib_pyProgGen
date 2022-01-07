@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,6 +28,12 @@
 # *
 # *
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
+
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
@@ -338,6 +341,8 @@ def Do_Replace_Sym_Pin_Name(Cmd, PinStr):
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Cmd - ByRef 
 def Proc_Special_Functions(Cmd, LEDNr, Channel):
     #-------------------------------------------------------------------------------------
+    fn_return_value = False
+    
     if Left(Cmd, Len('Mainboard_LED(')) == 'Mainboard_LED(':
         PinOrNr = Split(Replace(Cmd, 'Mainboard_LED(', ''), ',')(0)
         if InStr(' ' + M02.MB_LED_NR_STR + ' ', ' ' + PinOrNr + ' ') > 0:
@@ -355,10 +360,12 @@ def Proc_Special_Functions(Cmd, LEDNr, Channel):
             return fn_return_value, Cmd
         Cmd = '// ' + Cmd
     if InStr(Cmd, M02.SF_LED_TO_VAR) > 0:
-        if not M06LED.Add_LED2Var_Entry(Cmd, LEDNr):
+        fret, Cmd = M06LED.Add_LED2Var_Entry(Cmd, LEDNr)
+        if not fret:
             return fn_return_value, Cmd
     if InStr(Cmd, M02.SF_SERIAL_SOUND_PIN) > 0:
-        if not M06Sound.Add_SoundPin_Entry(Cmd, LEDNr):
+        fret, Cmd = M06Sound.Add_SoundPin_Entry(Cmd, LEDNr)
+        if not fret:
             return fn_return_value
     fn_return_value = True, Cmd
     return fn_return_value, Cmd
@@ -420,9 +427,8 @@ def Generate_Config_Line(LEDNr, Channel_or_define, r, Config_Col, Addr):
             Cmd = Replace(Cmd, '#LocInCh', 'LOC_INCH' + str(LocInChNr))
             Inc_LocInChNr = True
             # 18.11.19:
-        Proc_Special_Functions_res,Cmd = Proc_Special_Functions(Cmd, LEDNr, Channel_or_define) #*HL
-        #if Proc_Special_Functions(Cmd, LEDNr, Channel_or_define) == False:
-        if not Proc_Special_Functions_res:
+        fret,Cmd = Proc_Special_Functions(Cmd, LEDNr, Channel_or_define) #*HL
+        if fret == False:
             fn_return_value = '#ERROR#'
             P01.Cells(r, M25.Config__Col).Select()
             return fn_return_value
@@ -1019,7 +1025,9 @@ def Write_Header_File_and_Upload_to_Arduino():
     VBFiles.writeText(fp, '// Input channel defines for local inputs and expert users', '\n')
     VBFiles.writeText(fp, InChTxt, '\n')
     VBFiles.writeText(fp, '', '\n')
-    if M06SW.Write_Switches_Header_File_Part_A(fp, Channel) == False:
+    
+    fret, Channel = M06SW.Write_Switches_Header_File_Part_A(fp, Channel)
+    if fret == False:
         VBFiles.closeFile(fp)
         return
     if M06SW.Write_LowProrityLoop_Header_File(fp) == False:

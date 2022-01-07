@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,9 +29,16 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
+
 #from mlpyproggen.M02_Public import SH_VARS_ROW,PAGE_ID_COL,Header_Row
 
 from mlpyproggen.X01_Excel_Consts import *
@@ -94,7 +98,7 @@ SX_Bitposi_Col = int()
 Page_ID = String()
 
 def Add_Icons_and_Lines():
-    Sh = P01.CWorksheet
+    #Sh = P01.CWorksheet
     #--------------------------------
     P01.Application.EnableEvents = False
     for Sh in P01.ThisWorkbook.Sheets:
@@ -117,7 +121,7 @@ def Add_Icons_and_Lines():
     P01.Application.EnableEvents = True
 
 def Del_Icons_and_Lines():
-    Sh = Variant()
+    #Sh = Variant()
     #--------------------------------
     P01.Application.EnableEvents = False
     for Sh in P01.ThisWorkbook.Sheets:
@@ -138,7 +142,7 @@ def Has_Macro_and_LanguageName_Column(Sh, Col):
     return fn_return_value
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Sh=None - ByVal 
-def Make_sure_that_Col_Variables_match(Sh=None, Switch_back_Target=VBMissingArgument):
+def Make_sure_that_Col_Variables_match(Sh=None, Switch_back_Target=None):
     global Col_from_Sheet,SH_VARS_ROW,PAGE_ID_COL,Inp_Typ_Col,Filter__Col,Start_V_Col,Descrip_Col,Dist_Nr_Col,Conn_Nr_Col,MacIcon_Col,LanName_Col,Config__Col,LED_Nr__Col,LEDs____Col,InCnt___Col,LocInCh_Col,LED_Cha_Col
     global LED_TastCol,COMPort_COL,BUILDOP_COL,R_UPLOD_COL,COMPrtR_COL,BUILDOpRCOL,COMPrtT_COL,DCC_or_CAN_Add_Col,SX_Channel_Col,SX_Bitposi_Col,Ref_Col,Page_ID
     #----------------------------------------------------------------------------------------------------------------------------------
@@ -149,7 +153,7 @@ def Make_sure_that_Col_Variables_match(Sh=None, Switch_back_Target=VBMissingArgu
         return
         # Already read in => exit
     #Debug.Print "Updating the Col_Variables"
-    if not Switch_back_Target is VBMissingArgument: #*HL
+    if not Switch_back_Target is None: #*HL
         if Switch_back_Target.Parent.Name != Sh.Name:
             Debug.Print(r'Switching back to ' + Switch_back_Target.Parent.Name + r' in Make_sure_that_Col_Variables_match()')
             # VB2PY (UntranslatedCode) On Error GoTo ErrSwitchBack

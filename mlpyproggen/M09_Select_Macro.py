@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,9 +29,16 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
 #from mlpyproggen.M02_Public import *
 #from mlpyproggen.M06_Write_Header_LED2Var import *
 #from mlpyproggen.M06_Write_Header_Sound import *
@@ -145,7 +149,7 @@ def __Special_ConstrWarnLight(Res, LEDs):
     Ret = Ret + Trim(Param(7)) + ')' + '$' + LED_Channel
     _ret = Ret
     LEDs = 'C1-' + Trim(Param(2))
-    return _ret
+    return _ret, LEDs
 
 def __Test_Special_ConstrWarnLight():
     Res = String()
@@ -154,7 +158,7 @@ def __Test_Special_ConstrWarnLight():
     #UT---------------------------------------
     # ConstrWarnLight(LED,InCh, LEDcnt, MinBrightness, MaxBrightness, OnT, WaitT, WaitE)
     Res = 'ConstrWarnLight(#LED,#InCh, 6, 20, 255, 100 ms, 0 ms, 300 ms)'
-    Res = __Special_ConstrWarnLight(Res, LEDs)
+    Res, LEDs = __Special_ConstrWarnLight(Res, LEDs)
     Debug.Print(Res + 'LEDs:' + LEDs)
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Macro - ByVal 
@@ -224,7 +228,7 @@ def __Proc_General(LEDs, Macro, Description, LedChannels, LED_Channel, Def_Chann
 
     Param = Variant()
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    if Macro == '':
+    if Macro == '' or Macro == "<Abort>":
         return _ret
     Parts = Split(Replace(Macro, ')', ''), '(')
     if UBound(Parts) == 0:
@@ -260,10 +264,10 @@ def __Proc_General(LEDs, Macro, Description, LedChannels, LED_Channel, Def_Chann
         Res = Res + ')'
         if Other > 0 or Show_Channel != M10.CHAN_TYPE_NONE:
             Res = __Proc_General_With_Other_Par(Res, Description, LedChannels, Show_Channel, LED_Channel, Def_Channel)
-            if Res == '':
+            if Res == '' or Res =="<Abort>":
                 return _ret
             if Parts(0) == 'ConstrWarnLight':
-                Res = __Special_ConstrWarnLight(Res, LEDs)
+                Res, LEDs = __Special_ConstrWarnLight(Res, LEDs)
                 # 18.09.19
             if Left(Parts(0), Len('Multiplexer')) == 'Multiplexer':
                 Res = M80.Special_Multiplexer_Ext(Res, LEDs)
@@ -432,7 +436,7 @@ def Add_Icon_and_Name(SelRow, DstRow, Sh=None, NameOnly=False):
                 M27.Add_Icon(PicName, DstRow, Sh)
 
 def __SelectMacros_Sub():
-    _ret = None
+    _ret = False
     Res="" #*HL
     OldEvents = Boolean()
 

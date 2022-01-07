@@ -69,4 +69,21 @@ import mlpyproggen.P01_Workbook as P01
 
 from mlpyproggen.X01_Excel_Consts import *
 
+from vb2py.vbfunctions import *
+from vb2py.vbdebug import *
 
+"""# VB2PY (CheckDirective) VB directive took path 1 on False
+ https://www.spreadsheet1.com/how-to-copy-strings-to-clipboard-using-excel-vba.html
+# VB2PY (CheckDirective) VB directive took path 1 on VBA7
+# VB2PY (CheckDirective) VB directive took path 1 on Win64
+-----------------------------------------------------------------
+UT---------------------------------
+"""
+
+
+MaxSize = 4096
+
+def ClipBoard_SetData(sPutToClip):
+    return
+    
+    

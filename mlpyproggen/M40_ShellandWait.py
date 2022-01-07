@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,11 +29,18 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
+
 from vb2py.vbfunctions import *
-from vb2py.vbdebug import *
+#from vb2py.vbdebug import *
 from vb2py.vbconstants import *
 
-import mlpyproggen.Prog_Generator as PG
+#import mlpyproggen.Prog_Generator as PG
+import subprocess
 
 """ M40_ShellAndWait:
  ~~~~~~~~~~~~~~~~~
@@ -79,23 +83,6 @@ __WAIT_INFINITE = - 1
 
 def ShellAndWait(ShellCommand, TimeOutSeconds, ShellWindowState, BreakKey):
     fn_return_value = None
-    #TimeOutMs = Long()
-
-    #WaitRes = Long()
-
-    #ms = Long()
-
-    #MsgRes = VbMsgBoxResult()
-
-    #SaveCancelKey = XlEnableCancelKey()
-
-    #ElapsedTime = Long()
-
-    #Quit = Boolean()
-
-    #ProcHandle = Long()
-
-    #ERR_BREAK_KEY = 18
 
     DEFAULT_POLL_INTERVAL = 500
     #''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -152,14 +139,11 @@ def ShellAndWait(ShellCommand, TimeOutSeconds, ShellWindowState, BreakKey):
     if Trim(ShellCommand) == vbNullString:
         fn_return_value = InvalidParameter
         return fn_return_value
-    TimeOutMs = 1000 * TimeOutSeconds
-    if TimeOutMs < 0:
+
+    if TimeOutSeconds < 0:
         fn_return_value = InvalidParameter
         return fn_return_value
-    elif TimeOutMs == 0:
-        ms = __WAIT_INFINITE
-    else:
-        ms = TimeOutMs
+
     if (BreakKey == AbandonWait) or (BreakKey == IgnoreBreak) or (BreakKey == PromptUser):
         # valid
         pass
@@ -173,7 +157,32 @@ def ShellAndWait(ShellCommand, TimeOutSeconds, ShellWindowState, BreakKey):
         fn_return_value = InvalidParameter
         return fn_return_value
     # VB2PY (UntranslatedCode) On Error Resume Next
-    Err.Clear()
+    try:
+        
+        if TimeOutSeconds == 0:
+            process = subprocess.run(ShellCommand,Shell=True)
+        else:
+            process = subprocess.run(ShellCommand,timeout=TimeOutSeconds,Shell=True)
+            
+        errornumber = process.returncode
+        
+        if errornumber != 0:
+            return Failure
+        else:
+            return Success
+    except subprocess.TimeoutExpired:
+        return Timeout
+    
+    except Exception as error:
+        print(error)
+        return Failure
+        
+        
+    
+    """
+    #Err.Clear()
+    
+    
     TaskId = Shell(ShellCommand, ShellWindowState)
     if ( Err.Number != 0 )  or  ( TaskId == 0 ) :
         fn_return_value = Failure
@@ -257,6 +266,7 @@ def ShellAndWait(ShellCommand, TimeOutSeconds, ShellWindowState, BreakKey):
         fn_return_value = ShellAndWaitResult.Failure
     Application.EnableCancelKey = SaveCancelKey
     return fn_return_value
+    """
 
 # VB2PY (UntranslatedCode) Option Explicit
 # VB2PY (UntranslatedCode) Option Compare Text

@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,6 +28,12 @@
 # *
 # *
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
@@ -91,7 +94,7 @@ Tast_T = String()
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Sh - ByVal 
 def __Update_Language_in_Sheet(Sh, DestLang):
-    _ret = None
+    _ret = False
     LSh:P01.CWorksheet() = None
     #--------------------------------------------------------------------------------------------------------------
     ## VB2PY (CheckDirective) VB directive took path 1 on PROG_GENERATOR_PROG
@@ -182,7 +185,7 @@ def __Update_Language_in_Sheet(Sh, DestLang):
                 _with0.Range[Param].Validation.ErrorTitle = Tmp
                 # ToDo Warnungen
     if WasProtected:
-        Protect_Active_Sheet()
+        M30.Protect_Active_Sheet()
     #OldSel.Select
     _ret = True
     #Debug.Print "Updated Language in " & Sh.Name ' Debug
@@ -239,11 +242,11 @@ def __Test_Update_Language_in_Config_Sheet():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Sh - ByVal 
 def __Activate_Language_in_Example_Sheet(Sh):
-    o = Variant()
+    #o = Variant()
 
-    ActLanguage = Integer()
+    #ActLanguage = Integer()
 
-    LanguageNr = Integer()
+    #LanguageNr = Integer()
     #--------------------------------------------------------------------
     ActLanguage = Get_ExcelLanguage()
     for o in Sh.Shapes:
@@ -395,10 +398,10 @@ def __Test_Get_ExcelLanguage():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Desc - ByVal 
 def __Find_Cell_Pos_by_Name(Desc):
-    _ret = None
-    LSh = P01.CWorksheet()
+    _ret = False
+    #LSh = P01.CWorksheet()
 
-    Res = Variant()
+    #Res = Variant()
     #-------------------------------------------------------------
     # Find the given Desc in the language sheet and return the
     # destination position as string.
@@ -420,9 +423,9 @@ def __Test_Find_Cell_Pos_by_Name():
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Desc - ByVal 
 def __Get_German_Name(Desc):
     _ret = None
-    LSh = P01.CWorksheet()
+    #LSh = P01.CWorksheet()
 
-    Res = Variant()
+    #Res = Variant()
     #-------------------------------------------------------
     LSh = P01.ThisWorkbook.Sheets(M02.LANGUAGES_SH)
     _with9 = LSh
@@ -492,7 +495,7 @@ def Find_Language_Str_Row(Desc, Look_At=xlPart):
         if not (Retry):
             break
     # VB2PY (UntranslatedCode) On Error GoTo 0
-    if not IsEmpty(Res):
+    if not P01.IsEmpty(Res):
         if not Res is None:
             _ret = Res.Row
             ## VB2PY (CheckDirective) VB directive took path 1 on 0
@@ -592,7 +595,7 @@ def __Change_Lang_in_MultiPage(o):
         Pg.Caption = Get_Language_Str(Pg.Caption, False, xlWhole)
 
 def __Change_Language_in_Dialog(dlg):
-    o = Variant()
+    #o = Variant()
     #-------------------------------------------
     dlg.Caption = Get_Language_Str(dlg.Caption)
     for o in dlg.Controls:
@@ -636,22 +639,12 @@ def __Test_Translations():
     # Check it the translation works correct
     __Check_Languages = True
     Debug.Print(vbCr + r'-------------------------------------------')
-    Res = InputBox(r'Input the Language number' + vbCr + r' 0 = German' + vbCr + r' 1 = English' + vbCr + r' 2 = Dutch' + vbCr + r' 3 = French' + vbCr + r' 4 = Italian' + vbCr + r' 5 = Spain' + vbCr + r' 6 = Danish')
+    Res = P01.InputBox(r'Input the Language number' + vbCr + r' 0 = German' + vbCr + r' 1 = English' + vbCr + r' 2 = Dutch' + vbCr + r' 3 = French' + vbCr + r' 4 = Italian' + vbCr + r' 5 = Spain' + vbCr + r' 6 = Danish')
     if not IsNumeric(Res):
         return
-    __Test_Language = val(Res)
+    __Test_Language = P01.val(Res)
     __Update_Language_in_All_Sheets()
-    ## VB2PY (CheckDirective) VB directive took path 1 on PATTERN_CONFIG_PROG
-    __Change_Language_in_Dialog(Copy_Select_GotoAct_Form)
-    __Change_Language_in_Dialog(MainMenu_Form)
-    __Change_Language_in_Dialog(Percent_Msg_UserForm)
-    __Change_Language_in_Dialog(Select_from_Sheet_Form)
-    __Change_Language_in_Dialog(Select_GotoNr_Form)
-    __Change_Language_in_Dialog(Select_LED_Address)
-    __Change_Language_in_Dialog(StatusMsg_UserForm)
-    __Change_Language_in_Dialog(Test_GotoNr_Form)
-    __Change_Language_in_Dialog(UserForm_Other)
-    __Change_Language_in_Dialog(UserForm_USB_Connection)
+
     ## VB2PY (CheckDirective) VB directive took path 1 on PROG_GENERATOR_PROG
     __Change_Language_in_Dialog(Select_ProgGen_Dest_Form)
     __Change_Language_in_Dialog(Select_ProgGen_Src_Form)

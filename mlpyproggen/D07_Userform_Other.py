@@ -239,15 +239,15 @@ class UserForm_Other():
         else:
             select_0 = LCase(Parts(1))
             if (select_0 == 'min'):
-                val = Parts(0) * 60 * 1000
+                value = P01.val(Parts(0)) * 60 * 1000
             elif (select_0 == 'sec') or (select_0 == 'sek'):
-                val = Parts(0) * 1000
+                value = P01.val(Parts(0)) * 1000
             elif (select_0 == 'ms'):
-                val = Parts(0)
+                value = P01.val(Parts(0))
             else:
                 P01.MsgBox('Internal error: Unknown unit \'' + Parts(1) + '\' in Check_Time_String()', vbCritical, 'Internal error')
                 M30.EndProg()
-            if self.Check_Limit_to_MinMax(ParNr, val) == False:
+            if self.Check_Limit_to_MinMax(ParNr, value) == False:
                 return fn_return_value
         fn_return_value = True
         return fn_return_value
@@ -287,7 +287,7 @@ class UserForm_Other():
         ShowErr = Boolean()
         #-------------------------------------------------------------------------------------
         if ParNr > self.MAX_PAR_CNT:
-            P01.MsgBox('Internal error in Chek_Range()')
+            P01.MsgBox('Internal error in Check_Range()')
             M30.EndProg()
         paramName = self.ParName[ParNr-1]
         parVariable = self.ParamVar.get(paramName)
@@ -357,9 +357,9 @@ class UserForm_Other():
     
     def LED_Channel_TextBox_Change(self):
         #---------------------------------------
-        if self.Show_Channel_Type == CHAN_TYPE_LED:
+        if self.Show_Channel_Type == M10.CHAN_TYPE_LED:
             self.LimmitActivInput(LED_Channel_TextBox, 0, M02.LED_CHANNELS - 1)
-        elif self.Show_Channel_Type == CHAN_TYPE_SERIAL:
+        elif self.Show_Channel_Type == M10.CHAN_TYPE_SERIAL:
             self.LimmitActivInput(LED_Channel_TextBox, 0, M02.SERIAL_CHANNELS - 1)
     
     def Par10Select_Change():
@@ -637,28 +637,6 @@ class UserForm_Other():
             
             return paramvar
             
-            """
-            param_bind_up   = paramconfig_dict.get("Key_Up","")
-            param_bind_down = paramconfig_dict.get("Key_Down","")
-            
-            if param_bind_up != "":
-                self.bind(param_bind_up,s_paramvar.invoke_buttonup)
-                s_paramvar.key_up=param_bind_up
-                if self.bind_keys_dict.get(macro,{})=={}:
-                    self.bind_keys_dict[macro] = {}
-                self.bind_keys_dict[macro][paramkey] = s_paramvar
-            if param_bind_down != "":    
-                self.bind(param_bind_down,s_paramvar.invoke_buttondown)
-                s_paramvar.key_down=param_bind_down
-                self.bind_keys_dict[macro][paramkey] = s_paramvar
-            """
-            self.set_macroparam_var(macro, paramkey, paramvar,persistent=param_persistent)
-            
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow
-            
         elif param_type == "Time": # Time value param
             
             label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
@@ -673,13 +651,6 @@ class UserForm_Other():
             paramvar.key = paramkey
             
             return paramvar
-        
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow      
                 
         elif param_type == "String": # String value param
             
@@ -700,13 +671,6 @@ class UserForm_Other():
             #paramvar.macro = macro
             
             return paramvar
-            
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow
         
         elif param_type == "BigEntry": # Text value param
             
@@ -725,13 +689,6 @@ class UserForm_Other():
             #paramvar.macro = macro
             
             return paramvar
-        
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow            
         
         elif param_type == "Text": # Text value param
             if not param_hide:
@@ -758,13 +715,6 @@ class UserForm_Other():
                 paramvar.state = "disabled"
                 
             return paramvar
-        
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow
                 
         elif param_type == "Checkbutton": # Checkbutton param
             paramvar = tk.IntVar(value=0)
@@ -776,14 +726,6 @@ class UserForm_Other():
             
             return paramvar
                             
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow
-
-            
         elif param_type == "Combo" or param_type == "List": # Combolist param
             
             if not param_hide:
@@ -802,8 +744,16 @@ class UserForm_Other():
                 paramvar["values"] = combo_value_list
             else:
                 paramvar["values"] = combo_text_list
-                
-            paramvar.current(0) #set the selected view                    
+            found = False
+            index = 0
+            for select_value in combo_value_list:
+                if select_value == param_default:
+                    paramvar.current(index)
+                    found = True
+                    break
+                index = index +1
+            if not found:
+                paramvar.current(0) #set the selected view                    
             
             if not param_hide:
                 paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
@@ -813,174 +763,9 @@ class UserForm_Other():
             
             return paramvar
         
-            self.set_macroparam_var(macro, paramkey, paramvar)               
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow      
+        else:
+            return None
                 
-        elif param_type == "CX": # Channel value param
-            
-            label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
-            label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-            self.ToolTip(label, text=param_tooltip)
-            
-            paramvar = ttk.Combobox(parent_frame, width=PARAMCOMBOWIDTH,font=self.fontlabel)
-            
-            combo_value_list = paramconfig_dict.get("KeyValues",paramconfig_dict.get("Values",("C_All", "C12", "C23", "C1", "C2", "C3", "C_RED", "C_GREEN", "C_BLUE", "C_WHITE", "C_YELLOW", "C_CYAN")))
-            combo_text_list = paramconfig_dict.get("ValuesText",[])
-            
-            if combo_text_list == []:
-                paramvar["value"] = combo_value_list
-            else:
-                paramvar["value"] = combo_text_list                    
-            
-            paramvar.current(0) #set the selected colorview                    
-            
-            paramvar.grid(row=row+valuerow, column=column+valuecolumn, columnspan=1, sticky=STICKY, padx=2, pady=2)
-            paramvar.key = paramkey
-            paramvar.keyvalues = combo_value_list
-            paramvar.textvalues = combo_text_list
-        
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow      
-            
-        elif param_type == "Color": # Color value param
-            
-            self.colorlabel = tk.Button(parent_frame, text=param_title, width=PARAMLABELWIDTH, height=2, wraplength=PARAMLABELWRAPL,relief="raised", background=param_default,borderwidth=1,command=self.choosecolor,font=self.fontbutton)
-            #label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,bg=param_default,borderwidth=1)
-            self.colorlabel.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-            self.ToolTip(self.colorlabel, text=param_tooltip)
-            
-            paramvar = tk.Entry(parent_frame,width=PARAMENTRWIDTH,font=self.fontentry)
-            paramvar.delete(0, 'end')
-            paramvar.insert(0, param_default)
-            paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
-            paramvar.key = paramkey
-        
-            self.set_macroparam_var(macro, paramkey, paramvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow
-                
-        elif param_type == "ChooseFileName": # parameter AskFileName
-            
-            self.filechooserlabel = tk.Button(parent_frame, text=param_title, width=param_label_width, height=2, padx=2, pady=2, wraplength=PARAMLABELWRAPL,font=self.fontbutton,command=lambda macrokey=macro,paramkey=paramkey: self.choosefilename(macrokey=macrokey,paramkey=paramkey))
-            #label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,bg=param_default,borderwidth=1)
-            self.filechooserlabel.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=10, pady=10)
-            self.ToolTip(self.filechooserlabel, text=param_tooltip)
-            
-            paramvar_strvar = tk.StringVar()
-            paramvar_strvar.set("")
-            paramvar = tk.Entry(parent_frame,width=param_entry_width,font=self.fontentry,textvariable=paramvar_strvar)
-            paramvar.delete(0, 'end')
-            paramvar.insert(0, param_default)
-            paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
-            paramvar_strvar.key = paramkey
-            paramvar_strvar.filetypes = paramconfig_dict.get("FileTypes","*")
-            paramvar_strvar.text = param_title
-        
-            self.set_macroparam_var(macro, paramkey, paramvar_strvar)                
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow                
-                
-        elif param_type == "Button": # Text value param
-            if not param_hide:
-                number_of_lines = paramconfig_dict.get("Lines","")
-                if number_of_lines == "":
-                    number_of_lines = "2"
-                button_function = paramconfig_dict.get("Function","")
-                    
-                button=tk.Button(parent_frame, text=param_title,width=param_label_width,height=number_of_lines,wraplength = param_label_width*6,font=self.fontbutton,command=lambda macrokey=macro,button=button_function: self._button_cmd(macrokey=macrokey,button=button))
-                button.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-                self.ToolTip(button, text=param_tooltip)
-                #self.buttonlist.append(self.button)
-                
-                column = column + deltacolumn
-                if column > maxcolumns:
-                    column = 0
-                    row=row+deltarow
-                
-        elif param_type == "ColTab": # Color value param
-            
-            self.coltablabel = tk.Button(parent_frame, text=param_title, width=param_label_width, height=2, wraplength=PARAMLABELWRAPL,relief="raised", borderwidth=1,command=self.checkcolor,font=self.fontbutton)
-            #label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,bg=param_default,borderwidth=1)
-            self.coltablabel.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-            self.ToolTip(self.coltablabel, text=param_tooltip)
-            
-            #paramvar = tk.Entry(parent_frame,width=PARAMENTRWIDTH)
-            #paramvar.delete(0, 'end')
-            #paramvar.insert(0, param_default)
-            #paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
-            #paramvar.key = paramkey
-        
-            #self.set_macroparam_var(macro, paramkey, paramvar)
-            
-            self.create_color_palette(parent_frame)
-
-            column = 0
-            row=row + 4
-                
-        elif param_type == "Var": # Combolist param
-            
-            label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,font=self.fontlabel)
-            label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
-            self.ToolTip(label, text=param_tooltip)
-            
-            if param_allow_value_entry:
-                paramvar = ttk.Combobox(parent_frame, width=PARAMCOMBOWIDTH,font=self.fontlabel)
-            else:                
-                paramvar = ttk.Combobox(parent_frame, state="readonly", width=PARAMCOMBOWIDTH,font=self.fontlabel)                
-            
-            combo_value_list = paramconfig_dict.get("KeyValues",paramconfig_dict.get("Values",[]))
-            combo_text_list = paramconfig_dict.get("ValuesText",[])
-            
-            if combo_text_list != []:
-                paramvar["value"] = combo_text_list
-            elif combo_value_list != []:
-                paramvar["value"] = combo_value_list
-            else:
-                paramvar["value"] = ["Variable"]
-                
-            paramvar.current(0) #set the selected view                    
-            
-            paramvar.grid(row=row+valuerow, column=column+valuecolumn, sticky=STICKY, padx=2, pady=2)
-            paramvar.key = paramkey
-            paramvar.keyvalues = combo_value_list
-            paramvar.textvalues = combo_text_list
-        
-            self.set_macroparam_var(macro, paramkey, paramvar)
-
-            column = column + deltacolumn
-            if column > maxcolumns:
-                column = 0
-                row=row+deltarow
-        elif param_type == "Generic": # call generic function
-            logging.info ("%s - %s",macro,param_type)
-                                
-            generic_widget_frame = ttk.Frame(parent_frame)
-            generic_widget_frame.grid(row=row,column=column ,columnspan=6,sticky='nesw', padx=0, pady=0)
-            
-            generic_method_name = paramconfig_dict.get("GenericMethod","")
-            
-            if generic_method_name != "" and generic_methods != {}:
-                generic_methods[generic_method_name](generic_widget_frame,macro,macroparams)
-            else:
-                raise Exception("Method %s not implemented" % generic_method_name)
-            
-            column = 0
-            row=row+deltarow                    
-
     
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Par - ByVal 
@@ -993,17 +778,17 @@ class UserForm_Other():
     
         OldParams = vbObjectInitialize(objtype=String)
     
-        p = Variant()
+        #p = Variant()
     
         UsedParNr = 0 #Long()
     
         Nr = 0 #Long()
     
-        UsedArgNr = 0#Long()
+        UsedArgNr = 0 #Long()
     
-        SelectValues = Variant()
+        SelectValues = [] #Variant()
     
-        c1 = Variant()
+        #c1 = Variant()
     
         minIndex = Integer()
     
@@ -1016,9 +801,9 @@ class UserForm_Other():
 
         self.top.grab_set()
         
-        self.top.resizable(False, False)  # This code helps to disable windows from resizing
+        self.top.resizable(True, True)  # This code helps to disable windows from resizing
         
-        window_height = 500
+        window_height = 700
         window_width = 500
         
         screen_width = self.top.winfo_screenwidth()
@@ -1213,13 +998,13 @@ class UserForm_Other():
                 validListEntry = False
                 if ( SelectValues ) :
                     pass
-                    #for SelectValue in SelectValues:
-                    #    SelectValue = Trim(SelectValue)
-                    #    if ( SelectValue != '' ) :
-                    #        # Debug.Print (SelectValue)
-                    #        if SelectValue == ParVal:
-                    #            validListEntry = True
-                            #with_6 = self.Controls('Par' + str(UsedParNr) + 'Select')
+                    for SelectValue in SelectValues:
+                        SelectValue = Trim(SelectValue)
+                        if ( SelectValue != '' ) :
+                            # Debug.Print (SelectValue)
+                            if SelectValue == ParVal:
+                                validListEntry = True
+                            #with_6 = self.Controls['Par' + str(UsedParNr) + 'Select']
                             #with_6.AddItem(SelectValue)
                     #self.Controls['Par' + UsedParNr + 'Select'].Visible = True
                     #self.Controls['Par' + UsedParNr].Width = w

@@ -48,6 +48,7 @@ class UserForm_Description:
         self.IsActive = False
         self.button1_txt = "Abbrechen"
         self.button2_txt = "Ok"
+        self.Userform_res = ""
 
         #*HL Center_Form(Me)        
  
@@ -58,7 +59,7 @@ class UserForm_Description:
         self.top.destroy()
  
     def cancel(self, event=None):
-        self.UserForm_res = '<Abort>'
+        self.Userform_res = '<Abort>'
         self.IsActive = False
         self.top.destroy()
 

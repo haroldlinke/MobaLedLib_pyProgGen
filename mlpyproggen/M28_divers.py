@@ -3,16 +3,18 @@
 #         Write header
 #
 # * Version: 1.21
+# -*- coding: utf-8 -*-
+#
+#         Write header
+#
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,6 +33,11 @@
 # *
 # *
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
@@ -145,7 +152,7 @@ def __Test_Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets():
     Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(True)
 
 def Get_Bool_Config_Var(Name):
-    _ret = None
+    _ret = False
     #-------------------------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
     
@@ -166,7 +173,7 @@ def Get_Bool_Config_Var(Name):
     return _ret
 
 def Get_Num_Config_Var(Name):
-    _ret = None
+    _ret = -1
     Str = String()
     #------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
@@ -280,6 +287,7 @@ def Change_Board_Typ(LeftArduino, NewBrd):
     BuildOpt = P01.Cells(M02.SH_VARS_ROW, Col)
     if Old_Board == '':
         BuildOpt = NewBrd
+    else:
         BuildOpt = Replace(BuildOpt, Old_Board, NewBrd)
     P01.CellDict[M02.SH_VARS_ROW, Col] = Trim(BuildOpt)
 

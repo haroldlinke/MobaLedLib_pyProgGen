@@ -3,16 +3,18 @@
 #         Write header
 #
 # * Version: 1.21
+# -*- coding: utf-8 -*-
+#
+#         Write header
+#
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,10 +34,15 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
+
 #from mlpyproggen.M02_Public import *
 #from mlpyproggen.M08_ARDUINO import M08.LEDNr_Display_Type
 #from mlpyproggen.M25_Columns import Make_sure_that_Col_Variables_match #,LEDs____Col,LED_Cha_Col,LED_Nr__Col
@@ -195,11 +202,11 @@ def Row_Contains_Address_or_VarName(r):
     return fn_return_value
 
 def Update_Start_LedNr():
-    OldEvents = Boolean()
+    #OldEvents = Boolean()
 
-    display_Type = int()
+    #display_Type = int()
 
-    Row = Variant()
+    #Row = Variant()
 
     LEDNr = vbObjectInitialize((M02.LED_CHANNELS,), Long)
 
@@ -209,7 +216,7 @@ def Update_Start_LedNr():
 
     r = int()
 
-    Max_LEDs_Channel = Variant()
+    #Max_LEDs_Channel = Variant()
 
     Nr = int()
     #------------------------------
@@ -338,8 +345,9 @@ def FirstNotFormatedRow(StartRow):
     return fn_return_value
 
 def Format_Cells_to_Row(Row, UpdateAutofilter=True, AllRows=VBMissingArgument):
+    
     return #*HL
-
+"""
     FirstNFormRow = int()
     #--------------------------------------------------------------------------------------------------------------------
     # Formating the unformated rows
@@ -376,6 +384,7 @@ def Format_Cells_to_Row(Row, UpdateAutofilter=True, AllRows=VBMissingArgument):
         if UpdateAutofilter:
             pass #*HL M15.Expand_Filter_to_all_used_Rows()
         #If UpdateAutofilter Then AutofilterAllColumns Row ' Deletes the filter settings ;-(
+        """
 
 def Format_All_Rows():
     #---------------------------
@@ -476,9 +485,9 @@ def Correct_Autofilter():
 def Clear_Formula_Errors():
     return #*HL
     
-    rngCell = Range()
+    #rngCell = Range()
 
-    i = int()
+    #i = int()
     #-------------------------------
     for rngCell in P01.ActiveSheet.Used.Range:
         for i in vbForRange(1, 7):
@@ -552,13 +561,13 @@ def ClearSheet():
         OldEvents =  P01.Application.EnableEvents
         P01.Application.EnableEvents = False
         M25.Make_sure_that_Col_Variables_match()
-        P01.Rows(FirstDat_Row + ':' + LastUsedRow()).ClearContents()
-        P01.Rows[FirstDat_Row + ':' + LastUsedRow()].Hidden = False
-        P01.Rows('33:' + LastUsedRow()).Delete(Shift=xlUp)
-        P01.Cells(FirstDat_Row, 1).Activate()
-        P01.Application.GoTo(ActiveCell, True)
+        P01.Rows(M02.FirstDat_Row + ':' + M30.LastUsedRow()).ClearContents()
+        P01.Rows[M02.FirstDat_Row + ':' + M30.LastUsedRow()].Hidden = False
+        P01.Rows('33:' + M30.LastUsedRow()).Delete(Shift=xlUp)
+        P01.Cells(M02.FirstDat_Row, 1).Activate()
+        P01.Application.GoTo(P01.ActiveCell(), True)
         ResetTestButtons(False)
-        Del_Icons_in_IconCol()
+        #*HL Del_Icons_in_IconCol()
         P01.Application.EnableEvents = OldEvents
         P01.Application.ScreenUpdating = OldUppdating
 

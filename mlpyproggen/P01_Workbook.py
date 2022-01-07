@@ -39,6 +39,7 @@ from mlpyproggen.X01_Excel_Consts import *
 from vb2py.vbconstants import *
 from vb2py.vbfunctions import *
 #import mlpyproggen.M20_PageEvents_a_Functions as M20
+import subprocess
 
 
 def TimeValue(Duration):
@@ -120,8 +121,6 @@ def Format(value,formatstring):
     return str(value) # no formating implemented yet
 
 
-    
-
 def MsgBox(ErrorMessage:str, msg_type:int, ErrorTitle:str):
     if msg_type == vbQuestion + vbYesNoCancel:
         res=tk.messagebox.askyesnocancel(title=ErrorTitle, message=ErrorMessage)
@@ -151,7 +150,12 @@ def MsgBox(ErrorMessage:str, msg_type:int, ErrorTitle:str):
 
 def InputBox(Message:str, Title:str, Default=None):
     res = tk.simpledialog.askstring(Title,Message,initialvalue=Default)
+    if res == None:
+        res=""
     return res
+
+def Run(cmd):
+    subprocess.run(cmd,shell=True)
 
 
 class CWorkbook:
@@ -349,7 +353,10 @@ class CWorkbook:
             for sheet in self.sheets:
                 if sheet.Name == name:
                     return sheet
-        return None    
+        return None
+    
+    def Activate(self):
+        return
         
 
 class CWorksheet:
@@ -375,17 +382,45 @@ class CWorksheet:
             self.tablemodel.protected_cells = formating_dict.get("ProtectedCells",[])
             self.tablemodel.format_cells = formating_dict.get("FontColor",{})
         self.table.show()
-        self.LastUsedRow = self.tablemodel.getRowCount()
-        self.LastUsedColumn = self.tablemodel.getColumnCount()
-        self.UsedRange = CRange((0,0) , (self.LastUsedRow,self.LastUsedColumn),ws=self)
-        self.MaxRange  = CRange((0,0) , (self.LastUsedRow,self.LastUsedColumn),ws=self)
+        self.LastUsedRow_val = self.tablemodel.getRowCount()
+        self.LastUsedColumn_val = self.tablemodel.getColumnCount()
+        self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
+        self.MaxRange_val  = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
         self.Rectangles = CRectangles(0)
         self.AutoFilterMode = False
         self.searchcache = {}
         self.Shapes = []
         self.CellDict = CCellDict()
-        self.End = self.LastUsedColumn
-       
+        self.End_val = self.LastUsedColumn_val
+        
+    def get_LastUsedRow(self):
+        self.LastUsedRow_val = self.tablemodel.getRowCount()
+        return self.LastUsedRow_val
+    
+    def set_LastUsedRow(self,value):
+        self.LastUsedRow_val = value
+    
+    LastUsedRow = property(get_LastUsedRow, set_LastUsedRow, doc='Last used row')
+    
+    def get_LastUsedColumn(self):
+        self.LastUsedColumn_val = self.tablemodel.getColumnCount()
+        return self.LastUsedColumn_val
+    
+    def set_LastUsedColumn(self,value):
+        self.LastUsedColumn_val= value
+    
+    LastUsedColumn = property(get_LastUsedColumn, set_LastUsedColumn, doc='Last used row')
+    End = property(get_LastUsedColumn, set_LastUsedColumn, doc='Last used row')
+
+    def get_UsedRange(self):
+        self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
+        return self.UsedRange_val
+    
+    def set_UsedRange(self,value):
+        self.UsedRange_val = value
+               
+    UsedRange = property(get_UsedRange, set_UsedRange, doc='used range')    
+    MaxRange  = property(get_UsedRange, set_UsedRange, doc='used range')         
            
     def Cells(self,row, col):
         #print("Cells", self.Name, row, col)
@@ -495,9 +530,13 @@ class CWorksheet:
         return None
     
     def Activate(self):
+        global ActiveSheet
+        ActiveSheet = self        
         return
     
     def Select(self):
+        global ActiveSheet
+        ActiveSheet = self
         return
         
         
@@ -595,6 +634,12 @@ class CCell(str):
         self.HorizontalAlignment = xlCenter
         self.Text = value
         
+    def __str__(self):
+        return str(self.get_value())
+    
+    def __repr__(self):
+        return str(self.get_value())
+    
     def get_value(self):
         if self.Row != -1:
             if self.tablemodel == None:
@@ -706,6 +751,7 @@ class CApplication:
         self.Width = 1000 #*HL
         self.Height = 500 #*HL
         self.Version = "15"
+        self.WindowState = 0
         
     def OnTime(self,time,cmd):
         print("Application OnTime:",time,cmd)
@@ -725,6 +771,11 @@ class CFont:
     def __init__(self,name,size):
         self.Name = name
         self.Size = size
+        
+class CActiveWindow:
+    def __init__(self):
+        Zoom = 100
+        ScrollColumn = 1
         
 class SoundLines:
     def __init__(self):
@@ -754,6 +805,11 @@ CellDict:CCellDict = CCellDict()
 Selection = CSelection(CCell(""))
 
 Workbooks = []
+
+ActiveWindow = CActiveWindow()
+
+Date = "1.1.2022"
+Time = "12:00"
 
 
 Now = 0
