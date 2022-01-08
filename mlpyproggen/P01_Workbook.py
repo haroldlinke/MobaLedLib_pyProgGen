@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 #
-#         Write header
+#         Workbook
 #
-# * Version: 1.21
+# * Version: 4.03
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 8, 2022
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -32,6 +29,14 @@
 # *
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2021-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2022-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
+# 2022-01-08 V4.03 HL: - added Workbook Save and Load
+
+
+
 from tkintertable import TableCanvas, TableModel
 import tkinter as tk
 from tkinter import ttk
@@ -40,6 +45,8 @@ from vb2py.vbconstants import *
 from vb2py.vbfunctions import *
 #import mlpyproggen.M20_PageEvents_a_Functions as M20
 import subprocess
+import pickle
+import mlpyproggen.Prog_Generator as PG
 
 
 def TimeValue(Duration):
@@ -54,15 +61,20 @@ def ActiveCell():
     Selection = CSelection(ActiveSheet.Cells(row,col)) #*HL
     return ActiveSheet.Cells(row,col) #*HL
 
-def create_workbook(frame=None, path=None):
+def set_activeworkbook(workbook):
     global ThisWorkbook,ActiveSheet,ActiveWorkbook
-    ActiveWorkbook = Workbook = ThisWorkbook = CWorkbook(frame=frame,path=path)
+    ActiveWorkbook = Workbook = ThisWorkbook = workbook
     ActiveSheet = ActiveWorkbook.Sheets("DCC")
-    return ActiveWorkbook
+    PG.global_controller.activeworkbook = workbook
+    
+def create_workbook(frame=None, path=None,workbookName=None,workbookFilename=None):
+    global ThisWorkbook,ActiveSheet,ActiveWorkbook
+    workbook = ThisWorkbook = CWorkbook(frame=frame,path=path,workbookName=workbookName,workookFilename=workbookFilename)
+    set_activeworkbook(workbook)
+    return workbook
     
 def IsError(testval):
     return False
-    
 
 def Cells(row:int, column:int):
     cell = ActiveSheet.Cells(row,column)
@@ -159,7 +171,7 @@ def Run(cmd):
 
 
 class CWorkbook:
-    def __init__(self, frame=None,path=None):
+    def __init__(self, frame=None,path=None,workbookName=None, workookFilename=None):
         global Workbooks
         # Row and Columns are 0 based and not 1 based as in Excel
         sheetdict={"DCC":
@@ -305,14 +317,14 @@ class CWorkbook:
                      "Fieldnames": "A;B;C;D;E"
                     }
                 }
-
-        self.Name = "PyProgramWorkbook"
+        if workbookName:
+            self.Name = workbookName
+        else:
+            self.Name = "PyProgramWorkbook"
         Workbooks.append(self)
         if frame != None:
             self.Path = path
-            #self.tablemodel = init_tablemodel_DCC() #get_globaltabelmodel()
-            
-            #self.sheets = [CWorksheet("DCC",tablemodel=self.tablemodel,frame=frame)]
+            self.master = frame
             
             style = ttk.Style(frame)
             style.configure('downtab.TNotebook', tabposition='sw')
@@ -330,9 +342,11 @@ class CWorkbook:
                 if type(fieldnames) == str:
                     fieldnames = fieldnames.split(";")
                 tabframe = ttk.Frame(self.container,relief="ridge", borderwidth=1)
-                self.sheets.append(CWorksheet(sheetname,filepathname=path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict))
+                self.sheets.append(CWorksheet(sheetname,workbook=self, csv_filepathname=path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict))
                 
                 self.container.add(tabframe, text=sheetname)
+                
+                
             
             #self.container.bind("<<NotebookTabChanged>>",self.TabChanged)
                
@@ -357,23 +371,71 @@ class CWorkbook:
     
     def Activate(self):
         return
+    
+    def Save(self,filename=None):
+        if filename == None:
+            filename = tk.filedialog.asksaveasfilename(parent=self.master,
+                                                        defaultextension='.table',
+                                                        initialdir=os.getcwd(),
+                                                        filetypes=[("pickle","*.table"),
+                                                          ("All files","*.*")])
+        if filename:
+            self.SaveWorkbook(filename)
+        return
+    
+    def Load(self,filename=None):
+        """load from a file"""
+
+        if filename == None:
+            filename = tk.filedialog.askopenfilename(parent=self.master,
+                                                      defaultextension='.table',
+                                                      initialdir=os.getcwd(),
+                                                      filetypes=[("pickle","*.table"),
+                                                        ("All files","*.*")])
+        if not os.path.exists(filename):
+            print ('file does not exist')
+            return
+        if filename:
+            self.LoadWorkbook(filename)
+        return        
+    
+    def SaveWorkbook(self,filename):
+        workbookdata = {}
+        for sheet in self.sheets:
+            sheetdata = sheet.getData()
+            workbookdata[sheet.Name] = sheetdata
+        
+        fd = open(filename,'wb')
+        pickle.dump(workbookdata,fd)
+        fd.close()
+        return
+    
+    def LoadWorkbook(self,filename):
+        fd=open(filename,'rb')
+        workbookdata = pickle.load(fd)
+        
+        for sheet in self.sheets:
+            data = workbookdata.get(sheet.Name,{})
+            sheet.setData(data)
+        return        
         
 
 class CWorksheet:
-    def __init__(self,Name,tablemodel=None,filepathname=None,frame=None,fieldnames=None,formating_dict=None):
+    def __init__(self,Name,tablemodel=None,workbook=None,csv_filepathname=None,frame=None,fieldnames=None,formating_dict=None):
         
-        self.width = 600
-        self.height = 540
+        self.width = 1800
+        self.height = 600
+        self.Workbook = workbook
         self.ProtectContents = False
         self.Name = Name
         if tablemodel:
             self.tablemodel = tablemodel
             self.table = TableCanvas(frame, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
         else:
-            if filepathname:
+            if csv_filepathname:
                 self.tablemodel = TableModel()
                 self.table = TableCanvas(frame, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
-                self.table.importCSV(filename=filepathname, sep=';',fieldnames=fieldnames)
+                self.table.importCSV(filename=csv_filepathname, sep=';',fieldnames=fieldnames)
                 self.tablemodel = self.table.getModel()
             else:
                 return
@@ -513,7 +575,6 @@ class CWorksheet:
         return None
                 
     def find_in_col_set_col_val(self,searchtext, searchcol, setcol,setval,cache=False):
-        
         if cache:
             colcache = self.searchcache.get(searchcol,None)
             if not colcache:
@@ -531,14 +592,22 @@ class CWorksheet:
     
     def Activate(self):
         global ActiveSheet
-        ActiveSheet = self        
+        ActiveSheet = self
         return
     
     def Select(self):
         global ActiveSheet
         ActiveSheet = self
         return
-        
+    
+    def getData(self):
+        data = self.tablemodel.getData()
+        return data
+    
+    def setData(self,data):
+        self.tablemodel.createEmptyModel()
+        self.tablemodel.setupModel(data)
+        self.table.redrawTable()
         
 
 class CRange:

@@ -1,15 +1,11 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#         MobaLedCheckColors: Color checker for WS2812 and WS2811 based MobaLedLib
+#         Write header
 #
-# * Version: 1.39
+# * Version: 4.03
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
-# *
-# *
-# * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
@@ -49,6 +45,13 @@
 # * The code for changing pages was derived from: http://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
 # * License: http://creativecommons.org/licenses/by-sa/3.0/
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
+# 2021-01-08 V4.03 HL: - added Workbook Save and Load
+
 
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog, colorchooser, scrolledtext
@@ -222,6 +225,7 @@ class LEDColorTest(tk.Tk):
         self.max_ledcnt_list = []
         self.LED_baseadress = 0
         self.mobaledlib_version = 0
+        self.activeworkbook = None
         
         #self.fontdict={}
         #self.fontdict["FontGeneral"] = ("Verdana", int(8 * self.getConfigData("FontGeneral")/100))
@@ -306,11 +310,11 @@ class LEDColorTest(tk.Tk):
 #        filemenu.add_command(label="Farbpalette von Datei lesen", command=self.OpenFile)
 #        filemenu.add_command(label="Farbpalette speichern als ...", command=self.SaveFileas)
 #        filemenu.add_separator()
-        filemenu.add_command(label="LED Liste von Datei lesen", command=self.OpenFileLEDTab)
-        filemenu.add_command(label="LED Liste speichern als", command=self.SaveFileLEDTab)
+        filemenu.add_command(label="MacroWorkbook von Datei lesen", command=self.OpenFileLEDTab)
+        filemenu.add_command(label="MacroWorkbook speichern als", command=self.SaveFileLEDTab)
         filemenu.add_separator()
-        filemenu.add_command(label="Beenden und Daten speichern", command=self.ExitProg_with_save)
-        filemenu.add_command(label="Beenden ohne Daten zu speichern", command=self.ExitProg)
+        filemenu.add_command(label="Beenden und Konfig-Daten speichern", command=self.ExitProg_with_save)
+        filemenu.add_command(label="Beenden ohne Konfig-Daten zu speichern", command=self.ExitProg)
 
         colormenu = tk.Menu(menu)
         menu.add_cascade(label="Farbpalette", menu=colormenu)
@@ -346,9 +350,9 @@ class LEDColorTest(tk.Tk):
         self.shutdown_frame.grid_columnconfigure(0,weight=1)
         self.shutdown_frame.grid_rowconfigure(0,weight=1)
         
-        use_horizontalscroll=False
-        use_fullscroll=False
-        use_verticalscroll = False
+        use_horizontalscroll=True
+        use_fullscroll=True
+        use_verticalscroll = True
         if use_verticalscroll:
             self.scrolledcontainer = VerticalScrolledFrame(self)
         if use_horizontalscroll:
@@ -449,14 +453,15 @@ class LEDColorTest(tk.Tk):
             frame.readPalettefromFile(filepath)         
 
     def SaveFileLEDTab(self):
-        filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
-        if filepath:
-            self.saveLEDTabtoFile(filepath)
+        #filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
+        #if filepath:
+        #    self.saveLEDTabtoFile(filepath)
+        self.activeworkbook.Save()
 
     def OpenFileLEDTab(self):
-        filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
-        if filepath:
-            self.readLEDTabfromFile(filepath)     
+        #filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
+        # filepath:
+        self.activeworkbook.Load()
 
     def About(self):
         tk.messagebox("MobaCheckColor by Harold Linke")

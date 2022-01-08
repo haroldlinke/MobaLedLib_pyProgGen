@@ -59,7 +59,7 @@ class TableCanvas(Canvas):
         Canvas.__init__(self, parent, bg=bgcolor,
                          width=width, height=height,
                          relief=GROOVE,
-                         scrollregion=(0,0,300,200))
+                         scrollregion=(0,0,width,height))
         self.parentframe = parent
         #get platform into a variable
         self.ostyp = self.checkOSType()
@@ -115,9 +115,9 @@ class TableCanvas(Canvas):
     def set_defaults(self):
         """Set default settings"""
 
-        self.cellwidth=150
-        self.maxcellwidth=200
-        self.rowheight=20
+        self.cellwidth=300
+        self.maxcellwidth=600
+        self.rowheight=30
         self.horizlines=1
         self.vertlines=1
         self.alternaterows=0
@@ -1359,7 +1359,7 @@ class TableCanvas(Canvas):
         
         main = ["Copy", "Paste", "Clear Data"]
         general = ["Add Row(s)" , "Delete Row(s)", "Auto Fit Columns"]
-        filecommands = ['New','Load','Save','Import text','Export csv']
+        filecommands = ['New','Load Sheet','Save Sheet','Import csv text','Export csv']
         plotcommands = []        
 
         def createSubMenu(parent, label, commands):
@@ -1406,7 +1406,7 @@ class TableCanvas(Canvas):
 
         popupmenu.add_separator()
         createSubMenu(popupmenu, 'File', filecommands)
-        createSubMenu(popupmenu, 'Plot', plotcommands)
+        #createSubMenu(popupmenu, 'Plot', plotcommands)
         popupmenu.bind("<FocusOut>", popupFocusOut)
         popupmenu.focus_set()
         popupmenu.post(event.x_root, event.y_root)

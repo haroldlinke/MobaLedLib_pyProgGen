@@ -35,7 +35,9 @@ class TableModel(object):
 
     keywords = {'columnnames':'columnNames', 'columntypes':'columntypes',
                'columnlabels':'columnlabels', 'columnorder':'columnOrder',
-               'colors':'colors'}
+               'colors':'colors',"nodisplay":"nodisplay","protected_cells":"protected_cells",
+               "format_cells":"format_cells","columnwidths":"columnwidths"}
+
 
     def __init__(self, newdict=None, rows=None, columns=None):
         """Constructor"""
@@ -175,6 +177,10 @@ class TableModel(object):
             i=i+1
         data['columntypes'] = self.columntypes
         data['columnlabels'] = self.columnlabels
+        data["nodisplay"] = self.nodisplay
+        data["protected_cells"] = self.protected_cells
+        data["format_cells"]=self.format_cells
+        data["columnwidths"]=self.columnwidths        
         return data
 
     def getAllCells(self):
