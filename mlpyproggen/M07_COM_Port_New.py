@@ -238,7 +238,7 @@ def __Test_Select_Arduino_w_Blinking_LEDs_Dialog():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort - ByRef 
 def __Show_USB_Port_Dialog(ComPortColumn, ComPort):
-    fn_return_value = None
+    fn_return_value = False
     Res = Long()
 
     Picture = String()
@@ -265,7 +265,7 @@ def __Show_USB_Port_Dialog(ComPortColumn, ComPort):
     return fn_return_value
 
 def USB_Port_Dialog(ComPortColumn):
-    fn_return_value = None
+    fn_return_value = False
     ComPort = Long()
     #----------------------------------------------------------------
     if __Show_USB_Port_Dialog(ComPortColumn, ComPort):

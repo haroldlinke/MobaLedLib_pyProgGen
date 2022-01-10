@@ -172,7 +172,7 @@ def LastUsedRowIn(Sheet):
     else:
         Sh = Sheet
     #*HL fn_return_value = Sh.UsedRange.Rows(Sh.UsedRange.Rows.Count).Row
-    fn_return_value = len(Sh.UsedRange.Rows)
+    fn_return_value = len(Sh.UsedRange.Rows)-1
     Sh = None
     return fn_return_value
 
@@ -796,7 +796,7 @@ def CreateFolder(sFolder):
     # sFolder must have an "\" at the end
     # VB2PY (UntranslatedCode) On Error GoTo ErrorHandler
     s = GetPathOnly(sFolder)
-    if Dir(s, vbDirectory) == r'':
+    if Dir(s) == r'':
         s = CreateFolder(s)
         MkDir(s)
     fn_return_value = sFolder
@@ -1092,13 +1092,13 @@ def ConvertToUTF8Str(Source):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Source - ByRef 
 def ConvertFromUTF8(Source):
-    #Size = int()
+    Size = int()
 
     #Pointer = LongPtr()
 
-    #Length = int()
+    Length = int()
 
-    #Buffer = String()
+    Buffer = String()
     #----------------------------------------------------------------
     ## VB2PY (CheckDirective) VB directive took path 1 on VBA7
     #Size = UBound(Source) - LBound(Source) + 1
@@ -1107,20 +1107,22 @@ def ConvertFromUTF8(Source):
     #Buffer = Space(Length)
     #MultiByteToWideChar(CP_UTF8, 0, Pointer, Size, StrPtr(Buffer), Length)
     #fn_return_value = Buffer
-    fn_return_value =  Source.decode('utf-8')
+    Source_str = str(Source)
+    fn_return_value =  Source_str.decode('utf-8')
     
     return fn_return_value
 
 def ConvertUTF8Str(UTF8Str):
-    #bStr = vbObjectInitialize(objtype=Byte)
+    bStr = vbObjectInitialize(objtype=Byte)
 
-    #i = int()
+    i = int()
     #----------------------------------------------------------
-    #bStr = vbObjectInitialize((Len(UTF8Str) - 1,), Variant)
-    #for i in vbForRange(1, Len(UTF8Str)):
-    #    bStr[i - 1] = Asc(Mid(UTF8Str, i, 1))
-    #fn_return_value = ConvertFromUTF8(bStr)
-    fn_return_value =  UTF8Str.decode('utf-8')
+    bStr = vbObjectInitialize((Len(UTF8Str) - 1,), Variant)
+    for i in vbForRange(1, Len(UTF8Str)):
+        bStr[i - 1] = Asc(Mid(UTF8Str, i, 1))
+    fn_return_value = ConvertFromUTF8(bStr)
+    
+   # fn_return_value =  UTF8Str.decode('utf-8')
     return fn_return_value
 
 def Dir_is_Empty(DirName):

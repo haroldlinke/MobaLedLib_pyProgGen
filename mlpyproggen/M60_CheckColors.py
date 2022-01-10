@@ -369,6 +369,7 @@ def __Write_ColTab(fp, ColTab):
     VBFiles.writeText(fp, __ENDE_PALETTE_TXT, '\n')
 
 def Write_Default_CheckColors_Parameter_File():
+    return #*HL
     fp = Integer()
 
     FileName = String()

@@ -460,7 +460,7 @@ def Generate_Config_Line(LEDNr, Channel_or_define, r, Config_Col, Addr):
         Res = vbCrLf + M80.Get_Multiplexer_Group(Res, Description, r) + vbCrLf
     # End Changes by Misha
     if Inc_LocInChNr:
-        LocInChNr = LocInChNr + P01.Cells(r, M25.LocInCh_Col)
+        LocInChNr = LocInChNr + P01.val(P01.Cells(r, M25.LocInCh_Col))
         # 18.11.19: Moved down
     fn_return_value = Res
     return fn_return_value
@@ -578,7 +578,7 @@ def Create_Header_Entry(r, AddrStr):
         if AddressRangeExists(Addr, InCnt, Inp_TypR):
             Channel_or_define = Gen_Address_Define_Name(Addr, Inp_TypR)
             if InStr(InChTxt, Channel_or_define) == 0:
-                Add_to_Err(P01.Cells(r, M25.Inp_Typ_Col), M09.Get_Language_Str('Die Adresse \'') + str(Addr) + M09.Get_Language_Str('\' in Zeile ') + r + M09.Get_Language_Str(' wird bereits mit einem anderen Typ benutzt.'))
+                Add_to_Err(P01.Cells(r, M25.Inp_Typ_Col), M09.Get_Language_Str('Die Adresse \'') + str(Addr) + M09.Get_Language_Str('\' in Zeile ') + str(r) + M09.Get_Language_Str(' wird bereits mit einem anderen Typ benutzt.'))
             Addr = - 2
         else:
             Channel_or_define = Channel
@@ -796,12 +796,14 @@ def Create_HeaderFile():
     #Ctrl_Pressed = GetAsyncKeyState(VK_CONTROL) != 0
     #if Ctrl_Pressed:
     #    UserForm_Header_Created.DontShowAgain = False
+    P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt"))
     M25.Make_sure_that_Col_Variables_match()
     if not Init_HeaderFile_Generation():
         return
     sx = M25.Page_ID == 'Selectrix'
     for r in vbForRange(M02.FirstDat_Row, M30.LastUsedRow()): #*HL
         if not P01.Rows(r).EntireRow.Hidden and P01.Cells(r, M02.Enable_Col) != '':
+            P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Macrozeile: "+str(r)))
             Addr = - 1
             if M25.Address_starts_with_a_Number(r):
                 if sx:

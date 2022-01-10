@@ -476,7 +476,7 @@ class TableModel(object):
             self.deleteColumn(col)
         return
 
-    def autoAddRows(self, numrows=None):
+    def autoAddRows(self, numrows=None, atrow=None):
         """Automatically add x number of records"""
         rows = self.getRowCount()
         ints = [i for i in self.reclist if isinstance(i, int)]
@@ -492,7 +492,11 @@ class TableModel(object):
         for k in keys:
             newdata[k] = {}
         self.data.update(newdata)
-        self.reclist.extend(newdata.keys())
+        if atrow != None: # insert newdata list in reclist at atrow position
+            self.reclist[atrow:atrow]=newdata.keys()
+            pass
+        else:
+            self.reclist.extend(newdata.keys())
         return keys
 
     def autoAddColumns(self, numcols=None):

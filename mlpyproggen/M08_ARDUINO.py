@@ -1157,7 +1157,7 @@ def Create_InstalLib_Cmd_file(LibNames=VBMissingArgument):
 def Install_Libraries(LibNames=VBMissingArgument):
     CommandStr = String()
 
-    Res = None # ShellAndWaitResult()
+    Res = False # ShellAndWaitResult()
 
     Start = Variant()
 

@@ -84,6 +84,7 @@ class TableCanvas(Canvas):
         self.mode = 'normal'
         self.read_only = read_only
         self.filtered = False
+        self.left_click_callback = None
 
         self.loadPrefs()
         #set any options passed in kwargs to overwrite defaults and prefs
@@ -111,6 +112,9 @@ class TableCanvas(Canvas):
                               'number' : {"Edit": 'drawCellEntry' }}
         self.setFontSize()
         return
+    
+    def set_left_click_callback(self,callback):
+        self.left_click_callback = callback
 
     def set_defaults(self):
         """Set default settings"""
@@ -479,7 +483,7 @@ class TableCanvas(Canvas):
         self.setSelectedRow(self.model.getRecordIndex(key))
         return
 
-    def addRows(self, num=None):
+    def addRows(self, num=None,atrow=None):
         """Add new rows"""
 
         if num == None:
@@ -488,7 +492,9 @@ class TableCanvas(Canvas):
                                              parent=self.parentframe)
         if not num:
             return
-        keys = self.model.autoAddRows(num)
+        if atrow == None:
+            atrow=self.getSelectedRow()
+        keys = self.model.autoAddRows(num,atrow=atrow)
         self.redrawTable()
         self.setSelectedRow(self.model.getRecordIndex(keys[0]))
         return
@@ -535,14 +541,16 @@ class TableCanvas(Canvas):
                 self.setSelectedRow(0)
                 self.redrawTable()
         else:
-            n = messagebox.askyesno("Delete",
-                                      "Delete This Record?",
-                                      parent=self.parentframe)
-            if n:
-                row = self.getSelectedRow()
-                self.model.deleteRow(row)
-                self.setSelectedRow(row-1)
-                self.clearSelected()
+            row = self.getSelectedRow()
+            if not (any(elem in self.model.protected_cells for elem in (("*","*"),(row,"*")))):
+                n = messagebox.askyesno("Delete",
+                                          "Delete This Record?",
+                                          parent=self.parentframe)
+                if n:
+                    
+                    self.model.deleteRow(row)
+                    self.setSelectedRow(row)
+                    self.clearSelected()
                 self.redrawTable()
         return
 
@@ -922,6 +930,11 @@ class TableCanvas(Canvas):
         rowclicked = self.get_row_clicked(event)
         colclicked = self.get_col_clicked(event)
         self.focus_set()
+        
+        if self.left_click_callback:
+            res_continue = self.left_click_callback(rowclicked, colclicked)
+            if res_continue == False:
+                return
         
         #if ("*","*") in self.model.protected_cells or (rowclicked,"*") in self.model.protected_cells or ("*",colclicked) in self.model.protected_cells or (rowclicked,colclicked) in self.model.protected_cells :
         if any(elem in self.model.protected_cells for elem in (("*","*"),(rowclicked,"*"),("*",colclicked),(rowclicked,colclicked))):
@@ -1341,9 +1354,9 @@ class TableCanvas(Canvas):
                         "Auto Fit Columns" : self.autoResizeColumns,
                         "Filter Records" : self.showFilteringBar,
                         "New": self.new,
-                        "Load": self.load,
-                        "Save": self.save,
-                        "Import text":self.importTable,
+                        "Load Sheet": self.load,
+                        "Save Sheet": self.save,
+                        "Import csv text":self.importTable,
                         "Export csv": self.exportTable,
                         "Plot Selected" : self.plotSelected,
                         "Plot Options" : self.plotSetup,
@@ -1358,7 +1371,7 @@ class TableCanvas(Canvas):
         #plotcommands = ['Plot Selected','Plot Options']
         
         main = ["Copy", "Paste", "Clear Data"]
-        general = ["Add Row(s)" , "Delete Row(s)", "Auto Fit Columns"]
+        general = ["Add Row(s)",]
         filecommands = ['New','Load Sheet','Save Sheet','Import csv text','Export csv']
         plotcommands = []        
 

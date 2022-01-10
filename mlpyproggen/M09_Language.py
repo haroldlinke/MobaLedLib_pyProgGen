@@ -206,7 +206,7 @@ def __Test_Update_Language_in_Sheet():
     P01.Application.ScreenUpdating = OldUpdate
 
 def __Update_Language_in_Config_Sheet(DestLang):
-    _ret = None
+    _ret = False
     Row = int()
 
     Col = int()
@@ -333,7 +333,7 @@ def Check_SIMULATE_LANGUAGE():
         P01.MsgBox(r'Attention the compiler switch "SIMULATE_LANGUAGE" is set to ' + __Simulate_Language + vbCr + r'This is used to test the languages. It must be disabled in the release version!', vbInformation)
 
 def __Get_Language_Def():
-    _ret = None
+    _ret = False
     LangStr = String()
     #------------------------------------------
     LangStr = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(r'Language_Def')
@@ -474,26 +474,33 @@ def Find_Language_Str_Row(Desc, Look_At=xlPart):
     # Maximal length for the find command: 255
     Start = LSh.Cells(1,1) #_with11.Range(r'A1')
     Desc = RTrim(Desc)
-    while 1:
-        if Len(Desc) > 90:
-            Look_At = xlPart
-        Res = LSh.Cells.Find(What= Left(Desc, 90), after= Start, LookIn= xlFormulas, LookAt= Look_At, SearchOrder= xlByRows, SearchDirection= xlNext, MatchCase= True, SearchFormat= True)
-        if Look_At == xlPart and not P01.IsEmpty(Res):
-            Retry = ( RTrim(Res.Value) != RTrim(Desc) )  
-            #Debug_Find_Diff Res.Value, Desc ' Debug
-            if Retry:
-                #If Len(Desc) >= 255 Then
-                #   Debug.Print "Debug long string in Get_Language_Str"
-                #End If
-                Start = Res
-                if FirstPos is None:
-                    FirstPos = Res
-                else:
-                    if Res.Address == FirstPos.Address:
-                        Retry = False
-                        Res = None
-        if not (Retry):
-            break
+    #while 1:
+    if Len(Desc) > 90:
+        Look_At = xlPart
+        Desc = Left(Desc, 90)
+    #Res = LSh.Cells.Find(What= Left(Desc, 90), after= Start, LookIn= xlFormulas, LookAt= Look_At, SearchOrder= xlByRows, SearchDirection= xlNext, MatchCase= True, SearchFormat= True)
+    Res=LSh.find_in_col_ret_row(Desc,FirstLangCol)
+    #if Look_At == xlPart and not P01.IsEmpty(Res):
+    #    Retry = ( RTrim(Res.Value) != RTrim(Desc) )  
+    #    #Debug_Find_Diff Res.Value, Desc ' Debug
+    #    if Retry:
+            #If Len(Desc) >= 255 Then
+            #   Debug.Print "Debug long string in Get_Language_Str"
+            #End If
+    #        Start = Res
+    #        if FirstPos is None:
+    #            FirstPos = Res
+    #        else:
+    #            if Res.Address == FirstPos.Address:
+    #                Retry = False
+    #                Res = None
+    #if not (Retry):
+    #    break
+    if Res != None:
+        return int(Res)
+    else:
+        return 0
+        
     # VB2PY (UntranslatedCode) On Error GoTo 0
     if not P01.IsEmpty(Res):
         if not Res is None:

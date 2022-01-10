@@ -200,6 +200,7 @@ MB_LED_PIN_NR = '0  1  2  3  4  5  6  7  8  9  10  11  12  13  14 15 16'
 
 
 def Read_Sketchbook_Path_from_preferences_txt():
+    global Sketchbook_Path
     Name = String()
 
     FileStr = String()
@@ -208,7 +209,8 @@ def Read_Sketchbook_Path_from_preferences_txt():
     Name = Environ(Env_USERPROFILE) + AppLoc_Ardu + 'preferences.txt'
     FileStr = M30.Read_File_to_String(Name)
     if FileStr != '#ERROR#':
-        Sketchbook_Path = M30.ConvertUTF8Str(M30.Get_Ini_Entry(FileStr, 'sketchbook.path='))
+        Sketchbook_Path = M30.Get_Ini_Entry(FileStr, 'sketchbook.path=')
+        #*HL Sketchbook_Path = M30.ConvertUTF8Str(M30.Get_Ini_Entry(FileStr, 'sketchbook.path='))
         #ThisWorkbook.Sheets(LIBRARYS__SH).Range("Sketchbook_Path") = Sketchbook_Path
         if Sketchbook_Path == '#ERROR#':
             P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: beim lesen des \'sketchbook.path\' in \'#1#\''), "#1#", Name), vbCritical, M09.Get_Language_Str('Fehler beim Lesen der Datei:') + ' \'preferences.txt\'')
@@ -221,10 +223,11 @@ def Read_Sketchbook_Path_from_preferences_txt():
     return fn_return_value
 
 def Get_Sketchbook_Path():
+    global Sketchbook_Path
     #----------------------------------------------
     Debug.Print('Get_Sketchbook_Path called')
     if Sketchbook_Path == '':
-        Read_Sketchbook_Path_from_preferences_txt()()
+        Read_Sketchbook_Path_from_preferences_txt()
     fn_return_value = Sketchbook_Path
     return fn_return_value
 

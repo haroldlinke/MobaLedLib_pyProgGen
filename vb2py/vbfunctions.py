@@ -3,6 +3,7 @@ Functions to mimic VB intrinsic functions or things
 """
 
 from .vbclasses import *
+from .vbconstants import *
 from . import utils
 from . import config
 
@@ -95,7 +96,7 @@ def CreateObject(classname, ipaddress=None):
 _last_files = []
 
 
-def Dir(path=None):
+def Dir(path=None,pathtype=vbDirectory):
     """Recursively return the contents of a path matching a certain pattern
 
     The complicating part here is that when you first call Dir it return the

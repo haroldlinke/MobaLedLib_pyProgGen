@@ -2172,7 +2172,7 @@ class LEDColorTest(tk.Tk):
         return value
         
     
-    def determine_filepath(filename_key):
+    def determine_filepath(self,filename_key):
         #macrodata = self.MacroDef.data.get("StartPage",{})
         #filename = macrodata.get(filename_key,"")
         filename = self.get_macrodef_data("StartPage",filename_key)

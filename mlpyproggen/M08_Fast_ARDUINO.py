@@ -91,7 +91,7 @@ from vb2py.vbdebug import *
 
 
 def Packages_Dir_Available():
-    fn_return_value = None
+    fn_return_value = False
     Res = String()
     #--------------------------------------------------
     Res = Dir(Environ(Env_USERPROFILE) + AppLoc_Ardu, vbDirectory)

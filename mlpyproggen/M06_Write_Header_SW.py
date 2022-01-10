@@ -4,7 +4,7 @@
 #
 # * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 7, 2021
+# * Date: January 7, 2022
 # * Copyright: Harold Linke 2021
 # *
 # *
@@ -31,8 +31,8 @@
 
 #------------------------------------------------------------------------------
 # CHANGELOG:
-# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
-# 2021-01-07 v4.02 HL: - Else:,ByRef check done - first PoC release
+# 2021-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2022-01-07 v4.02 HL: - Else:,ByRef check done - first PoC release
 
 
 from vb2py.vbfunctions import *
@@ -76,6 +76,7 @@ import mlpyproggen.M37_Inst_Libraries as M37
 import mlpyproggen.M60_CheckColors as M60
 import mlpyproggen.M70_Exp_Libraries as M70
 import mlpyproggen.M80_Create_Mulitplexer as M80
+import mlpyproggen.P01_Worksheetfunction as WorksheetFunction
 
 import mlpyproggen.P01_Workbook as P01
 
@@ -119,6 +120,7 @@ Store_Status_Enabled = Boolean()
 Switch_Damping_Fact = String()
 
 def PIN_A3_Is_Used():
+    global RST_Pin_Number
     _ret = False
     #------------------------------------------
     if __Channel1InpCnt > 0 and RST_Pin_Number == 'A3':
@@ -207,7 +209,7 @@ def __Check_if_all_Variables_in_sequece_exist(r, Ctr_Name, N_Str):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: MacroName - ByVal 
 def __Add_InpVars(MacroName, Org_Macro, Filled_Macro, r, Org_Macro_Row):
-    _ret = None
+    _ret = False
     Second_Input_Names = 'InCh R_InCh InReset InCh2'
 
     Arg_List = vbObjectInitialize(objtype=String)
@@ -285,7 +287,7 @@ def __Add_InpVars(MacroName, Org_Macro, Filled_Macro, r, Org_Macro_Row):
     return _ret
 
 def __Is_Switch_Var_then_Add_to_Ctr(Var_Name):
-    _ret = None
+    _ret = False
     Nr = int()
     #-------------------------------------------------------------------------
     _select1, Nr = Is_in_Nr_String(Var_Name, 'Switch?', 1, 250, Nr)
@@ -387,7 +389,7 @@ def __Test():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Sw_List - ByVal 
 def __Check_one_Switch_Lists_for_SPI_Pins(Sw_List):
-    _ret = None
+    _ret = False
     Pin = Variant()
     #---------------------------------------------------------------------------------------
     Sw_List = ' ' + Sw_List + ' '
@@ -399,7 +401,7 @@ def __Check_one_Switch_Lists_for_SPI_Pins(Sw_List):
     return _ret
 
 def Check_Switch_Lists_for_SPI_Pins():
-    _ret = None
+    _ret = False
     #-----------------------------------------------------------
     if SwitchA_InpCnt > 0:
         if __Check_one_Switch_Lists_for_SPI_Pins(SwitchA_InpLst) == False:
@@ -548,6 +550,8 @@ def __Test_Get_Matching_Arg():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: VarName - ByVal 
 def Add_Variable_to_DstVar_List(VarName):
+    global __DstVar_List
+    
     _ret = False
     Check = String()
     #-------------------------------------------------------------------------------
@@ -639,7 +643,7 @@ def __Add_N2_Arg_to_DstVars(Org_Macro, Line):
             if TxtLen1 != TxtLenN or Left(Arg1, TxtLen1) != Left(ArgN, TxtLenN):
                 return _ret
             for i in vbForRange(StartNr, EndNr):
-                if Add_Variable_to_DstVar_List(Left(Arg1, TxtLen1) + i) == False:
+                if Add_Variable_to_DstVar_List(Left(Arg1, TxtLen1) + str(i)) == False:
                     return _ret
             _ret = True
     return _ret
@@ -663,7 +667,7 @@ def __Add_VarArgCnt_to_DstVars(Org_Macro, Line):
     return _ret
 
 def __Add_Cx_to_DstVars(Org_Macro, Line, Cnt, r):
-    _ret = None
+    _ret = False
     Arg1 = String()
 
     TxtLen = int()
@@ -761,7 +765,7 @@ def Print_DstVar_List(fp, Channel):
     Var = Variant()
     #-----------------------------------------------------------------
     for Var in Split(Trim(__DstVar_List), ' '):
-        VBFiles.writeText(fp, '#define ' + M30.AddSpaceToLen(Var, 22) + '  ' + Channel, '\n')
+        VBFiles.writeText(fp, '#define ' + M30.AddSpaceToLen(Var, 22) + '  ' + str(Channel), '\n')
         Channel = Channel + 1
     return Channel
 
@@ -807,7 +811,7 @@ def __Error_Msg_Varaible_Not_Defined(VarName, r):
 def Valid_Var_Name(Name, Row):
     global __MaxUsed_Loc_InCh, __MaxUsed_Loc_InCh_Row, Undefined_Input_Var, Undef_Input_Var_Row, __DstVar_List
     
-    _ret = None
+    _ret = False
     Std_Names = 'SI_1 SI_0 SI_Enable_Sound #LocInCh'
 
     Nr = int()
@@ -844,12 +848,12 @@ def Valid_Var_Name(Name, Row):
     # Add the undefined input variable to a list which is checked later
     if InStr(Undefined_Input_Var, ' ' + Name + ' ') == 0:
         Undefined_Input_Var = Undefined_Input_Var + Name + ' '
-        Undef_Input_Var_Row = Undef_Input_Var_Row + Row + ' '
+        Undef_Input_Var_Row = Undef_Input_Var_Row + str(Row) + ' '
     return _ret
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Arg - ByVal 
 def __Valid_Var_Name_and_Skip_InCh_and_Numbers(Arg, Row):
-    _ret = None
+    _ret = False
     SubArgList = vbObjectInitialize(objtype=String)
 
     SubArg = Variant()
@@ -870,11 +874,13 @@ def __Valid_Var_Name_and_Skip_InCh_and_Numbers(Arg, Row):
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Dest - ByRef 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Channel - ByRef 
 def Create_Loc_InCh_Defines(Dest, Channel, LocInChNr):
+    global __MaxUsed_Loc_InCh_Row, __MaxUsed_Loc_InCh
+    
     #-------------------------------------------------------------------------------------------------
     if LocInChNr > 0:
         Dest = Dest + vbCr + '// Local InCh variables' + vbCr
         for i in vbForRange(0, LocInChNr - 1):
-            Dest = Dest + M30.AddSpaceToLen('#define LOC_INCH' + i, 32) + Channel + vbCr
+            Dest = Dest + M30.AddSpaceToLen('#define LOC_INCH' + str(i), 32) + str(Channel) + vbCr
             Channel = Channel + 1
     if __MaxUsed_Loc_InCh >= LocInChNr:
         __Error_Msg_Varaible_Not_Defined('LOC_INCH' + __MaxUsed_Loc_InCh, __MaxUsed_Loc_InCh_Row)
@@ -889,7 +895,7 @@ def __Print_Keyboard_Defines_for_Type(fp, Name, InpCnt, Nr, Skip_11_16=VBMissing
     ResCnt = int()
     #-------------------------------------------------------------------------------------------------------------------------------------------
     for i in vbForRange(1, InpCnt):
-        VBFiles.writeText(fp, M30.AddSpaceToLen('#define ' + Name + i, 32) + Nr, '\n')
+        VBFiles.writeText(fp, M30.AddSpaceToLen('#define ' + Name + str(i), 32) + str(Nr), '\n')
         if Skip_11_16:
             if ( i - 1 % 16 )  == 9:
                 Nr = Nr + 6
@@ -923,7 +929,7 @@ def __Make_sure_that_Channel_is_divisible_by_4(Channel):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Channel - ByRef 
 def Write_Switches_Header_File_Part_A(fp, Channel):
-    global __DstVar_List
+    global __DstVar_List, SwitchA_InpCnt, SwitchB_InpCnt, SwitchC_InpCnt, SwitchD_InpCnt, SwitchA_InpLst, SwitchB_InpLst, SwitchC_InpLst, SwitchD_InpLst, Switch_Damping_Fact, CLK_Pin_Number, RST_Pin_Number
     
     _ret = False
     Ana_But_Pin_Array = vbObjectInitialize(objtype=String)
@@ -964,7 +970,7 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
             VBFiles.writeText(fp, 'AnalogScannerESP32 scanner;       // Creates an instance of the analog pin scanner.', '\n')
         VBFiles.writeText(fp, '', '\n')
         VBFiles.writeText(fp, '#include <Analog_Buttons10.h>', '\n')
-        Used_AButton_Channels = P01.WorksheetFunction.RoundUp(SwitchA_InpCnt / 10, 0)
+        Used_AButton_Channels = WorksheetFunction.RoundUp(SwitchA_InpCnt / 10, 0)
         for ACh in vbForRange(1, Used_AButton_Channels):
             VBFiles.writeText(fp, 'Analog_Buttons10_C AButtons' + ACh + '(' + Ana_But_Pin_Array(ACh - 1) + ');', '\n')
         VBFiles.writeText(fp, '', '\n')
@@ -1072,6 +1078,7 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         VBFiles.writeText(fp, 'void Additional_Setup_Proc()', '\n')
         VBFiles.writeText(fp, '//--------------------------', '\n')
         VBFiles.writeText(fp, '{', '\n')
+        PinList=""
         if SwitchA_InpCnt > 0 or Read_LDR:
             if SwitchA_InpCnt > 0:
                 PinList = Replace(Trim(SwitchA_InpLst), ' ', ',') + ','
@@ -1083,15 +1090,15 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
             if M02.Get_BoardTyp() == 'AM328':
                 VBFiles.writeText(fp, '', '\n')
                 if Read_LDR:
-                    VBFiles.writeText(fp, '  Init_DarknessSensor(' + LDR_Pin_Number + ', 50, SCAN_COUNT); // Attention: The analogRead() function can\'t be used together with the darkness sensor !', '\n')
-                    VBFiles.writeText(fp, '  scanner.setCallback(' + LDR_Pin_Number + ', Darkness_Detection_Callback);', '\n')
+                    VBFiles.writeText(fp, '  Init_DarknessSensor(' + str(LDR_Pin_Number) + ', 50, SCAN_COUNT); // Attention: The analogRead() function can\'t be used together with the darkness sensor !', '\n')
+                    VBFiles.writeText(fp, '  scanner.setCallback(' + str(LDR_Pin_Number) + ', Darkness_Detection_Callback);', '\n')
                 VBFiles.writeText(fp, '  scanner.setScanOrder(SCAN_COUNT, scanOrder);', '\n')
                 VBFiles.writeText(fp, '  scanner.beginScanning();', '\n')
             elif M02.Get_BoardTyp() == 'ESP32':
                 VBFiles.writeText(fp, '  scanner.setScanPins(SCAN_COUNT, scanOrder);', '\n')
                 if Read_LDR:
-                    VBFiles.writeText(fp, '  Init_DarknessSensor(' + LDR_Pin_Number + ', 50, 50); // Attention: The analogRead() function can\'t be used together with the darkness sensor !', '\n')
-                    VBFiles.writeText(fp, '  scanner.setCallback(' + LDR_Pin_Number + ', Darkness_Detection_Callback);', '\n')
+                    VBFiles.writeText(fp, '  Init_DarknessSensor(' + str(LDR_Pin_Number) + ', 50, 50); // Attention: The analogRead() function can\'t be used together with the darkness sensor !', '\n')
+                    VBFiles.writeText(fp, '  scanner.setCallback(' + str(LDR_Pin_Number) + ', Darkness_Detection_Callback);', '\n')
             VBFiles.writeText(fp, '', '\n')
         if __Channel1InpCnt > 0:
             VBFiles.writeText(fp, '  Keys_4017_Setup(); // Initialize the keyboard scanning process', '\n')
@@ -1111,21 +1118,21 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
             Act_Start_AButtons = Start_AButtons
             VBFiles.writeText(fp, '  uint16_t Button;             \\', '\n')
             for ACh in vbForRange(1, Used_AButton_Channels):
-                VBFiles.writeText(fp, M30.AddSpaceToLen('  Button = AButtons' + ACh + '.Get(); MobaLedLib_Copy_to_InpStruct((uint8_t*)&Button, 2, ' + Act_Start_AButtons + ');', 89) + '\\', '\n')
+                VBFiles.writeText(fp, M30.AddSpaceToLen('  Button = AButtons' + str(ACh) + '.Get(); MobaLedLib_Copy_to_InpStruct((uint8_t*)&Button, 2, ' + str(Act_Start_AButtons) + ');', 89) + '\\', '\n')
                 Act_Start_AButtons = Act_Start_AButtons + 16
         if __Channel1InpCnt > 0:
             VBFiles.writeText(fp, '  MobaLedLib_Copy_to_InpStruct(Keys_Array_1, KEYS_ARRAY_BYTE_SIZE_1, START_SWITCHES_1);  \\', '\n')
         if __Channel2InpCnt > 0:
             VBFiles.writeText(fp, '  MobaLedLib_Copy_to_InpStruct(Keys_Array_2, KEYS_ARRAY_BYTE_SIZE_2, START_SWITCHES_2);  \\', '\n')
         if SwitchD_InpCnt > 0:
-            VBFiles.writeText(fp, '  for (uint8_t i = 0; i < ' + SwitchD_InpCnt + '; i++) \\', '\n')
+            VBFiles.writeText(fp, '  for (uint8_t i = 0; i < ' + str(SwitchD_InpCnt) + '; i++) \\', '\n')
             VBFiles.writeText(fp, '      MobaLedLib.Set_Input(SwitchD1 + i, !digitalRead(pgm_read_byte_near(&SwitchD_Pins[i])));\\', '\n')
         VBFiles.writeText(fp, '}', '\n')
     _ret = True
     return _ret, Channel
 
 def Write_LowProrityLoop_Header_File(fp):
-    _ret = None
+    _ret = False
     if Serial_PinLst != '':
         VBFiles.writeText(fp, '/*****************************/', '\n')
         VBFiles.writeText(fp, '#define Additional_Loop_Proc2() \\', '\n')
@@ -1140,7 +1147,7 @@ def Write_LowProrityLoop_Header_File(fp):
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: InpLst1 - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: InpLst2 - ByVal 
 def __No_Duplicates_in_two_InpLists(Letter1, Letter2_or_Name, InpLst1, InpLst2, Set_Funct2='Set_LED_OutpPinLst()'):
-    _ret = None
+    _ret = False
     Pin = Variant()
     #-----------------------------------------------------------------------------------------------------------------------------------------
     # Retutn True if no duplicates are detected
@@ -1158,7 +1165,7 @@ def __No_Duplicates_in_two_InpLists(Letter1, Letter2_or_Name, InpLst1, InpLst2, 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: InpLst1 - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: InpLst2 - ByVal 
 def No_Duplicates_in_two_Lists(Pin2, InpLst1, InpLst2, Set_Funct2='Set_LED_OutpPinLst()'):
-    _ret = None
+    _ret = False
     Pin = Variant()
     #-----------------------------------------------------------------------------------------------------------------------------------------
     # Retutn True if no duplicates are detected
@@ -1180,7 +1187,9 @@ def __Test_No_Duplicates_in_two_InpLists():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: InpLst1 - ByVal 
 def __Check_CLK_a_RST_Pin_Usage(Letter1, InpLst1):
-    _ret = None
+    global RST_Pin_Number, CLK_Pin_Number
+    
+    _ret = False
     #------------------------------------------------------------------------------------------------
     # Check the RST_Pin_Number together with Letter1
     if SwitchB_InpCnt > 0 or SwitchC_InpCnt > 0:
@@ -1192,7 +1201,7 @@ def __Check_CLK_a_RST_Pin_Usage(Letter1, InpLst1):
     return _ret
 
 def No_Duplicates_in_InpLists():
-    _ret = None
+    _ret = False
     #-----------------------------------------------------
     if SwitchA_InpCnt > 0:
         if SwitchB_InpCnt > 0:
@@ -1268,7 +1277,7 @@ def Init_HeaderFile_Generation_SW():
     global  __MaxUsed_Loc_InCh, Read_LDR, Store_Status_Enabled, __Use_WS2811, SwitchA_InpCnt, SwitchB_InpCnt,SwitchC_InpCnt
     global SwitchD_InpCnt,DMX_LedChan,Serial_PinLst,LED_PINNr_List,LDR_Pin_Number,SwitchA_InpLst,SwitchB_InpLst,SwitchC_InpLst,SwitchD_InpLst,CLK_Pin_Number,RST_Pin_Number,__DstVar_List, __MultiSet_DstVar_List
     global  __CTR_Channels_1, __CTR_Channels_2, __But_Inp_List_1,__But_Inp_List_2, __Channel1InpCnt, __Channel2InpCnt,__CTR_Cha_Name_1,__CTR_Cha_Name_2
-    _ret = None
+    _ret = False
     #---------------------------------------------------------
     __MaxUsed_Loc_InCh = - 1
     Read_LDR = False
@@ -1308,8 +1317,8 @@ def Init_HeaderFile_Generation_SW():
     if SwitchB_InpCnt > 0 and SwitchC_InpCnt > 0:
         __CTR_Cha_Name_1 = 'SwitchB'
         __CTR_Cha_Name_2 = 'SwitchC'
-        __CTR_Channels_1 = P01.WorksheetFunction.RoundUp(SwitchB_InpCnt /  ( UBound(Split(SwitchB_InpLst, ' ')) + 1 ), 0)
-        __CTR_Channels_2 = P01.WorksheetFunction.RoundUp(SwitchC_InpCnt /  ( UBound(Split(SwitchC_InpLst, ' ')) + 1 ), 0)
+        __CTR_Channels_1 = WorksheetFunction.RoundUp(SwitchB_InpCnt /  ( UBound(Split(SwitchB_InpLst, ' ')) + 1 ), 0)
+        __CTR_Channels_2 = WorksheetFunction.RoundUp(SwitchC_InpCnt /  ( UBound(Split(SwitchC_InpLst, ' ')) + 1 ), 0)
         __But_Inp_List_1 = SwitchB_InpLst
         __But_Inp_List_2 = SwitchC_InpLst
         __Channel1InpCnt = SwitchB_InpCnt
@@ -1317,13 +1326,13 @@ def Init_HeaderFile_Generation_SW():
     elif SwitchB_InpCnt > 0:
         __CTR_Cha_Name_1 = 'SwitchB'
         __CTR_Cha_Name_2 = 'Unused'
-        __CTR_Channels_1 = P01.WorksheetFunction.RoundUp(SwitchB_InpCnt /  ( UBound(Split(SwitchB_InpLst, ' ')) + 1 ), 0)
+        __CTR_Channels_1 = WorksheetFunction.RoundUp(SwitchB_InpCnt /  ( UBound(Split(SwitchB_InpLst, ' ')) + 1 ), 0)
         __But_Inp_List_1 = SwitchB_InpLst
         __Channel1InpCnt = SwitchB_InpCnt
     elif SwitchC_InpCnt > 0:
         __CTR_Cha_Name_1 = 'SwitchC'
         __CTR_Cha_Name_2 = 'Unused'
-        __CTR_Channels_1 = P01.WorksheetFunction.RoundUp(SwitchC_InpCnt /  ( UBound(Split(SwitchC_InpLst, ' ')) + 1 ), 0)
+        __CTR_Channels_1 = WorksheetFunction.RoundUp(SwitchC_InpCnt /  ( UBound(Split(SwitchC_InpLst, ' ')) + 1 ), 0)
         __But_Inp_List_1 = SwitchC_InpLst
         __Channel1InpCnt = SwitchC_InpCnt
     _ret = True
@@ -1342,7 +1351,7 @@ def __Find_and_Select_Name(Name, UndefNr):
 def Check_Detected_Variables():
     global __DstVar_List
     
-    _ret = None
+    _ret = False
     #----------------------------------------------------
     # Check undefined input variables
     # ToDo:

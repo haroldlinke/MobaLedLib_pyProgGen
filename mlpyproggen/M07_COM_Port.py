@@ -239,7 +239,7 @@ def ComPortPage():
     return fn_return_value
 
 def Check_USB_Port_with_Dialog(ComPortColumn):
-    fn_return_value = None
+    fn_return_value = False
     #---------------------------------------------------------------------------
     if P01.val(ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)) <= 0:
         fn_return_value = False #*HL USB_Port_Dialog(ComPortColumn)
@@ -734,7 +734,7 @@ def __GetDeviceInformation(handle, HWVersion=255, SWMajorVersion=255, SWMinorVer
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort - ByVal 
 def SendMLLCommand(ComPort, message, UseHardwareHandshake, ShowResult):
-    fn_return_value = None
+    fn_return_value = False
     handle = int()
 
     CbWritten = Variant()

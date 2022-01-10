@@ -170,9 +170,9 @@ def UsedModules(LEDs):
     #-------------------------------------------------
     d = LEDs / 3
     if d == Round(d):
-        fn_return_value = d
+        fn_return_value = int(d)
     else:
-        fn_return_value = Round(d + 0.5, 0)
+        fn_return_value = int(Round(d + 0.5, 0))
     return fn_return_value
 
 def Check_IsSingleChannelCmd(LEDs):
@@ -259,7 +259,7 @@ def Update_Start_LedNr():
                     if Max_LEDs_Channel > 0 and display_Type == 1:
                         NewValue = '\'' + LEDs_Channel + '-' + str(LEDNr(LEDs_Channel))
                     else:
-                        NewValue = LEDNr(LEDs_Channel)
+                        NewValue = str(LEDNr(LEDs_Channel))
                 if P01.Cells(r, M25.LED_Nr__Col).Value == '' or P01.Cells(r, M25.LED_Nr__Col).Value != NewValue:
                     P01.Cells(r, M25.LED_Nr__Col).Value = NewValue
                     print("New Value: ",r,NewValue)
@@ -981,7 +981,7 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
     i = 1 + PixelOffset + ButtonCount * Height
     if P01.Cells(Row, TargetColumn).Width < i:
         factor = P01.Cells(Row, TargetColumn).Width / P01.Columns(TargetColumn).ColumnWidth
-        #*HL P01.Range[P01.Cells(VBGetMissingArgument(P01.Cells, 0), TargetColumn), P01.Cells(VBGetMissingArgument(P01.Cells, 0), TargetColumn)].ColumnWidth = P01.WorksheetFunction.RoundUp(i / factor, 1)
+        #*HL P01.Range[P01.Cells(VBGetMissingArgument(P01.Cells, 0), TargetColumn), P01.Cells(VBGetMissingArgument(P01.Cells, 0), TargetColumn)].ColumnWidth = WorksheetFunction.RoundUp(i / factor, 1)
     for i in vbForRange(1, ButtonCount):
         if Used_OldRect < OldRect_Cnt:
             objButton = P01.ActiveSheet.Rectangles(OldRect_List(Used_OldRect)).ShapeP01.Range.Item(1)

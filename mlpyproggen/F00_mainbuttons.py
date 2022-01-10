@@ -34,9 +34,13 @@
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
+import tkinter as tk
 
 import mlpyproggen.M06_Write_Header as M06
 import mlpyproggen.M03_Dialog as M03
+import mlpyproggen.M01_Gen_Release_Version as M01
+import mlpyproggen.P01_Workbook as P01
+import mlpyproggen.Prog_Generator as PG
 
 def Arduino_Button_Click():
     #---------------------------------
@@ -46,7 +50,8 @@ def Arduino_Button_Click():
 def ClearSheet_Button_Click():
     #------------------------------------
     __Button_Pressed_Proc()
-    ClearSheet()
+    notimplemented("Clear Sheet")
+    #ClearSheet()
 
 def Dialog_Button_Click():
     #-------------------------------
@@ -56,7 +61,8 @@ def Dialog_Button_Click():
 def Help_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    Show_Help()
+    notimplemented("Help")
+    #Show_Help()
 
 def __Button_Pressed_Proc():
     #--------------------------------
@@ -118,36 +124,41 @@ def __EnableAllButtons():
 def Hide_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    Proc_Hide_Unhide()
+    notimplemented("Hide/Unhide")
+    #Proc_Hide_Unhide()
 
 def Insert_Button_Click():
     __Button_Pressed_Proc()
-    Proc_Insert_Line()
+    P01.ActiveSheet.addrow_after_current_row()
 
 def Del_Button_Click():
     #-----------------------------
     __Button_Pressed_Proc()
-    Proc_Del_Row()
+    P01.ActiveSheet.deleterow()
 
 def Move_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    Proc_Move_Row()
+    notimplemented("Move Row")
+    #Proc_Move_Row()
 
 def Copy_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    Proc_Copy_Row()
+    notimplemented("Copy Row")
+    #Proc_Copy_Row()
 
 def Options_Button_Click():
     #----------------------------------
     __Button_Pressed_Proc()
-    Option_Dialog()
+    notimplemented("Options")
+    #Option_Dialog()
 
 def UnHideAll_Button_Click():
     #-----------------------------------
     __Button_Pressed_Proc()
-    Proc_UnHide_All()
+    notimplemented("UnHide All")
+    #Proc_UnHide_All()
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Target - ByVal 
 def __Worksheet_Change(Target):
@@ -175,6 +186,14 @@ def __Worksheet_Calculate():
         return
     if Cells.Parent.Name == ActiveSheet.Name:
         Global_Worksheet_Calculate()
+        
+def workbook_init():
+    M01.__Release_or_Debug_Version(True)
+    
+def notimplemented(command):
+    n = tk.messagebox.showinfo(command,
+                           "Not implemented yet",
+                            parent=PG.dialog_parent)    
 
 # VB2PY (UntranslatedCode) Option Explicit
 

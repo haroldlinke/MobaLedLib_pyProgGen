@@ -121,7 +121,7 @@ def Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(ReleaseMode):
         Debug.Print('P01.ActiveSheet Is Nothing in Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets')
         Debug.Print('Tritt beim ersten Start nach dem Download vom Internet auf (\'Geschützte Ansicht\')')
         Skip_Scroll_Down = True
-    for Sh in P01.ThisWorkbook.Sheets:
+    for Sh in P01.ThisWorkbook.sheets:
         if Is_Data_Sheet(Sh):
             _with1 = Sh
             M25.Make_sure_that_Col_Variables_match(Sh)

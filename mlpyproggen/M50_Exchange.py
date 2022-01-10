@@ -4,7 +4,7 @@
 #
 # * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 7, 2021
+# * Date: January 7, 2022
 # * Copyright: Harold Linke 2021
 # *
 # *
@@ -31,8 +31,8 @@
 
 #------------------------------------------------------------------------------
 # CHANGELOG:
-# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
-# 2021-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
+# 2021-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2022-01-07 v4.02 HL: - Else:, ByRef check done, first PoC release
 
 
 from vb2py.vbfunctions import *
@@ -98,11 +98,6 @@ import mlpyproggen.P01_Workbook as P01
 
 from mlpyproggen.X01_Excel_Consts import *
 
-from vb2py.vbfunctions import *
-from vb2py.vbdebug import *
-
-from vb2py.vbfunctions import *
-from vb2py.vbdebug import *
 
 """ Exchange functions for the Pattern_Configuarator                          ' 16.09.19:
 

@@ -90,7 +90,7 @@ __SoundLines = Scripting.Dictionary()
 def Init_HeaderFile_Generation_Sound():
     global __SoundLines
     
-    fn_return_value = None
+    fn_return_value = False
     #--------------------------------------------------------------
     __SoundLines = Scripting.Dictionary()
     fn_return_value = True
@@ -136,7 +136,7 @@ def Add_SoundPin_Entry(Cmd, Channel):
     return fn_return_value, Cmd
 
 def __GetPlayerClass(moduleType):
-    fn_return_value = None
+    fn_return_value = False
     if (moduleType == 'JQ6500'):
         fn_return_value = 'JQ6500SoundPlayer'
     elif (moduleType == 'JQ6500_AA'):
@@ -152,7 +152,7 @@ def __GetPlayerClass(moduleType):
 def Write_Header_File_Sound_Before_Config(fp):
     global __SoundLines
     
-    fn_return_value = None
+    fn_return_value = False
     if __SoundLines.Count > 0:
         if __Check_Sound_Duplicates() == False:
             return fn_return_value
@@ -170,7 +170,7 @@ def Write_Header_File_Sound_Before_Config(fp):
 def Write_Header_File_Sound_After_Config(fp):
     global __SoundLines
     
-    fn_return_value = None
+    fn_return_value = False
     #------------------------------------------------------------------
     if __SoundLines.Count > 0:
         if __Check_Sound_Duplicates() == False:
@@ -231,7 +231,7 @@ def Write_Header_File_Sound_After_Config(fp):
     return fn_return_value
 
 def __Check_Sound_Duplicates():
-    fn_return_value = None
+    fn_return_value = False
     if M06SW.No_Duplicates_in_two_Lists('LED', M06SW.Serial_PinLst, M06SW.LED_PINNr_List, M02.SF_SERIAL_SOUND_PIN) == False:
         return fn_return_value
     if M06SW.SwitchA_InpCnt:
@@ -262,7 +262,7 @@ def __Check_Sound_Duplicates():
 def CheckSoundChannelDefined(Channel):
     global __SoundLines
     
-    fn_return_value = None
+    fn_return_value = False
     if not __SoundLines.Exists(Channel):
         P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: Der Sound Kanal \'#1#\' ist nicht definiert.' + vbCr + 'Zur Definition muss das Makro ' + str(M02.SF_SERIAL_SOUND_PIN) + ' vor dieser Zeile verwendet werden'), "#1#", Channel), vbCritical, 'Fehler: Soundmodul')
         return fn_return_value
