@@ -1603,3 +1603,5 @@ xlXmlImportElementsTruncated = 1
 xlXmlImportValidationFailed = 2
 xlOn = 1
 xlOff = 0
+
+msoShapeRectangle = 1

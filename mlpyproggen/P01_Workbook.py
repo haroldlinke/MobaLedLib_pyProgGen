@@ -48,7 +48,10 @@ import subprocess
 import pickle
 import mlpyproggen.Prog_Generator as PG
 #import mlpyproggen.M01_Gen_Release_Version as M01
+import keyboard
 
+def updateWindow():
+    PG.global_controller.update()
 
 def TimeValue(Duration):
     
@@ -173,6 +176,39 @@ def Run(cmd):
 def set_statusmessage(message):
     PG.global_controller.set_statusmessage(message)
     PG.global_controller.update()
+
+__VK_LBUTTON = 0x1
+__VK_RBUTTON = 0x2
+__VK_MBUTTON = 0x4
+__VK_UP = 0x26
+__VK_DOWN = 0x28
+__VK_RETURN = 0xD
+__VK_ESCAPE = 0x1B
+
+def GetAsyncKeyState(key):
+    if key==__VK_UP:
+        return keyboard.is_pressed("up")
+    if key==__VK_DOWN:
+        return keyboard.is_pressed("down")
+    if key==__VK_RETURN:
+        return keyboard.is_pressed("enter")
+    if key==__VK_ESCAPE:   
+        return keyboard.is_pressed("escape")
+    return
+
+
+def GetCursorPos():
+    
+    pass
+
+def SetCursorPos(x,y):
+    
+    pass
+
+def DoEvents():
+    pass
+
+
 
 
 class CWorkbook:
@@ -446,7 +482,7 @@ class CWorksheet:
         self.Rectangles = CRectangles(0)
         self.AutoFilterMode = False
         self.searchcache = {}
-        self.Shapes = []
+        self.Shapes = [] #CShapelist([])
         self.CellDict = CCellDict()
         self.End_val = self.LastUsedColumn_val
         
@@ -463,14 +499,20 @@ class CWorksheet:
         else:
             return True
         
+    def EnbaleMousePosition(self):
+        pass
+        
     def addrow_after_current_row(self):
         cur_row = self.table.getSelectedRow()
         self.table.addRows(num=1,atrow=cur_row)
     
-    def deleterow(self):
+    def deleterows(self):
+        self.table.deleteRow()
         
-        self.table.deleteRow()        
-       
+    def moveRows(self): #,sc_rowlist,destrow):
+        self.table.Flag_move=True
+        print("Move started")
+        return
         
     def get_LastUsedRow(self):
         self.LastUsedRow_val = self.tablemodel.getRowCount()
@@ -645,7 +687,29 @@ class CWorksheet:
         self.tablemodel.setupModel(data)
         self.table.redrawTable()
         
+    def getSelectedRow(self):
+        selectedRow=self.table.getSelectedRow()+1
+        return selectedRow
 
+class CShapeList(object):
+    def __init__(self,shapelist):
+        self.shapelist = shapelist
+        
+    def AddShape(self, shapetype, Left, Top, Width, Height):
+        pass
+    
+class CShape(object):
+    
+    def __init__(self, name, shapetype, Left, Top, Width, Height):
+        self.shapetype = shapetype
+        self.Left=Left
+        self.Top = Top
+        self.Width = Width
+        self.height = Height
+        self.Name = name
+        self.TextFrame2 = CTextFrame()
+        
+        
 class CRange:
     def __init__(self,t1,t2,ws=None):
         #print("Range:",t1,t2)
@@ -677,10 +741,11 @@ class CRange:
         for cell in self.range_list:
             cell.Activate()        
             
-class CRectangles:
-    def __init__(self,count):
-        self.list=[]
+class CRectangles(object):
+    def __init__(self,value=(),row=0,col=0):
+        self.rlist = value
         self.Count=0
+
 
     #def __init__(self,rowrange,colrange):
     #    self.Rows=list()
@@ -689,12 +754,34 @@ class CRectangles:
     #    self.Columns=list()
     #    for i in range(colrange[0],colrange[1]):
     #        self.Columns.append(CRow(i))
+    
+class CRectangle(object):
+    
+    def __init__(self,row=0,col=0,onaction=""):
+        self.OnAction = onaction
+        self.TopLeftCell = CCell("")
+        self.TopLeftCell.Row = row
+        self.TopLeftCell.Column = col 
+        pass
+    
+    def Delete(self):
+        
+        pass
+    
 class CSelection:
     def __init__(self,cell):
-        self.EntireRow = CEntireRow(cell.Row)
+        #self.EntireRow = CEntireRow(cell.Row)
         self.EntireColumn = CEntireColumn(cell.Column)
         self.Characters = ""
+        self.selectedRows = []
         
+    def EntireRow(self):
+        self.selectedRows = []
+        for row in ActiveSheet.table.multiplerowlist:
+            self.selectedRows.append(row+1)
+        if self.selectedRows==[]:
+            self.selectedRows=[ActiveSheet.table.getSelectedRow()+1]
+        return self.selectedRows
 
 class CRow:
     def __init__(self,rownumber):

@@ -475,6 +475,22 @@ class TableModel(object):
         for col in cols:
             self.deleteColumn(col)
         return
+    
+    def moveRows(self,src_rowlist,dest_rowindex):
+        if src_rowlist[0]<dest_rowindex:
+            dest_rowindex = dest_rowindex-len(src_rowlist)
+        names = [self.getRecName(i) for i in src_rowlist]
+        self.moveRow(srckeylist=names,destindex=dest_rowindex)
+    
+    def moveRow(self,srckeylist=None,destindex=None):
+        if srckeylist and destindex:
+            print("MoveRow:",srckeylist,destindex)
+            for key in srckeylist:
+                self.reclist.remove(key)
+            self.reclist[destindex:destindex]=srckeylist
+            print(self.reclist)
+            print(self.data)
+        
 
     def autoAddRows(self, numrows=None, atrow=None):
         """Automatically add x number of records"""

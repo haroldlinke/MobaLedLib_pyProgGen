@@ -85,6 +85,8 @@ class TableCanvas(Canvas):
         self.read_only = read_only
         self.filtered = False
         self.left_click_callback = None
+        self.Flag_move=False
+        self.lastmultiplerowlist  = []
 
         self.loadPrefs()
         #set any options passed in kwargs to overwrite defaults and prefs
@@ -526,6 +528,11 @@ class TableCanvas(Canvas):
                 self.parentframe.configure(width=self.width)
                 self.redrawTable()
         return
+    
+    def moveRows(self,src_rowlist, dest_rowindex):
+        print("table.moveRows:",src_rowlist,dest_rowindex)
+        self.model.moveRows(src_rowlist, dest_rowindex)
+        self.redrawTable()
 
     def deleteRow(self):
         """Delete a row"""
@@ -760,7 +767,7 @@ class TableCanvas(Canvas):
         rowc = int((int(y)-y_start)/h)
         #rowc = math.floor(rowc)
         #print 'event.y',event.y, 'y',y
-        #print 'rowclicked', rowc
+        #print ('rowclicked', rowc)
         return rowc
 
     def get_col_clicked(self,event):
@@ -785,6 +792,7 @@ class TableCanvas(Canvas):
 
     def setSelectedRow(self, row):
         """Set currently selected row and reset multiple row list"""
+        self.lastmultiplerowlist = self.multiplerowlist
 
         self.currentrow = row
         self.multiplerowlist = []
@@ -949,6 +957,11 @@ class TableCanvas(Canvas):
             self.rightmenu.destroy()
         if hasattr(self.tablecolheader, 'rightmenu'):
             self.tablecolheader.rightmenu.destroy()
+            
+        if self.Flag_move:
+            #self.lastmultiplerowlist = self.multiplerowlist
+            self.moveRows(self.lastmultiplerowlist,rowclicked)
+            self.Flag_move = False
 
         self.startrow = rowclicked
         self.endrow = rowclicked
@@ -973,7 +986,9 @@ class TableCanvas(Canvas):
         return
 
     def handle_left_release(self,event):
+        #print("LeftRelease")
         self.endrow = self.get_row_clicked(event)
+        self.Flag_move = False
         return
 
     def handle_left_ctrl_click(self, event):
@@ -1032,6 +1047,7 @@ class TableCanvas(Canvas):
                 self.multiplerowlist = range(self.endrow, self.startrow+1)
             else:
                 self.multiplerowlist = range(self.startrow, self.endrow+1)
+            print("Mousedrag-Select:",self.multiplerowlist)
             self.drawMultipleRows(self.multiplerowlist)
             self.tablerowheader.drawSelectedRows(self.multiplerowlist)
             #draw selected cells outline using row and col lists
@@ -1043,7 +1059,8 @@ class TableCanvas(Canvas):
             if len(self.multiplecollist) >= 1:
                 self.drawMultipleCells()
             self.delete('multiplesel')
-        #print self.multiplerowlist
+        self.lastmultiplerowlist = self.multiplerowlist
+            #print self.multiplerowlist
         return
 
     def handle_arrow_keys(self, event):
@@ -1147,6 +1164,24 @@ class TableCanvas(Canvas):
             return
         if 0 <= row < self.rows and 0 <= col < self.cols:
             self.drawTooltip(row, col)
+            
+        if self.Flag_move:
+           
+            #print("Move:", row)
+            
+            self.destrow = row
+            self.multiplerowlist=[row]
+            
+            #self.moveRows(self.lastmultiplerowlist, self.destrow)
+            
+            #print("Mousedrag-Move:",self.lastmultiplerowlist,self.multiplerowlist )
+        
+            self.drawMultipleRows(self.multiplerowlist)
+            self.tablerowheader.drawSelectedRows(self.multiplerowlist)
+            #draw selected cells outline using row and col lists
+            #print self.multiplerowlist
+            self.drawMultipleCells()
+                
 
         return
 
@@ -1196,7 +1231,7 @@ class TableCanvas(Canvas):
     def formula_Dialog(self, row, col, currformula=None):
         """Formula dialog"""
         self.mode = 'formula'
-        print (self.mode)
+        #print (self.mode)
         x1,y1,x2,y2 = self.getCellCoords(row,col)
         w=300
         h=h=self.rowheight * 3
@@ -2789,7 +2824,7 @@ class RowHeader(Canvas):
             rowlist=[]
             rowlist.append(rows)
         else:
-           rowlist = rows
+            rowlist = rows
         for r in rowlist:
             if r not in self.table.visiblerows:
                 continue

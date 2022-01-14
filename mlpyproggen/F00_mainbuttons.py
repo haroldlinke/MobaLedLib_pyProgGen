@@ -41,6 +41,7 @@ import mlpyproggen.M03_Dialog as M03
 import mlpyproggen.M01_Gen_Release_Version as M01
 import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.Prog_Generator as PG
+import mlpyproggen.M23_Add_Move_Del_Row as M23
 
 def Arduino_Button_Click():
     #---------------------------------
@@ -134,13 +135,13 @@ def Insert_Button_Click():
 def Del_Button_Click():
     #-----------------------------
     __Button_Pressed_Proc()
-    P01.ActiveSheet.deleterow()
+    P01.ActiveSheet.deleterows()
 
 def Move_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Move Row")
-    #Proc_Move_Row()
+    #notimplemented("Move Row")
+    M23.Proc_Move_Row()
 
 def Copy_Button_Click():
     #------------------------------
