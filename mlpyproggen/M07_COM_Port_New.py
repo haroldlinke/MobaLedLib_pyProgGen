@@ -42,34 +42,38 @@ from vb2py.vbconstants import *
 #import mlpyproggen.M09_Language as M09
 #import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M30_Tools as M30
-import mlpyproggen.U01_userform as U01
+#import mlpyproggen.U01_userform as U01
 
 import mlpyproggen.M02_Public as M02
-import mlpyproggen.M03_Dialog as M03
-import mlpyproggen.M06_Write_Header_LED2Var as M06LED
-import mlpyproggen.M06_Write_Header_Sound as M06Sound
-import mlpyproggen.M06_Write_Header as M06
-#import mlpyproggen.M07_COM_Port as M07
+#import mlpyproggen.M03_Dialog as M03
+#import mlpyproggen.M06_Write_Header_LED2Var as M06LED
+#import mlpyproggen.M06_Write_Header_Sound as M06Sound
+#import mlpyproggen.M06_Write_Header as M06
+import mlpyproggen.M07_COM_Port as M07
 import mlpyproggen.M08_ARDUINO as M08
 import mlpyproggen.M09_Language as M09
-import mlpyproggen.M09_Select_Macro as M09SM
-import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
-import mlpyproggen.M10_Par_Description as M10
-import mlpyproggen.M20_PageEvents_a_Functions as M20
+#import mlpyproggen.M09_Select_Macro as M09SM
+#import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
+#import mlpyproggen.M10_Par_Description as M10
+#import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M25_Columns as M25
-import mlpyproggen.M27_Sheet_Icons as M27
-import mlpyproggen.M28_divers as M28
+#import mlpyproggen.M27_Sheet_Icons as M27
+#import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
-import mlpyproggen.M31_Sound as M31
-import mlpyproggen.M37_Inst_Libraries as M37
-import mlpyproggen.M60_CheckColors as M60
-import mlpyproggen.M70_Exp_Libraries as M70
-import mlpyproggen.M80_Create_Mulitplexer as M80
+#import mlpyproggen.M31_Sound as M31
+#import mlpyproggen.M37_Inst_Libraries as M37
+#import mlpyproggen.M60_CheckColors as M60
+#import mlpyproggen.M70_Exp_Libraries as M70
+#import mlpyproggen.M80_Create_Mulitplexer as M80
 
 import mlpyproggen.P01_Workbook as P01
 
+import mlpyproggen.D08_Select_COM_Port_Userform as D08
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
+
+Select_COM_Port_UserForm = D08.CSelect_COM_Port_UserForm()
 
 """ Select the Arduino COM Port
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,6 +165,7 @@ CheckCOMPort_Txt = String()
 __CheckCOMPort_Res = Long()
 
 def __Blink_Arduino_LED():
+    global CheckCOMPort,__CheckCOMPort_Res,CheckCOMPort_Txt
     SWMajorVersion = Byte()
 
     SWMinorVersion = Byte()
@@ -179,26 +184,27 @@ def __Blink_Arduino_LED():
     # A baudrate of 50 is used.
     BaudRate = 50
     if CheckCOMPort > 0:
-        Select_COM_Port_UserForm.Update_SpinButton(0)
+        D08.Select_COM_Port_UserForm.Update_SpinButton(0)
         if CheckCOMPort != 999:
             __CheckCOMPort_Res = DetectArduino(CheckCOMPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur, 1, PrintDebug= __PRINT_DEBUG)
         else:
             __CheckCOMPort_Res = - 9
-        Application.Cursor = xlNorthwestArrow
+        #*HLApplication.Cursor = xlNorthwestArrow
         #Debug.Print "CheckCOMPort_Res=" & CheckCOMPort_Res & "  CheckCOMPort=" & CheckCOMPort
         if __CheckCOMPort_Res < 0:
             if CheckCOMPort == 999:
-                Select_COM_Port_UserForm.Show_Status(True, Get_Language_Str('Kein COM Port erkannt.' + vbCr + 'Bitte Arduino an einen USB Anschluss des Computers anschließen'))
+                D08.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Kein COM Port erkannt.' + vbCr + 'Bitte Arduino an einen USB Anschluss des Computers anschließen'))
             else:
-                Select_COM_Port_UserForm.Show_Status(True, Get_Language_Str('Achtung: Der Arduino wird von einem anderen Programm benutzt.' + vbCr + '(Serieller Monitor?)' + vbCr + 'Das Programm muss geschlossen werden! '))
+                D08.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Achtung: Der Arduino wird von einem anderen Programm benutzt.' + vbCr + '(Serieller Monitor?)' + vbCr + 'Das Programm muss geschlossen werden! '))
         else:
-            Select_COM_Port_UserForm.Show_Status(False, CheckCOMPort_Txt)
-        Sleep(10)
-        DoEvents()
-        Application.OnTime(Now + TimeValue('00:00:00'), 'Blink_Arduino_LED')
+            D08.Select_COM_Port_UserForm.Show_Status(False, CheckCOMPort_Txt)
+        #*HL Sleep(10)
+        P01.DoEvents()
+        P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:00'), 'Blink_Arduino_LED')
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort_IO - ByRef 
 def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons, ComPort_IO):
+    global CheckCOMPort,__CheckCOMPort_Res,CheckCOMPort_Txt
     fn_return_value = None
     Res = Long()
     #--------------------------------------------------------------------------------------
@@ -216,17 +222,17 @@ def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons
     #  2: If the middle Button is pressed  (Abort)
     #  3: If the right  Button is pressed  (OK)
     CheckCOMPort = 999
-    Application.OnTime(Now + TimeValue('00:00:00'), 'Blink_Arduino_LED')
+    P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:00'), 'Blink_Arduino_LED')
     # Return values of Select_COM_Port_UserForm.ShowDialog:
     #  -1: If Abort is pressed
     #   0: If No COM Port is available
     #  >0: Selected COM Port
     # The variable "CheckCOMPort_Res" is >= 0 if the Port is available
-    fn_return_value = Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
+    fn_return_value = D08.Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, M09.Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
     if __CheckCOMPort_Res < 0:
         ComPort_IO = - ComPort_IO
         # Port is buzy
-    Application.Cursor = xlDefault
+    P01.Application.Cursor = xlDefault
     return fn_return_value
 
 def __Test_Select_Arduino_w_Blinking_LEDs_Dialog():
@@ -245,22 +251,22 @@ def __Show_USB_Port_Dialog(ComPortColumn, ComPort):
 
     ArduName = String()
     #---------------------------------------------------------------------------------------------
-    ComPort = val(Cells(SH_VARS_ROW, ComPortColumn))
+    ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
     if ComPort < 0:
         ComPort = - ComPort
-    if (ComPortColumn == COMPort_COL):
+    if (ComPortColumn == M25.COMPort_COL):
         Picture = 'LED_Image'
         ArduName = 'LED'
-    elif (ComPortColumn == COMPrtR_COL):
+    elif (ComPortColumn == M25.COMPrtR_COL):
         Picture = 'DCC_Image'
-        ArduName = Page_ID
-    elif (ComPortColumn == COMPrtT_COL):
+        ArduName = M25.Page_ID
+    elif (ComPortColumn == M25.COMPrtT_COL):
         Picture = 'Tiny_Image'
         ArduName = 'ISP'
     else:
-        MsgBox('Internal Error: Unsupported  ComPortColumn=' + ComPortColumn + ' in \'USB_Port_Dialog()\'', vbCritical, 'Internal Error')
-        EndProg()
-    Res = Select_Arduino_w_Blinking_LEDs_Dialog(Get_Language_Str('Überprüfung des USB Ports'), Get_Language_Str('Auswahl des Arduino COM Ports'), Replace(Get_Language_Str('Mit diesem Dialog wird der COM Port überprüft ' + 'bzw. ausgewählt an den der #1# Arduino angeschlossen ist.' + vbCr + vbCr + 'OK, wenn die LEDs am richtigen Arduino schnell blinken.'), '#1#', ArduName), Picture, Get_Language_Str(' ; A Abbruch; O Ok'), ComPort)
+        P01.MsgBox('Internal Error: Unsupported  ComPortColumn=' + ComPortColumn + ' in \'USB_Port_Dialog()\'', vbCritical, 'Internal Error')
+        M30.EndProg()
+    Res = Select_Arduino_w_Blinking_LEDs_Dialog(M09.Get_Language_Str('Überprüfung des USB Ports'), M09.Get_Language_Str('Auswahl des Arduino COM Ports'), Replace(M09.Get_Language_Str('Mit diesem Dialog wird der COM Port überprüft ' + 'bzw. ausgewählt an den der #1# Arduino angeschlossen ist.' + vbCr + vbCr + 'OK, wenn die LEDs am richtigen Arduino schnell blinken.'), '#1#', ArduName), Picture, M09.Get_Language_Str(' ; A Abbruch; O Ok'), ComPort)
     fn_return_value = ( Res == 3 )
     return fn_return_value
 
@@ -271,14 +277,14 @@ def USB_Port_Dialog(ComPortColumn):
     if __Show_USB_Port_Dialog(ComPortColumn, ComPort):
         if ComPort > 0:
             fn_return_value = True
-        ComPortPage.Cells[SH_VARS_ROW, ComPortColumn] = ComPort
+        M07.ComPortPage.Cells[M02.SH_VARS_ROW, ComPortColumn] = ComPort
     return fn_return_value
 
 def __Test_USB_Port_Dialog():
     #UT-------------------------------
     ## VB2PY (CheckDirective) VB directive took path 1 on PROG_GENERATOR_PROG
-    Make_sure_that_Col_Variables_match()
-    USB_Port_Dialog()(COMPort_COL)
+    M25.Make_sure_that_Col_Variables_match()
+    USB_Port_Dialog()(M25.COMPort_COL)
     #USB_Port_Dialog COMPrtR_COL
     #USB_Port_Dialog COMPrtT_COL  ' Could only be used im the Pattern_COnfigurator
 
@@ -291,9 +297,9 @@ def Detect_Com_Port(RightSide=VBMissingArgument, Pic_ID='DCC'):
     ComPort = Long()
     #--------------------------------------------------------------------------------------------------------
     if RightSide:
-        ComPortColumn = COMPrtR_COL
+        ComPortColumn = M25.COMPrtR_COL
     else:
-        ComPortColumn = COMPort_COL
+        ComPortColumn = M25.COMPort_COL
     if __Show_USB_Port_Dialog(ComPortColumn, ComPort):
         fn_return_value = ComPort
     return fn_return_value
@@ -305,10 +311,10 @@ def __Test_Check_If_Arduino_could_be_programmed_and_set_Board_type():
     #-------------------------------------------------------------------------
     ## VB2PY (CheckDirective) VB directive took path 1 on PATTERN_CONFIG_PROG
     # TinyUniProg
-    with_0 = Cells(SH_VARS_ROW, BuildOT_COL)
+    with_0 = P01.Cells(M02.SH_VARS_ROW, M25.BuildOT_COL)
     if with_0.Value == '':
         with_0.Value = 115200
-    Debug.Print(Check_If_Arduino_could_be_programmed_and_set_Board_type(COMPrtT_COL, BuildOT_COL, BuildOptions, DeviceSignature) + ' BuildOptions: ' + BuildOptions)
+    Debug.Print(M08.Check_If_Arduino_could_be_programmed_and_set_Board_type(COMPrtT_COL, BuildOT_COL, BuildOptions, DeviceSignature) + ' BuildOptions: ' + BuildOptions)
 
 # VB2PY (UntranslatedCode) Option Explicit
 

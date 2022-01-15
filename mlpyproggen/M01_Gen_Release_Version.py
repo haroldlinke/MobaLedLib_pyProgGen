@@ -197,6 +197,35 @@ def __Release_or_Debug_Version(Release):
     if Release:
         M60.Write_Default_CheckColors_Parameter_File()
         # 01.12.19:
+        
+def set_columnwidth(Sh):
+    if M28.Is_Data_Sheet(Sh):
+        Sh.Select()
+        factor = 10
+        M25.Make_sure_that_Col_Variables_match(Sh)
+        P01.Columns(M02.Enable_Col).ColumnWidth = 5.8*factor #*HL
+        if Sh.Name == 'Examples':
+            P01.Columns(M25.Filter__Col).ColumnWidt = 11*factor
+            P01.Columns(M25.Inp_Typ_Col).ColumnWidth = 16*factor
+        else:
+            P01.Columns(M25.Filter__Col).ColumnWidth = 5.8*factor
+            P01.Columns(M25.Inp_Typ_Col).ColumnWidth = 12*factor
+        if M25.Page_ID != 'Selectrix':
+            P01.Columns(M25.DCC_or_CAN_Add_Col).ColumnWidth = 11.57*factor
+        else:
+            P01.Columns(M25.SX_Channel_Col).ColumnWidth = 13.29*factor
+            P01.Columns(M25.SX_Bitposi_Col).ColumnWidth = 9.57*factor
+        P01.Columns(M25.Start_V_Col).ColumnWidth = 4.57*factor
+        P01.Columns(M25.Descrip_Col).ColumnWidth = 43.5*factor
+        P01.Columns(M25.Dist_Nr_Col).ColumnWidth = 8*factor
+        P01.Columns(M25.Conn_Nr_Col).ColumnWidth = 8.86*factor
+        P01.Columns(M25.Config__Col).ColumnWidth = 60*factor
+        P01.Columns(M25.LED_Nr__Col).ColumnWidth = 4.71*factor
+        P01.Columns(M25.LEDs____Col).ColumnWidth = 7*factor
+        P01.Columns(M25.InCnt___Col).ColumnWidth = 4.71*factor
+        P01.Columns(M25.LocInCh_Col).ColumnWidth = 4.71*factor
+        P01.Columns(M25.LED_Cha_Col).ColumnWidth = 4.71*factor
+        P01.Cells(M02.Header_Row + 1, M25.Descrip_Col).Select() 
 
 def Set_Config_Default_Values_at_Program_Start():
     #------------------------------------------------------

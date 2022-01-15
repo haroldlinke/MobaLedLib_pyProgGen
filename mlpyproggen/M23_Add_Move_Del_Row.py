@@ -137,9 +137,7 @@ def Proc_Move_Row():
     
     ActSh.moveRows()
     
-    return
-    
-    
+    """
     selectedrows = P01.Selection.EntireRow()
     
     if selectedrows[0] >= M02.FirstDat_Row:
@@ -171,6 +169,9 @@ def Proc_Move_Row():
             P01.Application.EnableEvents = OldEvents
         P01.Application.StatusBar = ''
     #P01.Sheets(ActSh).EnableDisableAllButtons(True)
+    """
+    
+    return
 
 def Proc_Copy_Row():
     OldUpdating = Boolean()

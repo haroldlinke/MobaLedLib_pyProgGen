@@ -492,7 +492,7 @@ class TableModel(object):
             print(self.data)
         
 
-    def autoAddRows(self, numrows=None, atrow=None):
+    def autoAddRows(self, numrows=None, atrow=None,copyfromrow=None):
         """Automatically add x number of records"""
         rows = self.getRowCount()
         ints = [i for i in self.reclist if isinstance(i, int)]
@@ -505,8 +505,13 @@ class TableModel(object):
         #make sure no keys are present already
         keys = list(set(keys)-set(self.reclist))
         newdata = {}
-        for k in keys:
-            newdata[k] = {}
+        if copyfromrow==None:
+            for k in keys:
+                newdata[k] = {}
+        else:
+            for k in keys:
+                newdata[k] = copy.deepcopy(self.data[self.reclist[copyfromrow]])
+                copyfromrow = copyfromrow+1
         self.data.update(newdata)
         if atrow != None: # insert newdata list in reclist at atrow position
             self.reclist[atrow:atrow]=newdata.keys()

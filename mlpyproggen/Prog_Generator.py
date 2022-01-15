@@ -39,29 +39,30 @@ import tkinter as tk
 from tkinter import ttk,messagebox
 
 from mlpyproggen.DefaultConstants import ARDUINO_WAITTIME,LARGE_FONT, SMALL_FONT, VERY_LARGE_FONT, PROG_VERSION,ARDUINO_LONG_WAITTIME
-from mlpyproggen.configfile import ConfigFile
+#from mlpyproggen.configfile import ConfigFile
 from locale import getdefaultlocale
-from tkintertable import TableCanvas, TableModel
-from collections import OrderedDict
+#from tkintertable import TableCanvas, TableModel
+#from collections import OrderedDict
 from mlpyproggen.P01_Workbook import create_workbook
 
 import os
-import serial
-import sys
-import threading
+#import serial
+#import sys
+#import threading
 import subprocess
-import queue
-import time
+#import queue
+#import time
 import logging
 import platform
-from scrolledFrame.ScrolledFrame import VerticalScrolledFrame,HorizontalScrolledFrame,ScrolledFrame
-from mlpyproggen.M06_Write_Header import Create_HeaderFile
+#from scrolledFrame.ScrolledFrame import VerticalScrolledFrame,HorizontalScrolledFrame,ScrolledFrame
+#from mlpyproggen.M06_Write_Header import Create_HeaderFile
 #from mlpyproggen.P01_Workbook import global_tablemodel
 
-from datetime import datetime
-from mlpyproggen.T01_exceltable import get_globaltabelmodel
+#from datetime import datetime
+#from mlpyproggen.T01_exceltable import get_globaltabelmodel
 import mlpyproggen.F00_mainbuttons as F00
 import mlpyproggen.M20_PageEvents_a_Functions as M20
+#import mlpyproggen.D08_Select_COM_Port_Userform as D08
 
 # --- Translation - not used
 EN = {}
@@ -307,21 +308,11 @@ class Prog_GeneratorPage(tk.Frame):
         self.icon_dict[button_desc["Icon_name"]] = tk.PhotoImage(file=filepath)
         button=ttk.Button(self.button_frame, text="Dialog", image=self.icon_dict[button_desc["Icon_name"]], command=button_desc["command"])
         button.pack( side="left",padx=button_desc["padx"])
-        self.controller.ToolTip(button, text=button_desc["tooltip"])                
-            
-    def dialog_button_cmd(self):
-        print("Dialog Button")
-        return
-    
-    def send_to_ARDUINO_button_cmd(self):
-        print("Send to ARDUINO Button")
-        Create_HeaderFile()
-        return
+        self.controller.ToolTip(button, text=button_desc["tooltip"])
     
     def get_param_config_dict(self, paramkey):
         paramconfig_dict = self.controller.MacroParamDef.data.get(paramkey,{})
         return paramconfig_dict    
-
     
     def start_ARDUINO_program_Run(self):
         result = subprocess.run(self.startfile, stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)

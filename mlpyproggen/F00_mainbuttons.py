@@ -42,6 +42,7 @@ import mlpyproggen.M01_Gen_Release_Version as M01
 import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.Prog_Generator as PG
 import mlpyproggen.M23_Add_Move_Del_Row as M23
+import mlpyproggen.M20_PageEvents_a_Functions as M20
 
 def Arduino_Button_Click():
     #---------------------------------
@@ -51,8 +52,7 @@ def Arduino_Button_Click():
 def ClearSheet_Button_Click():
     #------------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Clear Sheet")
-    #ClearSheet()
+    M20.ClearSheet()
 
 def Dialog_Button_Click():
     #-------------------------------
@@ -62,8 +62,7 @@ def Dialog_Button_Click():
 def Help_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Help")
-    #Show_Help()
+    M20.Show_Help()
 
 def __Button_Pressed_Proc():
     #--------------------------------
@@ -146,7 +145,8 @@ def Move_Button_Click():
 def Copy_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Copy Row")
+    #notimplemented("Copy Row")
+    P01.ActiveSheet.addrow_after_current_row(copy=True)
     #Proc_Copy_Row()
 
 def Options_Button_Click():

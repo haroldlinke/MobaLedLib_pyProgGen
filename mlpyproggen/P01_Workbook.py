@@ -43,18 +43,23 @@ from tkinter import ttk
 from mlpyproggen.X01_Excel_Consts import *
 from vb2py.vbconstants import *
 from vb2py.vbfunctions import *
+
 #import mlpyproggen.M20_PageEvents_a_Functions as M20
 import subprocess
 import pickle
 import mlpyproggen.Prog_Generator as PG
 #import mlpyproggen.M01_Gen_Release_Version as M01
 import keyboard
+#import mlpyproggen.M25_Columns as M25
+#import mlpyproggen.M02_global_variables as M02
+
+def Shell(cmd):
+    Run(cmd)
 
 def updateWindow():
     PG.global_controller.update()
 
 def TimeValue(Duration):
-    
     return 5
 
 def ActiveCell():
@@ -174,7 +179,7 @@ def Run(cmd):
     subprocess.run(cmd,shell=True)
     
 def set_statusmessage(message):
-    PG.global_controller.set_statusmessage(message)
+    PG.global_controller.set_connectstatusmessage(message)
     PG.global_controller.update()
 
 __VK_LBUTTON = 0x1
@@ -184,6 +189,7 @@ __VK_UP = 0x26
 __VK_DOWN = 0x28
 __VK_RETURN = 0xD
 __VK_ESCAPE = 0x1B
+__VK_CONTROL = 0x1C
 
 def GetAsyncKeyState(key):
     if key==__VK_UP:
@@ -194,141 +200,141 @@ def GetAsyncKeyState(key):
         return keyboard.is_pressed("enter")
     if key==__VK_ESCAPE:   
         return keyboard.is_pressed("escape")
+    if key==__VK_CONTROL:   
+        return keyboard.is_pressed("crtl")
     return
 
 
 def GetCursorPos():
-    
     pass
 
 def SetCursorPos(x,y):
-    
     pass
 
 def DoEvents():
     pass
 
-
+datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
+datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
+                        "ProtectedCells"  : ((0,"*"),(1,"*"), ("*",12),("*",13),("*",14),("*",15),("*",16)),
+                        "FontColor"       : { "1": {
+                                                    "font"     : ("Arial",10),
+                                                    "fg"       : "#FFFF00",
+                                                    "bg"       : "#0000FF",
+                                                    "Cells"    : ((0,"*"),(1,"*"))
+                                                    },
+                                              "2": {
+                                                    "font"     : ("Wingdings",10),
+                                                    "fg"       : "#000000",
+                                                    "bg"       : "#FFFFFF",
+                                                    "Cells"    : (("*",1),)
+                                                    },                                                          
+                                            "default": {
+                                                   "font"     : ("Arial",10),
+                                                   "fg"       : "#000000",
+                                                   "bg"       : "#FFFFFF",
+                                                   "Cells"    : (("*","*"),)
+                                                   }
+                                }
+                    }
+                        
+sheetdict={"DCC":
+            {"Name":"DCC",
+             "Filename"  : "\\csv\\dcc.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "Datasheet" : True
+             },
+           "Selectrix":
+            {"Name":"Selectrix",
+             "Filename"  : "\\csv\\Selectrix.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "Datasheet" : True
+             },
+           "CAN":
+            {"Name":"CAN",
+             "Filename"  : "\\csv\\CAN.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "Datasheet" : True
+             },
+           "Examples":
+            {"Name":"Examples",
+             "Filename"  : "\\csv\\Examples.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "Datasheet" : True
+             },                             
+           "Config":
+            {"Name":"Config",
+             "Filename":"\\csv\\Config.csv",
+             "Fieldnames": "A;B;C;D",
+             "Formating" : { "HideCells"       : (("*",3),),
+                            "ProtectedCells"  : ( ("*",1),("*",3)),
+                            "FontColor"       : { "1": {
+                                                        "font"     : ("Arial",10),
+                                                        "fg"       : "#0000FF",
+                                                        "bg"       : "#FFFFFF",
+                                                        "Cells"    : ((0,"*"),)
+                                                        },
+                                                "default": {
+                                                       "font"     : ("Arial",10),
+                                                       "fg"       : "#000000",
+                                                       "bg"       : "#FFFFFF",
+                                                       "Cells"    : (("*","*"),)
+                                                       }
+                                                }
+                            }
+            },
+           "Languages":
+            {"Name":"Languages",
+             "Filename":"\\csv\\Languages.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I"
+            },
+           "Lib_Macros":
+            {"Name":"Lib_Macros",
+             "Filename":"\\csv\\Lib_Macros.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS"
+            },
+           "Libraries":
+            {"Name":"Libraries",
+             "Filename":"\\csv\\Libraries.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I;J",
+             "Formating" : {"ProtectedCells"  : ((0,"*"),(1,"*"),(2,"*"),(3,"*"),(4,"*"),(5,"*"),(6,"*"),(7,"*")),
+                            "FontColor"       : { "1": {
+                                                        "font"     : ("Arial",10),
+                                                        "fg"       : "#FFFF00",
+                                                        "bg"       : "#0000FF",
+                                                        "Cells"    : ((6,"*"),)
+                                                        },
+                                                "default": {
+                                                       "font"     : ("Arial",10),
+                                                       "fg"       : "#000000",
+                                                       "bg"       : "#FFFFFF",
+                                                       "Cells"    : (("*","*"),)
+                                                       }
+                                                }
+                            }
+            },                   
+           "Par_Description":
+            {"Name":"Par_Description",
+             "Filename":"\\csv\\Par_Description.csv",
+              "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
+            },                  
+           "Platform_Parameters":
+            {"Name":"Platform_Parameters",
+             "Filename":"\\csv\\Platform_Parameters.csv",
+             "Fieldnames": "A;B;C;D;E"
+            }
+        }
 
 
 class CWorkbook:
     def __init__(self, frame=None,path=None,workbookName=None, workookFilename=None):
         global Workbooks
         # Row and Columns are 0 based and not 1 based as in Excel
-        datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
-        datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
-                                "ProtectedCells"  : ((0,"*"),(1,"*"), ("*",12),("*",13),("*",14),("*",15),("*",16)),
-                                "FontColor"       : { "1": {
-                                                            "font"     : ("Arial",10),
-                                                            "fg"       : "#FFFF00",
-                                                            "bg"       : "#0000FF",
-                                                            "Cells"    : ((0,"*"),(1,"*"))
-                                                            },
-                                                      "2": {
-                                                            "font"     : ("Wingdings",10),
-                                                            "fg"       : "#000000",
-                                                            "bg"       : "#FFFFFF",
-                                                            "Cells"    : (("*",1),)
-                                                            },                                                          
-                                                    "default": {
-                                                           "font"     : ("Arial",10),
-                                                           "fg"       : "#000000",
-                                                           "bg"       : "#FFFFFF",
-                                                           "Cells"    : (("*","*"),)
-                                                           }
-                                        }
-                            }
-                                
-        sheetdict={"DCC":
-                    {"Name":"DCC",
-                     "Filename"  : "\\csv\\dcc.csv",
-                     "Fieldnames": datasheet_fieldnames,
-                     "Formating" : datasheet_formating,
-                     "Datasheet" : True
-                     },
-                   "Selectrix":
-                    {"Name":"Selectrix",
-                     "Filename"  : "\\csv\\Selectrix.csv",
-                     "Fieldnames": datasheet_fieldnames,
-                     "Formating" : datasheet_formating,
-                     "Datasheet" : True
-                     },
-                   "CAN":
-                    {"Name":"CAN",
-                     "Filename"  : "\\csv\\CAN.csv",
-                     "Fieldnames": datasheet_fieldnames,
-                     "Formating" : datasheet_formating,
-                     "Datasheet" : True
-                     },
-                   "Examples":
-                    {"Name":"Examples",
-                     "Filename"  : "\\csv\\Examples.csv",
-                     "Fieldnames": datasheet_fieldnames,
-                     "Formating" : datasheet_formating,
-                     "Datasheet" : True
-                     },                             
-                   "Config":
-                    {"Name":"Config",
-                     "Filename":"\\csv\\Config.csv",
-                     "Fieldnames": "A;B;C;D",
-                     "Formating" : { "HideCells"       : (("*",3),),
-                                    "ProtectedCells"  : ( ("*",1),("*",3)),
-                                    "FontColor"       : { "1": {
-                                                                "font"     : ("Arial",10),
-                                                                "fg"       : "#0000FF",
-                                                                "bg"       : "#FFFFFF",
-                                                                "Cells"    : ((0,"*"),)
-                                                                },
-                                                        "default": {
-                                                               "font"     : ("Arial",10),
-                                                               "fg"       : "#000000",
-                                                               "bg"       : "#FFFFFF",
-                                                               "Cells"    : (("*","*"),)
-                                                               }
-                                                        }
-                                    }
-                    },
-                   "Languages":
-                    {"Name":"Languages",
-                     "Filename":"\\csv\\Languages.csv",
-                     "Fieldnames": "A;B;C;D;E;F;G;H;I"
-                    },
-                   "Lib_Macros":
-                    {"Name":"Lib_Macros",
-                     "Filename":"\\csv\\Lib_Macros.csv",
-                     "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS"
-                    },
-                   "Libraries":
-                    {"Name":"Libraries",
-                     "Filename":"\\csv\\Libraries.csv",
-                     "Fieldnames": "A;B;C;D;E;F;G;H;I;J",
-                     "Formating" : {"ProtectedCells"  : ((0,"*"),(1,"*"),(2,"*"),(3,"*"),(4,"*"),(5,"*"),(6,"*"),(7,"*")),
-                                    "FontColor"       : { "1": {
-                                                                "font"     : ("Arial",10),
-                                                                "fg"       : "#FFFF00",
-                                                                "bg"       : "#0000FF",
-                                                                "Cells"    : ((6,"*"),)
-                                                                },
-                                                        "default": {
-                                                               "font"     : ("Arial",10),
-                                                               "fg"       : "#000000",
-                                                               "bg"       : "#FFFFFF",
-                                                               "Cells"    : (("*","*"),)
-                                                               }
-                                                        }
-                                    }
-                    },                   
-                   "Par_Description":
-                    {"Name":"Par_Description",
-                     "Filename":"\\csv\\Par_Description.csv",
-                      "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
-                    },                  
-                   "Platform_Parameters":
-                    {"Name":"Platform_Parameters",
-                     "Filename":"\\csv\\Platform_Parameters.csv",
-                     "Fieldnames": "A;B;C;D;E"
-                    }
-                }
+
         if workbookName:
             self.Name = workbookName
         else:
@@ -337,6 +343,7 @@ class CWorkbook:
         if frame != None:
             self.Path = path
             self.master = frame
+            self.tabframedict = {}
             
             style = ttk.Style(frame)
             style.configure('downtab.TNotebook', tabposition='sw')
@@ -348,20 +355,13 @@ class CWorkbook:
             self.sheets = list()
         
             for sheetname in sheetdict.keys():
-                sheetname_prop = sheetdict.get(sheetname)
-                datasheet = sheetname_prop.get("Datasheet",False)
-                formating_dict = sheetname_prop.get("Formating",None)
-                fieldnames = sheetname_prop.get("Fieldnames",None)
-                if type(fieldnames) == str:
-                    fieldnames = fieldnames.split(";")
                 tabframe = ttk.Frame(self.container,relief="ridge", borderwidth=1)
-                
-                worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,callback=datasheet)
+                worksheet = self.new_sheet(sheetname,tabframe)
                 tabframe.sheetname = sheetname
                 tabframe.sheet = worksheet
                 self.sheets.append(worksheet)
                 self.container.add(tabframe, text=sheetname)
-            
+                self.tabframedict[sheetname]=worksheet
             self.container.bind("<<NotebookTabChanged>>",self.TabChanged)
                
         else:
@@ -369,6 +369,15 @@ class CWorkbook:
             self.tablemodel= None
             self.sheets = None
             
+    def new_sheet(self,sheetname,tabframe):
+        sheetname_prop = sheetdict.get(sheetname)
+        datasheet = sheetname_prop.get("Datasheet",False)
+        formating_dict = sheetname_prop.get("Formating",None)
+        fieldnames = sheetname_prop.get("Fieldnames",None)
+        if type(fieldnames) == str:
+            fieldnames = fieldnames.split(";")
+        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=self.Path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,datasheet=datasheet,callback=datasheet)
+        return worksheet
 
             
     def TabChanged(self,_event=None):
@@ -450,12 +459,16 @@ class CWorkbook:
         
 
 class CWorksheet:
-    def __init__(self,Name,tablemodel=None,workbook=None,csv_filepathname=None,frame=None,fieldnames=None,formating_dict=None,callback=False):
+    def __init__(self,Name,tablemodel=None,workbook=None,csv_filepathname=None,frame=None,fieldnames=None,formating_dict=None,datasheet=False,callback=False):
         
         self.width = 1800
         self.height = 600
         self.Workbook = workbook
         self.ProtectContents = False
+        self.Datasheet = datasheet
+        self.csv_filepathname = csv_filepathname
+        self.fieldnames = fieldnames
+        self.formating_dict = formating_dict
         self.Name = Name
         if tablemodel:
             self.tablemodel = tablemodel
@@ -464,17 +477,21 @@ class CWorksheet:
             if csv_filepathname:
                 self.tablemodel = TableModel()
                 self.table = TableCanvas(frame, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
-                self.table.importCSV(filename=csv_filepathname, sep=';',fieldnames=fieldnames)
+                self.table.importCSV(filename=self.csv_filepathname, sep=';',fieldnames=self.fieldnames)
                 self.tablemodel = self.table.getModel()
                 if callback:
                     self.table.set_left_click_callback(self.left_click_callback)
             else:
                 return
-        if formating_dict:
-            self.tablemodel.nodisplay = formating_dict.get("HideCells",[])
-            self.tablemodel.protected_cells = formating_dict.get("ProtectedCells",[])
-            self.tablemodel.format_cells = formating_dict.get("FontColor",{})
+        if self.formating_dict:
+            self.tablemodel.nodisplay = self.formating_dict.get("HideCells",[])
+            self.tablemodel.protected_cells = self.formating_dict.get("ProtectedCells",[])
+            self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
         self.table.show()
+        self.update_table_properties()
+
+        
+    def update_table_properties(self):
         self.LastUsedRow_val = self.tablemodel.getRowCount()
         self.LastUsedColumn_val = self.tablemodel.getColumnCount()
         self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
@@ -484,7 +501,7 @@ class CWorksheet:
         self.searchcache = {}
         self.Shapes = [] #CShapelist([])
         self.CellDict = CCellDict()
-        self.End_val = self.LastUsedColumn_val
+        self.End_val = self.LastUsedColumn_val        
         
     def left_click_callback(self,row,col):
         print("Left_Click_Call_Back:",row,col)
@@ -499,12 +516,18 @@ class CWorksheet:
         else:
             return True
         
-    def EnbaleMousePosition(self):
+    def EnableMousePosition(self):
         pass
         
-    def addrow_after_current_row(self):
+    def addrow_after_current_row(self,copy=False):
         cur_row = self.table.getSelectedRow()
-        self.table.addRows(num=1,atrow=cur_row)
+        num_rows = len(self.table.get_selectedRecordNames())
+        if num_rows==0:
+            num_rows = 1
+        copyfromrow=None
+        if copy:
+            copyfromrow = cur_row
+        self.table.addRows(num=num_rows,atrow=cur_row,copyfromrow=copyfromrow)
     
     def deleterows(self):
         self.table.deleteRow()
@@ -690,6 +713,22 @@ class CWorksheet:
     def getSelectedRow(self):
         selectedRow=self.table.getSelectedRow()+1
         return selectedRow
+    
+    def clearSheet(self):
+        self.table.clearData(question=False)
+        self.table.importCSV(filename=self.csv_filepathname, sep=';',fieldnames=self.fieldnames)
+        self.tablemodel = self.table.getModel()
+        if self.formating_dict:
+            self.tablemodel.nodisplay = self.formating_dict.get("HideCells",[])
+            self.tablemodel.protected_cells = self.formating_dict.get("ProtectedCells",[])
+            self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
+        #self.table.redraw()
+        self.update_table_properties()
+        self.Activate()
+        
+
+        
+        
 
 class CShapeList(object):
     def __init__(self,shapelist):

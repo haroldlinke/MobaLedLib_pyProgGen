@@ -124,7 +124,6 @@ class UserForm_Other():
 
         return self.res
 
-
     
     """ Following parameters exist:
      LED Cx  InCh    Val0    Val1    On_Min  On_Limit    LedCnt  Brightness  DstVar  Mode    Enable  TimeOut DstVar1 DstVarN MinTime MaxTime MinOn   MaxOn   Var SrcLED  EnableCh    Start   End GlobVarNr   FirstInCh   InCh_Cnt    Duration    Period  Pause   Act Off S_InCh  R_InCh  Timeout T_InCh  DstVar0 MinBrightness   MaxBrightness   B_LED_Cx    B_LED   InNr    TmpNr   Rotate  Steps   MaxSoundNr  InReset

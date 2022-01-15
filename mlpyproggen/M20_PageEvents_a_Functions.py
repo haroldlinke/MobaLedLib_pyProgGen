@@ -52,34 +52,36 @@ from vb2py.vbconstants import *
 #import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
 #from mlpyproggen.M06_Write_Header import Start_LED_Channel
 
+import mlpyproggen.M01_Gen_Release_Version as M01
 import mlpyproggen.M02_Public as M02
 import mlpyproggen.M02_global_variables as M02GV
-import mlpyproggen.M03_Dialog as M03
+#import mlpyproggen.M03_Dialog as M03
 import mlpyproggen.M06_Write_Header as M06
-import mlpyproggen.M06_Write_Header_LED2Var as M06LED
-import mlpyproggen.M06_Write_Header_Sound as M06Sound
-import mlpyproggen.M06_Write_Header_SW as M06SW
-import mlpyproggen.M07_COM_Port as M07
+#import mlpyproggen.M06_Write_Header_LED2Var as M06LED
+#import mlpyproggen.M06_Write_Header_Sound as M06Sound
+#import mlpyproggen.M06_Write_Header_SW as M06SW
+#import mlpyproggen.M07_COM_Port as M07
 import mlpyproggen.M08_ARDUINO as M08
 import mlpyproggen.M09_Language as M09
 import mlpyproggen.M09_Select_Macro as M09SM
-import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
-import mlpyproggen.M10_Par_Description as M10
-import mlpyproggen.M20_PageEvents_a_Functions as M20
+#import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
+#import mlpyproggen.M10_Par_Description as M10
+#import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M25_Columns as M25
 import mlpyproggen.M27_Sheet_Icons as M27
-import mlpyproggen.M28_divers as M28
+#import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
-import mlpyproggen.M31_Sound as M31
-import mlpyproggen.M37_Inst_Libraries as M37
-import mlpyproggen.M60_CheckColors as M60
-import mlpyproggen.M70_Exp_Libraries as M70
-import mlpyproggen.M80_Create_Mulitplexer as M80
-import mlpyproggen.P01_Worksheetfunction as WorksheetFunction
+#import mlpyproggen.M31_Sound as M31
+#import mlpyproggen.M37_Inst_Libraries as M37
+#import mlpyproggen.M60_CheckColors as M60
+#import mlpyproggen.M70_Exp_Libraries as M70
+#import mlpyproggen.M80_Create_Mulitplexer as M80
+#import mlpyproggen.P01_Worksheetfunction as WorksheetFunction
 
 import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
 
 import mlpyproggen.P01_Workbook as P01
+import mlpyproggen.Prog_Generator as PG
 
 from mlpyproggen.X01_Excel_Consts import *
 
@@ -558,6 +560,8 @@ def Option_Dialog():
 def ClearSheet():
     #----------------------
     if M30.MsgBoxMov(M09.Get_Language_Str('Wollen Sie alle Einträge dieser Seite löschen?'), vbQuestion + vbYesNo, M09.Get_Language_Str('Seite Löschen?')) == vbYes:
+        P01.ActiveSheet.clearSheet()
+        """
         OldUppdating =  P01.Application.ScreenUpdating
         P01.Application.ScreenUpdating = False
         OldEvents =  P01.Application.EnableEvents
@@ -572,12 +576,21 @@ def ClearSheet():
         #*HL Del_Icons_in_IconCol()
         P01.Application.EnableEvents = OldEvents
         P01.Application.ScreenUpdating = OldUppdating
+        """
+        __set_column_width(P01.ActiveSheet)
+        
+def __set_column_width(sheet):
+    M01.set_columnwidth(sheet)
+    
+
 
 def Show_Help():
     #---------------------
     P01.Application.EnableEvents = True
     ## VB2PY (CheckDirective) VB directive took path 1 on 1
-    Shell('Explorer https://wiki.mobaledlib.de/anleitungen/spezial/programmgenerator')
+    
+    #P01.Shell('Explorer https://wiki.mobaledlib.de/anleitungen/spezial/programmgenerator')
+    PG.global_controller.call_helppage()
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Sh - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Target - ByVal 

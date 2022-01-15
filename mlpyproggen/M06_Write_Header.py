@@ -55,25 +55,25 @@ from vb2py.vbconstants import *
 #from mlpyproggen.F_UserForm_Header_Created import *
 
 import mlpyproggen.M02_Public as M02
-import mlpyproggen.M03_Dialog as M03
+#import mlpyproggen.M03_Dialog as M03
 import mlpyproggen.M06_Write_Header_LED2Var as M06LED
 import mlpyproggen.M06_Write_Header_Sound as M06Sound
 import mlpyproggen.M06_Write_Header_SW as M06SW
-import mlpyproggen.M07_COM_Port as M07
+#import mlpyproggen.M07_COM_Port as M07
 import mlpyproggen.M08_ARDUINO as M08
 import mlpyproggen.M09_Language as M09
 import mlpyproggen.M09_Select_Macro as M09SM
-import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
-import mlpyproggen.M10_Par_Description as M10
+#import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
+#import mlpyproggen.M10_Par_Description as M10
 import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M25_Columns as M25
-import mlpyproggen.M27_Sheet_Icons as M27
+#import mlpyproggen.M27_Sheet_Icons as M27
 import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
-import mlpyproggen.M31_Sound as M31
-import mlpyproggen.M37_Inst_Libraries as M37
-import mlpyproggen.M60_CheckColors as M60
-import mlpyproggen.M70_Exp_Libraries as M70
+#import mlpyproggen.M31_Sound as M31
+#import mlpyproggen.M37_Inst_Libraries as M37
+#import mlpyproggen.M60_CheckColors as M60
+#import mlpyproggen.M70_Exp_Libraries as M70
 import mlpyproggen.M80_Create_Mulitplexer as M80
 
 import mlpyproggen.P01_Workbook as P01
@@ -789,6 +789,7 @@ def Create_HeaderFile():
     SX_Ch = int()
     #-----------------------------
     # Is called if the "Z. Arduino schicken" button is pressed
+    P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt"))
     M30.Check_Version()
     M20.Update_Start_LedNr()
     M30.Clear_Platform_Parameter_Cache()
@@ -796,7 +797,7 @@ def Create_HeaderFile():
     #Ctrl_Pressed = GetAsyncKeyState(VK_CONTROL) != 0
     #if Ctrl_Pressed:
     #    UserForm_Header_Created.DontShowAgain = False
-    P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt"))
+    
     M25.Make_sure_that_Col_Variables_match()
     if not Init_HeaderFile_Generation():
         return

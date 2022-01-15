@@ -397,7 +397,7 @@ class TableCanvas(Canvas):
             col = self.model.getColumnIndex(colname)
         #bgcolor = self.model.getColorAt(row,col, 'bg')
         #fgcolor = self.model.getColorAt(row,col, 'fg')
-        fgcolor,bgcolor,font = model.getCellFormatAt(row,col)
+        fgcolor,bgcolor,font = self.model.getCellFormatAt(row,col)
         text = self.model.getValueAt(row,col)
         self.drawText(row, col, text, fgcolor,font=font)
         if bgcolor != None:
@@ -485,7 +485,7 @@ class TableCanvas(Canvas):
         self.setSelectedRow(self.model.getRecordIndex(key))
         return
 
-    def addRows(self, num=None,atrow=None):
+    def addRows(self, num=None,atrow=None,copyfromrow=None):
         """Add new rows"""
 
         if num == None:
@@ -496,7 +496,7 @@ class TableCanvas(Canvas):
             return
         if atrow == None:
             atrow=self.getSelectedRow()
-        keys = self.model.autoAddRows(num,atrow=atrow)
+        keys = self.model.autoAddRows(num,atrow=atrow,copyfromrow=copyfromrow)
         self.redrawTable()
         self.setSelectedRow(self.model.getRecordIndex(keys[0]))
         return
@@ -574,14 +574,14 @@ class TableCanvas(Canvas):
             self.redrawTable()
         return
 
-    def deleteCells(self, rows, cols):
+    def deleteCells(self, rows, cols,question=True):
         """Clear the cell contents"""
-
-        n =  messagebox.askyesno("Clear Confirm",
-                                   "Clear this data?",
-                                   parent=self.parentframe)
-        if not n:
-            return
+        if question:
+            n =  messagebox.askyesno("Clear Confirm",
+                                       "Clear this data?",
+                                       parent=self.parentframe)
+            if not n:
+                return
         for col in cols:
             for row in rows:
                 #absrow = self.get_AbsoluteRow(row)
@@ -589,12 +589,12 @@ class TableCanvas(Canvas):
                 self.redrawCell(row,col)
         return
 
-    def clearData(self, evt=None):
+    def clearData(self, evt=None,question=True):
         """Delete cells from gui event"""
 
         rows = self.multiplerowlist
         cols = self.multiplecollist
-        self.deleteCells(rows, cols)
+        self.deleteCells(rows, cols,question=question)
         return
 
     def autoAddColumns(self, numcols=None):

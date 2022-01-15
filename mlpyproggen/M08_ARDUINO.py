@@ -79,6 +79,8 @@ import mlpyproggen.M40_ShellandWait as M40
 #import mlpyproggen.M70_Exp_Libraries as M70
 #import mlpyproggen.M80_Create_Mulitplexer as M80
 
+#import mlpyproggen.D08_Select_COM_Port_Userform as D08
+
 import mlpyproggen.P01_Workbook as P01
 
 import mlpyproggen.Prog_Generator as PG

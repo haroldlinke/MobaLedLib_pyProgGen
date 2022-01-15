@@ -46,29 +46,31 @@ from vb2py.vbconstants import *
 #import mlpyproggen.M09_Language as M09
 #import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M30_Tools as M30
-import mlpyproggen.U01_userform as U01
+#import mlpyproggen.U01_userform as U01
 
 import mlpyproggen.M02_Public as M02
-import mlpyproggen.M03_Dialog as M03
-import mlpyproggen.M06_Write_Header_LED2Var as M06LED
-import mlpyproggen.M06_Write_Header_Sound as M06Sound
-import mlpyproggen.M06_Write_Header as M06
+#import mlpyproggen.M03_Dialog as M03
+#import mlpyproggen.M06_Write_Header_LED2Var as M06LED
+#import mlpyproggen.M06_Write_Header_Sound as M06Sound
+#import mlpyproggen.M06_Write_Header as M06
 import mlpyproggen.M07_COM_Port_New as M07New
 import mlpyproggen.M08_ARDUINO as M08
 import mlpyproggen.M09_Language as M09
-import mlpyproggen.M09_Select_Macro as M09SM
-import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
-import mlpyproggen.M10_Par_Description as M10
-import mlpyproggen.M20_PageEvents_a_Functions as M20
+#import mlpyproggen.M09_Select_Macro as M09SM
+#import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
+#import mlpyproggen.M10_Par_Description as M10
+#import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M25_Columns as M25
-import mlpyproggen.M27_Sheet_Icons as M27
-import mlpyproggen.M28_divers as M28
+#import mlpyproggen.M27_Sheet_Icons as M27
+#import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
-import mlpyproggen.M31_Sound as M31
-import mlpyproggen.M37_Inst_Libraries as M37
-import mlpyproggen.M60_CheckColors as M60
-import mlpyproggen.M70_Exp_Libraries as M70
-import mlpyproggen.M80_Create_Mulitplexer as M80
+#import mlpyproggen.M31_Sound as M31
+#import mlpyproggen.M37_Inst_Libraries as M37
+#import mlpyproggen.M60_CheckColors as M60
+#import mlpyproggen.M70_Exp_Libraries as M70
+#import mlpyproggen.M80_Create_Mulitplexer as M80
+
+#import mlpyproggen.D08_Select_COM_Port_Userform as D08
 
 import mlpyproggen.P01_Workbook as P01
 
@@ -242,7 +244,7 @@ def Check_USB_Port_with_Dialog(ComPortColumn):
     fn_return_value = False
     #---------------------------------------------------------------------------
     if P01.val(ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)) <= 0:
-        fn_return_value = False #*HL USB_Port_Dialog(ComPortColumn)
+        fn_return_value = M07New.USB_Port_Dialog(ComPortColumn)
     else:
         fn_return_value = True
     return fn_return_value
@@ -264,7 +266,7 @@ def Get_USB_Port_with_Dialog(Right=VBMissingArgument):
         ComPortColumn = M25.COMPort_COL
     with_0 = ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)
     if P01.val(with_0.Value) <= 0:
-        if USB_Port_Dialog(ComPortColumn) == False:
+        if M07New.USB_Port_Dialog(ComPortColumn) == False:
             fn_return_value = - 1
             return fn_return_value
     fn_return_value = P01.val(with_0.Value)
@@ -811,66 +813,3 @@ def SendMLLCommand(ComPort, message, UseHardwareHandshake, ShowResult):
     fn_return_value = False
     return fn_return_value
 
-# VB2PY (UntranslatedCode) Option Explicit
-# Revision History:
-# ~~~~~~~~~~~~~~~~~
-# 30.12.19: - Copied from Prog_Generator
-#           - Added function ComPortPage() to be able to store the com port in one page for all sheets
-# 31.12.19: - Improved the Get_USB_Ports() function because the "find" function didn't work on Norberts compuer for some reasons
-# 27.03.20: - method InitComPort to be able to init the serial communication parameter
-# 31.03.20: - method InitComPort: also set com timeouts
-#           - support com ports > COM9
-# 07.04.20: - Jürgen added functions to detect the connected Arduinos
-# 04.05.20: - Speed up from 3 sec to 1 sec by
-#             - Requesting only the Device Signatur
-#             - Reducing the number of requested bytes in Transact()
-# 21.04.21: - Add experimantal Pico Support
-#           - move generic SendMLLCommand into this module
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function SetCommState Lib "kernel32.dll" (ByVal hCommDev As Long, ByRef lpDCB As DCB) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function GetCommState Lib "kernel32.dll" (ByVal nCid As Long, ByRef lpDCB As DCB) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function BuildCommDCB Lib "kernel32.dll" Alias "BuildCommDCBA" (ByVal lpDef As String, ByRef lpDCB As DCB) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function SetCommTimeouts Lib "kernel32" (ByVal hFile As Long, lpCommTimeouts As COMMTIMEOUTS) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function GetCommTimeouts Lib "kernel32.dll" (ByVal hFile As Long, ByRef lpCommTimeouts As COMMTIMEOUTS) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function EscapeCommFunction Lib "kernel32.dll" (ByVal hFile As Long, ByVal dwFunc As Long) As Boolean
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function PurgeComm Lib "kernel32" (ByVal hFile As Long, ByVal dwFlags As Long) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function GetDefaultCommConfig Lib "kernel32" Alias "GetDefaultCommConfigA" (ByVal lpszName As String, _\nlpCC As COMMCONFIG, lpdwSize As Long) As Long
-#-------------------------------------------------------------------------------
-# System Constants
-#-------------------------------------------------------------------------------
-# COMM Functions
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-#
-# Creates or opens a communications resource and returns a handle
-# that can be used to access the resource.
-#
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function CreateFile Lib "kernel32" Alias "CreateFileA" _\n(ByVal lpFileName As String, ByVal dwDesiredAccess As Long, _\nByVal dwShareMode As Long, lpSecurityAttributes As Any, _\nByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, _\nByVal hTemplateFile As Long) As Long
-#
-# Closes an open communications device or file handle.
-#
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function WriteFile Lib "kernel32.dll" (ByVal hFile As Long, _\nByRef Buffer As Any, ByVal nNumberOfBytesToWrite As Long, _\nByRef lpNumberOfBytesWritten As Long, ByVal lpOverlapped As Long) As Long
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function ReadFile Lib "kernel32.dll" (ByVal hFile As Long, _\nByRef Buffer As Any, ByVal nNumberOfBytesToRead As Long, _\nByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
-#-------------------------
-#------------------------------------------
-#-----------------------------------------------------------
-#UT------------------------------
-#-----------------------------------------
-#---------------------------------------------------------------------------
-#UT------------------------------------------
-#-----------------------------------------------------------------------------
-#-------------------------------------------------------------
-#------------------------------------------------------------------------------------------------
-#********************** 07.04.20: New block from Jürgen ***************************
-#------------------------------------------------------------------------------------------------------------------------------
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------------------
-#UT------------------------------------------
-#UT---------------------
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#UT------------------------------------
-#---------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------
-#--------------------------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------------------------------------------
