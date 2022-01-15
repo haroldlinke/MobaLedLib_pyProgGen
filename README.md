@@ -7,7 +7,7 @@ MobaledLib 3.1.0 has to be installed
 
 
 
-Installation option 3: Python files - e.g. for LINUX and MAC
+Installation using Python files
 1. search for the MLL-subfolder LEDs_Autoprog - this folder must contain the file "LEDs_AutoProg.ino"
 2. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
 3. create a subfolder Python
@@ -31,22 +31,19 @@ The VBA code was translated 1 to 1 to Python using the Wedbased VB2PY-converter:
 
 The Tables are based on Tkintertable: https://github.com/dmnfarrell/tkintertable
 
-Only the "Dialog"-Button and the "Send-to-ARDUINO"-Button are implemented yet.
+All Dialog-Buttons except Hide/Unhide and unhide all are implemented.
 The main Dialogs are implemented focusing on the main way to enter data and create the MACRO definition in the table.
 
-It is possible to use the dialog to create House/Gaslights Macros and Macros using the Generic Form UserFormOther. Editing of Macros via Dialog should be possible too.
-Sending of Macros to ARDUINO is possible. The headerfile creation is using the original VBA logic. The sending to the ARDUINO is done using the Pytho based logic on the pyProgramGenerator. Check the ARDUINO Einstellungen - Page if the ARDUINO is recognized correctly.
+It is possible to use the dialog to create House/Gaslights Macros and Macros using the Generic Form UserFormOther. Editing of Macros via Dialog is possible too.
+Sending of Macros to ARDUINO is possible. The headerfile creation is using the original VBA logic. The sending to the ARDUINO is done using the Python based logic of the "old" pyProgramGenerator. Check the ARDUINO Einstellungen - Page if the ARDUINO is recognized correctly.
 
 Limitations:
-There is no save or laod command for the complete data. There is also NO check if the data was saved.
-It is possible to save the tables individually by right-clicking in the table. Select: File->Save.
-
 Editing individual cells is possible. There is no automatic update of the LEDNr columns yet.
 
-There are a lot of hidden issues with sytactical/logical differences between VBA and Python that will cause crashes or wrong behavior:
-handling of global variables
-handling of by_ref parameters
-construction using automatic type translation: e.g. string = string + integer + string
+There are a lot of hidden issues with sytactical/logical differences between VBA and Python that may cause crashes or wrong behavior:
+- handling of global variables
+- handling of by_ref parameters
+- construction using automatic type translation: e.g. string = string + integer + string
 
 
 
