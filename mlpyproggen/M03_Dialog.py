@@ -101,6 +101,7 @@ def Dialog_Guided_Input():
         #for i in vbForRange(1, 5):
         #    DoEvents()
         #    Sleep(50)
+        P01.ActiveSheet.remove_bindings()
         while 1:
             __Input_NextRow = False
             __Ask_Input_NextRow = True
@@ -109,9 +110,10 @@ def Dialog_Guided_Input():
             if __Input_NextRow:
                 Debug.Print('ToDo: Prüfen of die nächste Zeile leer ist und geg. eine Zeile einfügen')
             if not (__Input_NextRow):
-                P01.ActiveSheet.Redraw_table()
+                P01.ActiveSheet.Redraw_table(do_bindings=True)
                 break
     else:
+        P01.ActiveSheet.remove_bindings()
         __Ask_Input_NextRow = False
         ActiveCell = P01.ActiveCell()
         r = ActiveCell.Row
@@ -140,7 +142,7 @@ def Dialog_Guided_Input():
             else:
                 P01.MsgBox(M09.Get_Language_Str('Für die Ausgewählte Spalte existiert noch kein Dialog'), vbInformation, M09.Get_Language_Str('Kein Dialog vorhanden'))
     
-    P01.ActiveSheet.Redraw_table()
+    P01.ActiveSheet.Redraw_table(do_bindings=True)
     return
     
 

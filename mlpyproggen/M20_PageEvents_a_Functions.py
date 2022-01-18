@@ -210,6 +210,8 @@ def Update_Start_LedNr():
     #display_Type = int()
 
     #Row = Variant()
+    
+    value = P01.getvalue(3,12)
 
     LEDNr = vbObjectInitialize((M02.LED_CHANNELS,), Long)
 
@@ -231,14 +233,18 @@ def Update_Start_LedNr():
     # 03.04.21 Juergen - try to find out if only the main LED Channel is in use
     Max_LEDs_Channel = 0
     for row in P01.ActiveSheet.UsedRange.Rows:
+        value = P01.getvalue(3,12)
         r = row.Row
+        P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Max LEDs Channel: "+str(r)))
         if r >= M02.FirstDat_Row:
             if Row_is_Achtive(r):
                 if P01.val(P01.Cells(r, M25.LED_Cha_Col)) > Max_LEDs_Channel:
                     Max_LEDs_Channel = P01.val(P01.Cells(r, M25.LED_Cha_Col))
     for row in P01.ActiveSheet.UsedRange.Rows:
+        value = P01.getvalue(3,12)
         r = row.Row
-        print("Update Start LED: Row=",r)
+        P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Update Start LED: "+str(r)))
+        #print("Update Start LED: Row=",r)
         if r >= M02.FirstDat_Row:
             if Row_is_Achtive(r):
                 LEDs_Channel = P01.val(P01.Cells(r, M25.LED_Cha_Col))

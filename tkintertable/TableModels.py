@@ -653,6 +653,7 @@ class TableModel(object):
         """Returns the cell value at location specified
             by columnIndex and rowIndex."""
         value = self.getRecordAttributeAtColumn(rowIndex, columnIndex)
+        #print("getValueAt:",rowIndex,columnIndex,value)
         return value
 
     def setValueAt(self, value, rowIndex, columnIndex):

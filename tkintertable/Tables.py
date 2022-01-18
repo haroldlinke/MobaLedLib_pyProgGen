@@ -21,6 +21,7 @@
 
 from __future__ import absolute_import, division, print_function
 import sys
+import traceback
 #from PIL import Image, ImageTk
 import PIL as PIL
 try:
@@ -49,6 +50,7 @@ import math, time
 import os, types
 import copy
 import platform
+from mlpyproggen.tooltip import Tooltip_Canvas
 
 class TableCanvas(Canvas):
     """A tkinter class for providing table functionality"""
@@ -69,6 +71,7 @@ class TableCanvas(Canvas):
         self.set_defaults()
         self.fgcolor = fgcolor
         self.iconlist=[]
+        self.tooltip_var_dict = {}
 
         self.currentpage = None
         self.navFrame = None
@@ -184,27 +187,42 @@ class TableCanvas(Canvas):
         self.bind('<B1-Motion>', self.handle_mouse_drag)
         self.bind('<Motion>', self.handle_motion)
 
-        self.bind_all("<Control-x>", self.deleteRow)
-        self.bind_all("<Control-n>", self.addRow)
-        self.bind_all("<Delete>", self.clearData)
-        self.bind_all("<Control-v>", self.paste)
+        self.bind("<Control-x>", self.deleteRow)
+        self.bind("<Control-n>", self.addRow)
+        self.bind("<Delete>", self.clearData)
+        self.bind("<Control-v>", self.paste)
 
         #if not hasattr(self,'parentapp'):
         #    self.parentapp = self.parentframe
 
-        self.parentframe.master.bind_all("<Right>", self.handle_arrow_keys)
-        self.parentframe.master.bind_all("<Left>", self.handle_arrow_keys)
-        self.parentframe.master.bind_all("<Up>", self.handle_arrow_keys)
-        self.parentframe.master.bind_all("<Down>", self.handle_arrow_keys)
-        self.parentframe.master.bind_all("<KP_8>", self.handle_arrow_keys)
-        self.parentframe.master.bind_all("<Return>", self.handle_arrow_keys)
-        self.parentframe.master.bind_all("<Tab>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<Right>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<Left>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<Up>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<Down>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<KP_8>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<Return>", self.handle_arrow_keys)
+        self.parentframe.bind_all("<Tab>", self.handle_arrow_keys)
         #if 'windows' in self.platform:
         self.bind("<MouseWheel>", self.mouse_wheel)
         self.bind('<Button-4>', self.mouse_wheel)
         self.bind('<Button-5>', self.mouse_wheel)
         self.focus_set()
         return
+    
+    def remove_bindings(self):
+        """Bind keys and mouse clicks, this can be overriden"""
+        #if not hasattr(self,'parentapp'):
+        #    self.parentapp = self.parentframe
+
+        self.parentframe.unbind_all("<Right>")
+        self.parentframe.unbind_all("<Left>" )
+        self.parentframe.unbind_all("<Up>")
+        self.parentframe.unbind_all("<Down>")
+        self.parentframe.unbind_all("<KP_8>")
+        self.parentframe.unbind_all("<Return>")
+        self.parentframe.unbind_all("<Tab>")
+
+        return    
 
     def getModel(self):
         """Get the current table model"""
@@ -1062,6 +1080,14 @@ class TableCanvas(Canvas):
         self.lastmultiplerowlist = self.multiplerowlist
             #print self.multiplerowlist
         return
+    
+    def get_previousrow(self):
+        prevrow = self.currentrow
+        while prevrow > 0:
+            prevrow=prevrow-1
+            if not any(elem in self.model.protected_cells for elem in (("*","*"),(prevrow,"*"))):
+                return prevrow
+        return prevrow
 
     def handle_arrow_keys(self, event):
         """Handle arrow keys press"""
@@ -1074,20 +1100,21 @@ class TableCanvas(Canvas):
             return
 
         if event.keysym == 'Up':
-            if self.currentrow == 0:
+            prevrow = self.get_previousrow()
+            if prevrow==0:
                 return
             else:
-                self.currentrow  = self.currentrow -1
+                self.gotoprevRow() #self.currentrow = prevrow
         elif event.keysym == 'Down':
             if self.currentrow >= self.rows-1:
                 return
             else:
-                self.currentrow  = self.currentrow +1
+                self.gotonextRow()  # self.currentrow  = self.currentrow +1
         elif event.keysym == 'Right' or event.keysym == 'Tab':
             if self.currentcol >= self.cols-1:
                 if self.currentrow < self.rows-1:
                     self.currentcol = 0
-                    self.currentrow  = self.currentrow +1
+                    self.gotonextRow() #  self.currentrow  = self.currentrow +1
                 else:
                     return
             else:
@@ -1098,7 +1125,8 @@ class TableCanvas(Canvas):
                     return
                 else:
                     self.currentcol = self.cols-1
-                    self.currentrow = self.currentrow - 1
+                    self.gotoprevRow() 
+                    #self.currentrow = self.currentrow - 1
             else:
                 self.currentcol  = self.currentcol -1
         self.drawSelectedRect(self.currentrow, self.currentcol)
@@ -1166,20 +1194,10 @@ class TableCanvas(Canvas):
             self.drawTooltip(row, col)
             
         if self.Flag_move:
-           
-            #print("Move:", row)
-            
             self.destrow = row
             self.multiplerowlist=[row]
-            
-            #self.moveRows(self.lastmultiplerowlist, self.destrow)
-            
-            #print("Mousedrag-Move:",self.lastmultiplerowlist,self.multiplerowlist )
-        
             self.drawMultipleRows(self.multiplerowlist)
             self.tablerowheader.drawSelectedRows(self.multiplerowlist)
-            #draw selected cells outline using row and col lists
-            #print self.multiplerowlist
             self.drawMultipleCells()
                 
 
@@ -1192,7 +1210,8 @@ class TableCanvas(Canvas):
             self.cellentry.destroy()
         self.currentcol=self.currentcol+1
         if self.currentcol >= self.cols-1:
-            self.currentrow  = self.currentrow +1
+            #self.currentrow  = self.currentrow +1
+            self.gotonextRow()
             self.currentcol = self.currentcol+1
         self.drawSelectedRect(self.currentrow, self.currentcol)
         return
@@ -1282,7 +1301,7 @@ class TableCanvas(Canvas):
         if len(self.multiplerowlist) == 0 or len(self.multiplecollist) == 0:
             return None
 
-        print (rows, cols)
+        #print (rows, cols)
         if cols == None:
             cols = range(self.cols)
         for r in rows:
@@ -1761,6 +1780,10 @@ class TableCanvas(Canvas):
         
         if ("*","*") in self.model.nodisplay or (row,"*") in self.model.nodisplay or ("*",col) in self.model.nodisplay or (row,col) in self.model.nodisplay:
             return
+        #print("Drawtext:",row,col,celltxt)
+        #if row==2 and col==11:
+            #print("Drawtext:",row,col,celltxt)
+            #traceback.print_stack()
 
         self.delete('celltext'+str(col)+'_'+str(row))
         h=self.rowheight
@@ -1795,6 +1818,8 @@ class TableCanvas(Canvas):
             x1 = x1-w/2+pad
         elif align == 'e':
             x1 = x1+w/2-pad
+        
+        tooltip_txt = celltxt
 
         if w < 18:
             celltxt = '.'
@@ -1845,6 +1870,7 @@ class TableCanvas(Canvas):
                                           fill=linkcolor,
                                           font=linkfont,
                                           tag=('text','hlink','celltext'+str(col)+'_'+str(row)))
+                self.ToolTip_canvas(self, rect,text=tooltip_txt)
                 if haslink == 1:
                     self.tag_bind(rect, '<Double-Button-1>', self.check_hyperlink)
 
@@ -1860,7 +1886,23 @@ class TableCanvas(Canvas):
                                       font=font,
                                       anchor=align,
                                       tag=('text','celltext'+str(col)+'_'+str(row)))
+            self.ToolTip_canvas(self, rect,text=tooltip_txt)
+        
+        
+        
         return
+    
+    def ToolTip_canvas(self, canvas, objid,text="",button_1=False):
+        tooltiptext = text
+        tooltip_var = self.tooltip_var_dict.get(objid,None)
+        if tooltip_var==None:
+            tooltip_var=Tooltip_Canvas(canvas, objid, text=tooltiptext,button_1=button_1,controller=self)
+            self.tooltip_var_dict[objid] = tooltip_var
+        else:
+            tooltip_var.unschedule()
+            tooltip_var.hide()
+            tooltip_var.update_text(text)            
+        return    
 
     def isLink(self, cell):
         """Checks if cell is a hyperlink, without using isinstance"""
@@ -1937,6 +1979,7 @@ class TableCanvas(Canvas):
 
     def drawTooltip(self, row, col):
         """Draw a tooltip showing contents of cell"""
+        return
 
         x1,y1,x2,y2 = self.getCellCoords(row,col)
         w=x2-x1
@@ -1952,6 +1995,8 @@ class TableCanvas(Canvas):
             return
 
         sfont = font.Font(family='Arial', size=12,weight='bold')
+        
+        
         obj = self.create_text(x1+w/1.5,y2,text=text,
                                 anchor='w',
                                 font=sfont,tag='tooltip')

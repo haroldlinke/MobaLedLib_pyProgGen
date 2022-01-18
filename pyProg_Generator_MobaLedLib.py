@@ -138,7 +138,7 @@ def _(text):
 
 
 tabClassList_all = ( StartPage, Prog_GeneratorPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
-tabClassList_mll_only = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_mll_only = ( StartPage, Prog_GeneratorPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 tabClassList_SetColTab = (ColorCheckPage, SerialMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 tabClassList_pyProg_only = ( StartPage, Prog_GeneratorPage,EffectTestPage, EffectMacroPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 

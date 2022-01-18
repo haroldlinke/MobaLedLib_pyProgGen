@@ -799,12 +799,13 @@ def Create_HeaderFile():
     #    UserForm_Header_Created.DontShowAgain = False
     
     M25.Make_sure_that_Col_Variables_match()
+    P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Init Headerfile Generation"))
     if not Init_HeaderFile_Generation():
         return
     sx = M25.Page_ID == 'Selectrix'
     for r in vbForRange(M02.FirstDat_Row, M30.LastUsedRow()): #*HL
         if not P01.Rows(r).EntireRow.Hidden and P01.Cells(r, M02.Enable_Col) != '':
-            P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Macrozeile: "+str(r)))
+            P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. 2nd round - Macrozeile: "+str(r)))
             Addr = - 1
             if M25.Address_starts_with_a_Number(r):
                 if sx:

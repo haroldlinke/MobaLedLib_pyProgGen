@@ -62,6 +62,12 @@ def updateWindow():
 def TimeValue(Duration):
     return 5
 
+def getvalue(row,column):
+    value=ActiveSheet.tablemodel.getValueAt(row-1,column-1)
+    print("P01.getvalue:",row,column,value)
+    
+    return value
+
 def ActiveCell():
     global Selection
     table = ActiveSheet.table
@@ -243,33 +249,34 @@ sheetdict={"DCC":
              "Filename"  : "\\csv\\dcc.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
-             "Datasheet" : True
+             "SheetType" : "Datasheet"
              },
            "Selectrix":
             {"Name":"Selectrix",
              "Filename"  : "\\csv\\Selectrix.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
-             "Datasheet" : True
+             "SheetType" : "Datasheet"
              },
            "CAN":
             {"Name":"CAN",
              "Filename"  : "\\csv\\CAN.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
-             "Datasheet" : True
+             "SheetType" : "Datasheet"
              },
            "Examples":
             {"Name":"Examples",
              "Filename"  : "\\csv\\Examples.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
-             "Datasheet" : True
+             "SheetType" : "Datasheet"
              },                             
            "Config":
             {"Name":"Config",
              "Filename":"\\csv\\Config.csv",
              "Fieldnames": "A;B;C;D",
+             "SheetType" : "Config",
              "Formating" : { "HideCells"       : (("*",3),),
                             "ProtectedCells"  : ( ("*",1),("*",3)),
                             "FontColor"       : { "1": {
@@ -362,6 +369,9 @@ class CWorkbook:
                 self.sheets.append(worksheet)
                 self.container.add(tabframe, text=sheetname)
                 self.tabframedict[sheetname]=worksheet
+                if not self.showws and not PG.global_controller.show_pyPrgrammGenerator:
+                    self.container.tab(tabframe,state="hidden")
+                    
             self.container.bind("<<NotebookTabChanged>>",self.TabChanged)
                
         else:
@@ -371,12 +381,14 @@ class CWorkbook:
             
     def new_sheet(self,sheetname,tabframe):
         sheetname_prop = sheetdict.get(sheetname)
-        datasheet = sheetname_prop.get("Datasheet",False)
+        sheettype = sheetname_prop.get("SheetType","")
+        callback = sheettype=="Datasheet"
+        self.showws = sheettype in ["Datasheet","Config"]
         formating_dict = sheetname_prop.get("Formating",None)
         fieldnames = sheetname_prop.get("Fieldnames",None)
         if type(fieldnames) == str:
             fieldnames = fieldnames.split(";")
-        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=self.Path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,datasheet=datasheet,callback=datasheet)
+        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=self.Path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,Sheettype=sheettype,callback=callback)
         return worksheet
 
             
@@ -459,13 +471,13 @@ class CWorkbook:
         
 
 class CWorksheet:
-    def __init__(self,Name,tablemodel=None,workbook=None,csv_filepathname=None,frame=None,fieldnames=None,formating_dict=None,datasheet=False,callback=False):
+    def __init__(self,Name,tablemodel=None,workbook=None,csv_filepathname=None,frame=None,fieldnames=None,formating_dict=None,Sheettype="",callback=False):
         
         self.width = 1800
         self.height = 600
         self.Workbook = workbook
         self.ProtectContents = False
-        self.Datasheet = datasheet
+        self.Datasheet = Sheettype == "Datasheet"
         self.csv_filepathname = csv_filepathname
         self.fieldnames = fieldnames
         self.formating_dict = formating_dict
@@ -487,6 +499,7 @@ class CWorksheet:
             self.tablemodel.nodisplay = self.formating_dict.get("HideCells",[])
             self.tablemodel.protected_cells = self.formating_dict.get("ProtectedCells",[])
             self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
+        
         self.table.show()
         self.update_table_properties()
 
@@ -576,6 +589,7 @@ class CWorksheet:
         cell.set_row(row)
         cell.set_column(col)
         cell.set_parent(self)
+        cell.set_sheet(self)
         return cell
     
     def Range(self,cell1,cell2):
@@ -616,8 +630,11 @@ class CWorksheet:
         if self.wsselected_callback and Application.EnableEvents:
             self.wsselected_callback(selectedcell)
             
-    def Redraw_table(self):
+    def Redraw_table(self,do_bindings=False):
         self.table.redraw()
+        if do_bindings:
+            print("Redraw_Table - do bindings")
+            self.do_bindings()
         
     def set_value_in_cell(self,row,column,newval):
         cell = self.Cells(row, column)
@@ -631,7 +648,7 @@ class CWorksheet:
             if self.tablemodel.data[name][colname] != newval:
                 self.tablemodel.data[name][colname] = newval
                 if Application.EnableEvents:
-                    print("Workbook changed")
+                    print("Workbook contents changed")
                     ActiveSheet.EventWSchanged(self)
         """
         
@@ -694,7 +711,16 @@ class CWorksheet:
     def Activate(self):
         global ActiveSheet
         ActiveSheet = self
+        self.table.do_bindings()
         return
+    
+    def do_bindings(self):
+        #print("do bindings")
+        self.table.do_bindings()
+        
+    def remove_bindings(self):
+        #print("remove bindings")
+        self.table.remove_bindings()
     
     def Select(self):
         global ActiveSheet
@@ -862,7 +888,6 @@ class CCell(str):
         self.Orientation = 0
         self.Row = -1
         self.Column = -1
-        self.Value = value
         self.Formula = ""
         self.tablemodel = tablemodel
         self.CountLarge = 1
@@ -875,7 +900,9 @@ class CCell(str):
         self.Comment = None
         self.Font = CFont("Arial",10)
         self.HorizontalAlignment = xlCenter
+        self.Sheet = ActiveSheet
         self.Text = value
+        self.Value = value
         
     def __str__(self):
         return str(self.get_value())
@@ -903,24 +930,29 @@ class CCell(str):
         self.Address = (self.Row,self.Column)
     
     def set_value(self, newval):
-        if self.Row != -1:
-            if self.tablemodel == None:
-                self.tablemodel = ActiveSheet.tablemodel
-            colname = self.tablemodel.getColumnName(self.Column-1)
-            #coltype = tablemodel.columntypes[colname]
-            name = self.tablemodel.getRecName(self.Row-1)
-            if colname in self.tablemodel.data[name]:
-                if self.tablemodel.data[name][colname] != newval:
-                    self.tablemodel.data[name][colname] = newval
-                    if type(newval) != str:
-                        print("Type not str",newval)
-                    if Application.EnableEvents:
-                        print("Workbook changed")
-                        ActiveSheet.EventWSchanged(self)
-                        #M20.Global_Worksheet_Change(self)
+        if self.Sheet != None:
+            if self.Row != -1:
+                #print("Set_value",self.Row, self.Column,newval,self.Sheet.Name)
+                if self.tablemodel == None:
+                    self.tablemodel = ActiveSheet.tablemodel
+                colname = self.tablemodel.getColumnName(self.Column-1)
+                #coltype = tablemodel.columntypes[colname]
+                name = self.tablemodel.getRecName(self.Row-1)
+                if colname in self.tablemodel.data[name]:
+                    if self.tablemodel.data[name][colname] != newval:
+                        self.tablemodel.data[name][colname] = newval
+                        if type(newval) != str:
+                            print("Type not str",newval)
+                        if Application.EnableEvents:
+                            #print("Workbook contents changed:",)
+                            ActiveSheet.EventWSchanged(self)
+                            #M20.Global_Worksheet_Change(self)
                 
     def set_tablemodel(self,tablemodel):
         self.tablemodel = tablemodel
+        
+    def set_sheet(self,sheet):
+        self.Sheet=sheet
     
     def set_parent(self,parent):
         self.Parent = parent
@@ -966,8 +998,8 @@ class CCellDict():
         return Cells(k[0],k[1])
         
     def __setitem__(self,k,value):
-        print("Setitem",k, value)
         ccell = Cells(k[0],k[1])
+        #print("Setitem",k, value,ccell.Sheet.Name)
         ccell.set_value(value)
         
         
