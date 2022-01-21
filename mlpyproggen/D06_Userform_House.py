@@ -262,7 +262,7 @@ class UserForm_House:
                                    ' SINGLE_LED3D:3        SINGLE_LED3D:3        SINGLE_LED3D:3')
 
         self.__UserForm_Initialize()
-        #*HL Center_Form(Me)        
+        P01.Center_Form(self.top)        
  
     def ok(self, event=None):
         self.IsActive = False

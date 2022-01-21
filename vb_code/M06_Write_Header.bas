@@ -285,24 +285,24 @@ Private Function Generate_Config_Line(LEDNr As Long, ByVal Channel_or_define As 
 ' ToDo: Add checks like
 ' - open/closing braket test
 ' - characters after #LED, #InCh
-  Dim Txt As String, Lines As Variant, Line As Variant, Res As String, AddDescription As Boolean, Description As String, Inc_LocInChNr As Boolean
+  Dim Txt As String, lines As Variant, line As Variant, Res As String, AddDescription As Boolean, Description As String, Inc_LocInChNr As Boolean
   Txt = Cells(r, Config_Col)
   If Trim(Txt) = "" Then Exit Function
-  Lines = Split(Txt, vbLf)
+  lines = Split(Txt, vbLf)
   Description = Get_Description(r)
   AddDescription = Description <> ""
-  For Each Line In Lines ' Multiple lines in one cell are possible
+  For Each line In lines ' Multiple lines in one cell are possible
       Dim CommentStart As Long, Cmd As String, Comment As String
       Comment = ""
       Cmd = ""
-      CommentStart = InStr(Line, "//")
+      CommentStart = InStr(line, "//")
       If CommentStart = 0 Then
-         Cmd = Line
+         Cmd = line
       ElseIf CommentStart = 1 Then
-         Comment = Line
+         Comment = line
       Else
-         Cmd = Left(Line, CommentStart)
-         Comment = Mid(Line, CommentStart + 1, 1000)
+         Cmd = Left(line, CommentStart)
+         Comment = Mid(line, CommentStart + 1, 1000)
       End If
       
       If LEDNr < 0 Then                                                     ' 16.11.20:
@@ -360,7 +360,7 @@ Private Function Generate_Config_Line(LEDNr As Long, ByVal Channel_or_define As 
       
       AddDescription = False
       Res = Res & Cmd & vbCr
-  Next Line
+  Next line
 
     ' Added by Misha 29-03-2020                                             ' 14.06.20: Added from Mishas version
     ' Changed by Misha 20-04-2020
@@ -656,6 +656,11 @@ Public Function Get_Store_Status(r As Long, Addr As Long, Inp_TypR As Range, Cha
 End Function
 'end change 01.05.20: Jürgen
 
+'---------------------------------------------------
+Public Function GetMacroStoreType(r As Long) As Byte              ' 17.12.21: Jürgen Split into single line and multi line implementation
+'---------------------------------------------------
+    GetMacroStoreType = GetMacroStoreTypeLine(Cells(r, Config__Col))
+End Function
 
 ' return
 ' 0 for no or undefined storage
@@ -665,19 +670,25 @@ End Function
 ' 4 for function which prevents status storage
 
 '---------------------------------------------------
-Public Function GetMacroStoreType(r As Long) As Byte              ' 01.05.20: Jürgen
+Public Function GetMacroStoreTypeLine(Config_Entry As String) As Byte          ' 01.05.20: Jürgen
 '---------------------------------------------------
-    GetMacroStoreType = MST_None                                  ' 01.05.20: From Mail Old: GetMacroStoreType = 0
+    GetMacroStoreTypeLine = MST_None                                  ' 01.05.20: From Mail Old: GetMacroStoreType = 0
 
-    Dim Config_Entry As String
     Dim Org_Macro_Row As Long
-    Config_Entry = Cells(r, Config__Col)
     
     If Trim(Config_Entry) = "" Then Exit Function              ' no macro assigned
     
     Dim Parts() As String, p As Long
+    Parts = Split(Config_Entry, vbLf)
+    If (LBound(Parts) <> UBound(Parts)) Then
+        GetMacroStoreTypeLine = GetMultilineMacroStoreType(Parts)
+        Exit Function
+    End If
     Parts = Split(Config_Entry, vbCr)
-    If (LBound(Parts) <> UBound(Parts)) Then Exit Function     ' multi line macros don't allow store
+    If (LBound(Parts) <> UBound(Parts)) Then
+        GetMacroStoreTypeLine = GetMultilineMacroStoreType(Parts)
+        Exit Function
+    End If
     
     Parts = Split(Config_Entry, "(")
     If Trim(Parts(0)) = "" Then Exit Function                  ' no macro assigned
@@ -686,10 +697,29 @@ Public Function GetMacroStoreType(r As Long) As Byte              ' 01.05.20: Jü
     
     Dim OutCntStr As String, Org_Macro As String, Org_Arguments As String
     With Sheets(LIBMACROS_SH)
-       GetMacroStoreType = val(.Cells(Org_Macro_Row, SM_Type__COL))  ' 01.05.20: From Mail Old: GetMacroStoreType = Val(.Cells(Org_Macro_Row, SM_CountrCOL))
+       GetMacroStoreTypeLine = val(.Cells(Org_Macro_Row, SM_Type__COL))  ' 01.05.20: From Mail Old: GetMacroStoreType = Val(.Cells(Org_Macro_Row, SM_CountrCOL))
     End With
     Exit Function
 End Function
+
+'---------------------------------------------------
+Public Function GetMultilineMacroStoreType(lines) As Byte             ' 17.12.21: Jürgen
+'---------------------------------------------------
+    ' find the first macro have a defined store type
+    ' otherwise 0 = undefined
+    GetMultilineMacroStoreType = MST_None
+    Dim line
+    For Each line In lines
+        Dim s As String
+        s = line
+        GetMultilineMacroStoreType = GetMacroStoreTypeLine(s)
+        If GetMultilineMacroStoreType <> MST_None Then
+            Exit Function
+        End If
+    Next
+
+End Function
+'---------------------------------------------------
 
 '-----------------------------------------------------------------------------------------------------------------
 Public Function GetOnOffStoreType(r As Long, Addr As Long, Inp_TypR As Range, Channel_or_define As String) As Byte              ' 01.05.20: Jürgen
@@ -719,10 +749,11 @@ Public Function GetOnOffStoreType(r As Long, Addr As Long, Inp_TypR As Range, Ch
 End Function
 
 '-----------------------------
-Public Sub Create_HeaderFile()
+Public Function Create_HeaderFile(Optional CreateFilesOnly As Boolean = False) As Boolean   ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
 '-----------------------------
 ' Is called if the "Z. Arduino schicken" button is pressed
 
+  Create_HeaderFile = False                                                 ' 20.12.21: Jürgen
   Check_Version                                                             ' 21.11.21: Juergen
   Update_Start_LedNr                                                        ' 11.10.20: To prevent problems if the calculation was not called before for some reasons
   Clear_Platform_Parameter_Cache                                            ' 14.10.2021: Juergen force reload of Platofmr Paramters every time a new header is created
@@ -732,7 +763,7 @@ Public Sub Create_HeaderFile()
   
   Make_sure_that_Col_Variables_match
   
-  If Not Init_HeaderFile_Generation() Then Exit Sub
+  If Not Init_HeaderFile_Generation() Then Exit Function
   
   
   Dim r As Long, sx As Boolean, SX_Ch As Long
@@ -775,20 +806,20 @@ Public Sub Create_HeaderFile()
             Dim VarName As String
             VarName = Get_Address_String(r)
             If VarName <> "" Then
-               If Not Valid_Var_Name(VarName, r) Then Exit Sub
+               If Not Valid_Var_Name(VarName, r) Then Exit Function
                Addr = VarName
             End If
         End If
         If Not Create_Header_Entry(r, Addr) Then
-            Exit Sub
+            Exit Function
         End If
     End If
   Next r
   
-  If Check_Detected_Variables() = False Then Exit Sub
-  
-  Write_Header_File_and_Upload_to_Arduino
-End Sub
+  If Check_Detected_Variables() = False Then Exit Function
+  If CheckArduinoHomeDir() = False Then Exit Function           ' 02.12.21: Juergen see forum post #7085
+  Create_HeaderFile = Write_Header_File_and_Upload_to_Arduino(CreateFilesOnly)       ' 20.12.21: Jürgen return result of called function
+End Function
 
 
 '----------------------------------------------------
@@ -815,7 +846,7 @@ End Function
 'end change 01.05.20: Jürgen
 
 '----------------------------------------------------
-Private Sub Write_Header_File_and_Upload_to_Arduino()
+Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnly As Boolean = False) As Boolean    ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
 '----------------------------------------------------
   Dim NumLeds As Long, Nr As Long, MaxLed As Long
   
@@ -837,7 +868,7 @@ Private Sub Write_Header_File_and_Upload_to_Arduino()
   If Err <> "" Then
      MsgBox Err & vbCr & vbCr & _
             Get_Language_Str("Ein neues Header file wurde nicht generiert!"), vbCritical, Get_Language_Str("Es sind Fehler aufgetreten")
-     Exit Sub
+     Exit Function
   End If
   
   Dim Name As String
@@ -883,6 +914,7 @@ Private Sub Write_Header_File_and_Upload_to_Arduino()
   Print #fp, ""
   If Page_ID = "Selectrix" Then
          Print #fp, "#define TWO_BUTTONS_PER_ADDRESS 0      // One button is used (Selectrix)"
+         Print #fp, "#define USE_SX_INTERFACE               // enable Selectrix protocol on single CPU mainboards"                  ' 06.12.2021 Juergen add SX for ESP
   Else:  Print #fp, "#define TWO_BUTTONS_PER_ADDRESS 1      // Two buttons (Red/Green) are used (DCC/CAN)"
   End If
   Print #fp, "#ifdef NUM_LEDS"
@@ -944,7 +976,7 @@ Private Sub Write_Header_File_and_Upload_to_Arduino()
     If Get_Bool_Config_Var("USE_SPI_Communication") Then                    ' 16.05.20:
        If Check_Switch_Lists_for_SPI_Pins() = False Then
             Close #fp
-           Exit Sub
+           Exit Function
        End If
     End If
   
@@ -1000,23 +1032,23 @@ Private Sub Write_Header_File_and_Upload_to_Arduino()
   
   If Write_Switches_Header_File_Part_A(fp, Channel) = False Then
      Close #fp
-     Exit Sub
+     Exit Function
   End If
   
   If Write_LowProrityLoop_Header_File(fp) = False Then
      Close #fp
-     Exit Sub
+     Exit Function
   End If
   
   If Write_Header_File_LED2Var(fp) = False Then                             ' 08.10.20:
      Close #fp
-     Exit Sub
+     Exit Function
   End If
   
    ' 15.10.21: Juergen split creation of sound extensions to ensure that preprocessor defines are corretly compiled
   If Write_Header_File_Sound_Before_Config(fp) = False Then
      Close #fp
-     Exit Sub
+     Exit Function
   End If
 
   Print #fp, DayAndNightTimer                                               ' 07.10.20:
@@ -1079,7 +1111,7 @@ Private Sub Write_Header_File_and_Upload_to_Arduino()
  ' 15.10.21: Juergen move creation of onboard sound code after the configuration struture to ensue that #defines from ProgGenerator are effective
   If Write_Header_File_Sound_After_Config(fp) = False Then
      Close #fp
-     Exit Sub
+     Exit Function
   End If
 
 
@@ -1111,17 +1143,21 @@ Private Sub Write_Header_File_and_Upload_to_Arduino()
   Application.StatusBar = Time & Get_Language_Str(": Header Datei '") & Name & Get_Language_Str("' wurde erzeugt") ' 14.07.20: Don't use Show_Status_for_a_while because the compile time is shorter with Jürgens new PrivateBuild command
   'Show_Status_for_a_while Time & Get_Language_Str(": Header Datei '") & Name & Get_Language_Str("' wurde erzeugt")
     
-  If UserForm_Header_Created.DontShowAgain = False Then
+  If CreateFilesOnly = False And UserForm_Header_Created.DontShowAgain = False Then  ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
         UserForm_Header_Created.FileName = Name
         UserForm_Header_Created.Show
-  Else: Compile_and_Upload_LED_Prog_to_Arduino
+  Else: Compile_and_Upload_LED_Prog_to_Arduino CreateFilesOnly
   End If
   ResetTestButtons Store_Status_Enabled                                     ' 19.01.21: Jürgen
-  Exit Sub
+  Write_Header_File_and_Upload_to_Arduino = True                            ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
+  Exit Function
   
 WriteError:
   ' Attention: This could also be an error some where else in the code
   MsgBox Get_Language_Str("Fehler beim schreiben der Datei '") & Name & "'", vbCritical, Get_Language_Str("Fehler beim erzeugen der Arduino Header Datei")
   Close #fp
-End Sub
+End Function
+
+
+
 

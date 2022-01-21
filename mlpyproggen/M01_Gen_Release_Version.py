@@ -160,7 +160,7 @@ def __Release_or_Debug_Version(Release):
     #    P01.Sheets(M02.START_SH).Unprotect()
     if Release:
         __Set_Config_Default_Values_for_Release()
-    #*HL M28.Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(Release) 
+    M28.Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(Release) 
     if Release:
         # move cursor to begin of sheet data                               ' 10.03.21  Juergen
         for Sh in P01.ThisWorkbook.sheets:

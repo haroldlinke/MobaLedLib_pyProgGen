@@ -82,8 +82,7 @@ Private Function Check_Limit_to_MinMax(ParNr As Long, Value As Variant) As Boole
     If Msg <> "" Then
           Controls("Par" & ParNr).setFocus
           MsgBox Get_Language_Str("Der Parameter '") & Controls("LabelPar" & ParNr).Caption & Get_Language_Str("' ist ") & Msg, vbInformation, Get_Language_Str("Bereichsüberschreitung")
-    Else
-          Check_Limit_to_MinMax = True
+    Else: Check_Limit_to_MinMax = True
     End If
   'End With
 End Function
@@ -145,8 +144,7 @@ Private Function Check_RGB_List(TypStr As String, ByVal Value As String, ParNr A
   Dim s As Variant, Err As Boolean, ExpCnt As Long
   If TypStr = "RGB" Then
         ExpCnt = 3
-  Else
-        ExpCnt = 6
+  Else: ExpCnt = 6
   End If
   
   If UBound(Split(Value, ",")) <> ExpCnt - 1 Then
@@ -369,8 +367,7 @@ Public Sub MouseWheel(ByVal lngRotation As Long)
     #If 1 Then ' Simulate keys
         If lngRotation < 0 Then
               Application.SendKeys "{HOME}{DOWN}{DOWN}{DOWN}" ' {HOME} to move the cursor to the start of the line
-        Else
-              Application.SendKeys "{HOME}{UP}{UP}{UP}"
+        Else: Application.SendKeys "{HOME}{UP}{UP}{UP}"
         End If
     #Else
         Dim ScrollChars As Long
@@ -379,8 +376,7 @@ Public Sub MouseWheel(ByVal lngRotation As Long)
         End If
         If lngRotation < 0 Then
               .SelStart = .SelStart + ScrollChars
-        Else
-              .SelStart = Application.Max(.SelStart - ScrollChars, 0)
+        Else: .SelStart = Application.Max(.SelStart - ScrollChars, 0)
         End If
     #End If
   End With
@@ -498,8 +494,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
   'Const CNames = "Val0 Val1 Period Duration Timeout DstVar MinTime MaxTime Par1"
   If Description = "" Then
         Description_TextBox = Get_Language_Str("Noch keine Beschreibung zur Funktion '") & Name & Get_Language_Str("' vorhanden ;-(")
-  Else
-        Description_TextBox = Description
+  Else: Description_TextBox = Description
   End If
 
   Description_TextBox.setFocus ' To show the scroll bar                     ' 04.11.21:
@@ -557,8 +552,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
   ElseIf Show_Channel = CHAN_TYPE_LED Then
      If UseOldParams Then
            LED_Channel_TextBox = LED_Channel
-     Else
-           LED_Channel_TextBox = Def_Channel
+     Else: LED_Channel_TextBox = Def_Channel
      End If
   End If
 
@@ -619,8 +613,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
                                         Invers(UsedParNr - 1) = True        '           because its difficult to understand the negative logic of Skip0
                                         If ParVal = 0 Then                  '           But it's not used because Skip0 has been chanded to Use0 in the C code
                                               ParVal = 1
-                                        Else
-                                              ParVal = 0
+                                        Else: ParVal = 0
                                         End If
                                         Me.Controls("Par" & UsedParNr) = ParVal
                             Case "...", "…": ' Join all following parameters         ' 21.04.20:
@@ -692,8 +685,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
       If (p = "Cx" Or p = "B_LED_Cx") Then
         If UseOldParams Then
               Set_OptionButton Trim(OldParams(Nr)), p = "B_LED_Cx"
-        Else
-              OptionButton_C1.setFocus                              ' 07.10.21:
+        Else: OptionButton_C1.setFocus                              ' 07.10.21:
         End If
       End If
       Nr = Nr + 1
@@ -747,8 +739,7 @@ Private Function Get_OptionButton_Res() As String
   ElseIf OptionButton_C3 Then: val = "C3"
   ElseIf OptionButton_12 Then: val = "C12"
   ElseIf OptionButton_23 Then: val = "C23"
-  Else
-      MsgBox Get_Language_Str("LED Auswahl Fehler"), vbCritical
+  Else: MsgBox Get_Language_Str("LED Auswahl Fehler"), vbCritical
   End If
   Get_OptionButton_Res = val
 End Function
@@ -760,8 +751,7 @@ Private Sub Set_OptionButton(val As String, Only_Single As Boolean)
     Case "C_ALL":
                   If Only_Single Then
                         OptionButton_C1 = True:  OptionButton_C1.setFocus    ' 07.10.21: Added ...setFocus to all lines
-                  Else
-                        OptionButton_All = True: OptionButton_All.setFocus
+                  Else: OptionButton_All = True: OptionButton_All.setFocus
                   End If
     Case "C1":    OptionButton_C1 = True:        OptionButton_C1.setFocus
     Case "C2":    OptionButton_C2 = True:        OptionButton_C2.setFocus
@@ -769,14 +759,12 @@ Private Sub Set_OptionButton(val As String, Only_Single As Boolean)
     Case "C12":
                   If Only_Single Then
                         OptionButton_C1 = True:  OptionButton_C1.setFocus
-                  Else
-                        OptionButton_12 = True:  OptionButton_12.setFocus
+                  Else: OptionButton_12 = True:  OptionButton_12.setFocus
                   End If
     Case "C23":
                   If Only_Single Then
                         OptionButton_C2 = True:  OptionButton_C2.setFocus
-                  Else
-                        OptionButton_23 = True:  OptionButton_23.setFocus
+                  Else: OptionButton_23 = True:  OptionButton_23.setFocus
                   End If
     Case Else:    OptionButton_All = True:       OptionButton_All.setFocus
                   MsgBox Get_Language_Str("Fehler beim Lesen der bestehenden Kanalbezeichnung '") & val & "'", vbCritical, Get_Language_Str("Unbekannte Kanalbezeichnung")
@@ -810,8 +798,7 @@ Private Function Create_Result(ByRef Res As String) As Boolean
                        If Invers(Nr - 1) Then
                           If val = 0 Then
                                 val = 1
-                          Else
-                                val = 0
+                          Else: val = 0
                           End If
                        End If
                        Exit For

@@ -65,6 +65,8 @@ import mlpyproggen.M60_CheckColors as M60
 import mlpyproggen.M70_Exp_Libraries as M70
 import mlpyproggen.M80_Create_Mulitplexer as M80
 
+#import mlpyproggen.D09_StatusMsg_Userform as D09
+
 import mlpyproggen.P01_Workbook as P01
 
 from mlpyproggen.X01_Excel_Consts import *
@@ -90,7 +92,6 @@ class SelectMacrosTreeform:
         self.ActKey = ""
         self.ActiveNode = None
 
-        #*HL Center_Form(Me)        
  
     def ok(self, event=None):
         self.IsActive = False
@@ -410,7 +411,7 @@ class SelectMacrosTreeform:
         # Add elements to the Treeview and return the number of the listbox entry which matches with the given string
         #ShowHourGlassCursor(True)
         #if not self.Visible:
-        #    StatusMsg_UserForm.ShowDialog('Initialisiere Dialog...', '')
+        #P01.StatusMsg_UserForm.ShowDialog('Initialisiere Dialog...', '')
         #else:
         #    Please_Wait.Visible = True
         #    DoEvents()
@@ -462,7 +463,7 @@ class SelectMacrosTreeform:
             #__mcTree.Refresh()
         #Please_Wait.Visible = False
         #if not Me.Visible:
-        #    Unload(StatusMsg_UserForm)
+        #P01.Unload(P01.StatusMsg_UserForm)
         #ShowHourGlassCursor(False)
         return fn_return_value
     

@@ -168,11 +168,11 @@ Private Const Parm_STK_SW_MINOR = &H82
 '-------------------------
 Private Sub Test_Get_COM()
 '-------------------------
-  Dim Res As String, Line As Variant
+  Dim Res As String, line As Variant
   Res = F_shellExec("cmd /c mode")
-  For Each Line In Split(Res, vbCr)
-      Debug.Print Line;
-  Next Line
+  For Each line In Split(Res, vbCr)
+      Debug.Print line;
+  Next line
 End Sub
 
 
@@ -182,7 +182,7 @@ Private Function Get_USB_Ports() As Variant
 ' The function returns an long array with COM numbers
 ' COM-10 is allways added because otherwise the array may be empty if no other com port is detected
 ' The "find" function dosen't work on Norberts computer => Therefore it's replaced by an own find algo
-  Dim Res As String, Lines As Variant
+  Dim Res As String, lines As Variant
   Res = F_shellExec("cmd /c mode") ' Achtung: Der Mode Befehl schickt einen Reset zu allen Ports
 
   If Res = "" Then ' No COM port available ?
@@ -192,15 +192,15 @@ Private Function Get_USB_Ports() As Variant
   End If
   
   Res = Replace(Res, ":", "")
-  Dim Line As Variant, p As Long, ResStr As String, Cnt As Long
+  Dim line As Variant, p As Long, ResStr As String, Cnt As Long
   ResStr = "-10 "
-  For Each Line In Split(Res, vbCr)
-     p = InStr(Line, "COM")
+  For Each line In Split(Res, vbCr)
+     p = InStr(line, "COM")
      If p > 0 Then
-        ResStr = ResStr & Trim(Mid(Line, p + Len("COM"), 255)) & " "
+        ResStr = ResStr & Trim(Mid(line, p + Len("COM"), 255)) & " "
         Cnt = Cnt + 1
      End If
-  Next Line
+  Next line
   ResStr = DelLast(ResStr)
   Dim ResSplit As Variant
   ResSplit = Split(ResStr, " ")
@@ -464,7 +464,7 @@ Private Sub TestDetect()
     Next
   Next
   Debug.Print "End"
-  Debug.Print "Check duaration: " & Format(Time - Start, "hh:mm:ss")
+  Debug.Print "Check duration: " & Format(Time - Start, "hh:mm:ss")
   Exit Sub
   
 IsEmpty:
@@ -529,7 +529,7 @@ Private Sub Test_Get_Arduino_Baudrate()
  'Debug.Print "Get_Arduino_Baudrate=" & Get_Arduino_Baudrate(6, 115200, DeviceSignatur, FirmwareVer, True)
   Debug.Print "Get_Arduino_Baudrate=" & Get_Arduino_Baudrate(6, 57600, DeviceSignatur, FirmwareVer, True)   ' Matching Baudrate 3 Sec, Not matching 6 Sek
  'Debug.Print "Get_Arduino_Baudrate=" & Get_Arduino_Baudrate(8, 115200, DeviceSignatur, FirmwareVer, True)  ' Matching Baudrate 3 Sec, Not matching 6 Sek
-  Debug.Print "Check duaration: " & Format(Time - Start, "hh:mm:ss")
+  Debug.Print "Check duration: " & Format(Time - Start, "hh:mm:ss")
 End Sub
 
 '---------------------------------------------------------------------------

@@ -160,17 +160,17 @@ Private Function Find_Line_with(ByVal c As String, StartLine As Long, Optional M
   Dim LineNr As Long
   With ListBox
     For LineNr = StartLine To .ListCount - 1
-       Dim Line As String
-       Line = .List(LineNr)
-       If Line <> "" Then
+       Dim line As String
+       line = .List(LineNr)
+       If line <> "" Then
           Select Case Mode
             Case 1: ' First character
-                    If UCase(Left(Line, 1)) = c Then
+                    If UCase(Left(line, 1)) = c Then
                        Find_Line_with = LineNr
                        Exit Function
                     End If
             Case -1: ' Find anywhere in the line
-                    If InStr(Line, c) > 0 Then
+                    If InStr(line, c) > 0 Then
                        Find_Line_with = LineNr
                        Exit Function
                     End If

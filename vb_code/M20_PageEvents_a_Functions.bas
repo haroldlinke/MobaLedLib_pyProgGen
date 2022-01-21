@@ -19,19 +19,19 @@ Private Global_Rect_List() As String                                        ' 25
 Private PriorCell As Range
 
 '---------------------------------------------------------------------------------
-Private Function Get_Parameter_from_Leds_Line(ByVal Line As String, ParNr As Long)
+Private Function Get_Parameter_from_Leds_Line(ByVal line As String, ParNr As Long)
 '---------------------------------------------------------------------------------
-  If Left(Line, 1) = "^" Then
-     Line = Trim(Mid(Line, 2, 200))
+  If Left(line, 1) = "^" Then
+     line = Trim(Mid(line, 2, 200))
   End If
   
-  If Left(Line, 1) <> "C" Then
+  If Left(line, 1) <> "C" Then
      MsgBox Get_Language_Str("Fehler: LEDs Eintrag muss mit 'C' beginnen"), vbCritical, Get_Language_Str("Fehler in LEDs Eintrag")
      EndProg
   End If
   
   Dim Parts As Variant, Error As Boolean
-  Parts = Split(Mid(Line, 2, 200), "-")
+  Parts = Split(Mid(line, 2, 200), "-")
   If UBound(Parts) <> 1 Then
      Error = 1
   ElseIf Not IsNumeric(Parts(0)) Or Not IsNumeric(Parts(1)) Then
@@ -46,11 +46,11 @@ Private Function Get_Parameter_from_Leds_Line(ByVal Line As String, ParNr As Lon
 End Function
 
 '---------------------------------------------------------------------------------------------
-Private Sub Update_LastUsedChannel_in_Row(ByVal Line As String, ByRef LastusedChannel As Long)
+Private Sub Update_LastUsedChannel_in_Row(ByVal line As String, ByRef LastusedChannel As Long)
 '---------------------------------------------------------------------------------------------
-  Line = Trim(Line)
+  line = Trim(line)
   Dim val As Long
-  val = Get_Parameter_from_Leds_Line(Line, 1)
+  val = Get_Parameter_from_Leds_Line(line, 1)
   If val > LastusedChannel Then LastusedChannel = val
 End Sub
 
@@ -58,10 +58,10 @@ End Sub
 Public Sub Update_LastUsedChannel(LEDs As String, ByRef LastusedChannel As Long)
 '--------------------------------------------------------------------------------
   If InStr(LEDs, vbLf) Then
-        Dim Line As Variant
-        For Each Line In Split(LEDs, vbLf)
-           Update_LastUsedChannel_in_Row Line, LastusedChannel
-        Next Line
+        Dim line As Variant
+        For Each line In Split(LEDs, vbLf)
+           Update_LastUsedChannel_in_Row line, LastusedChannel
+        Next line
   Else: Update_LastUsedChannel_in_Row LEDs, LastusedChannel
   End If
 End Sub
@@ -70,13 +70,13 @@ End Sub
 Public Function Get_FirstUsedChannel(LEDs As String)
 '---------------------------------------------------
   If InStr(LEDs, vbLf) Then
-        Dim Line As Variant
+        Dim line As Variant
         Get_FirstUsedChannel = 99
-        For Each Line In Split(LEDs, vbLf)
+        For Each line In Split(LEDs, vbLf)
            Dim val As Long
-           val = Get_Parameter_from_Leds_Line(Line, 0)
+           val = Get_Parameter_from_Leds_Line(line, 0)
            If val < Get_FirstUsedChannel Then Get_FirstUsedChannel = val
-        Next Line
+        Next line
   Else: Get_FirstUsedChannel = Get_Parameter_from_Leds_Line(LEDs, 0)
   End If
 End Function
@@ -624,7 +624,7 @@ Public Sub ClearSheet()
      Rows("33:" & LastUsedRow()).Delete Shift:=xlUp
      
      Cells(FirstDat_Row, 1).Activate                                        ' 22.10.21: First column, prior the sheet was shifted to the description col. Old: Descrip_Col
-     Application.GoTo ActiveCell, True
+     Application.Goto ActiveCell, True
      ResetTestButtons False                                                 ' 21.03.21 Juergen: clear buttons
      Del_Icons_in_IconCol
      

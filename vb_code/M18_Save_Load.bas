@@ -87,7 +87,7 @@ Private Function Save_Sheet_to_pgf(fp As Integer, ByVal Sh As Worksheet) As Bool
          End If
          Print #fp, Line_ID & vbTab & Enabled;
          For Col = Enable_Col + 1 To LastColumnDatSheet()                   ' 27.11.21: Old: LastUsedColumn
-             Dim Line As String
+             Dim line As String
              If Col = MacIcon_Col Then Col = Col + 1 ' Skip the Icon column (MacIcon_Col is -1 if the column doesn't exist)      ' 20.10.21
              If Col = LanName_Col Then Col = Col + 1 ' Use two lines to be able to enable both new columns separately                             '
              Print #fp, vbTab & Replace(Cells(r.Row, Col), vbLf, "{NewLine}");
@@ -293,10 +293,10 @@ Private Sub Adapt_Adress_and_Typ_to_Selectrix(ByRef prLst As Variant)
 End Sub
 
 '----------------------------------------------------
-Private Function Read_Line(Line As String) As Boolean
+Private Function Read_Line(line As String) As Boolean
 '----------------------------------------------------
   Dim Parts() As String
-  Parts = Split(Line, vbTab)
+  Parts = Split(line, vbTab)
   If Page_ID <> Import_Page_ID Then
      ' Problem "Selectrix" has an additional column "Bitposition"
      If Import_Page_ID = "Selectrix" Then
@@ -368,12 +368,12 @@ Private Function Read_Line(Line As String) As Boolean
 End Function
 
 '---------------------------------------------------------------------
-Private Function PGF_has_Multiple_Sheets(Lines() As String) As Boolean
+Private Function PGF_has_Multiple_Sheets(lines() As String) As Boolean
 '---------------------------------------------------------------------
-  Dim Line As Variant, SheetCnt As Long
-  For Each Line In Lines
-      Line = Replace(Line, vbLf, "")
-      If Left(Line, Len(SheetID)) = SheetID Then
+  Dim line As Variant, SheetCnt As Long
+  For Each line In lines
+      line = Replace(line, vbLf, "")
+      If Left(line, Len(SheetID)) = SheetID Then
          SheetCnt = SheetCnt + 1
          If SheetCnt > 1 Then
             PGF_has_Multiple_Sheets = True
@@ -416,11 +416,11 @@ Private Sub Check_Hidden_Lines()
 End Sub
 
 '-----------------------------------------------------------------------------------------------------------------
-Private Function Read_PGF_from_String_V1_0(Lines() As String, Name As String, ToActiveSheet As Boolean) As Boolean
+Private Function Read_PGF_from_String_V1_0(lines() As String, Name As String, ToActiveSheet As Boolean) As Boolean
 '-----------------------------------------------------------------------------------------------------------------
   Dim LNr As Long, SkipSheet As Boolean, Inp_Page_ID As String, SheetName As String, Multiple_Sheets As Boolean
   Dim SheetCnt As Long, LineNrInSheet As Long
-  Multiple_Sheets = PGF_has_Multiple_Sheets(Lines)
+  Multiple_Sheets = PGF_has_Multiple_Sheets(lines)
   AddedToFilterColumn = 0
   HiddenRows = 0
   Start_Row = 0
@@ -428,10 +428,10 @@ Private Function Read_PGF_from_String_V1_0(Lines() As String, Name As String, To
   
   Unload UserForm_Options ' Otherwise the status can't be shown             ' 06.08.20:
   
-  For LNr = 1 To UBound(Lines) - 1
+  For LNr = 1 To UBound(lines) - 1
       Dim Parts() As String
-      If Trim(Replace(Lines(LNr), vbLf, "")) <> "" Then                     ' 25.10.21:
-          Parts = Split(Replace(Lines(LNr), vbLf, ""), vbTab)
+      If Trim(Replace(lines(LNr), vbLf, "")) <> "" Then                     ' 25.10.21:
+          Parts = Split(Replace(lines(LNr), vbLf, ""), vbTab)
           Select Case Parts(0)
              Case SheetID: ' Read Sheet type and name
                            Check_Hidden_Lines
@@ -478,7 +478,7 @@ Private Function Read_PGF_from_String_V1_0(Lines() As String, Name As String, To
                            End If
              Case Line_ID: ' Read sheet line
                            If Not SkipSheet Then
-                              If Not Read_Line(Lines(LNr)) Then Exit Function
+                              If Not Read_Line(lines(LNr)) Then Exit Function
                               StatusMsg_UserForm.Set_ActSheet_Label "Line: " & LineNrInSheet                                   ' 06.08.20:
                               LineNrInSheet = LineNrInSheet + 1
                            End If
@@ -500,18 +500,18 @@ End Function
 '-------------------------------------------------------------------------------------------
 Public Function Read_PGF(ByVal Name As String, Optional ToActiveSheet As Boolean) As Boolean
 '-------------------------------------------------------------------------------------------
-  Dim FileStr As String, Lines() As String, Parts() As String, Err As Boolean
+  Dim FileStr As String, lines() As String, Parts() As String, Err As Boolean
   ImportFollowingSheets = False
   FileStr = Read_File_to_String(Name)
   If FileStr = "#ERROR#" Then Exit Function
-  Lines = Split(FileStr, vbCr)
-  If UBound(Lines) <= 1 Then
+  lines = Split(FileStr, vbCr)
+  If UBound(lines) <= 1 Then
      MsgBox Get_Language_Str("Fehler: Die PGF Datei enthält keine Daten:") & vbCr & _
             "  '" & Name & "'", vbCritical, Get_Language_Str("Ungültige PGF Datei")
      Exit Function
   End If
   
-  Parts = Split(Lines(0), vbTab)
+  Parts = Split(lines(0), vbTab)
   Err = (UBound(Parts) < 2)
   If Not Err Then Err = (Parts(0) <> Head_ID)
   If Not Err Then Err = (Parts(1) <> PGF_Identification)
@@ -521,7 +521,7 @@ Public Function Read_PGF(ByVal Name As String, Optional ToActiveSheet As Boolean
      Application.ScreenUpdating = False
      VerStr = Parts(2)
      Select Case VerStr
-         Case PGF_Version_String: Read_PGF = Read_PGF_from_String_V1_0(Lines, Name, ToActiveSheet)
+         Case PGF_Version_String: Read_PGF = Read_PGF_from_String_V1_0(lines, Name, ToActiveSheet)
                                   StatusMsg_UserForm.Hide
          Case Else: Err = True
      End Select

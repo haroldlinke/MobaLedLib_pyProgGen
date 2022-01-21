@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} StatusMsg_UserForm 
    Caption         =   "Bitte etwas Geduld..."
-   ClientHeight    =   1455
+   ClientHeight    =   1452
    ClientLeft      =   45
    ClientTop       =   345
    ClientWidth     =   3090

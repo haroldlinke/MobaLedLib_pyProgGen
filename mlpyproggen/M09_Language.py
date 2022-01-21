@@ -51,33 +51,33 @@ from mlpyproggen.X01_Excel_Consts import *
 
 import mlpyproggen.P01_Workbook as P01
 
-import mlpyproggen.M09_Translate_Examples as M09TL
+#import mlpyproggen.M09_Translate_Examples as M09TL
 
 import mlpyproggen.M02_Public as M02
-import mlpyproggen.M02_Scripting as Scripting
-import mlpyproggen.M03_Dialog as M03
-import mlpyproggen.M06_Write_Header_LED2Var as M06LED
-import mlpyproggen.M06_Write_Header_Sound as M06Sound
-import mlpyproggen.M06_Write_Header_SW as M06SW
-import mlpyproggen.M06_Write_Header as M06
-import mlpyproggen.M07_COM_Port as M07
-import mlpyproggen.M08_ARDUINO as M08
+#import mlpyproggen.M02_Scripting as Scripting
+#import mlpyproggen.M03_Dialog as M03
+#import mlpyproggen.M06_Write_Header_LED2Var as M06LED
+#import mlpyproggen.M06_Write_Header_Sound as M06Sound
+#import mlpyproggen.M06_Write_Header_SW as M06SW
+#import mlpyproggen.M06_Write_Header as M06
+#import mlpyproggen.M07_COM_Port as M07
+#import mlpyproggen.M08_ARDUINO as M08
 #import mlpyproggen.M09_Language as M09
-import mlpyproggen.M09_Translate_Examples as M09TE
-import mlpyproggen.M09_Select_Macro as M09SM
-import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
-import mlpyproggen.M10_Par_Description as M10
-import mlpyproggen.M20_PageEvents_a_Functions as M20
+#import mlpyproggen.M09_Translate_Examples as M09TE
+#import mlpyproggen.M09_Select_Macro as M09SM
+#import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
+#import mlpyproggen.M10_Par_Description as M10
+#import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M25_Columns as M25
 import mlpyproggen.M27_Sheet_Icons as M27
 import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
-import mlpyproggen.M31_Sound as M31
-import mlpyproggen.M37_Inst_Libraries as M37
-import mlpyproggen.M40_ShellandWait as M40
-import mlpyproggen.M60_CheckColors as M60
-import mlpyproggen.M70_Exp_Libraries as M70
-import mlpyproggen.M80_Create_Mulitplexer as M80
+#import mlpyproggen.M31_Sound as M31
+#import mlpyproggen.M37_Inst_Libraries as M37
+#import mlpyproggen.M40_ShellandWait as M40
+#import mlpyproggen.M60_CheckColors as M60
+#import mlpyproggen.M70_Exp_Libraries as M70
+#import mlpyproggen.M80_Create_Mulitplexer as M80
 
 
 FirstLangRow = 3
@@ -628,7 +628,7 @@ def __Test_Change_Language_in_Dialog():
     ## VB2PY (CheckDirective) VB directive took path 1 on PATTERN_CONFIG_PROG
     Copy_Select_GotoAct_Form.Show()
 
-def Set_Tast_Txt_Var(ForceUpdate=VBMissingArgument):
+def Set_Tast_Txt_Var(ForceUpdate=False):
     #-----------------------------------------------------------
     global Red_T,Green_T,OnOff_T,Tast_T
     

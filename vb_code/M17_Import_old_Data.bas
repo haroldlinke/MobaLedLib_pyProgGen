@@ -36,7 +36,7 @@ Private Function Select_and_Open_Old_Version() As Workbook
    ChDrive Path
    ChDir Path
    Do
-     Name = Application.GetOpenFilename("Program generator  (*.xlsm),Prog_Generator_*.xlsm", _
+     Name = Application.GetOpenFilename("Program generator  (*.xlsm), *.xlsm", _
             Title:=Get_Language_Str("Altes Prog_Generator Programm auswählen von der importiert werden soll"))
      If Name <> False Then
         If InStr(FileName(Name), "Prog_Generator") = 0 Then

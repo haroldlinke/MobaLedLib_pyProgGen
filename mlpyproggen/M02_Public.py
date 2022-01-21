@@ -80,7 +80,7 @@ import mlpyproggen.P01_Workbook as P01
 # ##################################################### Public Const
 
 Lib_Version_Nr = '3.1.0'
-Test_Sufix = ''
+Test_Sufix = 'A'
 Prog_Version = 'Ver. ' + Lib_Version_Nr + Test_Sufix
 Prog_Version_Nr = Lib_Version_Nr + Test_Sufix
 DEBUG_CHANGEEVENT = False

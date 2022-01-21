@@ -71,7 +71,7 @@ import mlpyproggen.M25_Columns as M25
 import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
 #import mlpyproggen.M31_Sound as M31
-#import mlpyproggen.M37_Inst_Libraries as M37
+import mlpyproggen.M37_Inst_Libraries as M37
 #import mlpyproggen.M60_CheckColors as M60
 #import mlpyproggen.M70_Exp_Libraries as M70
 import mlpyproggen.M80_Create_Mulitplexer as M80
@@ -720,8 +720,11 @@ def Get_Store_Status(r, Addr, Inp_TypR, Channel_or_define):
     return fn_return_value
 
 def GetMacroStoreType(r):
-    Config_Entry = String()
+    return GetMacroStoreTypeLine(P01.Cells(r, M25.Config__Col))
 
+
+def GetMacroStoreTypeLine(Config_Entry):
+    
     Org_Macro_Row = int()
 
     Parts = vbObjectInitialize(objtype=String)
@@ -735,12 +738,18 @@ def GetMacroStoreType(r):
     Org_Arguments = String()
     #---------------------------------------------------
     fn_return_value = M02.MST_None
-    Config_Entry = P01.Cells(r, M25.Config__Col)
+    #Config_Entry = P01.Cells(r, M25.Config__Col)
     if Trim(Config_Entry) == '':
         return fn_return_value
         # no macro assigned
+    Parts = Split(Config_Entry, vbLf)
+    if ( LBound(Parts) != UBound(Parts) ) :
+        fn_return_value = GetMultilineMacroStoreType(Parts)
+        return fn_return_value
+        # multi line macros don't allow store    
     Parts = Split(Config_Entry, vbCr)
     if ( LBound(Parts) != UBound(Parts) ) :
+        fn_return_value = GetMultilineMacroStoreType(Parts)
         return fn_return_value
         # multi line macros don't allow store
     Parts = Split(Config_Entry, '(')
@@ -752,6 +761,20 @@ def GetMacroStoreType(r):
         return fn_return_value
         # macro not found
     fn_return_value = P01.val(P01.Sheets(M02.LIBMACROS_SH).Cells(Org_Macro_Row, M02.SM_Type__COL))
+    return fn_return_value
+
+def GetMultilineMacroStoreType(lines):
+    fn_return_value = None
+    line = Variant()
+    #---------------------------------------------------
+    # find the first macro have a defined store type
+    # otherwise 0 = undefined
+    fn_return_value = M02.MST_None
+    for line in lines:
+        s = line
+        fn_return_value = GetMacroStoreTypeLine(s)
+        if fn_return_value != M02.MST_None:
+            return fn_return_value
     return fn_return_value
 
 
@@ -777,7 +800,7 @@ def GetOnOffStoreType(r, Addr, Inp_TypR, Channel_or_define):
         return fn_return_value
     return fn_return_value
 
-def Create_HeaderFile():
+def Create_HeaderFile(CreateFilesOnly = False): #20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
     global AddrComment
     
     Ctrl_Pressed = Boolean()
@@ -790,6 +813,8 @@ def Create_HeaderFile():
     #-----------------------------
     # Is called if the "Z. Arduino schicken" button is pressed
     P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt"))
+    fn_return_value=False
+    
     M30.Check_Version()
     M20.Update_Start_LedNr()
     M30.Clear_Platform_Parameter_Cache()
@@ -801,7 +826,7 @@ def Create_HeaderFile():
     M25.Make_sure_that_Col_Variables_match()
     P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Init Headerfile Generation"))
     if not Init_HeaderFile_Generation():
-        return
+        return fn_return_value
     sx = M25.Page_ID == 'Selectrix'
     for r in vbForRange(M02.FirstDat_Row, M30.LastUsedRow()): #*HL
         if not P01.Rows(r).EntireRow.Hidden and P01.Cells(r, M02.Enable_Col) != '':
@@ -841,13 +866,16 @@ def Create_HeaderFile():
                 VarName = M25.Get_Address_String(r)
                 if VarName != '':
                     if not M06SW.Valid_Var_Name(VarName, r):
-                        return
+                        return fn_return_value
                     Addr = VarName
             if not Create_Header_Entry(r, Addr):
-                return
+                return fn_return_value
     if M06SW.Check_Detected_Variables() == False:
-        return
-    Write_Header_File_and_Upload_to_Arduino()
+        return fn_return_value
+    if M37.CheckArduinoHomeDir()==False: # 02.12.21: Juergen see forum post #7085
+        return fn_return_value
+    fn_return_value = Write_Header_File_and_Upload_to_Arduino(CreateFilesOnly) # 20.12.21: Jürgen return result of called function
+    return fn_return_value
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Txt - ByRef 
 def DelTailingEmptyLines(Txt):
@@ -871,7 +899,7 @@ def Store_ValuesTxt_Used():
     fn_return_value = ( Store_ValuesTxt != '' )
     return fn_return_value
 
-def Write_Header_File_and_Upload_to_Arduino():
+def Write_Header_File_and_Upload_to_Arduino(CreateFilesOnly=False): #20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
     global Err, Ext_AddrTxt, Store_ValuesTxt, InChTxt, LocInChNr, Channel, ConfigTxt, LEDs_per_ChannelList, Start_Values
     
     NumLeds = int()
@@ -894,6 +922,7 @@ def Write_Header_File_and_Upload_to_Arduino():
 
     Color_Test_Mode = String()
     #----------------------------------------------------
+    fn_return_value = False
     Err=""
     MaxLed = M30.Get_Current_Platform_Int('MaxLed')
     for Nr in vbForRange(0, M02.LED_CHANNELS - 1):
@@ -906,7 +935,7 @@ def Write_Header_File_and_Upload_to_Arduino():
         Err = Replace(Err, "#1#", str(MaxLed))
     if Err != '':
         P01.MsgBox(Err + vbCr + vbCr + M09.Get_Language_Str('Ein neues Header file wurde nicht generiert!'), vbCritical, M09.Get_Language_Str('Es sind Fehler aufgetreten'))
-        return
+        return fn_return_value
     Name = P01.ThisWorkbook.Path + '/' + M02.Ino_Dir_LED + M02.Include_FileName
     Ext_AddrTxt=DelTailingEmptyLines(Ext_AddrTxt)
     Store_ValuesTxt=DelTailingEmptyLines(Store_ValuesTxt)
@@ -919,11 +948,12 @@ def Write_Header_File_and_Upload_to_Arduino():
         ShortPath = Mid(P01.ThisWorkbook.Path, p + 1, 255) + ' '
     fp = FreeFile()
     # VB2PY (UntranslatedCode) On Error GoTo WriteError
+    #try:
     VBFiles.openFile(fp, Name, 'w') 
     VBFiles.writeText(fp, '// This file contains the ' + M25.Page_ID + ' and LED definitions.', '\n')
     VBFiles.writeText(fp, '//', '\n')
     VBFiles.writeText(fp, '// It was automatically generated by the program ' + P01.ThisWorkbook.Name + ' ' + M02.Prog_Version + '      by Hardi', '\n')
-    #*HL VBFiles.writeText(fp, '// File creation: ' + Date + ' ' + Time, '\n')
+    VBFiles.writeText(fp, '// File creation: ' + P01.Date_str() + ' ' + P01.Time_str(), '\n')
     VBFiles.writeText(fp, '// (Attention: The display in the Arduino IDE is not updated if Options/External Editor is disabled)', '\n')
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '#ifndef __LEDS_AUTOPROG_H__', '\n')
@@ -941,11 +971,11 @@ def Write_Header_File_and_Upload_to_Arduino():
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '#include <MobaLedLib.h>', '\n')
     VBFiles.writeText(fp, '', '\n')
-#    VBFiles.writeText(fp, '#define START_MSG "LEDs_AutoProg Ver 1: ' + ShortPath + Format(Date, 'dd.mm.yy') + ' ' + Format(Time, 'hh:mm') + '"', '\n')
-    VBFiles.writeText(fp, '#define START_MSG "LEDs_AutoProg Ver 1: ' + '"', '\n')
+    VBFiles.writeText(fp, '#define START_MSG "LEDs_AutoProg Ver 1: ' + ShortPath + P01.Format(P01.Date_str(), 'dd.mm.yy') + ' ' + P01.Format(P01.Time_str(), 'hh:mm') + '"', '\n')
+    #VBFiles.writeText(fp, '#define START_MSG "LEDs_AutoProg Ver 1: ' + '"', '\n')
     VBFiles.writeText(fp, '', '\n')
     if M25.Page_ID == 'Selectrix':
-        VBFiles.writeText(fp, '#define TWO_BUTTONS_PER_ADDRESS 0      // One button is used (Selectrix)', '\n')
+        VBFiles.writeText(fp, '#define USE_SX_INTERFACE               // enable Selectrix protocol on single CPU mainboards', '\n') # 06.12.2021 Juergen add SX for ESP
     else:
         VBFiles.writeText(fp, '#define TWO_BUTTONS_PER_ADDRESS 1      // Two buttons (Red/Green) are used (DCC/CAN)', '\n')
     VBFiles.writeText(fp, '#ifdef NUM_LEDS', '\n')
@@ -991,7 +1021,7 @@ def Write_Header_File_and_Upload_to_Arduino():
         if M28.Get_Bool_Config_Var('USE_SPI_Communication'):
             if M06SW.Check_Switch_Lists_for_SPI_Pins() == False:
                 VBFiles.closeFile(fp)
-                return
+                return fn_return_value
         VBFiles.writeText(fp, '#define USE_EXT_ADDR', '\n')
         if InStr(M02.Prog_for_Right_Ardu, ' ' + M25.Page_ID + ' ') > 0:
             VBFiles.writeText(fp, '#define USE_RS232_OR_SPI_AS_INPUT      // Use the RS232 or SPI Input to read DCC/SX commands from the second Arduino and from the PC (The SPI is only used if enabled with USE_SPI_COM)', '\n')
@@ -1033,17 +1063,17 @@ def Write_Header_File_and_Upload_to_Arduino():
     fret, Channel = M06SW.Write_Switches_Header_File_Part_A(fp, Channel)
     if fret == False:
         VBFiles.closeFile(fp)
-        return
+        return fn_return_value
     if M06SW.Write_LowProrityLoop_Header_File(fp) == False:
         VBFiles.closeFile(fp)
-        return
+        return fn_return_value
     if M06LED.Write_Header_File_LED2Var(fp) == False:
         VBFiles.closeFile(fp)
-        return
+        return fn_return_value
     # 15.10.21: Juergen split creation of sound extensions to ensure that preprocessor defines are corretly compiled
     if M06Sound.Write_Header_File_Sound_Before_Config(fp) == False:
         VBFiles.closeFile(fp)
-        return
+        return fn_return_value
     VBFiles.writeText(fp, DayAndNightTimer, '\n')
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '//*******************************************************************', '\n')
@@ -1097,7 +1127,7 @@ def Write_Header_File_and_Upload_to_Arduino():
     # 15.10.21: Juergen move creation of onboard sound code after the configuration struture to ensue that #defines from ProgGenerator are effective
     if M06Sound.Write_Header_File_Sound_After_Config(fp) == False:
         VBFiles.closeFile(fp)
-        return
+        return fn_return_value
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '', '\n')
@@ -1114,13 +1144,15 @@ def Write_Header_File_and_Upload_to_Arduino():
         #*HLUserForm_Header_Created.DontShowAgain = False
     P01.Application.StatusBar = Time + M09.Get_Language_Str(': Header Datei \'') + Name + M09.Get_Language_Str('\' wurde erzeugt')
     #Show_Status_for_a_while Time & Get_Language_Str(": Header Datei '") & Name & Get_Language_Str("' wurde erzeugt")
-    #*HL if UserForm_Header_Created.DontShowAgain == False:
+    #*HL if CreateFilesOnly == False and UserForm_Header_Created.DontShowAgain == False:
     #*HL    UserForm_Header_Created.FileName = Name
     #*HL    UserForm_Header_Created.Show()
-    M08.Compile_and_Upload_LED_Prog_to_Arduino()
+    M08.Compile_and_Upload_LED_Prog_to_Arduino(CreateFilesOnly)
     M20.ResetTestButtons(M06SW.Store_Status_Enabled)
-    return
-    # Attention: This could also be an error some where else in the code
+    fn_return_value = True
+    return fn_return_value
+    #except:
+    #    # Attention: This could also be an error some where else in the code
     P01.MsgBox(M09.Get_Language_Str('Fehler beim schreiben der Datei \'') + Name + '\'', vbCritical, M09.Get_Language_Str('Fehler beim erzeugen der Arduino Header Datei'))
     VBFiles.closeFile(fp)
 

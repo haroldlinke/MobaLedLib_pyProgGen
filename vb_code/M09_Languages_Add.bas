@@ -55,7 +55,7 @@ Private Function Get_LineNumber(Str As String, ByVal Pos As Long) As Long
     Dim Start As Long
     Start = InStrRev(Str, vbCr, Pos)
     If Start > 0 Then
-         Dim Line As String
+         Dim line As String
          LineCnt = LineCnt + 1
          Pos = Start - 1
          If Pos = 0 Then Exit Do

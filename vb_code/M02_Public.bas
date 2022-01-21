@@ -2,7 +2,7 @@ Attribute VB_Name = "M02_Public"
 Option Explicit
 
 Public Const Lib_Version_Nr = "3.1.0"                             ' If changed check also "Exp_Prog_Gen_Version" in Pattern_Configurator
-Private Const Test_Sufix = ""                                     ' The Excel programs use the same version number than the library to avoid confusion
+Private Const Test_Sufix = "A"                                    ' The Excel programs use the same version number than the library to avoid confusion
 Public Const Prog_Version = "Ver. " & Lib_Version_Nr & Test_Sufix ' A sufix could be used for beta version
 Public Const Prog_Version_Nr = Lib_Version_Nr & Test_Sufix        ' Call Gen_Release_Version() to update all sheets
                                            

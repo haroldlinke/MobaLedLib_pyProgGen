@@ -7,7 +7,7 @@ Private Const Width_Define = 76
 '-------------------------------------------------------------------------------------------------------------------------------
 Private Sub Write_one_Block(fp As Integer, MName As String, Params1 As String, MTyp As String, Ram As String, Params2 As String)
 '-------------------------------------------------------------------------------------------------------------------------------
-  Dim Line As String, i As Long, TNr As Long, Define As String
+  Dim line As String, i As Long, TNr As Long, Define As String
   MName = RTrim(MName)
   Define = "#define "
   If Left(MName, Len("XPatternT")) = "XPatternT" Then
@@ -24,17 +24,17 @@ Private Sub Write_one_Block(fp As Integer, MName As String, Params1 As String, M
   End If
   
   For TNr = 1 To TimeCnt
-    Line = AddSpaceToLen(Define & MName & TNr & "(", 22) & Params1
+    line = AddSpaceToLen(Define & MName & TNr & "(", 22) & Params1
     For i = 1 To TNr
-        Line = Line & "T" & i & ","
+        line = line & "T" & i & ","
     Next i
-    Line = AddSpaceToLen(Line & "...)", Width_Define + TimeCnt * 4) & AddSpaceToLen(MTyp & TNr & "_T,", 15) & "_CHKL(LED)+" & Ram & Params2
+    line = AddSpaceToLen(line & "...)", Width_Define + TimeCnt * 4) & AddSpaceToLen(MTyp & TNr & "_T,", 15) & "_CHKL(LED)+" & Ram & Params2
     
     For i = 1 To TNr
-        Line = Line & "_T2B(T" & i & "),"
+        line = line & "_T2B(T" & i & "),"
     Next i
-    Line = Line & "_W2B(COUNT_VARARGS(__VA_ARGS__)), __VA_ARGS__,"
-    Print #fp, Line
+    line = line & "_W2B(COUNT_VARARGS(__VA_ARGS__)), __VA_ARGS__,"
+    Print #fp, line
   Next TNr
   
   If Left(MName, Len("XPatternT")) = "XPatternT" Then

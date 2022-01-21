@@ -659,7 +659,8 @@ Private Sub Correct_Temp_Adrduino_nr_Dirs()
 '------------------------------------------
 ' Sometimes the instalation fails an a "Arduino_<nr>" directory is created.
 ' Unfortunately an update with a new version is not possible
-  If Read_Sketchbook_Path_from_preferences_txt() = False Then Exit Sub
+  If CheckArduinoHomeDir() = False Then Exit Sub        ' also sets Sketchbook_Path variable  02.12.21: Juergen
+  
   ChDrive Sketchbook_Path
   ChDir Sketchbook_Path
   Dim Res As String, DirList As String
@@ -672,7 +673,29 @@ Private Sub Correct_Temp_Adrduino_nr_Dirs()
   For Each d In Split(DirList, vbTab)
      Correct_one_Temp_Arduino_nr_Dir (d)
   Next
+  Exit Sub
 End Sub
+
+' 02.12.21: Juergen see forum post #7085
+'------------------------------------------
+Public Function CheckArduinoHomeDir()
+'------------------------------------------
+  CheckArduinoHomeDir = False
+  If Read_Sketchbook_Path_from_preferences_txt() = False Then Exit Function
+  On Error GoTo DirError
+  ChDrive Sketchbook_Path
+  ChDir Sketchbook_Path
+  CheckArduinoHomeDir = True
+  Exit Function
+DirError:
+  On Error GoTo 0
+  Dim message
+  message = Replace(Get_Language_Str("Das Arduino Sketchbook Verzeichnis #1# existiert nicht." & _
+    "Bitte prüfen und korrigieren sie die Einstellungen in der Arduino IDE."), "#1#", _
+    Sketchbook_Path & vbCrLf)
+      
+  MsgBox message, vbCritical, Get_Language_Str("Es sind Fehler aufgetreten")
+End Function
 
 '-----------------------------------------------------------------------------------
 Private Function Check_All_Selected_Libraries_Result(Ask_User As Boolean) As Boolean
@@ -1123,9 +1146,11 @@ End Sub
 Public Function Is_Lib_Installed(LibName As String) As Boolean              ' 11.11.20:
 '-------------------------------------------------------------
   Dim Row As Long
+  Dim LastRow As Long
+  LastRow = LastUsedRowIn(LIBRARYS__SH)
   Row = First_Dat_Row
   With Sheets(LIBRARYS__SH)
-     While .Cells(Row, Libr_Name_Col) <> ""
+     While Row <= LastRow                                                   ' 06.12.2021 Juergen Fix issue with empty lines in sheet
         If .Cells(Row, Libr_Name_Col) = LibName Then
             Is_Lib_Installed = (.Cells(Row, Installed_Col) = 1)
             Exit Function
@@ -1140,8 +1165,10 @@ Public Function Get_Lib_Version(LibName As String) As String              ' 01.0
 '-------------------------------------------------------------
   Dim Row As Long
   Row = First_Dat_Row
+  Dim LastRow As Long
+  LastRow = LastUsedRowIn(LIBRARYS__SH)
   With Sheets(LIBRARYS__SH)
-     While .Cells(Row, Libr_Name_Col) <> ""
+     While Row <= LastRow                                                   ' 06.12.2021 Juergen Fix issue with empty lines in sheet
         If .Cells(Row, Libr_Name_Col) = LibName Then
             Get_Lib_Version = .Cells(Row, DetectVer_Col)
             Exit Function
@@ -1157,8 +1184,10 @@ Public Function Get_Required_Version(LibName As String) As String              '
 '-------------------------------------------------------------
   Dim Row As Long
   Row = First_Dat_Row
+  Dim LastRow As Long
+  LastRow = LastUsedRowIn(LIBRARYS__SH)
   With Sheets(LIBRARYS__SH)
-     While .Cells(Row, Libr_Name_Col) <> ""
+     While Row <= LastRow                                                   ' 06.12.2021 Juergen Fix issue with empty lines in sheet
         If .Cells(Row, Libr_Name_Col) = LibName Then
             Get_Required_Version = .Cells(Row, Reque_Ver_Col)
             Exit Function
@@ -1188,3 +1217,5 @@ Public Function PICO_Lib_Installed() As Boolean                             ' 18
 '-----------------------------------------------
   PICO_Lib_Installed = Is_Lib_Installed("rp2040:rp2040")
 End Function
+
+

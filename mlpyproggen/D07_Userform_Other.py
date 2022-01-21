@@ -2,17 +2,14 @@
 #
 #         Write header
 #
-# * Version: 1.21
+# * Version: 4.02
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *
 # * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
 # *
-# *
-# * History of Change
-# * V1.00 10.03.2020 - Harold Linke - first release
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
 # *
@@ -31,6 +28,12 @@
 # *
 # *
 # ***************************************************************************
+
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
+
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 from vb2py.vbconstants import *
@@ -98,8 +101,7 @@ class UserForm_Other():
         self.DEFAULT_PAR_WIDTH = 48
         self.ParamVar = {}
         self.Controls={}
-        self.UserForm_Initialize()
-        #*HL Center_Form(Me)                
+        self.UserForm_Initialize()             
  
     def ok(self, event=None):
         self.IsActive = False

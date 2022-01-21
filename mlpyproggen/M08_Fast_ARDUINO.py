@@ -141,6 +141,7 @@ def Create_Build_Arduino(fp):
     VBFiles.writeText(fp, 'REM  5: Baudrate:            "57600" or "115200"', '\n')
     VBFiles.writeText(fp, 'REM  6: Arduino Library path "%USERPROFILE%\\Documents\\Arduino\\libraries"', '\n')
     VBFiles.writeText(fp, 'REM  7: CPU type:            "atmega328p, atmega4809', '\n')
+    VBFiles.writeText(fp, 'REM  8: options:             ""noflash|norebuild""', '\n') # 19.12.21: Jürgen: Added noflash optio
     VBFiles.writeText(fp, 'REM', '\n')
     VBFiles.writeText(fp, 'REM The program uses the captured and adapted command line from the Arduino IDE', '\n')
     VBFiles.writeText(fp, 'REM', '\n')
@@ -177,6 +178,7 @@ def Create_Build_Arduino(fp):
     VBFiles.writeText(fp, '     %2', '\n')
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '', '\n')
+    VBFiles.writeText(fp, 'if ""%8""==""noflash"" goto :EOF', '\n')  # 19.12.21: Jürgen: add noflash option
     VBFiles.writeText(fp, 'if %errorlevel%==0 (', '\n')
     VBFiles.writeText(fp, '   REM *** Flash program ***', '\n')
     VBFiles.writeText(fp, '   REM -v = Verbose output. -v -v for more.', '\n')
@@ -222,6 +224,7 @@ def Create_Build_Pico(fp):
     VBFiles.writeText(fp, 'REM  5: Baudrate:            "115200"', '\n')
     VBFiles.writeText(fp, 'REM  6: Arduino Library path "%USERPROFILE%\\Documents\\Arduino\\libraries"', '\n')
     VBFiles.writeText(fp, 'REM  7: CPU type:            "rp2040', '\n')
+    VBFiles.writeText(fp, 'REM  8: options:             ""noflash""', '\n')   # 19.12.21: Jürgen: Added noflash option
     VBFiles.writeText(fp, 'REM', '\n')
     VBFiles.writeText(fp, 'REM The program uses the captured and adapted command line from the Arduino IDE', '\n')
     VBFiles.writeText(fp, 'REM', '\n')
@@ -252,6 +255,7 @@ def Create_Build_Pico(fp):
     VBFiles.writeText(fp, '     %2', '\n')
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, '', '\n')
+    VBFiles.writeText(fp, 'if ""%8""==""noflash"" goto :EOF', '\n')   # 19.12.21: Jürgen: add noflash option   
     VBFiles.writeText(fp, 'if %errorlevel%==0 (', '\n')
     VBFiles.writeText(fp, '   REM *** Flash program ***', '\n')
     VBFiles.writeText(fp, '   :flash', '\n')

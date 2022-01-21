@@ -37,7 +37,6 @@ import mlpyproggen.Prog_Generator as PG
 from vb2py.vbconstants import *
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
-import mlpyproggen.M30_Tools as M30
 import mlpyproggen.M09_Language as M09
 
 
@@ -59,9 +58,8 @@ class UserForm_Select_Typ_DCC:
         self.radiobtn2_txt = "Rot"
         self.radiobtn3_txt = "Grün"
         self.res = tk.IntVar()
-
         self.Userform_res = ""
-        #*HL Center_Form(Me)        
+        
         
     def __Abort_Button_Click(self):
         #-------------------------------
@@ -82,6 +80,7 @@ class UserForm_Select_Typ_DCC:
     def setFocus(self,Target):
         #-----------------------------------------
         M09.Set_Tast_Txt_Var()
+        self.res.set(1)
         select_0 = Left(Target, 1)
         if (select_0 == UCase(Left(M09.OnOff_T, 1))):
             #Button_OnOff = True

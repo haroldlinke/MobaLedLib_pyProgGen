@@ -118,7 +118,7 @@ End Sub
     '-------------------------------------------------------------------------------------------------------
     Private Sub Workbook_SheetBeforeRightClick(ByVal Sh As Object, ByVal Target As Range, Cancel As Boolean)
     '-------------------------------------------------------------------------------------------------------
-      Cancel = False
+      Cancel = True
       Debug.Print "DieserArbeitsmappe: Workbook_SheetBeforeRightClick" & Target.Row
     End Sub
 #End If

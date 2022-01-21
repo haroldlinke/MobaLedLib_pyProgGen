@@ -44,6 +44,10 @@ import mlpyproggen.Prog_Generator as PG
 import mlpyproggen.M23_Add_Move_Del_Row as M23
 import mlpyproggen.M20_PageEvents_a_Functions as M20
 
+import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
+import mlpyproggen.D02_Userform_Select_Typ_SX as D02SX
+import mlpyproggen.D09_StatusMsg_Userform as D09
+
 def Arduino_Button_Click():
     #---------------------------------
     __Button_Pressed_Proc()
@@ -190,6 +194,14 @@ def __Worksheet_Calculate():
         
 def workbook_init():
     M01.__Release_or_Debug_Version(True)
+    init_UserForms()
+    
+def init_UserForms():
+    global StatusMsg_UserForm, UserForm_Select_Typ_DCC, UserForm_Select_Typ_SX
+    StatusMsg_UserForm = D09.CStatusMsg_UserForm()
+    UserForm_Select_Typ_DCC = D02.UserForm_Select_Typ_DCC()
+    UserForm_Select_Typ_SX = D02SX.UserForm_Select_Typ_SX()
+
     
 def notimplemented(command):
     n = tk.messagebox.showinfo(command,
@@ -198,3 +210,10 @@ def notimplemented(command):
 
 # VB2PY (UntranslatedCode) Option Explicit
 
+#***************************
+#* UserForms
+#***************************
+
+StatusMsg_UserForm = None
+UserForm_Select_Typ_DCC = None
+UserForm_Select_Typ_SX = None

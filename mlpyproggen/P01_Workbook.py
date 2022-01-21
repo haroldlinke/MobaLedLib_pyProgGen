@@ -43,15 +43,27 @@ from tkinter import ttk
 from mlpyproggen.X01_Excel_Consts import *
 from vb2py.vbconstants import *
 from vb2py.vbfunctions import *
+import time
 
 #import mlpyproggen.M20_PageEvents_a_Functions as M20
 import subprocess
 import pickle
 import mlpyproggen.Prog_Generator as PG
+
 #import mlpyproggen.M01_Gen_Release_Version as M01
 import keyboard
 #import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M02_global_variables as M02
+
+
+def Date_str():
+    return "01.01.2022"
+
+def Time_str():
+    return "12:00:00"
+
+def Center_Form(form):
+    return
 
 def Shell(cmd):
     Run(cmd)
@@ -64,7 +76,7 @@ def TimeValue(Duration):
 
 def getvalue(row,column):
     value=ActiveSheet.tablemodel.getValueAt(row-1,column-1)
-    print("P01.getvalue:",row,column,value)
+    #print("P01.getvalue:",row,column,value)
     
     return value
 
@@ -139,12 +151,23 @@ def VarType(obj):
         return vbString
     else:
         return None
+def Unload(UserForm):
+    UserForm.destroy()
 
 def ChDrive(srcdir):
     print("ChDrive:", srcdir)
     return
 
 def Format(value,formatstring):
+    if formatstring == "hh:mm:ss":
+        time_sec = value%60
+        value=int(value/60)
+        time_min = value % 60
+        value=int(value/60)
+        time_h=value
+        time_str = str(time_h)+":"+str(time_min)+":"+str(time_sec)
+        return time_str
+    
     return str(value) # no formating implemented yet
 
 
@@ -181,11 +204,14 @@ def InputBox(Message:str, Title:str, Default=None):
         res=""
     return res
 
+def Time():
+    return time.time()
+
 def Run(cmd):
     subprocess.run(cmd,shell=True)
     
 def set_statusmessage(message):
-    PG.global_controller.set_connectstatusmessage(message)
+    PG.global_controller.set_statusmessage(message)
     PG.global_controller.update()
 
 __VK_LBUTTON = 0x1
@@ -254,7 +280,7 @@ sheetdict={"DCC":
            "Selectrix":
             {"Name":"Selectrix",
              "Filename"  : "\\csv\\Selectrix.csv",
-             "Fieldnames": datasheet_fieldnames,
+             "Fieldnames": "A;Aktiv;Filter;Channel oder\nName[0..99];Bitposition\n[1..8];Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment",
              "Formating" : datasheet_formating,
              "SheetType" : "Datasheet"
              },
@@ -505,7 +531,7 @@ class CWorksheet:
 
         
     def update_table_properties(self):
-        self.LastUsedRow_val = self.tablemodel.getRowCount()
+        self.LastUsedRow_val = self.tablemodel.getLastUsedRow()+1
         self.LastUsedColumn_val = self.tablemodel.getColumnCount()
         self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
         self.MaxRange_val  = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
@@ -551,11 +577,12 @@ class CWorksheet:
         return
         
     def get_LastUsedRow(self):
-        self.LastUsedRow_val = self.tablemodel.getRowCount()
+        self.LastUsedRow_val = self.tablemodel.getLastUsedRow()+1 #self.tablemodel.getRowCount()
         return self.LastUsedRow_val
     
     def set_LastUsedRow(self,value):
         self.LastUsedRow_val = value
+        self.tablemodel.setLastUsedRow(value-1)
     
     LastUsedRow = property(get_LastUsedRow, set_LastUsedRow, doc='Last used row')
     
@@ -570,7 +597,7 @@ class CWorksheet:
     End = property(get_LastUsedColumn, set_LastUsedColumn, doc='Last used row')
 
     def get_UsedRange(self):
-        self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
+        self.UsedRange_val = CRange((0,0) , (self.get_LastUsedRow(),self.LastUsedColumn_val),ws=self)
         return self.UsedRange_val
     
     def set_UsedRange(self,value):
@@ -633,7 +660,7 @@ class CWorksheet:
     def Redraw_table(self,do_bindings=False):
         self.table.redraw()
         if do_bindings:
-            print("Redraw_Table - do bindings")
+            #print("Redraw_Table - do bindings")
             self.do_bindings()
         
     def set_value_in_cell(self,row,column,newval):
@@ -935,17 +962,14 @@ class CCell(str):
                 #print("Set_value",self.Row, self.Column,newval,self.Sheet.Name)
                 if self.tablemodel == None:
                     self.tablemodel = ActiveSheet.tablemodel
-                colname = self.tablemodel.getColumnName(self.Column-1)
-                #coltype = tablemodel.columntypes[colname]
-                name = self.tablemodel.getRecName(self.Row-1)
-                if colname in self.tablemodel.data[name]:
-                    if self.tablemodel.data[name][colname] != newval:
-                        self.tablemodel.data[name][colname] = newval
-                        if type(newval) != str:
-                            print("Type not str",newval)
-                        if Application.EnableEvents:
-                            #print("Workbook contents changed:",)
-                            ActiveSheet.EventWSchanged(self)
+                curval = self.tablemodel.getValueAt(self.Row-1, self.Column-1)
+                if curval != newval:
+                    self.tablemodel.setValueAt(newval, self.Row-1, self.Column-1)
+                    if type(newval) != str:
+                        print("Type not str",newval)
+                    if Application.EnableEvents:
+                        #print("Workbook contents changed:",)
+                        ActiveSheet.EventWSchanged(self)
                             #M20.Global_Worksheet_Change(self)
                 
     def set_tablemodel(self,tablemodel):
@@ -1030,7 +1054,8 @@ class CApplication:
         
     def OnTime(self,time,cmd):
         print("Application OnTime:",time,cmd)
-        return #*HL
+        PG.global_controller.after(time,cmd)
+        return
     
     def RoundUp(v1,v2):
         #print("RoundUp")
@@ -1083,8 +1108,9 @@ Workbooks = []
 
 ActiveWindow = CActiveWindow()
 
-Date = "1.1.2022"
-Time = "12:00"
+#Date = "1.1.2022"
+#Time = "12:00"
 
 
 Now = 0
+

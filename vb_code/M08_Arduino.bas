@@ -127,6 +127,7 @@ Private Function Create_Start_Sub(BoardName As String, ResultName As String, Com
           End If
           Dim CommandStr As String
           CommandStr = """" & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & GetShortPath(DelLast(Get_Ardu_LibDir())) & """ " & CPUType ' 23.07.20: Jürgen: Added: "GetShortPath()" 28.10.20 Jürgen added cpuType
+          CommandStr = CommandStr + " %*"                                                                                                                                                                     ' 19.12.21: Jürgen: Added noflash option
           Print #fp, "if not exist MyPrivateBuildScript.cmd ("
           Print #fp, "  REM embedded Fast Build and Upload"
           Print #fp, "  call :build " + CommandStr
@@ -248,7 +249,7 @@ Private Function Create_Start_ESP32_Sub(ResultName As String, ComPort As String,
      Print #fp, "CHCP 65001 >NUL" ' change the code page to show the correct german umlauts (ä,ö,ü, ...)
   End If
   Print #fp, ""
-  Print #fp, "set ArduinoLib=%USERPROFILE%\Documents\Arduino\libraries"
+  Print #fp, "set ArduinoLib=" & GetShortPath(DelLast(Get_Ardu_LibDir()))  ' 02.12.21: Juergen see forum post #7085
   Print #fp, "if not exist MyPrivateBuildScript.cmd ("
   Print #fp, "       REM embedded Fast Build and Upload" ' esp32:esp32:esp32:PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none -vid-pid=10C4_EA60
   Print #fp, "       call :build """ & FilePath(Find_ArduinoExe) & """ ""LEDs_AutoProg.ino"" " & ComPort & " """ & BuildOptOnly & """ 115200  ""%ArduinoLib%"" esp32 %*"
@@ -277,6 +278,7 @@ Private Function Create_Start_ESP32_Sub(ResultName As String, ComPort As String,
   Print #fp, "REM  5: Baudrate:            ""57600"" or ""115200"""
   Print #fp, "REM  6: Arduino Library path ""%USERPROFILE%\Documents\Arduino\libraries"""
   Print #fp, "REM  7: CPU type:            ""atmega328p, atmega4809, esp32"""
+  Print #fp, "REM  8: options:             ""noflash|norebuild"""                                     ' 19.12.21: Jürgen: Added noflash option
   Print #fp, "REM  additional argument from caller"
   Print #fp, "REM"
   Print #fp, "REM The program uses the captured and adapted command line from the Arduino IDE"
@@ -347,7 +349,7 @@ Private Function Create_Start_ESP32_Sub(ResultName As String, ComPort As String,
   Print #fp, "if exist ""%aTemp%\rebuildFailed.txt"" ("
   Print #fp, "   echo Last rebuild failed ;-("
   Print #fp, "   echo Press ENTER to rebuild everything"  ' If the error is located in the .ino file Ctrl+C could be pressed here
-  Print #fp, "   pause"
+  Print #fp, "   if ""%8""=="""" pause"
   Print #fp, "   goto :rebuild"
   Print #fp, "   )"
   Print #fp, ""
@@ -751,7 +753,8 @@ Public Function Get_New_Board_Type(FirmwareVer As String) As String         ' 29
 End Function
 
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Public Function Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn As Long, BuildOptColumn As Long, ByRef BuildOptions As String, ByRef DeviceSignature As Long) As Boolean ' 04.05.20:  28.10.20: Jürgen: Added DeviceSignature
+Public Function Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn As Long, BuildOptColumn As Long, ByRef BuildOptions As String, ByRef DeviceSignature As Long, _
+        Optional CreateFilesOnly As Boolean = False) As Boolean       ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ' The "Buzy" check and the automatic board detection is only active if Autodetect is enabled
 ' Otherwise the values in the BuildOptColumn are used
@@ -760,6 +763,12 @@ Public Function Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortC
   Dim Start_Baudrate As Long, BaudRate As Long, ComPort As Long, Msg As String, Retry As Boolean, AutoDetect As Boolean
 
   Do
+    If CreateFilesOnly Then                                               ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
+        BuildOptions = Cells(SH_VARS_ROW, BuildOptColumn)
+        Check_If_Arduino_could_be_programmed_and_set_Board_type = True
+        Exit Function
+    End If
+    
     Retry = False
     If Check_USB_Port_with_Dialog(ComPortColumn) = False Then Exit Function ' Display Dialog if the COM Port is negativ and ask the user to correct it
     
@@ -855,7 +864,8 @@ Public Sub Stop_Compile_Time_Display()
 End Sub
 
 '------------------------------------------------------------------------------------------------------------------------------------------------
-Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortColumn As Long, BuildOptColumn As Long, SrcDir As String) As Boolean
+Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortColumn As Long, BuildOptColumn As Long, SrcDir As String, _
+                                                  Optional CreateFilesOnly As Boolean = False) As Boolean                                           ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
 '------------------------------------------------------------------------------------------------------------------------------------------------
   Dim ComPort As String, BuildOptions As String, CommandStr As String, ResFile As String, Mode As String, DeviceSignature As Long, CPUType As String
   
@@ -878,7 +888,7 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
   Unload UserForm_Options ' Otherwise the status can't be shown
   StatusMsg_UserForm.ShowDialog Replace(Get_Language_Str("Programmiere #1# Arduino"), "#1#", ArduName) & vbCr & FileNameExt(InoName), "..."
   Update_Compile_Time True
-  If Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, BuildOptColumn, BuildOptions, DeviceSignature) = False Then  ' 28.10.20: Jürgen: Added: DeviceSignature
+  If Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, BuildOptColumn, BuildOptions, DeviceSignature, CreateFilesOnly) = False Then  ' 28.10.20: Jürgen: Added: DeviceSignature
      Stop_Compile_Time_Display
      Exit Function
   End If
@@ -903,10 +913,10 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
           MsgBox Get_Language_Str("Wenn der ESP32 verwendet wird, dann wird kein rechter Arduino benötigt"), vbInformation, Get_Language_Str("Rechter Arduino nicht benötigt")
           Exit Function
      Else
-          If Page_ID = "DCC" Or Page_ID = "CAN" Then
-                Mode = Get_BoardTyp()
-          Else: MsgBox "Error: The ESP32 support for '" & Page_ID & "' is not finished yet", vbInformation, "ESP32 support not finished"
-                Exit Function
+          Mode = Get_BoardTyp()
+          If Mode = "PICO" And Page_ID = "Selectrix" Then
+             MsgBox Replace("Error: The #1# support for '" & Page_ID & "' is not finished yet", "#1#", Mode), vbInformation, Replace("#1# support not finished", "#1#", Mode)
+             Exit Function
           End If
      End If
      TextColor = vbYellow                                                   ' 27.11.20: Juergen
@@ -927,6 +937,13 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
      Unload StatusMsg_UserForm
      EndProg
   End If
+  
+  If CreateFilesOnly Then                                               ' 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
+      Stop_Compile_Time_Display
+      Compile_and_Upload_Prog_to_Arduino = True
+      Exit Function
+  End If
+  
   Dim Res As ShellAndWaitResult
   Dim Start As Variant: Start = Time
   
@@ -990,7 +1007,7 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
     EndProg
   Else
     Stop_Compile_Time_Display
-    Debug.Print "Compile and upload duaration: " & Format(Time - Start, "hh:mm:ss")
+    Debug.Print "Compile and upload duration: " & Format(Time - Start, "hh:mm:ss")
     Show_Status_for_a_while Get_Language_Str("Programm erfolgreich hochgeladen. Kompilieren und Hochladen dauerte ") & Format(Time - Start, "hh:mm:ss"), "00:02:00"  ' 05.05.20: Old 30 Sek
     Compile_and_Upload_Prog_to_Arduino = True
   End If
@@ -998,10 +1015,10 @@ End Function
 
 
 '------------------------------------------------------------------
-Public Function Compile_and_Upload_LED_Prog_to_Arduino() As Boolean
+Public Function Compile_and_Upload_LED_Prog_to_Arduino(Optional CreateFilesOnly As Boolean = False) As Boolean
 '------------------------------------------------------------------
   If Upload_the_Right_Arduino_Prog_if_needed() Then
-     Compile_and_Upload_LED_Prog_to_Arduino = Compile_and_Upload_Prog_to_Arduino(InoName_LED, COMPort_COL, BUILDOP_COL, ThisWorkbook.Path & "\" & Ino_Dir_LED)
+     Compile_and_Upload_LED_Prog_to_Arduino = Compile_and_Upload_Prog_to_Arduino(InoName_LED, COMPort_COL, BUILDOP_COL, ThisWorkbook.Path & "\" & Ino_Dir_LED, CreateFilesOnly)
   End If
 End Function
 
@@ -1254,7 +1271,7 @@ WriteError:
                "geschickt werden."), vbInformation, Get_Language_Str("Fehler beim Installieren der Bibliotheken")
         EndProg
       Else
-        Debug.Print "Compile and upload duaration: " & Format(Time - Start, "hh:mm:ss")
+        Debug.Print "Compile and upload duration: " & Format(Time - Start, "hh:mm:ss")
         Show_Status_for_a_while Get_Language_Str("Bibliotheken erfolgreich installiert. (Dauer: ") & Format(Time - Start, "hh:mm:ss") & ")", "00:00:30"
       End If
       
@@ -1334,4 +1351,5 @@ LibDirMissing:
     End Sub
 
 #End If ' OLD_LIB_CHECK
+
 

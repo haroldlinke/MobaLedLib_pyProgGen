@@ -54,7 +54,7 @@ import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.M02_Public as M02
 #import mlpyproggen.M02_global_variables as M02GV
 #import mlpyproggen.M03_Dialog as M03
-#import mlpyproggen.M06_Write_Header as M06
+import mlpyproggen.M06_Write_Header as M06
 #import mlpyproggen.M06_Write_Header_LED2Var as M06LED
 #import mlpyproggen.M06_Write_Header_Sound as M06Sound
 #import mlpyproggen.M06_Write_Header_SW as M06SW
@@ -176,7 +176,7 @@ def LastUsedRowIn(Sheet):
     Sh = None
     return fn_return_value
 
-def LastUsedColumnInRow(Sh:P01.CWorksheet, Row):
+def LastUsedColumnInRow(Sh, Row):
     #---------------------------------------------------------------
     fn_return_value = Sh.Cells(Row, Sh.Columns.Count).Column #*HL .End(xlToLeft).Column
     return fn_return_value
@@ -476,15 +476,15 @@ def EndProg():
 def ClearStatusbar():
     #--------------------------
     # Is called by onTime to clear the status bar after a while
-    P01.Application.StatusBar = r''
+    P01.set_statusmessage("")
 
 def Show_Status_for_a_while(Txt, Duration=r'00:00:15'):
     #-------------------------------------------------------------------------------------------
-    P01.Application.StatusBar = Txt
+    P01.set_statusmessage(Txt)
     if Txt != r'':
-        P01.Application.OnTime(P01.Now + P01.TimeValue(Duration), r'ClearStatusbar')
+        P01.Application.OnTime(15000, ClearStatusbar)
     else:
-        P01.Application.OnTime(P01.Now + P01.TimeValue(r'00:00:00'), r'ClearStatusbar')
+        P01.Application.OnTime(15000, ClearStatusbar)
 
 def All_Borderlines(r):
     #-------------------------------------
@@ -1420,151 +1420,59 @@ def HourGlassCursor(bApply):
         # in some systems the cursor may fail to reset to default, this forces it
         GetCursorPos(pt)
         SetCursorPos(pt.X, pt.Y)
+    return
 
-# VB2PY (UntranslatedCode) Option Explicit
-# Module Description:
-# ~~~~~~~~~~~~~~~~~~~
-# This module contains general tools.
-# Overview 32 / 64 Bit functions: https://jkp-ads.com/Articles/apideclarations.asp
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-# VB2PY (UntranslatedCode) Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr)
-# VB2PY (UntranslatedCode) Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
-#    Public Declare PtrSafe Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
-# Test whether you are using the 64-bit version of Office 2010.
-## VB2PY (CheckDirective) VB directive took path 1 on Win64
-# VB2PY (UntranslatedCode) Public Declare PtrSafe Function GetTickCount64 Lib "kernel32" () As LongLong
-#assert False, '# UNTRANSLATED VB LINE #23 [#End If]'
-# https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getsystemmetrics    ' 23.04.20:
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
-## VB2PY (CheckDirective) VB directive took path 1 on Win64
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function SetForegroundWindow Lib "user32" (ByVal hwnd As LongPtr) As LongPtr
-## VB2PY (CheckDirective) VB directive took path 1 on Mac
-# don't compile the APIs in Mac
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function WideCharToMultiByte Lib "kernel32.dll" ( _\nByVal CodePage As Long, _\nByVal dwFlags As Long, _\nByVal lpWideCharStr As LongPtr, _\nByVal cchWideChar As Long, _\nByVal lpMultiByteStr As LongPtr, _\nByVal cbMultiByte As Long, _\nByVal lpDefaultChar As LongPtr, _\nByVal lpUsedDefaultChar As LongPtr) As Long                             
-#'' Maps a character string to a UTF-16 (wide character) string             ' 26.05.20:
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-# VB2PY (UntranslatedCode) Private Declare PtrSafe Function MultiByteToWideChar Lib "kernel32" ( _\nByVal CodePage As Long, _\nByVal dwFlags As Long, _\nByVal lpMultiByteStr As LongPtr, _\nByVal cchMultiByte As Long, _\nByVal lpWideCharStr As LongPtr, _\nByVal cchWideChar As Long _\n) As Long
-#Some constants for GetSystemMetrics
-#Public Const KS_SHIFT_KEY = 16
-#Public Const KS_CTRL_KEY = 17
-#Public Const KS_ALT_KEY = 18
-#--------------------------
-#----------------------------------------
-#----------------------------------------------------------------------------
-#--------------------------------------------------------------------------------
-#---------------------------------------------------
-#-----------------------------
-#--------------------------------
-#------------------------------------
-#-----------------------------------------------
-#---------------------------------------------------------------
-#--------------------------------------------------
-#------------------------------------------------------------------
-#-----------------------------------------------
-#---------------------------------------------------------------------
-#--------------------------------------------------
-#--------------------------------------------------------------
-#-------------------------------------------------------------
-#UT--------------------------------------
-#----------------------------------------------------------------------
-#----------------------------------------------------------------
-#---------------------------
-#--------------------------------------------------------------
-#---------------------------------------------------
-#UT---------------------------
-#----------------------------------------------------------
-#--------------------------------------------------
-## VB2PY (CheckDirective) VB directive took path 1 on 1
-#-------------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------
-#--------------------------------------------------------------------------
-#--------------------------------------------------------------------------------------------------
-## VB2PY (CheckDirective) VB directive took path 1 on False
-#-------------------------------------------------------------------------
-#UT---------------------------
-#--------------------------------------------------------------------------------------------------------
-#-----------------------------
-#----------------------------------------------------------------------------------------
-#UT-------------------------
-#-----------------------------------------
-#---------------------------------------------
-#-------------------
-#--------------------------
-#-------------------------------------------------------------------------------------------
-#-------------------------------------
-#---------------------------------------------------
-#------------------------------------------------
-#---------------------------------------------
-#------------------------------------------------
-#-------------------------------------------------------------------
-#-------------------------------
-#-------------------------
-#-------------------------------------------
-#-------------------------------------------------
-#----------------------------------------
-#-----------------------------------------------
-#----------------------------------------------------
-#----------------------------------------------------------------------------------------
-#UT---------------------
-#----------------------------------------------------------------
-#------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------
-#-------------------------------------------------------------------------
-#UT-------------------------------
-#-----------------------------------------------------------------------------------------------
-#UT-------------------------------
-#------------------------------------------------------
-#--------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------
-#----------------------------------------------------
-#--------------------------------------------------------------------------------
-#UT--------------------------------
-#-----------------------------------------------------------------------------------------------------------------------
-#UT-----------------------
-#--------------------------------------------------------
-#--------------------------------------------------------
-#------------------
-#---------------------------------------------------------
-#---------------------------------------------------------------------
-## VB2PY (CheckDirective) VB directive took path 1 on VBA7
-#----------------------------------------
-#--------------------------------------------------------------------
-# https://www.herber.de/forum/archiv/916to920/917548_Textdateien_von_UTF8_nach_Ansi_konvertieren.html
-#---------------------------------------------------------------
-#-----------------------------------------------------------------
-#----------------------------------------------------------------
-#----------------------------------------------------------
-#---------------------------------------------------------
-#------------------------------------------------------------
-#--------------------------------------------------------------------------------------------------------------------
-#UT-------------------------------------
-#---------------------------------------------------------------------------------------------------
-#----------------------------------------------
-#------------------------------------------
-# 22.11.21: Juergen
-#------------------------------------------
-# 22.11.21: Juergen
-#------------------------------------------
-#UT-----------------------------------
-#------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 14.10.21 Juergen
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-## VB2PY (CheckDirective) VB directive took path 1 on Win64
-## VB2PY (CheckDirective) VB directive took path 1 on False
-#--------------------------------------------
+def CreateHeaderFile(Platform, SheetName):
+    OriginalPlatform = String()
+    #MsgBox "CreateHeaderFile for " & Platform & "/" & SheetName
+    #ThisWorkbook.Close SaveChanges:=False
+    for Sh in P01.ActiveWorkbook.Sheets:
+        if Sh.Name == SheetName:
+            break
+    if Sh is None:
+        P01.MsgBox('The sheet ' + SheetName + ' does not exist')
+        return
+    P01.Sheets(SheetName).Select()
+    M25.Make_sure_that_Col_Variables_match()
+    OriginalPlatform = P01.Cells(M02.SH_VARS_ROW, M25.BUILDOP_COL)
+    if (Platform == 'ESP32'):
+        P01.Cells[M02.SH_VARS_ROW, M25.BUILDOP_COL] = M02.BOARD_ESP32
+    elif (Platform == 'AM328'):
+        P01.Cells[M02.SH_VARS_ROW, M25.BUILDOP_COL] = M02.BOARD_NANO_NEW
+    elif (Platform == 'PICO'):
+        P01.Cells[M02.SH_VARS_ROW, M25.BUILDOP_COL] = M02.BOARD_PICO
+    else:
+        P01.MsgBox('The platform ' + Platform + ' is not supported')
+        return
+    if M06.Create_HeaderFile(True):
+        FileCopy_with_Check(P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED, Platform + '_Header_' + SheetName + '.h', P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED + M02.Include_FileName)
+    else:
+        TargetName = P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED + Platform + '_Header_' + SheetName + '.h'
+        if Dir(TargetName) != '':
+            Kill(TargetName)
+    P01.Cells[M02.SH_VARS_ROW, M25.BUILDOP_COL] = OriginalPlatform
+    
+def __IsValidPageId(ID):
+    fn_return_value = True
+    if ID == 'DCC':
+        return fn_return_value
+    if ID == 'Selectrix':
+        return fn_return_value
+    if ID == 'CAN':
+        return fn_return_value
+    fn_return_value = False
+    return fn_return_value
+
+def CreateAllHeaderFiles():
+   
+    for Sh in P01.ActiveWorkbook.Sheets:
+        if __IsValidPageId(Sh.Cells(M02.SH_VARS_ROW, M02.PAGE_ID_COL)):
+            CreateHeaderFile('ESP32', Sh.Name)
+    for Sh in P01.ActiveWorkbook.Sheets:
+        if __IsValidPageId(Sh.Cells(M02.SH_VARS_ROW, M02.PAGE_ID_COL)):
+            CreateHeaderFile('AM328', Sh.Name)
+    for Sh in P01.ActiveWorkbook.Sheets:
+        if __IsValidPageId(Sh.Cells(M02.SH_VARS_ROW, M02.PAGE_ID_COL)):
+            CreateHeaderFile('PICO', Sh.Name)
+
+

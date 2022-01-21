@@ -123,6 +123,7 @@ Public Sub Create_Build_Arduino(fp As Integer)                                  
   Print #fp, "REM  5: Baudrate:            ""57600"" or ""115200"""
   Print #fp, "REM  6: Arduino Library path ""%USERPROFILE%\Documents\Arduino\libraries"""
   Print #fp, "REM  7: CPU type:            ""atmega328p, atmega4809"                                            ' 28.10.20: Jürgen
+  Print #fp, "REM  8: options:             ""noflash|norebuild"""                                     ' 19.12.21: Jürgen: Added noflash option
   Print #fp, "REM"
   Print #fp, "REM The program uses the captured and adapted command line from the Arduino IDE"
   Print #fp, "REM"
@@ -164,6 +165,7 @@ Public Sub Create_Build_Arduino(fp As Integer)                                  
   Print #fp, "     %2"
   Print #fp, ""
   Print #fp, ""
+  Print #fp, "if ""%8""==""noflash"" goto :EOF"                                                            ' 19.12.21: Jürgen: add noflash option
   Print #fp, "if %errorlevel%==0 ("
   Print #fp, "   REM *** Flash program ***"
   Print #fp, "   REM -v = Verbose output. -v -v for more."
@@ -214,6 +216,7 @@ Public Sub Create_Build_Pico(fp As Integer)                     ' 17.04.21: Jürg
   Print #fp, "REM  5: Baudrate:            ""115200"""
   Print #fp, "REM  6: Arduino Library path ""%USERPROFILE%\Documents\Arduino\libraries"""
   Print #fp, "REM  7: CPU type:            ""rp2040"
+  Print #fp, "REM  8: options:             ""noflash"""                                     ' 19.12.21: Jürgen: Added noflash option
   Print #fp, "REM"
   Print #fp, "REM The program uses the captured and adapted command line from the Arduino IDE"
   Print #fp, "REM"
@@ -246,6 +249,7 @@ Public Sub Create_Build_Pico(fp As Integer)                     ' 17.04.21: Jürg
   Print #fp, "     %2"
   Print #fp, ""
   Print #fp, ""
+  Print #fp, "if ""%8""==""noflash"" goto :EOF"                                                            ' 19.12.21: Jürgen: add noflash option
   Print #fp, "if %errorlevel%==0 ("
   Print #fp, "   REM *** Flash program ***"
   Print #fp, "   :flash"

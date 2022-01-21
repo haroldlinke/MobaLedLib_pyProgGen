@@ -88,6 +88,14 @@ class TableModel(object):
                 self.autoAddRows(rows)
             if columns != None:
                 self.autoAddColumns(columns)
+        else:
+            self.setLastUsedRow=0
+            for rowIndex in self.data.keys():
+                rec=self.data[rowIndex]
+                if not self.isRecEmpty(rec):
+                    self.updateLastUsedRow(rowIndex)
+                    
+                    
         self.filteredrecs = None
         return
 
@@ -105,6 +113,7 @@ class TableModel(object):
         self.protected_cells = [] #*HL  list of cells that are not editable ("*",col) and (row,"*") for rows and columns
         self.format_cells = {}
         self.columnwidths={}  #used to store col widths, not held in saved data
+        self.lastUsedRow = 0
         return
 
     def createEmptyModel(self):
@@ -121,6 +130,13 @@ class TableModel(object):
             self.columnlabels[colname]=colname
         self.reclist = list(self.data.keys())
         return
+    
+    def isRecEmpty(self,rec):
+        
+        for colname in self.columnNames:
+            if rec.get(colname,"")!="":
+                return False
+        return True
 
     def importCSV(self, filename, sep=',',fieldnames=None):
         """Import table data from a comma separated file."""
@@ -145,16 +161,20 @@ class TableModel(object):
 
         #get cols from sub data keys
         colnames = []
+        self.setLastUsedRow(0)
         for k in newdata:
             fields = newdata[k].keys()
             for f in fields:
                 if not f in colnames:
                     colnames.append(f)
+                if f!=None and newdata[k][f]!="":
+                    self.updateLastUsedRow(k)
         for c in colnames:
             self.addColumn(c)
         #add the data
         self.data.update(newdata)
         self.reclist = list(self.data.keys())
+        #self.lastUsedRow = self.getRowCount()
         return
 
     def getDefaultTypes(self):
@@ -213,12 +233,14 @@ class TableModel(object):
         collist = self.getColCells(columnIndex)
         maxw=5
         for c in collist:
-            try:
-                w = len(str(c))
-            except UnicodeEncodeError:
-                pass
-            if w > maxw:
-                maxw = w
+                lines=c.split("\n")
+                for line in lines:
+                    try:
+                        w = len(str(line))
+                    except UnicodeEncodeError:
+                        pass
+                    if w > maxw:
+                        maxw = w
         #print 'longest width', maxw
         return maxw
 
@@ -418,9 +440,13 @@ class TableModel(object):
         """Delete a row"""
         if key == None or not key in self.reclist:
             key = self.getRecName(rowIndex)
+        if rowIndex==None:
+            rowIndex = self.getRecordIndex(key)
+            
         del self.data[key]
         if update==True:
             self.reclist.remove(key)
+        self.removeRowfromLastUsedRow(rowIndex)
         return
 
     def deleteRows(self, rowlist=None):
@@ -488,6 +514,7 @@ class TableModel(object):
             for key in srckeylist:
                 self.reclist.remove(key)
             self.reclist[destindex:destindex]=srckeylist
+            self.updateLastUsedRow(destindex+len(srckeylist))
             print(self.reclist)
             print(self.data)
         
@@ -644,6 +671,20 @@ class TableModel(object):
                 if func(value, item):
                     names.append(rec)
         return names
+    
+    def removeRowfromLastUsedRow(self,rowIndex):
+        if rowIndex<=self.lastUsedRow:
+            self.lastUsedRow-=1
+    
+    def getLastUsedRow(self):
+        return self.lastUsedRow
+    
+    def setLastUsedRow(self,value):
+        self.lastUsedRow = value
+    
+    def updateLastUsedRow(self,rowIndex):
+        if rowIndex>self.lastUsedRow:
+            self.lastUsedRow=rowIndex
 
     def getRowCount(self):
         """Returns the number of rows in the table model."""
@@ -672,6 +713,7 @@ class TableModel(object):
                 pass
         else:
             self.data[name][colname] = value
+        self.updateLastUsedRow(rowIndex)
         return
 
     def setFormulaAt(self, f, rowIndex, columnIndex):

@@ -384,10 +384,10 @@ End Function
 Function CellLinesSum(ByVal c As String) As Variant
 '--------------------------------------------------
   If InStr(c, vbLf) Then
-        Dim Line As Variant
-        For Each Line In Split(c, vbLf)
-           CellLinesSum = CellLinesSum + val(Line)
-        Next Line
+        Dim line As Variant
+        For Each line In Split(c, vbLf)
+           CellLinesSum = CellLinesSum + val(line)
+        Next line
   Else: CellLinesSum = val(c)
   End If
 End Function
@@ -1733,3 +1733,63 @@ Public Sub HourGlassCursor(bApply As Boolean)
     #End If
 End Sub
 #End If
+
+Public Sub CreateHeaderFile(Platform As String, SheetName As String)                            ' 20.12.21 Jürgen: add function to export a header file
+    'MsgBox "CreateHeaderFile for " & Platform & "/" & SheetName
+    'ThisWorkbook.Close SaveChanges:=False
+    Dim Sh As Worksheet, OriginalPlatform As String
+    For Each Sh In Sheets
+       If Sh.Name = SheetName Then Exit For
+    Next
+    
+    If Sh Is Nothing Then
+        MsgBox "The sheet " & SheetName & " does not exist"
+        Exit Sub
+    End If
+    Sheets(SheetName).Select
+    Make_sure_that_Col_Variables_match
+    OriginalPlatform = Cells(SH_VARS_ROW, BUILDOP_COL)
+    Select Case Platform
+        Case "ESP32"
+            Cells(SH_VARS_ROW, BUILDOP_COL) = BOARD_ESP32
+        Case "AM328"
+            Cells(SH_VARS_ROW, BUILDOP_COL) = BOARD_NANO_NEW
+        Case "PICO"
+            Cells(SH_VARS_ROW, BUILDOP_COL) = BOARD_PICO
+        Case Else
+            MsgBox "The platform " & Platform & " is not supported"
+            Exit Sub
+    End Select
+    
+    If Create_HeaderFile(True) Then
+        FileCopy_with_Check ThisWorkbook.Path & "\" & Ino_Dir_LED, Platform & "_Header_" & SheetName & ".h", ThisWorkbook.Path & "\" & Ino_Dir_LED & Include_FileName
+    Else
+        Dim TargetName As String
+        TargetName = ThisWorkbook.Path & "\" & Ino_Dir_LED & Platform & "_Header_" & SheetName & ".h"
+        If Dir(TargetName) <> "" Then Kill TargetName
+    End If
+    Cells(SH_VARS_ROW, BUILDOP_COL) = OriginalPlatform
+End Sub
+
+Function IsValidPageId(ID As String)
+    IsValidPageId = True
+    If ID = "DCC" Then Exit Function
+    If ID = "Selectrix" Then Exit Function
+    If ID = "CAN" Then Exit Function
+    IsValidPageId = False
+End Function
+
+Public Sub CreateAllHeaderFiles()
+
+    Dim Sh As Worksheet
+    For Each Sh In Sheets
+        If IsValidPageId(Sh.Cells(SH_VARS_ROW, PAGE_ID_COL)) Then CreateHeaderFile "ESP32", Sh.Name
+    Next
+    For Each Sh In Sheets
+        If IsValidPageId(Sh.Cells(SH_VARS_ROW, PAGE_ID_COL)) Then CreateHeaderFile "AM328", Sh.Name
+    Next
+    For Each Sh In Sheets
+        If IsValidPageId(Sh.Cells(SH_VARS_ROW, PAGE_ID_COL)) Then CreateHeaderFile "PICO", Sh.Name
+    Next
+End Sub
+

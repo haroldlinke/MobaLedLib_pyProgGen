@@ -649,6 +649,20 @@ Attribute VB_Name = "M00_RevisionHistory_ToDo"
 '             different languages to group the lines correctly
 '           - change release to 3.1.0
 '           - publish release
+'
+' 02.12.21: - Fix ESP32 build issue with non-default arduino home directory
+'           - Fix issue in case Arduino home directory doesn't exist
+' 06.12.21: - Add Selectrix support for ESP32
+'           - fix issue with empty lines in libraries sheet
+' 10.12.21: - Add Macro RGB_Heartbeat_Color
+' 14.12.21: - Improve Macro RGB_Heartbeat_Color to support vriable pulse duration
+'             Fix some typos
+' 16.12.21: - Add missing macros InCh_toTmpVar1 and BinCh_toTmpVar1
+'             mark those makros to disable status storage (Goto 0)
+'           - add handling of multiline makros in makro storage type detection
+' 21.12.21: - code changes to allow programmatic header file creation
+'
+'
 
 ' ToDo:
 ' ~~~~~

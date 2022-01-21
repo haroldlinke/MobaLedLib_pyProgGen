@@ -495,19 +495,19 @@ Private Function Read_ColTab_from_Config_File(ByRef ColTab() As RGB_T) As Boolea
   Dim FileName As String, Txt As String, Sp As Long, Ep As Long, Nr As Integer
   If Not Open_Cfg_File_and_Get_Sp_and_Ep(Txt, Sp, Ep, FileName) Then Exit Function
   
-  Dim ColTabList() As String, Line As Variant
+  Dim ColTabList() As String, line As Variant
   Sp = Sp + Len(START_PALETTETXT) + 1
   ColTabList = Split(Mid(Txt, Sp, Ep - Sp), vbCr)
-  For Each Line In ColTabList
+  For Each line In ColTabList
      Dim ColStr As String
      If Nr < COLTAB_SIZE Then
-        ColStr = Replace(Replace(Trim(Split(Line, ":")(1)), """", ""), ",", "")
+        ColStr = Replace(Replace(Trim(Split(line, ":")(1)), """", ""), ",", "")
         ColTab(Nr).r = "&H" & Mid(ColStr, 2, 2)
         ColTab(Nr).g = "&H" & Mid(ColStr, 4, 2)
         ColTab(Nr).b = "&H" & Mid(ColStr, 6, 2)
         Nr = Nr + 1
      End If
-  Next Line
+  Next line
 End Function
 
 'UT--------------------------------------------
@@ -581,11 +581,11 @@ End Sub
 '----------------------------------------------------------------------------
 Private Function C_String_to_ColTab(C_Str As String, ByRef ColTab() As RGB_T)
 '----------------------------------------------------------------------------
-  Dim Line As Variant, Nr As Long
-  For Each Line In Split(C_Str, vbLf)
-     If Left(Trim(Line), 2) <> "//" Then
+  Dim line As Variant, Nr As Long
+  For Each line In Split(C_Str, vbLf)
+     If Left(Trim(line), 2) <> "//" Then
         Dim Parts() As String
-        Parts = Split(Trim(Replace(Line, "Set_ColTab(", "")), ",")
+        Parts = Split(Trim(Replace(line, "Set_ColTab(", "")), ",")
         If Nr < COLTAB_SIZE Then
            With ColTab(Nr)
              .r = val(Trim(Parts(0)))
@@ -595,7 +595,7 @@ Private Function C_String_to_ColTab(C_Str As String, ByRef ColTab() As RGB_T)
         End If
         Nr = Nr + 1
      End If
-  Next Line
+  Next line
 End Function
 
 'UT----------------------------------

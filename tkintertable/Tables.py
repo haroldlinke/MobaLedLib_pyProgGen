@@ -1820,25 +1820,10 @@ class TableCanvas(Canvas):
             x1 = x1+w/2-pad
         
         tooltip_txt = celltxt
-
-        if w < 18:
-            celltxt = '.'
-        else:
-            if font:
-                fontsize = font[1]
-            else:
-                fontsize = self.fontsize
-            colname = self.model.getColumnName(col)
-            #scaling between canvas and text normalised to about font 14
-            scale = 8.5 * float(fontsize)/12
-            size = length * scale
-            if size > w:
-                newlength = w / scale
-                #print w, size, length, newlength
-                celltxt = celltxt[0:int(math.floor(newlength))]
-
-        #if celltxt is dict then we are drawing a hyperlink
+        
         if specialtype:
+            #if celltxt is dict then we are drawing a hyperlink
+        
             iconfilename=celldict.get("Icon",None)
             if iconfilename:
                 x1,y1,x2,y2 = self.getCellCoords(row,col)
@@ -1848,8 +1833,7 @@ class TableCanvas(Canvas):
                 image_id = self.create_image( x1,y1+2, #x1+w/2,y1+h/2,
                                               image= iconimage,                                         
                                               anchor="nw",
-                                              tag=('icon','iconfilename_'+str(col)+'_'+str(row)))                       
-                
+                                              tag=('icon','iconfilename_'+str(col)+'_'+str(row))) 
         
             if self.isLink(celltxt) == True:
                 haslink=0
@@ -1876,20 +1860,39 @@ class TableCanvas(Canvas):
 
         #just normal text
         else:
+            txtparts = celltxt.split("§")
+            celltxt=txtparts[0]
+            if len(txtparts)>1:
+                tooltip_txt = txtparts[1]
             if font == None:
                 font = self.thefont
             else:
-                pass #print(font)
+                pass #print(font)            
+            if w < 18:
+                celltxt = '.'
+            else:
+                if font:
+                    fontsize = font[1]
+                else:
+                    fontsize = self.fontsize
+                colname = self.model.getColumnName(col)
+                #scaling between canvas and text normalised to about font 14
+                scale = 8.5 * float(fontsize)/10
+                size = length * scale
+                if size > 2*w:
+                    newlength = 2*w / scale
+                    #print w, size, length, newlength
+                    celltxt = celltxt[0:int(math.floor(newlength))]            
+            
             rect = self.create_text(x1+w/2,y1+h/2,
                                       text=celltxt,
                                       fill=fgcolor,
                                       font=font,
                                       anchor=align,
+                                      width=w-10,
                                       tag=('text','celltext'+str(col)+'_'+str(row)))
+            
             self.ToolTip_canvas(self, rect,text=tooltip_txt)
-        
-        
-        
         return
     
     def ToolTip_canvas(self, canvas, objid,text="",button_1=False):
@@ -1907,9 +1910,9 @@ class TableCanvas(Canvas):
     def isLink(self, cell):
         """Checks if cell is a hyperlink, without using isinstance"""
         try:
-            if type(cell) is dict:
-                print(cell)
-            if ('link' in cell or "icon" in cell)and type(cell) is dict:
+            #if type(cell) is dict:
+            #    print(cell)
+            if type(cell) is dict and ('link' in cell or "icon" in cell or "tooltip" in cell):
                 return True
         except:
             return False
@@ -2493,8 +2496,8 @@ class ColumnHeader(Canvas):
                 w = self.table.cellwidth
             x = self.table.col_positions[col]
 
-            if len(collabel)>w/10:
-                collabel = collabel[0:int(w/12)]+'.'
+            #if len(collabel)>w/10:
+            #    collabel = collabel[0:int(w/12)]+'.'
             line = self.create_line(x, 0, x, h, tag=('gridline', 'vertline'),
                                  fill='white', width=2)
 
@@ -2503,7 +2506,8 @@ class ColumnHeader(Canvas):
                             anchor=align,
                             fill='white',
                             font=self.thefont,
-                            tag='text')
+                            tag='text',
+                            width=w-10)
 
 
         x=self.table.col_positions[col+1]

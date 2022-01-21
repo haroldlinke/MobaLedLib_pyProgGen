@@ -219,13 +219,13 @@ def Detect_Com_Port_and_Save_Result(Right):
     Port = M07New.Detect_Com_Port(Right, Pic_ID)
     if Port > 0:
         P01.CellDict[M02.SH_VARS_ROW, ComPortColumn] = Port
-        #*HL StatusMsg_UserForm.Set_Label(Get_Language_Str('Überprüfe den Arduino Typ'))
-        #*HL StatusMsg_UserForm.Show()
+        P01.StatusMsg_UserForm.Set_Label(M09.Get_Language_Str('Überprüfe den Arduino Typ'))
+        P01.StatusMsg_UserForm.Show()
         
         BuildOptions = ""
         DeviceSignature = 0        
         Fn_res, BuildOptions, DeviceSignature = M08.Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, BuildOptColumn, BuildOptions, DeviceSignature) #*HL Buildoption and devicesignature are return values
-        #*HL U01.Unload(StatusMsg_UserForm)
+        P01.Unload(P01.StatusMsg_UserForm)
 
 def __TestDetect_Com_Port():
     #UT------------------------------
@@ -388,7 +388,7 @@ def Check_If_Port_is_Available_And_Get_Name(PortNr):
     Res = int()
     #--------------------------------------------------------------------------------------
     Ports = EnumComPorts(False, ResNames)
-    Res = 3 #*HL M30.Get_Position_In_Array(PortNr, Ports)
+    Res = M30.Get_Position_In_Array(PortNr, Ports)
     if Res >= 0:
         fn_return_value = ResNames(Res)
     return fn_return_value
@@ -453,7 +453,7 @@ def __TestDetect():
             else:
                 break
     Debug.Print('End')
-    Debug.Print('Check duaration: ' + Format(Time - Start, 'hh:mm:ss'))
+    Debug.Print('Check duration: ' + Format(Time - Start, 'hh:mm:ss'))
     return
     P01.MsgBox('No Arduino detected')
 
@@ -538,7 +538,7 @@ def __Test_Get_Arduino_Baudrate():
     #Debug.Print "Get_Arduino_Baudrate=" & Get_Arduino_Baudrate(6, 115200, DeviceSignatur, FirmwareVer, True)
     Debug.Print('Get_Arduino_Baudrate=' + Get_Arduino_Baudrate(6, 57600, DeviceSignatur, FirmwareVer, True))
     #Debug.Print "Get_Arduino_Baudrate=" & Get_Arduino_Baudrate(8, 115200, DeviceSignatur, FirmwareVer, True)  ' Matching Baudrate 3 Sec, Not matching 6 Sek
-    Debug.Print('Check duaration: ' + Format(Time - Start, 'hh:mm:ss'))
+    Debug.Print('Check duration: ' + Format(Time - Start, 'hh:mm:ss'))
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Port - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: BaudRate - ByVal 

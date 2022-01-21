@@ -132,7 +132,7 @@
         "Max": "255",
         "Default": "",
         "Input Text": "ARDUINO blinken lassen",
-        "Hint": "ARDUINO blinkt, wenn er ausgewählt wird. \nACHTUNG: Das Reaktionszeit der Benutzeroberfläche wir dadurch langsamer"
+        "Hint": "ARDUINO blinkt, wenn er ausgewählt wird. \nACHTUNG: Die Reaktionszeit der Benutzeroberfläche wird dadurch langsamer"
     },
     "ARDUINOConnected": {
         "ParName": "ARDUINO-Connected",

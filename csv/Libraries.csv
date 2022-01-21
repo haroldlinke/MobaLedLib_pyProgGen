@@ -1,5 +1,5 @@
 ;;;Last update:;;Arduino IDE:;1.8.13;Sketchbook_Path: 'C:\Users\Harold\Documents\Arduino';
-;;;16.12.21 7:50;;Std. Boards (Nano, Uno, …): ;1.8.3;;
+;;;19.1.22 9:55;;Std. Boards (Nano, Uno, …): ;1.8.3;;
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;
@@ -27,8 +27,7 @@ until a newer oficial version than 3.3.3 is released because here the flicker du
 ;1;L;U8g2;clib\u8g2.h;;2.28.10;;Library for ESP32 display support
 ;1;L;CAN;src\CAN.h;;0.3.1;;Library for ESP32 CAN support
 ;1;L;EspSoftwareSerial;SoftwareSerial.h;;6.15.2;;Library for ESP32 SoftwareSerial support
-;;;;;;;;
-;1;B*;rp2040:rp2040;rp2040\dummy_rp2040.h;1.9.6;1.9.6;https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json;Board for Raspberry Pico  (Experimental)
+;;B*;rp2040:rp2040;rp2040\dummy_rp2040.h;1.9.6;;https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json;Board for Raspberry Pico  (Experimental)
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;

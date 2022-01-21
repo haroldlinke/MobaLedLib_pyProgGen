@@ -277,12 +277,12 @@ class LEDColorTest(tk.Tk):
             SIZEFACTOR_width = screen_width/1280
             window_width=screen_width
         else:
-            window_width = 1400 # 1280
+            window_width = 1920 # 1280
         
         if screen_height < 900:
             window_height=screen_height
         else:
-            window_height=900
+            window_height=1000
         
         if self.getConfigData("pos_x") < screen_width and self.getConfigData("pos_y") < screen_height:
             self.geometry('%dx%d+%d+%d' % (window_width,window_height,self.getConfigData("pos_x"), self.getConfigData("pos_y")))
@@ -405,15 +405,23 @@ class LEDColorTest(tk.Tk):
         temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)                
         self.readLEDTabfromFile(temp_ledeffecttable_filename,tabselection=False)
         
-        self.connectstatusmessage = tk.Label(self, text='Status:', fg="black",bd=1, relief="sunken", anchor="w")
-        self.connectstatusmessage.grid(row=1,column=0,sticky="ew")
+        self.messageframe = ttk.Frame(self)
+        
+        self.connectstatusmessage = tk.Label(self.messageframe, text='Status:', fg="black",bd=1, relief="sunken", anchor="w")
+        self.connectstatusmessage.grid(row=0,column=0,sticky="ew")
         #self.statusmessage.pack(side="bottom", fill="x")
         self.ToolTip(self.connectstatusmessage, text="Zeigt den Status der Verbindung zum ARDUINO an: \nVerbunden - eine Verbindung zum ARDUINO steht\nNicht verbunden - keine Verbindung zum ARDUINO")
         
-        self.statusmessage = tk.Label(self, text='', fg="black",bd=1, relief="sunken", anchor="w")
-        self.statusmessage.grid(row=1,column=1,sticky="ew")
+        self.statusmessage = tk.Label(self.messageframe, text=' ', fg="black",bd=1, relief="sunken", anchor="w")
+        self.statusmessage.grid(row=0,column=1,sticky="ew")
         #self.statusmessage.pack(side="bottom", fill="x")
         self.ToolTip(self.statusmessage, text="Zeigt Meldungen und Fehler an")
+        
+        self.messageframe.grid_columnconfigure(0, weight=1, uniform="group1")
+        self.messageframe.grid_columnconfigure(1, weight=1, uniform="group1")
+        self.messageframe.grid_rowconfigure(0, weight=1)
+        
+        self.messageframe.grid(row=1,column=0,sticky="nesw")
         
         if COMMAND_LINE_ARG_DICT.get("z21simulator","")=="True":
             # start the Z21 simulator

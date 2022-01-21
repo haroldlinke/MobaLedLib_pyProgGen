@@ -78,7 +78,9 @@ import mlpyproggen.M30_Tools as M30
 #import mlpyproggen.M80_Create_Mulitplexer as M80
 #import mlpyproggen.P01_Worksheetfunction as WorksheetFunction
 
-import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
+import mlpyproggen.F00_mainbuttons as F00
+
+#import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
 
 import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.Prog_Generator as PG
@@ -107,7 +109,7 @@ from mlpyproggen.X01_Excel_Consts import *
 """
 
 Global_Rect_List = vbObjectInitialize(objtype=String)
-PriorCell = P01.CCell("") #range() # HaLi test
+PriorCell = None #P01.CCell("") #range() # HaLi test
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Line - ByVal 
 def Get_Parameter_from_Leds_Line(Line, ParNr):
@@ -221,8 +223,6 @@ def Update_Start_LedNr():
 
     r = int()
 
-    #Max_LEDs_Channel = Variant()
-
     Nr = int()
     #------------------------------
     # Update the Start LedNr in all used rows
@@ -232,8 +232,8 @@ def Update_Start_LedNr():
     M25.Make_sure_that_Col_Variables_match()
     # 03.04.21 Juergen - try to find out if only the main LED Channel is in use
     Max_LEDs_Channel = 0
+    LEDs_Channel = 0
     for row in P01.ActiveSheet.UsedRange.Rows:
-        value = P01.getvalue(3,12)
         r = row.Row
         P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Max LEDs Channel: "+str(r)))
         if r >= M02.FirstDat_Row:
@@ -241,7 +241,6 @@ def Update_Start_LedNr():
                 if P01.val(P01.Cells(r, M25.LED_Cha_Col)) > Max_LEDs_Channel:
                     Max_LEDs_Channel = P01.val(P01.Cells(r, M25.LED_Cha_Col))
     for row in P01.ActiveSheet.UsedRange.Rows:
-        value = P01.getvalue(3,12)
         r = row.Row
         P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Update Start LED: "+str(r)))
         #print("Update Start LED: Row=",r)
@@ -286,8 +285,8 @@ def Update_Start_LedNr():
                     LEDNr[LEDs_Channel] = LEDNr(LEDs_Channel) + M30.CellLinesSum(LEDs)
             else:
                 Clear_LED_Nr_Columns(r)
-        #*HL if LEDNr(LEDs_Channel) > MaxLEDNr(LEDs_Channel):
-        #*HL    MaxLEDNr[LEDs_Channel] = LEDNr(LEDs_Channel)
+        if LEDNr(LEDs_Channel) > MaxLEDNr(LEDs_Channel):
+            MaxLEDNr[LEDs_Channel] = LEDNr(LEDs_Channel)
             # 19.01.21:
     # Write the Last LED number to row 1 (SH_VARS_ROW)
     for Nr in vbForRange(0, M02.LED_CHANNELS - 1):
@@ -435,17 +434,19 @@ def Select_Typ_by_Dialog(Target):
     P01.Application.EnableEvents = False
     Target.Select()
     if M25.Page_ID == 'Selectrix':
-        UserForm_Select_Typ_SX.setFocus(Target)
-        UserForm_Select_Typ_SX.Show()
+        F00.UserForm_Select_Typ_SX.setFocus(Target)
+        F00.UserForm_Select_Typ_SX.Show()
+        M02GV.Userform_Res = F00.UserForm_Select_Typ_SX.Userform_res
+        if F00.UserForm_Select_Typ_SX.Userform_res !="":
+            Target.set_value(F00.UserForm_Select_Typ_SX.Userform_res) #*HL        
     else:
-        UserForm_Select_Typ_DCC = D02.UserForm_Select_Typ_DCC()
-        UserForm_Select_Typ_DCC.setFocus(Target)
-        UserForm_Select_Typ_DCC.Show()
-        M02GV.Userform_Res = UserForm_Select_Typ_DCC.Userform_res
-        if UserForm_Select_Typ_DCC.Userform_res !="":
-            Target.set_value(UserForm_Select_Typ_DCC.Userform_res) #*HL
+        #UserForm_Select_Typ_DCC = D02.UserForm_Select_Typ_DCC()
+        F00.UserForm_Select_Typ_DCC.setFocus(Target)
+        F00.UserForm_Select_Typ_DCC.Show()
+        M02GV.Userform_Res = F00.UserForm_Select_Typ_DCC.Userform_res
+        if F00.UserForm_Select_Typ_DCC.Userform_res !="":
+            Target.set_value(F00.UserForm_Select_Typ_DCC.Userform_res) #*HL
     P01.Application.EnableEvents = True
-    # Global_Worksheet_Change(Target) #*HL
     #*HL if Userform_Res != '':
     #*HL     Target = Userform_Res
     P01.Application.EnableEvents = OldEvents
@@ -644,8 +645,8 @@ def Complete_Addr_Column_with_InCnt(r):
                             EBit_Str = '.8'
                             EndAddr = EndAddr - 1
                         else:
-                            EBit_Str = '.' + EBit_Pos % 8
-                        SBit_Str = '.' + BitPos
+                            EBit_Str = '.' + str(EBit_Pos % 8)
+                        SBit_Str = '.' + str(BitPos)
                 else:
                     if Inp_Typ == M09.Red_T or Inp_Typ == M09.Green_T:
                         EndAddr = Addr

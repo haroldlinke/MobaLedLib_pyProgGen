@@ -141,9 +141,9 @@ def Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(ReleaseMode):
                 #   LRow = LRow + 1
                 #Wend
                 # VB2PY (UntranslatedCode) On Error GoTo 0
-            for rngCell in Sh.UsedRange:
+            for rngCell in Sh.UsedRange.range_list:
                 for i in vbForRange(1, 7):
-                    rngCell.Errors.Item[i].Ignore = True
+                    pass #*HL rngCell.Errors.Item[i].Ignore = True
     if not OldSh is None:
         OldSh.Select()
 

@@ -675,7 +675,7 @@ def __Correct_Temp_Adrduino_nr_Dirs():
     #------------------------------------------
     # Sometimes the instalation fails an a "Arduino_<nr>" directory is created.
     # Unfortunately an update with a new version is not possible
-    if M02.Read_Sketchbook_Path_from_preferences_txt() == False:
+    if CheckArduinoHomeDir() == False: # also sets Sketchbook_Path variable  02.12.21: Juergen
         return
     P01.ChDrive(M02.Sketchbook_Path)
     ChDir(M02.Sketchbook_Path)
@@ -685,6 +685,28 @@ def __Correct_Temp_Adrduino_nr_Dirs():
         Res = Dir()
     for d in Split(DirList, vbTab):
         __Correct_one_Temp_Arduino_nr_Dir(( d ))
+    return
+
+def CheckArduinoHomeDir():
+    fn_return_value = None
+    message = Variant()
+    #------------------------------------------
+    fn_return_value = False
+    if M02.Read_Sketchbook_Path_from_preferences_txt() == False:
+        return fn_return_value
+    # VB2PY (UntranslatedCode) On Error GoTo DirError
+    P01.ChDrive(M02.Sketchbook_Path)
+    try:
+        ChDir(M02.Sketchbook_Path)
+        fn_return_value = True
+        return fn_return_value
+    # VB2PY (UntranslatedCode) On Error GoTo 0
+    except:
+        message = Replace(M09.Get_Language_Str('Das Arduino Sketchbook Verzeichnis #1# existiert nicht.' + 'Bitte prüfen und korrigieren sie die Einstellungen in der Arduino IDE.'), '#1#', M02.Sketchbook_Path + vbCrLf)
+        P01.MsgBox(message, vbCritical, M09.Get_Language_Str('Es sind Fehler aufgetreten'))
+        return fn_return_value
+
+
 
 def __Check_All_Selected_Libraries_Result(Ask_User):
     fn_return_value = None
@@ -1078,9 +1100,10 @@ def Is_Lib_Installed(LibName):
     fn_return_value = None
     Row = int()
     #-------------------------------------------------------------
+    LastRow = M30.LastUsedRow(M02.LIBRARYS__SH)
     Row = __First_Dat_Row
     with_5 = P01.Sheets(M02.LIBRARYS__SH)
-    while with_5.Cells(Row, __Libr_Name_Col) != '':
+    while Row <= LastRow:                                         # 06.12.2021 Juergen Fix issue with empty lines in sheet
         if with_5.Cells(Row, __Libr_Name_Col) == LibName:
             fn_return_value = ( with_5.Cells(Row, __Installed_Col) == 1 )
             return fn_return_value
@@ -1091,9 +1114,10 @@ def Get_Lib_Version(LibName):
     fn_return_value = None
     Row = int()
     #-------------------------------------------------------------
+    LastRow = M30.LastUsedRowIn(M02.LIBRARYS__SH)
     Row = __First_Dat_Row
     with_6 = P01.Sheets(M02.LIBRARYS__SH)
-    while with_6.Cells(Row, __Libr_Name_Col) != '':
+    while Row <= LastRow:                                       # 06.12.2021 Juergen Fix issue with empty lines in sheet
         if with_6.Cells(Row, __Libr_Name_Col) == LibName:
             fn_return_value = with_6.Cells(Row, __DetectVer_Col)
             return fn_return_value
@@ -1105,9 +1129,10 @@ def Get_Required_Version(LibName):
     fn_return_value = None
     Row = int()
     #-------------------------------------------------------------
+    LastRow = M30.LastUsedRowIn(M02.LIBRARYS__SH)
     Row = __First_Dat_Row
     with_7 = P01.Sheets(M02.LIBRARYS__SH)
-    while with_7.Cells(Row, __Libr_Name_Col) != '':
+    while Row <= LastRow:                                       # 06.12.2021 Juergen Fix issue with empty lines in sheet
         if with_7.Cells(Row, __Libr_Name_Col) == LibName:
             fn_return_value = with_7.Cells(Row, __Reque_Ver_Col)
             return fn_return_value

@@ -37,7 +37,6 @@ from vb2py.vbdebug import *
 import tkinter as tk
 from tkinter import ttk
 import mlpyproggen.Prog_Generator as PG
-import mlpyproggen.P01_Workbook as P01
 
 class UserForm_Connector:
     def __init__(self):
@@ -51,9 +50,7 @@ class UserForm_Connector:
         self.button2_txt = "Ok"
         self.Dist_Nr_R = ""
         self.Conn_Nr_R = ""
-        self.res = False
-
-        #*HL Center_Form(Me)        
+        self.res = False    
  
     def ok(self, event=None):
         self.IsActive = False
@@ -72,7 +69,7 @@ class UserForm_Connector:
         self.top.destroy()
         self.res = False
 
-    def Start(self,cell1:P01.CCell,cell2:P01.CCell):
+    def Start(self,cell1,cell2):
         self.entry1_input = tk.StringVar(self.controller)
         self.entry2_input = tk.StringVar(self.controller)
         self.top = tk.Toplevel(self.controller)

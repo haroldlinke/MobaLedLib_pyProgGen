@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Wait_CheckColors_Form 
    Caption         =   "Warte auf das Ende des Farbtest Programms"
-   ClientHeight    =   4470
+   ClientHeight    =   4476
    ClientLeft      =   105
    ClientTop       =   450
    ClientWidth     =   5985
