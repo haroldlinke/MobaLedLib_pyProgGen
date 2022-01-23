@@ -47,6 +47,7 @@ import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
 import mlpyproggen.D02_Userform_Select_Typ_SX as D02SX
 import mlpyproggen.D09_StatusMsg_Userform as D09
+import mlpyproggen.D08_Select_COM_Port_Userform as D08
 
 def Arduino_Button_Click():
     #---------------------------------
@@ -197,10 +198,11 @@ def workbook_init():
     init_UserForms()
     
 def init_UserForms():
-    global StatusMsg_UserForm, UserForm_Select_Typ_DCC, UserForm_Select_Typ_SX
+    global StatusMsg_UserForm, UserForm_Select_Typ_DCC, UserForm_Select_Typ_SX, Select_COM_Port_UserForm
     StatusMsg_UserForm = D09.CStatusMsg_UserForm()
     UserForm_Select_Typ_DCC = D02.UserForm_Select_Typ_DCC()
     UserForm_Select_Typ_SX = D02SX.UserForm_Select_Typ_SX()
+    Select_COM_Port_UserForm = D08.CSelect_COM_Port_UserForm()
 
     
 def notimplemented(command):
@@ -217,3 +219,4 @@ def notimplemented(command):
 StatusMsg_UserForm = None
 UserForm_Select_Typ_DCC = None
 UserForm_Select_Typ_SX = None
+Select_COM_Port_UserForm = None

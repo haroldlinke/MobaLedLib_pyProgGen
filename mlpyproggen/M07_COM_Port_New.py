@@ -69,11 +69,12 @@ import mlpyproggen.M30_Tools as M30
 import mlpyproggen.P01_Workbook as P01
 
 import mlpyproggen.D08_Select_COM_Port_Userform as D08
+import mlpyproggen.F00_mainbuttons as F00
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
 
-Select_COM_Port_UserForm = D08.CSelect_COM_Port_UserForm()
+#Select_COM_Port_UserForm = D08.CSelect_COM_Port_UserForm()
 
 """ Select the Arduino COM Port
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -184,23 +185,23 @@ def __Blink_Arduino_LED():
     # A baudrate of 50 is used.
     BaudRate = 50
     if CheckCOMPort > 0:
-        D08.Select_COM_Port_UserForm.Update_SpinButton(0)
+        F00.Select_COM_Port_UserForm.Update_SpinButton(0)
         if CheckCOMPort != 999:
-            __CheckCOMPort_Res = DetectArduino(CheckCOMPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur, 1, PrintDebug= __PRINT_DEBUG)
+            __CheckCOMPort_Res, DeviceSignatur = M07.DetectArduino(CheckCOMPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur, 1, PrintDebug= __PRINT_DEBUG)
         else:
             __CheckCOMPort_Res = - 9
         #*HLApplication.Cursor = xlNorthwestArrow
         #Debug.Print "CheckCOMPort_Res=" & CheckCOMPort_Res & "  CheckCOMPort=" & CheckCOMPort
         if __CheckCOMPort_Res < 0:
             if CheckCOMPort == 999:
-                D08.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Kein COM Port erkannt.' + vbCr + 'Bitte Arduino an einen USB Anschluss des Computers anschließen'))
+                F00.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Kein COM Port erkannt.' + vbCr + 'Bitte Arduino an einen USB Anschluss des Computers anschließen'))
             else:
-                D08.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Achtung: Der Arduino wird von einem anderen Programm benutzt.' + vbCr + '(Serieller Monitor?)' + vbCr + 'Das Programm muss geschlossen werden! '))
+                F00.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Achtung: Der Arduino wird von einem anderen Programm benutzt.' + vbCr + '(Serieller Monitor?)' + vbCr + 'Das Programm muss geschlossen werden! '))
         else:
-            D08.Select_COM_Port_UserForm.Show_Status(False, CheckCOMPort_Txt)
+            F00.Select_COM_Port_UserForm.Show_Status(False, CheckCOMPort_Txt)
         #*HL Sleep(10)
         P01.DoEvents()
-        P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:00'), 'Blink_Arduino_LED')
+        P01.Application.OnTime(1000, __Blink_Arduino_LED)
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort_IO - ByRef 
 def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons, ComPort_IO):
@@ -222,13 +223,13 @@ def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons
     #  2: If the middle Button is pressed  (Abort)
     #  3: If the right  Button is pressed  (OK)
     CheckCOMPort = 999
-    P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:00'), 'Blink_Arduino_LED')
+    P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:00'), __Blink_Arduino_LED)
     # Return values of Select_COM_Port_UserForm.ShowDialog:
     #  -1: If Abort is pressed
     #   0: If No COM Port is available
     #  >0: Selected COM Port
     # The variable "CheckCOMPort_Res" is >= 0 if the Port is available
-    fn_return_value = D08.Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, M09.Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
+    fn_return_value = F00.Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, M09.Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
     if __CheckCOMPort_Res < 0:
         ComPort_IO = - ComPort_IO
         # Port is buzy

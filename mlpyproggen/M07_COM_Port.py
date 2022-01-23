@@ -33,7 +33,9 @@
 # CHANGELOG:
 # 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
 # 2021-01-07 v4.02 HL: - Else: check done, first PoC release
-
+import serial.tools.list_ports as portlist
+import logging
+import serial
 
 from vb2py.vbfunctions import *
 from vb2py.vbdebug import *
@@ -73,6 +75,10 @@ import mlpyproggen.M30_Tools as M30
 #import mlpyproggen.D08_Select_COM_Port_Userform as D08
 
 import mlpyproggen.P01_Workbook as P01
+import mlpyproggen.F00_mainbuttons as F00
+
+import mlpyproggen.Prog_Generator as PG
+
 
 class DCB:
     def __init__(self):
@@ -146,6 +152,18 @@ __Parm_STK_HW_VER = 0x80
 __Parm_STK_SW_MAJOR = 0x81
 __Parm_STK_SW_MINOR = 0x82
 
+Resp_STK_OK = b'\x10'
+Resp_STK_FAILED = b'\x11'
+Resp_STK_INSYNC = b'\x14'
+Sync_CRC_EOP = b'\x20'
+Cmnd_STK_GET_PARAMETER = b'\x41'
+Cmnd_STK_GET_SYNC = b'\x30'
+STK_READ_SIGN = b'\x75'
+Parm_STK_HW_VER = b'\x80'
+Parm_STK_SW_MAJOR = b'\x81'
+Parm_STK_SW_MINOR = b'\x82'
+
+
 def __Test_Get_COM():
     Res = String()
 
@@ -203,8 +221,6 @@ def Detect_Com_Port_and_Save_Result(Right):
     BuildOptColumn = int()
 
     Pic_ID = String()
-    
-    
 
     Port = int()
     #-----------------------------------------------------------
@@ -219,13 +235,13 @@ def Detect_Com_Port_and_Save_Result(Right):
     Port = M07New.Detect_Com_Port(Right, Pic_ID)
     if Port > 0:
         P01.CellDict[M02.SH_VARS_ROW, ComPortColumn] = Port
-        P01.StatusMsg_UserForm.Set_Label(M09.Get_Language_Str('Überprüfe den Arduino Typ'))
-        P01.StatusMsg_UserForm.Show()
+        F00.StatusMsg_UserForm.Set_Label(M09.Get_Language_Str('Überprüfe den Arduino Typ'))
+        F00.StatusMsg_UserForm.Show()
         
         BuildOptions = ""
         DeviceSignature = 0        
         Fn_res, BuildOptions, DeviceSignature = M08.Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, BuildOptColumn, BuildOptions, DeviceSignature) #*HL Buildoption and devicesignature are return values
-        P01.Unload(P01.StatusMsg_UserForm)
+        P01.Unload(F00.StatusMsg_UserForm)
 
 def __TestDetect_Com_Port():
     #UT------------------------------
@@ -256,7 +272,7 @@ def __Test_Check_USB_Port_with_Dialog():
     #Debug.Print Check_USB_Port_with_Dialog(COMPrtR_COL)   ' Right Arduino
     #Debug.Print Check_USB_Port_with_Dialog(COMPrtT_COL)   ' Tiny_Uniprog
 
-def Get_USB_Port_with_Dialog(Right=VBMissingArgument):
+def Get_USB_Port_with_Dialog(Right=False):
     fn_return_value = None
     ComPortColumn = int()
     #-----------------------------------------------------------------------------
@@ -310,7 +326,7 @@ def NativeInitComPort(Port, Settings, readTimeout):
     return fn_return_value
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ResNames - ByRef 
-def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
+def EnumComPorts_old(Show_Unknown, ResNames, PrintDebug=True):
     fn_return_value = None
     Ports = vbObjectInitialize((50,), Byte)
 
@@ -367,6 +383,24 @@ def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
         fn_return_value = Result
     return fn_return_value
 
+# VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ResNames - ByRef 
+def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
+    Ports = vbObjectInitialize((50,), Byte)
+
+    temp_comports_list = portlist.comports(include_links=False)
+
+    NumberOfPorts = len(temp_comports_list)
+    Ports = vbObjectInitialize((NumberOfPorts - 1,), Variant)
+    ResNames = vbObjectInitialize((NumberOfPorts - 1,), Variant)    
+    idx=0
+    for comport in temp_comports_list:
+        Ports[idx] = comport.device.replace("COM","")
+        ResNames[idx] = comport.description
+        idx=idx+1
+
+    fn_return_value = Ports
+    return fn_return_value, ResNames
+
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: PortNr - ByVal 
 def Check_If_Port_is_Available(PortNr):
     fn_return_value = None
@@ -374,7 +408,7 @@ def Check_If_Port_is_Available(PortNr):
 
     ResNames = vbObjectInitialize(objtype=String)
     #--------------------------------------------------------------------------
-    Ports = EnumComPorts(False, ResNames)
+    Ports, ResNames = EnumComPorts(False, ResNames)
     fn_return_value = M30.Is_Contained_in_Array(PortNr, Ports)
     return fn_return_value
 
@@ -387,7 +421,7 @@ def Check_If_Port_is_Available_And_Get_Name(PortNr):
 
     Res = int()
     #--------------------------------------------------------------------------------------
-    Ports = EnumComPorts(False, ResNames)
+    Ports,ResNames = EnumComPorts(False, ResNames)
     Res = M30.Get_Position_In_Array(PortNr, Ports)
     if Res >= 0:
         fn_return_value = ResNames(Res)
@@ -423,7 +457,7 @@ def __TestDetect():
     Ub = int()
     #UT---------------------
     Start = Time
-    ComPorts = EnumComPorts(False, Names)
+    ComPorts, Names = EnumComPorts(False, Names)
     # VB2PY (UntranslatedCode) On Error GoTo IsEmpty
     Ub = UBound(ComPorts)
     # VB2PY (UntranslatedCode) On Error GoTo 0
@@ -434,7 +468,7 @@ def __TestDetect():
             else:
                 BaudRate = 115200
             Debug.Print('Trying COM' + ComPort + ' with Baudrate ' + BaudRate)
-            select_0 = DetectArduino(ComPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur)
+            select_0, DeviceSignatur = DetectArduino(ComPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur)
             if (select_0 == 1):
                 Debug.Print('  Serial Port     : COM' + ComPort)
                 Debug.Print('  Serial Baudrate : ' + BaudRate)
@@ -460,7 +494,7 @@ def __TestDetect():
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DeviceSignatur - ByRef 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: FirmwareVer - ByRef 
-def Get_Arduino_Baudrate(ComPort, Start_Baudrate, DeviceSignatur, FirmwareVer, DebugPrint=VBMissingArgument):
+def Get_Arduino_Baudrate(ComPort, Start_Baudrate, DeviceSignatur, FirmwareVer, DebugPrint=False):
     fn_return_value = None
     SWMajorVersion = Byte()
 
@@ -494,9 +528,9 @@ def Get_Arduino_Baudrate(ComPort, Start_Baudrate, DeviceSignatur, FirmwareVer, D
         if DebugPrint:
             Debug.Print('Trying COM' + str(ComPort) + ' with Baudrate ' + str(BaudRate))
         if 0:
-            Res = DetectArduino(ComPort, BaudRate, DeviceSignatur= DeviceSignatur, SleepTime= SleepTime)
+            Res, DeviceSignatur = DetectArduino(ComPort, BaudRate, DeviceSignatur= DeviceSignatur, SleepTime= SleepTime)
         else:
-            Res = DetectArduino(ComPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur= DeviceSignatur, SleepTime= SleepTime)
+            Res, DeviceSignatur = DetectArduino(ComPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur= DeviceSignatur, SleepTime= SleepTime)
         if (Res == 1):
             if DebugPrint:
                 Debug.Print('  Serial Port     : COM' + str(ComPort))
@@ -539,6 +573,80 @@ def __Test_Get_Arduino_Baudrate():
     Debug.Print('Get_Arduino_Baudrate=' + Get_Arduino_Baudrate(6, 57600, DeviceSignatur, FirmwareVer, True))
     #Debug.Print "Get_Arduino_Baudrate=" & Get_Arduino_Baudrate(8, 115200, DeviceSignatur, FirmwareVer, True)  ' Matching Baudrate 3 Sec, Not matching 6 Sek
     Debug.Print('Check duration: ' + Format(Time - Start, 'hh:mm:ss'))
+    
+def getdeviceinformation():
+    logging.debug("getdeviceinformation")
+    DeviceSignatur = b''
+    HWVersion = b''
+    SWMajorVersion  = b''
+    SWMinorVersion  = b''
+    Data = __transact(STK_READ_SIGN, 5)
+    if len(Data)==5:
+        if Data[4].to_bytes(1,byteorder="little") == Resp_STK_OK:
+            DeviceSignatur = Data[1:4]
+            logging.debug("getdeviceinformation: %s",str(DeviceSignatur))
+            if DeviceSignatur == b'\x1E\x95\x0F':
+                logging.info("ATMEGA328P")
+            else:
+                logging.info("Device Signatur: %s",str(DeviceSignatur))
+    return DeviceSignatur
+    
+def DetectArduino(port,baudrate, HWVersion=255, SWMajorVersion=255, SWMinorVersion=255, DeviceSignatur=- 1, Trials=3, PrintDebug=True, SleepTime=20):
+    global Cmnd_STK_GET_SYNC
+    # protocol see application note 1AVR061 here http://ww1.microchip.com/downloads/en/Appnotes/doc2525.pdf
+    # Result:  1: O.K
+    #          0: Give up after n trials => if no arduino is detected
+    #         -1: can't open com port
+    #         -2: can't close and assign port
+    #         -3: can't reset arduino
+    No_of_trials = Trials
+    logging.debug ("detect_arduino: %s",port)
+    no_port=None
+    try: # close the port if it is open and reopen it with DTR = False
+        if PG.global_controller.arduino and PG.global_controller.arduino.is_open:
+            PG.global_controller.arduino.close()
+        PG.global_controller.arduino = serial.Serial(no_port,baudrate=baudrate,timeout=0.2,write_timeout=1,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,bytesize=serial.EIGHTBITS)
+        logging.info("connected to: " + PG.global_controller.arduino.port)
+    except BaseException as e:
+        logging.debug(e)
+        logging.debug("detect_arduino: Error assigning port")
+        return -2, None
+    if type(port)==int:
+        port_str="COM"+str(port)
+    else:
+        port_str = port
+    PG.global_controller.arduino.port = port_str
+    PG.global_controller.arduino.dtr = False
+    try:
+        PG.global_controller.arduino.open()
+    except BaseException as e:
+        logging.debug(e)            
+        logging.debug("detect_arduino: Error opening  port "+port_str)
+        return -1, None           
+    try:
+        PG.global_controller.arduino.dtr = True
+        time.sleep(0.250)
+        PG.global_controller.arduino.dtr = False
+    except BaseException as e:
+        logging.debug(e)                 
+        logging.debug("Error, reset ARDUINO")
+        return -3, None
+
+    # now get in sync
+    message = Cmnd_STK_GET_SYNC
+    
+    sucessful=False
+    
+    for i in range (No_of_trials):
+        message = __transact(Cmnd_STK_GET_SYNC,2)
+        
+        if message == Resp_STK_INSYNC + Resp_STK_OK:
+            devicesignatur = getdeviceinformation()
+            PG.global_controller.arduino.close()
+            return 1, devicesignatur
+    if not sucessful:
+        logging.debug("Give up after %s trials",No_of_trials)
+    return 0, None
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Port - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: BaudRate - ByVal 
@@ -546,7 +654,7 @@ def __Test_Get_Arduino_Baudrate():
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: SWMajorVersion=255 - ByRef 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: SWMinorVersion=255 - ByRef 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DeviceSignatur=- 1 - ByRef 
-def DetectArduino(Port, BaudRate, HWVersion=255, SWMajorVersion=255, SWMinorVersion=255, DeviceSignatur=- 1, Trials=3, PrintDebug=True, SleepTime=20):
+def DetectArduino_old(Port, BaudRate, HWVersion=255, SWMajorVersion=255, SWMinorVersion=255, DeviceSignatur=- 1, Trials=3, PrintDebug=True, SleepTime=20):
     fn_return_value = None
     handle = int()
 
@@ -636,8 +744,27 @@ def DetectArduino(Port, BaudRate, HWVersion=255, SWMajorVersion=255, SWMinorVers
         CloseHandle(( handle ))
     return fn_return_value
 
+def __transact(bytemessage,nNumberOfBytesToRead=10):
+    
+    bytemessage += Sync_CRC_EOP
+    # write message to serport
+    nbytes_written = PG.global_controller.arduino.write(bytemessage)
+    if nbytes_written != len(bytemessage):
+        logging.debug("ERROR write to ARDUINO")
+        return b''
+    no_of_trials=10
+    for i in range (no_of_trials):
+        # read from serport nNumberOfBytesToRead
+        read_data = PG.global_controller.arduino.read(size=nNumberOfBytesToRead)
+        logging.debug("transact: %s",read_data)
+        if (read_data[:1] == Resp_STK_INSYNC and read_data[-1:] == Resp_STK_OK) or read_data[-1:] == Resp_STK_FAILED:
+        # return response
+            logging.debug("transact data_ok: %s",read_data)
+            return read_data
+    return b''
+
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: handle - ByVal 
-def __Transact(handle, message, nNumberOfBytesToRead=10):
+def __Transact_old(handle, message, nNumberOfBytesToRead=10):
     fn_return_value = None
     CbWritten = Variant()
 

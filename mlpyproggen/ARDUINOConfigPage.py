@@ -325,6 +325,7 @@ class ARDUINOConfigPage(tk.Frame):
         self.after(200,self.on_blink_arduino_led)
                         
     def on_blink_arduino_led(self):
+        
         arduino_blick_cb = self.controller.get_macroparam_val("ARDUINOConfigPage","ARDUINOBlink")
         if self.blink_ARDUINO != "" and arduino_blick_cb==1:
             portdata = self.arduino_portlist.get(self.blink_ARDUINO,{})
@@ -414,6 +415,8 @@ class ARDUINOConfigPage(tk.Frame):
                     self.controller.set_macroparam_val("ARDUINOConfigPage","ARDUINO Type",2)
     
     def on_update_ARDUINO_data(self):
+        
+        logging.debug("on_update_ARDUINO_data")
         if self.monitor_arduino_ports:
             temp_comports_list=portlist.comports(include_links=False)
             
@@ -483,9 +486,14 @@ class ARDUINOConfigPage(tk.Frame):
         else:
             Baudrate = Start_Baudrate
         #if not Baudrate in [115200,57600]: Baudrate = 115200
+        SleepTime=20
         for i in range(trials):
             logging.debug("Trying COM %s with Baudrate %s",ComPort,Baudrate)
-            Res, DeviceSignatur = self.detect_arduino(ComPort, Baudrate,No_of_trials=int(trials/2)) 
+            if False:
+                Res, DeviceSignatur = self.detect_arduino(ComPort, Baudrate,No_of_trials=int(trials/2),SleepTime=SleepTime)
+            else:
+                Res, DeviceSignatur = self.detect_arduino(ComPort, Baudrate,No_of_trials=int(trials/2),SleepTime=SleepTime)
+
             if Res == 1: # Arduino detected
                 logging.debug("  Serial Port     : %s",ComPort)
                 logging.debug("  Serial Baudrate : %s",Baudrate)
@@ -554,7 +562,7 @@ class ARDUINOConfigPage(tk.Frame):
         return DeviceSignatur
 
     
-    def detect_arduino(self,port,baudrate,No_of_trials=2):
+    def detect_arduino(self,port,baudrate,No_of_trials=2,SleepTime=20):
         # protocol see application note 1AVR061 here http://ww1.microchip.com/downloads/en/Appnotes/doc2525.pdf
         # Result:  1: O.K
         #          0: Give up after n trials => if no arduino is detected
@@ -563,6 +571,7 @@ class ARDUINOConfigPage(tk.Frame):
         #         -3: can't reset arduino
         
         logging.debug ("detect_arduino: %s",port)
+        logging.debug ("SleepTime="+str(SleepTime))
         no_port=None
         try: # close the port if it is open and reopen it with DTR = False
             if self.controller.arduino and self.controller.arduino.is_open:

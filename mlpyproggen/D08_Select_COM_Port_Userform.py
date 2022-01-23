@@ -53,7 +53,7 @@ from tkcolorpicker.limitvar import LimitVar
 #import mlpyproggen.M06_Write_Header_LED2Var as M06LED
 #import mlpyproggen.M06_Write_Header_Sound as M06Sound
 #import mlpyproggen.M06_Write_Header_SW as M06SW
-#import mlpyproggen.M07_COM_Port as M07
+import mlpyproggen.M07_COM_Port as M07
 #import mlpyproggen.M08_ARDUINO as M08
 #import mlpyproggen.M09_Language as M09
 #import mlpyproggen.M09_Select_Macro as M09SM
@@ -63,7 +63,7 @@ from tkcolorpicker.limitvar import LimitVar
 #import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M27_Sheet_Icons as M27
 #import mlpyproggen.M28_divers as M28
-#import mlpyproggen.M30_Tools as M30
+import mlpyproggen.M30_Tools as M30
 #import mlpyproggen.M31_Sound as M31
 #import mlpyproggen.M37_Inst_Libraries as M37
 #import mlpyproggen.M60_CheckColors as M60
@@ -73,22 +73,23 @@ from tkcolorpicker.limitvar import LimitVar
 from mlpyproggen.X01_Excel_Consts import *
 import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.Prog_Generator as PG
+import mlpyproggen.M09_Language as M09
 
 import logging
 
-__LocalComPorts = vbObjectInitialize(objtype=Byte)
+LocalComPorts = vbObjectInitialize(objtype=Byte)
 __OldL_ComPorts = vbObjectInitialize(objtype=Byte)
-__PortNames = vbObjectInitialize(objtype=String)
+PortNames = vbObjectInitialize(objtype=String)
 __OldSpinButton = Long()
 __Pressed_Button = Long()
-__LocalPrintDebug = Boolean()
+LocalPrintDebug = Boolean()
 __LocalShow_ComPort = Boolean()
 
 
 class CSelect_COM_Port_UserForm:
     def __init__(self):
 
-        #self.controller = PG.get_global_controller()
+        self.controller = PG.get_global_controller()
         self.IsActive = False
         self.button1_txt = "Abbrechen"
         self.button2_txt = "Ok"
@@ -165,62 +166,69 @@ class CSelect_COM_Port_UserForm:
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DefaultPort - ByVal 
     def Update_SpinButton(self, DefaultPort):
+        return #*HL
+    
+    
+        global CheckCOMPort_Txt,CheckCOMPort,COM_Port_Label,PortNames,LocalPrintDebug,LocalComPorts
         #------------------------------------------------------
         # Is also called by the OnTime proc which checks the available ports
-        __LocalComPorts = EnumComPorts(Show_Unknown_CheckBox, __PortNames, PrintDebug= __LocalPrintDebug)
-        if isInitialised(__LocalComPorts):
-            SpinButton.Max = UBound(__LocalComPorts)
+        Show_Unknown_CheckBox = True #*HL
+        LocalComPorts,PortNames = M07.EnumComPorts(Show_Unknown_CheckBox, PortNames, PrintDebug= LocalPrintDebug)
+        if M30.isInitialised(LocalComPorts):
+            SpinButton.Max = UBound(LocalComPorts)
             if DefaultPort > 0:
-                for i in vbForRange(0, UBound(__LocalComPorts)):
-                    if DefaultPort == __LocalComPorts(i):
+                for i in vbForRange(0, UBound(LocalComPorts)):
+                    if DefaultPort == LocalComPorts(i):
                         SpinButton = i
             else:
-                if isInitialised(__OldL_ComPorts):
-                    if UBound(__LocalComPorts) > UBound(__OldL_ComPorts):
+                if M30.isInitialised(__OldL_ComPorts):
+                    if UBound(LocalComPorts) > UBound(__OldL_ComPorts):
                         for ix in vbForRange(0, UBound(__OldL_ComPorts)):
-                            if __LocalComPorts(ix) != __OldL_ComPorts(ix):
+                            if LocalComPorts(ix) != __OldL_ComPorts(ix):
                                 SpinButton = ix
                                 break
                         if ix > UBound(__OldL_ComPorts):
                             SpinButton = ix
             if SpinButton > SpinButton.Max:
                 SpinButton = SpinButton.Max
-            CheckCOMPort_Txt = __PortNames(SpinButton)
-            CheckCOMPort = __LocalComPorts(SpinButton)
+            CheckCOMPort_Txt = PortNames(SpinButton)
+            CheckCOMPort = LocalComPorts(SpinButton)
             COM_Port_Label = ' COM' + CheckCOMPort
             if SpinButton != __OldSpinButton:
-                Show_Status(False, Get_Language_Str('Aktualisiere Status ...'))
+                self.Show_Status(False, M09.Get_Language_Str('Aktualisiere Status ...'))
                 __OldSpinButton = SpinButton
-            for Port in __LocalComPorts:
+            for Port in LocalComPorts:
                 PortsStr = PortsStr + Port + ' '
-            Available_Ports_Label = DelLast(PortsStr)
-            __OldL_ComPorts = __LocalComPorts
+            self.AvailPorts_Label.configure(text=M30.DelLast(PortsStr))
+            __OldL_ComPorts = LocalComPorts
         else:
             CheckCOMPort = 999
-            Available_Ports_Label = ''
+            elf.AvailPorts_Label.configure(text='')
             COM_Port_Label = ' -'
     
     def Show_Status(self,ErrBox, Msg):
+        global Error_Label,Status_Label
         #-------------------------------------------------------
         if ErrBox:
-            if Error_Label != Msg:
-                Error_Label = Msg
+            #if Error_Label != Msg:
+            self.Error_Label.configure(text=Msg)
                 # "If" is used to prevent flickering
         else:
-            if Status_Label != Msg:
-                Status_Label = Msg
-        if Error_Label.Visible != ErrBox:
-            Error_Label.Visible = ErrBox
-        if Status_Label.Visible == ErrBox:
-            Status_Label.Visible = not ErrBox
+            self.Status_Label.configure(text=Msg)
+            #if Status_Label != Msg:
+            #    Status_Label = Msg
+        #if Error_Label.Visible != ErrBox:
+        if ErrBox:
+            self.Error_Label.grid()
+            self.Status_Label.grid()
+        else:
+            self.Error_Label.grid_remove()
+            self.Status_Label.grid_remove()            
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort_IO - ByRef 
     def ShowDialog(self, Caption, Title, Text, Picture, Buttons, FocusButton, Show_ComPort, Red_Hint, ComPort_IO, PrintDebug=False):
         fn_return_value = None
-        ButtonArr = vbObjectInitialize(objtype=String)
-    
-        BNr = Variant()
-    
+            
         c = Variant()
     
         Found = Boolean()
@@ -263,27 +271,27 @@ class CSelect_COM_Port_UserForm:
         self.Title_Label.focus_set()
         self.Title_Label.grid(row=0,column=0,columnspan=2,sticky="nesw",padx=10,pady=10)
         
-        self.Text_Label = ttk.Label(self.top, text=Text,font=("Tahoma", 11),width=30,height=8, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.Text_Label = ttk.Label(self.top, text=Text,font=("Tahoma", 11),width=30, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.Text_Label.grid(row=1,column=0,columnspan=2,sticky="nesw",padx=10,pady=10)
         
-        self.Status_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=15,height=4,wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.Status_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=15,wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.Status_Label.grid(row=2,column=1,rowspan=2,sticky="nesw",padx=10,pady=10)
         
-        self.Error_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=15,height=4, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.Error_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=15, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.Error_Label.grid(row=2,column=0,rowspan=1,sticky="nesw",padx=10,pady=10)        
                 
-        self.AvailPortsTxt_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=15,height=1, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.AvailPortsTxt_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=15, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.AvailPortsTxt_Label.grid(row=3,column=0,columnspan=2,sticky="nesw",padx=10,pady=10)        
                 
-        self.Image_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=30,height=10, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.Image_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=30, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.Image_Label.grid(row=0,column=2,rowspan=7,sticky="nesw",padx=10,pady=10)
         
         #self.Show_Unknown_CheckBox = 
         
-        self.Hint_Label = ttk.Label(self.top, text="Zur Identifikation des Arduinos blinken die LEDs des ausgewählten Arduinos schnell.\nEin anderer COM Port kann über die Pfeiltasten ausgewählt werden.\nDer Arduino kann auch nachträglich angesteckt werden.",font=("Tahoma", 11),width=30,height=8, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.Hint_Label = ttk.Label(self.top, text="Zur Identifikation des Arduinos blinken die LEDs des ausgewählten Arduinos schnell.\nEin anderer COM Port kann über die Pfeiltasten ausgewählt werden.\nDer Arduino kann auch nachträglich angesteckt werden.",font=("Tahoma", 11),width=30,wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.Hint_Label.grid(row=7,column=0,columnspan=2,rowspan=2,sticky="nesw",padx=10,pady=10)
         
-        self.AvailPorts_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=30,height=1, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
+        self.AvailPorts_Label = ttk.Label(self.top, text="",font=("Tahoma", 11),width=30, wraplength=window_width-20,relief=tk.SUNKEN, borderwidth=1)
         self.AvailPorts_Label.grid(row=5,column=0,columnspan=2,sticky="nesw",padx=10,pady=10)
         
         self.button_frame = ttk.Frame(self.top)
@@ -349,8 +357,8 @@ class CSelect_COM_Port_UserForm:
         Me.Show()
         # Store the results
         if Show_ComPort:
-            if isInitialised(__LocalComPorts):
-                ComPort_IO = __LocalComPorts(SpinButton)
+            if isInitialised(LocalComPorts):
+                ComPort_IO = LocalComPorts(SpinButton)
         fn_return_value = __Pressed_Button
         return fn_return_value
     

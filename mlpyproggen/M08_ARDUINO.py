@@ -831,7 +831,7 @@ def Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, Build
                 Msg = M09.Get_Language_Str('Fehler: Das Gerät am COM Port #1# wurde nicht als Arduino erkannt.' + vbCr + 'Evtl. ist es ein defekter Arduino oder der Bootloader ist falsch.')
             else:
                 Msg = M09.Get_Language_Str('Fehler: Der COM Port #1# wird bereits von einem anderen Programm benutzt.' + vbCr + 'Das kann z.B. der serielle Monitor der Arduino IDE oder das Farbtestprogramm sein.' + vbCr + vbCr + 'Das entsprechende Programm muss geschlossen werden.')
-            Msg = Replace(Msg, "#1#", ComPort) + vbCr + vbCr + M09.Get_Language_Str('Wollen sie es noch mal mit einem anderen Arduino oder einem anderen COM Port versuchen?') + vbCr + vbCr + M09.Get_Language_Str('Mit \'Nein\' wird die Meldung ignoriert und versucht den Arduino trotzdem zu programmieren.')
+            Msg = Replace(Msg, "#1#", str(ComPort)) + vbCr + vbCr + M09.Get_Language_Str('Wollen sie es noch mal mit einem anderen Arduino oder einem anderen COM Port versuchen?') + vbCr + vbCr + M09.Get_Language_Str('Mit \'Nein\' wird die Meldung ignoriert und versucht den Arduino trotzdem zu programmieren.')
             select_variable_ = P01.MsgBox(Msg, vbYesNoCancel + vbQuestion, M09.Get_Language_Str('Fehler bei der Überprüfung des angeschlossenen Arduinos'))
             if (select_variable_ == vbYes):
                 Retry = True
@@ -913,7 +913,7 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         ArduName = 'LED'
     else:
         ArduName =  M25.Page_ID
-    #P01.Unload(UserForm_Options)
+    #P01.Unload(UserForm_Options) # already done
     F00.StatusMsg_UserForm.ShowDialog(Replace(M09.Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + vbCr + M30.FileNameExt(InoName), '...')
     Update_Compile_Time(True)
     
@@ -940,7 +940,7 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         else:
             Mode = M02.Get_BoardTyp()
             if Mode=="Pico" and M25.Page_ID == 'Selectrix':
-                P01.MsgBox Replace('Error: The #1# support for \'' + M25.Page_ID + '\' is not finished yet',"#1#,Mode) vbInformation, Replace("#1# support not finished","#1#",Mode')
+                P01.MsgBox(Replace('Error: The #1# support for \'' + M25.Page_ID + '\' is not finished yet',"#1#",Mode), vbInformation, Replace("#1# support not finished","#1#",Mode))
                 return fn_return_value
         TextColor = vbYellow
     if DeviceSignature == 2004561:
@@ -948,10 +948,11 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
     else:
         CPUType = 'atmega328p'
     CommandStr = '"' + Create_Cmd_file(ResFile, ComPort, BuildOptions, InoName, Mode, SrcDir, CPUType) + '"'
-    """
+    
     # Disable "serial.SerialDiscovery" trial 2                                ' 16.03.20:
     # Problem: Change the background color to Red is not working
-    #CommandStr = CommandStr & " 2>&1 | find /v "" StatusLogger "" | find /v ""serial.SerialDiscovery"" | find /v ""fungsvorgang..."""
+    #CommandStr = CommandStr & " 2>&1 | find /v "" StatusLogger "" | find /v ""serial.SerialDiscovery"" | find /v ""fungsvorgang...
+    """
     
     #if CommandStr == '' or CommandStr == '""':
     #    #U01.Unload(StatusMsg_UserForm)
