@@ -43,6 +43,7 @@ import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.Prog_Generator as PG
 import mlpyproggen.M23_Add_Move_Del_Row as M23
 import mlpyproggen.M20_PageEvents_a_Functions as M20
+import mlpyproggen.M30_Tools as M30
 
 import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
 import mlpyproggen.D02_Userform_Select_Typ_SX as D02SX
@@ -193,9 +194,21 @@ def __Worksheet_Calculate():
     if Cells.Parent.Name == ActiveSheet.Name:
         Global_Worksheet_Calculate()
         
-def workbook_init():
+def workbook_init(workbook):
     M01.__Release_or_Debug_Version(True)
     init_UserForms()
+    for sheet in workbook.sheets:
+        worksheet_init(sheet)
+    
+def worksheet_init(worksheet):
+    return
+    first_call=True
+    if worksheet.Datasheet:
+        P01.ActiveSheet=worksheet
+        for row in range(3,M30.LastUsedRow()):
+            M20.Update_TestButtons(row,First_Call=first_call)
+            M20.Update_StartValue(row)
+            first_call=False
     
 def init_UserForms():
     global StatusMsg_UserForm, UserForm_Select_Typ_DCC, UserForm_Select_Typ_SX, Select_COM_Port_UserForm

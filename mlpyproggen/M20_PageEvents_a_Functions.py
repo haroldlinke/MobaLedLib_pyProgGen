@@ -72,6 +72,7 @@ import mlpyproggen.M27_Sheet_Icons as M27
 #import mlpyproggen.M28_divers as M28
 import mlpyproggen.M30_Tools as M30
 #import mlpyproggen.M31_Sound as M31
+import mlpyproggen.M32_DCC as M32
 #import mlpyproggen.M37_Inst_Libraries as M37
 #import mlpyproggen.M60_CheckColors as M60
 #import mlpyproggen.M70_Exp_Libraries as M70
@@ -108,7 +109,7 @@ from mlpyproggen.X01_Excel_Consts import *
 
 """
 
-Global_Rect_List = vbObjectInitialize(objtype=String)
+Global_Rect_List = [] #vbObjectInitialize(objtype=String)
 PriorCell = None #P01.CCell("") #range() # HaLi test
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Line - ByVal 
@@ -657,7 +658,7 @@ def Complete_Addr_Column_with_InCnt(r):
                     else:
                         EndAddr = Addr + InCnt - 1
             if Addr != EndAddr and EndAddr != 0 or  ( InCnt > 1 and EBit_Str != '' ) :
-                Target = Addr + SBit_Str + ' - ' + EndAddr + EBit_Str
+                Target = str(Addr) + SBit_Str + ' - ' + str(EndAddr) + EBit_Str
             else:
                 Target = Addr
 
@@ -811,6 +812,8 @@ def Update_StartValue(Row):
     Addr = int()
 
     AddrColumn = int()
+    
+    Inp_TypR = None
     #-----------------------------------------------
     M25.Make_sure_that_Col_Variables_match()
     if ( M25.Page_ID == 'DCC' )  or  ( M25.Page_ID == 'CAN' ) :
@@ -846,7 +849,7 @@ def Update_StartValue(Row):
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Row - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: onValue=0 - ByVal 
 def Update_TestButtons(Row, onValue=0, First_Call=True):
-    return
+    
     global Global_Rect_List
     #objButton = Shape()
 
@@ -900,7 +903,7 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
 
     Used_OldRect = int()
     #-----------------------------------------------
-    Debug.Print ("Update_TestButtons(" & str(Row) & ")")
+    Debug.Print ("Update_TestButtons(" + str(Row) + ")")
     toggle = False
     # only for the DCC and Selectrix sheet
     isSX = M25.Page_ID == 'Selectrix'
@@ -911,16 +914,16 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
         AddrColumn = M25.SX_Channel_Col
     else:
         return
-    PixelOffset = 35
+    PixelOffset = 50 #*HL 35
     LastRow = M30.LastUsedRow()
     ButtonPrefix = 'B'
     i = 1
     if First_Call:
-        Global_Rect_List = vbObjectInitialize(((1, LastRow),), Variant)
+        Global_Rect_List = vbObjectInitialize(((1, LastRow),), str)
         while i <= P01.ActiveSheet.Rectangles.Count:
             #  is it a SendButton Shape?
             if P01.ActiveSheet.Rectangles(i).OnAction == 'DCCSend':
-                RectRow = P01.ActiveSheet.Rectangles(i).TopLeftCell.Row
+                RectRow = P01.ActiveSheet.Rectangles.rlist(i).TopLeftCell.Row
                 if RectRow <= LastRow:
                     Global_Rect_List[RectRow] = Global_Rect_List(RectRow) + str(i) + ' '
                 if P01.ActiveSheet.Rectangles(i).TopLeftCell.Row == Row:
@@ -930,9 +933,9 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
                     OldRect_Cnt = OldRect_Cnt + 1
                 else:
                     # find orphans
-                    Addr = M25.Get_First_Number_of_Range(P01.ActiveSheet.Rectangles(i).TopLeftCell.Row, AddrColumn)
+                    Addr = M25.Get_First_Number_of_Range(P01.ActiveSheet.Rectangles.rlist(i).TopLeftCell.Row, AddrColumn)
                     if Addr == '':
-                        P01.ActiveSheet.Rectangles(i).Delete()
+                        P01.ActiveSheet.Rectangles.rlist(i).Delete()
                         i = i - 1
             i = i + 1
     else:
@@ -998,9 +1001,9 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
         if InCnt > 1:
             TextOffset = 0
             AltTextOffset = 1
-    Height = P01.Cells(Row, TargetColumn).Height
-    if Height > 13:
-        Height = 13
+    Height = P01.Cells(Row, TargetColumn).Height()
+    if Height > 26: #13
+        Height = 26 
     # increase minimum column size if needed
     #*HLi = 1 + PixelOffset + ButtonCount * Height
     #*HLif P01.Cells(Row, TargetColumn).Width < i:
@@ -1008,40 +1011,46 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
     #*HL    P01.Range[P01.Cells(1, TargetColumn), P01.Cells(1, TargetColumn)].ColumnWidth = WorksheetFunction.RoundUp(i / factor, 1)
     for i in vbForRange(1, ButtonCount):
         if Used_OldRect < OldRect_Cnt:
-            objButton = P01.ActiveSheet.Rectangles(OldRect_List(Used_OldRect)).ShapeP01.Range.Item(1)
+            objButton = P01.ActiveSheet.Rectangles.rlist[OldRect_List(Used_OldRect)]
             Used_OldRect = Used_OldRect + 1
         else:
-            objButton = P01.ActiveSheet.Shapes.AddShape(msoShapeRectangle, 0, 0, 0, 0)
+            #*HLobjButton = P01.ActiveSheet.Shapes.AddShape(msoShapeRectangle, Row, TargetColumn, 0, 0, 0, 0)
             NewCreated = True
         isSetToOn = False
         if toggle:
-            if ( onValue and  ( 2 **  ( i - 1 ) ) )  != 0:
+            if ( onValue &  ( 2 **  ( i - 1 ) ) )  != 0:
                 isSetToOn = True
-        objButton.Name = ButtonPrefix + P01.Format(Addr, '0000') + '-' + P01.Format(Direction, '00') + '-' + P01.Format(ColorOffset, '00') + '-' + str(TextOffset)
+        objButton_Name = ButtonPrefix + P01.Format(Addr, '0000') + '-' + P01.Format(Direction, '00') + '-' + P01.Format(ColorOffset, '00') + '-' + str(TextOffset)
         if NewCreated:
-            objButton.Left = P01.Cells(Row, TargetColumn).Left + PixelOffset +  ( i - 1 )  * Height
-            objButton.Top = P01.Cells(Row, TargetColumn).Top + 1
-            objButton.Height = Height - 2
-            objButton.Width = Height - 2
+            objButton_Left = P01.Cells(Row, TargetColumn).Left() + PixelOffset +  ( i - 1 )  * Height
+            objButton_Top = P01.Cells(Row, TargetColumn).Top() + 1
+            objButton_Height = Height - 2
+            objButton_Width = Height - 2
+            objButton = P01.ActiveSheet.Shapes.AddShape(objButton_Name, msoShapeRectangle, objButton_Left, objButton_Top, objButton_Height, objButton_Width, "#FF0000")
+        
         if P01.Cells(Row, M25.Inp_Typ_Col).Text == M09.OnOff_T:
-            if objButton.TextFrame2.Text.Range.Text != TextOffset:
-                objButton.TextFrame2.Text.Range.Text = TextOffset
+            if objButton.TextFrame2 != TextOffset:
+                objButton.TextFrame2 = TextOffset
         else:
-            if objButton.TextFrame2.Text.Range.Text != ' ':
-                objButton.TextFrame2.Text.Range.Text = ' '
+            if objButton.TextFrame2 != ' ':
+                objButton.TextFrame2 = ' '
                 # No text because it's confusing if 0/1 is used for OnOff switches
         if NewCreated:
             objButton.OnAction = 'DCCSend'
-            objButton.DrawingObject.Border.Color = rgb(0, 0, 0)
-            objButton.TextFrame2.Text.Range.ParagraphFormat.Alignment = msoAlignCenter
-        objButton.Fill.ForeColor.rgb = GetButtonColor(ColorOffset)
+            if P01.Application.canvas_leftclickcmd==None:
+                P01.Application.set_canvas_leftclickcmd(M32.DCCSend)
+            #objButton.DrawingObject.Border.Color = rgb(0, 0, 0)
+            #objButton.TextFrame2.Text.Range.ParagraphFormat.Alignment = msoAlignCenter
+        objButton.Fill = GetButtonColor(ColorOffset)
         if toggle:
-            altText = ButtonPrefix + P01.Format(Addr, '0000') + '-' + P01.Format(1 - Direction, '00') + '-' + P01.Format(ColorOffset + 1, '00') + '-' + AltTextOffset
+            altText = ButtonPrefix + P01.Format(Addr, '0000') + '-' + P01.Format(1 - Direction, '00') + '-' + P01.Format(ColorOffset + 1, '00') + '-' + str(AltTextOffset)
             if isSetToOn:
                 objButton.AlternativeText = objButton.Name
                 objButton.Name = altText
-                objButton.TextFrame2.Text.Range.Text = Mid(objButton.Name, 13, 1)
-                objButton.Fill.ForeColor.rgb = GetButtonColor(P01.val(Mid(objButton.Name, 10, 2)))
+                #*HLobjButton.TextFrame2.Text.Range.Text = Mid(objButton.Name, 13, 1)
+                objButton.TextFrame2 = Mid(objButton.Name, 13, 1)
+                #*HLobjButton.Fill.ForeColor.rgb = GetButtonColor(P01.val(Mid(objButton.Name, 10, 2)))
+                objButton.Fill = GetButtonColor(P01.val(Mid(objButton.Name, 10, 2)))
             else:
                 objButton.AlternativeText = altText
         else:
@@ -1057,6 +1066,7 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
             else:
                 Direction = 1
         ColorOffset = ValidateColorIndex(ColorOffset + ColorInc)
+        objButton.updateShape()
     for i in vbForRange(Used_OldRect, OldRect_Cnt - 1):
         P01.ActiveSheet.Rectangles(OldRect_List(i)).Delete()
 
@@ -1101,13 +1111,13 @@ def Test_ResetTestButtons():
 def GetButtonColor(Index):
     #----------------------------------------------------------
     if (Index == 0):
-        fn_return_value = rgb(255, 128, 128)
+        fn_return_value = P01.rgbtohex(255, 128, 128)
     elif (Index == 1):
-        fn_return_value = rgb(128, 255, 128)
+        fn_return_value = P01.rgbtohex(128, 255, 128)
     elif (Index == 2):
-        fn_return_value = rgb(255, 255, 128)
+        fn_return_value = P01.rgbtohex(255, 255, 128)
     else:
-        fn_return_value = rgb(255, 255, 255)
+        fn_return_value = P01.rgbtohex(255, 255, 255)
     return fn_return_value
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Index - ByVal 

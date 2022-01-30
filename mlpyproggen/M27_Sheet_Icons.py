@@ -104,6 +104,7 @@ def __Test_Add_Icon():
     Add_Icon('Andreaskreuz', 12)
 
 def Del_Icons(r):
+    return #*HL
     Pic = Variant()
 
     MinTop = Double()
@@ -122,7 +123,7 @@ def Del_Icons(r):
     MaxTop = MinTop + r.Height
     MinLeft = r.Left
     MaxLeft = MinLeft + r.Width
-    for Pic in with_2.Shapes:
+    for Pic in with_2.Shapes.shapelist:
         if Pic.Top > MinTop and Pic.Top < MaxTop and Pic.Left >= MinLeft and Pic.Left <= MaxLeft:
             Pic.Delete()
 

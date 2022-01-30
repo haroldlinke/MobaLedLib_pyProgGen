@@ -449,6 +449,9 @@ def Right(text, number):
 
 _last_rnd_number = random.random()
 
+def rgb(r,g,b):
+    return (r,g,b)
+
 
 def Rnd(value=1):
     """Return a random numer and optionally seed the current state"""

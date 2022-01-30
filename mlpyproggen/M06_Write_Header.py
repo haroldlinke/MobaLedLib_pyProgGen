@@ -185,9 +185,9 @@ def AddressExists(Addr):
             if a == Addr:
                 fn_return_value = True
                 return fn_return_value
-        AddrList = vbObjectInitialize((UBound(AddrList) + 1,), Variant, AddrList)
+        AddrList = vbObjectInitialize((UBound(AddrList) + 1,), int, AddrList)
     else:
-        AddrList = vbObjectInitialize((0,), Variant, AddrList)
+        AddrList = vbObjectInitialize((0,), int, AddrList)
     AddrList[UBound(AddrList)] = Addr
     return fn_return_value
 
@@ -219,11 +219,11 @@ def AddressRangeExists(Addr, Cnt, InpTyp):
         M30.EndProg()
     Ad = Addr
     for i in vbForRange(1, Cnt):
-        if InpTypMod and 1:
+        if InpTypMod & 1:
             if AddressExists(Ad * 2):
                 fn_return_value = True
                 return fn_return_value
-        if InpTypMod and 2:
+        if InpTypMod & 2:
             if AddressExists(Ad * 2 + 1):
                 fn_return_value = True
                 return fn_return_value
@@ -478,7 +478,7 @@ def Get_Typ_Const(Inp_Typ):
     elif (Inp_Typ == M09.Tast_T):
         fn_return_value = 'B_TAST, '
     else:
-        P01.MsgBox('Internal error: Undefined Inp_Typ: \'' + Inp_Typ + '\' in Get_Typ_Const()', vbCritical, 'Internal error in Get_Typ_Const()')
+        P01.MsgBox('Internal error: Undefined Inp_Typ: \'' + str(Inp_Typ) + '\' in Get_Typ_Const()', vbCritical, 'Internal error in Get_Typ_Const()')
         M30.EndProg()
     return fn_return_value
 
@@ -489,6 +489,7 @@ def Add_to_Err(r, Txt):
         r.Select()
         # Marc the first error location
     Err = Err + Txt + vbCr
+    Debug.Print("Add_to_Err:" + Err)
 
 def Add_Start_Value_Line(r, Mask, Pos, Description):
     global Start_Values, Channel
@@ -513,7 +514,7 @@ def Create_Start_Value_Entry(r):
     Description = Get_Description(r)
     Mask = 1
     for i in vbForRange(0, P01.val(P01.Cells(r, M25.InCnt___Col)) - 1):
-        if ( sv and Mask )  > 0:
+        if ( sv & Mask )  > 0:
             Add_Start_Value_Line(r, Mask, i, Description)
             Description = '   "'
         Mask = Mask * 2

@@ -49,6 +49,7 @@ import time
 import subprocess
 import pickle
 import mlpyproggen.Prog_Generator as PG
+import mlpyproggen.F00_mainbuttons as F00
 
 #import mlpyproggen.M01_Gen_Release_Version as M01
 import keyboard
@@ -132,7 +133,10 @@ def val(value):
     if valtype is CCell:
         cellvalue = value.get_value()
         if cellvalue != "":
-            return int(cellvalue)
+            if IsNumeric(cellvalue):
+                return int(cellvalue)
+            else:
+                return 0
         else:
             return 0
     elif valtype is str:
@@ -167,6 +171,12 @@ def Format(value,formatstring):
         time_h=value
         time_str = str(time_h)+":"+str(time_min)+":"+str(time_sec)
         return time_str
+    elif formatstring == "0000":
+        return "{0:4d}".format(value)
+    elif formatstring == "00":
+        return "{0:2d}".format(value)
+    else:
+        pass
     
     return str(value) # no formating implemented yet
 
@@ -248,7 +258,7 @@ def DoEvents():
 
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
 datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
-                        "ProtectedCells"  : ((0,"*"),(1,"*"), ("*",12),("*",13),("*",14),("*",15),("*",16)),
+                        "ProtectedCells"  : ((0,"*"),(1,"*"),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
                         "FontColor"       : { "1": {
                                                     "font"     : ("Arial",10),
                                                     "fg"       : "#FFFF00",
@@ -493,6 +503,8 @@ class CWorkbook:
         for sheet in self.sheets:
             data = workbookdata.get(sheet.Name,{})
             sheet.setData(data)
+            sheet.init_data()
+            
         return        
         
 
@@ -508,6 +520,7 @@ class CWorksheet:
         self.fieldnames = fieldnames
         self.formating_dict = formating_dict
         self.Name = Name
+        self.Shapes = CShapeList()
         if tablemodel:
             self.tablemodel = tablemodel
             self.table = TableCanvas(frame, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
@@ -527,7 +540,10 @@ class CWorksheet:
             self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
         
         self.table.show()
-        self.update_table_properties()
+        self.update_table_properties()        
+        
+    def init_data(self):
+        F00.worksheet_init(self)
 
         
     def update_table_properties(self):
@@ -535,25 +551,36 @@ class CWorksheet:
         self.LastUsedColumn_val = self.tablemodel.getColumnCount()
         self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
         self.MaxRange_val  = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
-        self.Rectangles = CRectangles(0)
+        self.Rectangles = CRectangles()
         self.AutoFilterMode = False
         self.searchcache = {}
-        self.Shapes = [] #CShapelist([])
+        self.Shapes = CShapeList([])
         self.CellDict = CCellDict()
         self.End_val = self.LastUsedColumn_val        
         
-    def left_click_callback(self,row,col):
-        print("Left_Click_Call_Back:",row,col)
-        if col == 1:  # aktive column
-            cell = self.Cells(row+1,col+1)
-            if cell.Value == "":
-                cell.Value = chr(252)
+    def left_click_callback(self,value1,value2,callertype="cell"):
+        
+        if callertype=="cell":
+            row=value1
+            col=value2
+            print("Left_Click_Call_Back:",row,col)
+            if col == 1:  # aktive column
+                cell = self.Cells(row+1,col+1)
+                if cell.Value == "":
+                    cell.Value = chr(252)
+                else:
+                    cell.Value= ""
+                self.Redraw_table()
+                return False
             else:
-                cell.Value= ""
-            self.Redraw_table()
-            return False
-        else:
-            return True
+                return True
+        elif callertype=="canvas":
+            print("Leftclick-Canvas",value1)
+            #callingshape = self.Shapes.shapelist[int(value1[0])]
+            Application.caller = int(value1[0])
+            if Application.canvas_leftclickcmd!=None:
+                Application.canvas_leftclickcmd()
+                return False
         
     def EnableMousePosition(self):
         pass
@@ -778,28 +805,46 @@ class CWorksheet:
         #self.table.redraw()
         self.update_table_properties()
         self.Activate()
-        
-
-        
-        
 
 class CShapeList(object):
-    def __init__(self,shapelist):
+    def __init__(self,shapelist=[]):
         self.shapelist = shapelist
         
-    def AddShape(self, shapetype, Left, Top, Width, Height):
-        pass
+    def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill):
+        if shapetype == msoShapeRectangle:
+            shape = CShape(name, shapetype, Left, Top, Width, Height, Fill)
+            self.shapelist.append(shape)
+            shape.index = len(self.shapelist)-1
+            shape.tableshape=ActiveSheet.table.addShape(name, "rect", Left, Top, Width, Height, Fill,masteridx=shape.index)
+            return shape
+        
+    def Delete(self,shape):
+        self.shapelist.remove(shape)
+            
+        
     
 class CShape(object):
     
-    def __init__(self, name, shapetype, Left, Top, Width, Height):
+    def __init__(self, name, shapetype, Left, Top, Width, Height, Fill):
         self.shapetype = shapetype
         self.Left=Left
         self.Top = Top
         self.Width = Width
         self.height = Height
         self.Name = name
-        self.TextFrame2 = CTextFrame()
+        self.TextFrame2 = ""
+        self.AlternativeText = ""
+        self.TextFrame2 = ""
+        self.Fill = Fill
+        self.tableshape=None
+        
+    def updateShape(self):
+        self.tableshape.updateShape(Fill=self.Fill,Text=self.TextFrame2)
+        
+        
+    def Delete(self):
+        
+        pass
         
         
 class CRange:
@@ -834,11 +879,18 @@ class CRange:
             cell.Activate()        
             
 class CRectangles(object):
-    def __init__(self,value=(),row=0,col=0):
-        self.rlist = value
+    def __init__(self):
+        self.rlist = []
         self.Count=0
+        
+    def add(self,rectangle):
+        self.rlist.append(rectangle)
+        
+    def delete(self,i):
+        self.rlist.remove(i)
+        
 
-
+        
     #def __init__(self,rowrange,colrange):
     #    self.Rows=list()
     #    for i in range(rowrange[0],rowrange[1]):
@@ -849,15 +901,16 @@ class CRectangles(object):
     
 class CRectangle(object):
     
-    def __init__(self,row=0,col=0,onaction=""):
+    def __init__(self,row=0,col=0,i=0,onaction=""):
         self.OnAction = onaction
         self.TopLeftCell = CCell("")
         self.TopLeftCell.Row = row
-        self.TopLeftCell.Column = col 
+        self.TopLeftCell.Column = col
+        self.index = i
         pass
     
     def Delete(self):
-        
+        super().delete(self.index)
         pass
     
 class CSelection:
@@ -918,11 +971,7 @@ class CCell(str):
         self.Formula = ""
         self.tablemodel = tablemodel
         self.CountLarge = 1
-        self.Height = 20
-        self.Width = 30
         self.Parent = None
-        self.Top = 0
-        self.Left = 0
         self.Address = (self.Row,self.Column)
         self.Comment = None
         self.Font = CFont("Arial",10)
@@ -1009,6 +1058,22 @@ class CCell(str):
         
     def Activate(self):
         self.Parent.table.gotoCell(self.Row,self.Column)
+        
+    def Left(self):
+        x1,y1,x2,y2 = ActiveSheet.table.getCellCoords(self.Row-1,self.Column-1)
+        return x1
+    
+    def Top(self):
+        x1,y1,x2,y2 = ActiveSheet.table.getCellCoords(self.Row-1,self.Column-1)
+        return y1
+    
+    def Width(self):
+        x1,y1,x2,y2 = ActiveSheet.table.getCellCoords(self.Row-1,self.Column-1)
+        return x2-x1
+    
+    def Height(self):
+        x1,y1,x2,y2 = ActiveSheet.table.getCellCoords(self.Row-1,self.Column-1)
+        return y2-y1    
     
     Value = property(get_value, set_value, doc='value of CCell')
     Text = property(get_value, set_value, doc='value of CCell')
@@ -1051,6 +1116,12 @@ class CApplication:
         self.Height = 500 #*HL
         self.Version = "15"
         self.WindowState = 0
+        self.caller=0
+        self.canvas_leftclickcmd=None
+        
+    def set_canvas_leftclickcmd(self,cmd):
+        self.canvas_leftclickcmd=cmd
+        
         
     def OnTime(self,time,cmd):
         print("Application OnTime:",time,cmd)
@@ -1089,6 +1160,16 @@ class SoundLines:
     def Add(Channel, Pin_playerClass):
         pass
     
+class CButton:
+    def __init__(self,name):
+        self.Name=name
+        self.AlternativeText = ""
+        self.TextFrame2 = ""
+        self.Fill = (0,0,0)
+        
+def rgbtohex(r,g,b):
+    return f'#{r:02x}{g:02x}{b:02x}'
+
 
 # global variables
 

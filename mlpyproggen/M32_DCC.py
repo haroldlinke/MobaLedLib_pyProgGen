@@ -58,7 +58,7 @@ import mlpyproggen.M09_Language as M09
 #import mlpyproggen.M09_Select_Macro as M09SM
 #import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
 #import mlpyproggen.M10_Par_Description as M10
-#import mlpyproggen.M20_PageEvents_a_Functions as M20
+import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M27_Sheet_Icons as M27
 import mlpyproggen.M28_divers as M28
@@ -88,10 +88,10 @@ import mlpyproggen.Prog_Generator as PG
 """
 
 
-def __DCCSend():
+def DCCSend():
     callerName = String()
 
-    Target = Excel.Range()
+    #Target = Excel.Range()
 
     Button = Object()
 
@@ -99,7 +99,7 @@ def __DCCSend():
 
     Direction = Byte()
     # VB2PY (UntranslatedCode) On Error Resume Next
-    Button = P01.ActiveSheet.Shapes(P01.Application.caller)
+    Button = P01.ActiveSheet.Shapes.shapelist[P01.Application.caller]
     callerName = Button.Name
     # VB2PY (UntranslatedCode) On Error GoTo 0
     if callerName == '':
@@ -111,7 +111,7 @@ def __DCCSend():
     Addr = Addr - P01.val(M28.Get_String_Config_Var('DCC_Offset'))
     Direction = P01.val(Mid(callerName, 7, 2))
     if SendDCCAccessoryCommand(Addr, Direction):
-        for Button in P01.ActiveSheet.Shapes:
+        for Button in P01.ActiveSheet.Shapes.shapelist:
             #Debug.Print Button.Name
             if Button.Name == callerName and Button.AlternativeText != '':
                 Tmp = Button.Name
@@ -119,8 +119,10 @@ def __DCCSend():
                     Debug.Print(P01.Format(Time, 'hh.mm.ss') + ' change from' + vbCrLf + Button.Name + ' to' + vbCrLf + Button.AlternativeText)
                 Button.Name = Button.AlternativeText
                 Button.AlternativeText = Tmp
-                Button.TextFrame2.TextRange.Text = Mid(Button.Name, 13, 1)
-                Button.Fill.ForeColor.rgb = GetButtonColor(P01.val(Mid(Button.Name, 10, 2)))
+                #*HLButton.TextFrame2.TextRange.Text = Mid(Button.Name, 13, 1)
+                Button.TextFrame2 = Mid(Button.Name, 13, 1)
+                Button.Fill = M20.GetButtonColor(P01.val(Mid(Button.Name, 10, 2)))
+                Button.updateShape()
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Addr - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Direction - ByVal 
@@ -137,15 +139,26 @@ def SendDCCAccessoryCommand(Addr, Direction):
     # now you may use hardware handshake using CTR flow control
     UseHardwareHandshake = False
     M25.Make_sure_that_Col_Variables_match()
-    if M07.Check_USB_Port_with_Dialog(COMPort_COL) == False:
-        return fn_return_value
+    #if M07.Check_USB_Port_with_Dialog(M25.COMPort_COL) == False:
+    #    return fn_return_value
         # 04.05.20: Added exit (Prior Check_USB_Port_with_Dialog ends the program in case of an error)
-    if ( Addr < 1 or Addr > 9999 ) :
-        P01.MsgBox(M09.Get_Language_Str('Die Adresse muss im Bereich 1 bis 9999 liegen'), vbCritical, M09.Get_Language_Str('Fehler: Decoder senden fehlgeschlagen'))
-        return fn_return_value
-    ComPort = P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL)
-    Output_Buffer = '@' + Left(Addr + '   ', 4) + ' ' + Left(Direction + ' ', 2) + ' 01' + Chr(10)
-    fn_return_value = M07.SendMLLCommand(ComPort, Output_Buffer, UseHardwareHandshake, M02.DEBUG_DCCSEND)
+    #if ( Addr < 1 or Addr > 9999 ) :
+    #    P01.MsgBox(M09.Get_Language_Str('Die Adresse muss im Bereich 1 bis 9999 liegen'), vbCritical, M09.Get_Language_Str('Fehler: Decoder senden fehlgeschlagen'))
+    #    return fn_return_value
+    #ComPort = P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL)
+    Output_Buffer = '@' + Left(str(Addr) + '   ', 4) + ' ' + Left(str(Direction) + ' ', 2) + ' 01' + Chr(10)
+    send_command_to_ARDUINO(Output_Buffer)
+    fn_return_value=True
+
+    #fn_return_value = M07.SendMLLCommand(ComPort, Output_Buffer, UseHardwareHandshake, M02.DEBUG_DCCSEND)
     return fn_return_value
+
+def send_command_to_ARDUINO(command):
+    PG.global_controller.connect_if_not_connected()
+    for c in command:
+        PG.global_controller.send_to_ARDUINO(c)
+        #time.sleep(0.01)
+    c = chr(10)
+    PG.global_controller.send_to_ARDUINO(c)    
 
 # VB2PY (UntranslatedCode) Option Explicit

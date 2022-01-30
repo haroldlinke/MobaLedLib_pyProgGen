@@ -181,7 +181,7 @@ class Prog_GeneratorPage(tk.Frame):
         #config_frame.grid(row=1, columnspan=2, pady=(20, 30), padx=10)        
         #in_button_frame.grid(row=2, column=0, sticky="n", padx=4, pady=4)
         
-        F00.workbook_init()
+        F00.workbook_init(self.workbook)
         
         # ----------------------------------------------------------------
         # Standardprocedures for every tabpage

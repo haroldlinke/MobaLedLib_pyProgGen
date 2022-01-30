@@ -916,7 +916,7 @@ def SendMLLCommand(ComPort, message, UseHardwareHandshake, ShowResult):
                 Sleep(10)()
                 # 03.04.20: Added delay
     # write response(s) to the debug output
-    if 1 and ShowResult:
+    if 1 & ShowResult:
         while 1:
             by = 0
             if ReadFile(handle, by, 1, CbRead, 0):

@@ -90,6 +90,7 @@ class TableCanvas(Canvas):
         self.left_click_callback = None
         self.Flag_move=False
         self.lastmultiplerowlist  = []
+        self.init_table()
 
         self.loadPrefs()
         #set any options passed in kwargs to overwrite defaults and prefs
@@ -120,6 +121,10 @@ class TableCanvas(Canvas):
     
     def set_left_click_callback(self,callback):
         self.left_click_callback = callback
+        
+    def init_table(self):
+        self.shapelist=CShapeList(self)
+        
 
     def set_defaults(self):
         """Set default settings"""
@@ -336,6 +341,8 @@ class TableCanvas(Canvas):
 
     def redrawVisible(self, event=None, callback=None):
         """Redraw the visible portion of the canvas"""
+        self.delete("Icons")
+        self.delete("Shape")
 
         model = self.model
         self.rows = self.model.getRowCount()
@@ -383,6 +390,8 @@ class TableCanvas(Canvas):
                 self.drawText(row, col, text, fgcolor, align,font=font)
                 if bgcolor != None:
                     self.drawRect(row,col, color=bgcolor)
+                    
+        self.drawShapes()
 
         #self.drawSelectedCol()
         self.tablecolheader.redraw()
@@ -396,6 +405,7 @@ class TableCanvas(Canvas):
             self.tablerowheader.drawSelectedRows(self.multiplerowlist)
             self.drawMultipleRows(self.multiplerowlist)
             self.drawMultipleCells()
+
         return
 
     def redrawTable(self, event=None, callback=None):
@@ -1774,6 +1784,29 @@ class TableCanvas(Canvas):
         elif value == '':
             return 1
         return 1
+    
+    def addShape(self, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
+        return self.shapelist.AddShape(name, shapetype, Left, Top, Width, Height, Fill, Text=Text,masteridx=masteridx)
+        
+    def drawShapes(self):
+        self.delete("Shape")
+        for shape in self.shapelist.shapelist:
+            self.drawShape(shape)
+            
+    def drawShape(self,shape):
+        if shape.rectidx>0:
+            self.delete(shape.rectidx)
+        if shape.textidx>0:
+            self.delete(shape.textidx)
+        if shape.Shapetype == "rect":
+            if shape.TextFrame2 == "":
+                shape.TextFrame2 = "0"
+            shape.rectidx = self.create_rectangle(shape.Left,shape.Top,shape.Left+shape.Width,shape.Top+shape.Height,fill=shape.Fill,tags=(shape.masteridx,shape.Name,"Shape"))
+            shape.textidx = self.create_text(int(shape.Left+shape.Width/2),int(shape.Top+shape.Height/2),width=shape.Left+shape.Width,text=shape.TextFrame2,tags=(shape.masteridx,shape.Name,"Shape"))
+            self.tag_raise(shape.rectidx)
+            self.tag_raise(shape.textidx)
+            self.tag_bind(shape.rectidx,"<Button-1>", shape.shape_button_1)
+            self.tag_bind(shape.textidx,"<Button-1>", shape.shape_button_1)
 
     def drawText(self, row, col, celltxt, fgcolor=None, align=None,font=None):
         """Draw the text inside a cell area"""
@@ -1833,7 +1866,7 @@ class TableCanvas(Canvas):
                 image_id = self.create_image( x1,y1+2, #x1+w/2,y1+h/2,
                                               image= iconimage,                                         
                                               anchor="nw",
-                                              tag=('icon','iconfilename_'+str(col)+'_'+str(row))) 
+                                              tag=('Icon','iconfilename_'+str(col)+'_'+str(row))) 
         
             if self.isLink(celltxt) == True:
                 haslink=0
@@ -2385,6 +2418,7 @@ class TableCanvas(Canvas):
 
     def importCSV(self, filename=None, sep=',',fieldnames=None):
         """Import from csv file"""
+        self.init_table()
 
         if filename is None:
             from .Tables_IO import TableImporter
@@ -2394,6 +2428,7 @@ class TableCanvas(Canvas):
             model = TableModel()
             model.importDict(importer.data)
         else:
+            self.init_table()
             model = TableModel()
             model.importCSV(filename, sep=sep,fieldnames=fieldnames)
         self.updateModel(model)
@@ -2917,3 +2952,62 @@ class AutoScrollbar(Scrollbar):
     #    raise TclError, "cannot use pack with this widget"
     #def place(self, **kw):
     #    raise TclError, "cannot use place with this widget"
+    
+
+class CShapeList(object):
+    def __init__(self,canvas):
+        self.shapelist = []
+        self.canvas=canvas
+        
+    def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
+        if shapetype == "rect":
+            shape = CShape(self.canvas, name, "rect", Left, Top, Width, Height, Fill,masteridx=masteridx,Text=Text)
+            self.shapelist.append(shape)
+            shape.index = len(self.shapelist)-1
+            return shape
+    
+class CShape(object):
+    def __init__(self, canvas, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
+        self.Shapetype = shapetype
+        self.canvas=canvas
+        self.Left=Left
+        self.Top = Top
+        self.Width = Width
+        self.Height = Height
+        self.Name = name
+        self.TextFrame2 = Text
+        self.AlternativeText = ""
+        self.Fill = Fill
+        self.Index = 0
+        self.onaction = ""
+        self.rectidx=0
+        self.textidx=0
+        self.masteridx=masteridx
+        #self.canvas.tag_bind(shape.rectidx,"<Button-1>", self.shape_button_1)
+        
+    def shape_button_1(self,event=None):
+        print("Shape Button_1 event")
+        print(repr(event))
+        tags=self.canvas.gettags(self.rectidx)
+        print(tags)
+        if self.canvas.left_click_callback:
+            res_continue = self.canvas.left_click_callback(tags, "",callertype="canvas")
+            if res_continue == False:
+                return
+            
+    def updateShape(self,Fill=None,Text=None):
+        if Fill:
+            self.Fill=Fill
+        if Text:
+            self.TextFrame2=Text
+        self.canvas.drawShape(self)
+
+        
+        
+        
+    def Delete(self):
+        super().delete(self.index)
+        pass
+    
+
+
