@@ -1115,7 +1115,7 @@ def Ask_to_Upload_and_Compile_and_Upload_Prog_to_Right_Arduino():
     if Ask_To_Upload_the_Right_Arduino_Prog('Check_Button'):
         Compile_and_Upload_Prog_to_Right_Arduino()()
 
-def Create_InstalLib_Cmd_file(LibNames=VBMissingArgument):
+def Create_InstalLib_Cmd_file(LibNames=""):
     ResultName = String()
 
     CommandStr = String()
@@ -1171,7 +1171,7 @@ def Create_InstalLib_Cmd_file(LibNames=VBMissingArgument):
     P01.MsgBox(M09.Get_Language_Str('Fehler beim schreiben der Datei \'') + Name + '\'', vbCritical, M09.Get_Language_Str('Fehler beim erzeugen der Arduino Start Datei'))
     return fn_return_value
 
-def Install_Libraries(LibNames=VBMissingArgument):
+def Install_Libraries(LibNames=[]):
     CommandStr = String()
 
     Res = False # ShellAndWaitResult()

@@ -289,7 +289,7 @@ def __Test_USB_Port_Dialog():
     #USB_Port_Dialog COMPrtR_COL
     #USB_Port_Dialog COMPrtT_COL  ' Could only be used im the Pattern_COnfigurator
 
-def Detect_Com_Port(RightSide=VBMissingArgument, Pic_ID='DCC'):
+def Detect_Com_Port(RightSide=False, Pic_ID='DCC'):
     fn_return_value = None
     Res = Boolean()
 

@@ -890,7 +890,7 @@ def Create_Loc_InCh_Defines(Dest, Channel, LocInChNr):
         
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Nr - ByRef 
-def __Print_Keyboard_Defines_for_Type(fp, Name, InpCnt, Nr, Skip_11_16=VBMissingArgument):
+def __Print_Keyboard_Defines_for_Type(fp, Name, InpCnt, Nr, Skip_11_16=False):
     i = int()
 
     ResCnt = int()

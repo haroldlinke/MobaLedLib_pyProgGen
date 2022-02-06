@@ -36,12 +36,13 @@ class TableModel(object):
     keywords = {'columnnames':'columnNames', 'columntypes':'columntypes',
                'columnlabels':'columnlabels', 'columnorder':'columnOrder',
                'colors':'colors',"nodisplay":"nodisplay","protected_cells":"protected_cells",
-               "format_cells":"format_cells","columnwidths":"columnwidths"}
+               "format_cells":"format_cells","columnwidths":"columnwidths","shapelist":"shapelist"}
 
 
-    def __init__(self, newdict=None, rows=None, columns=None):
+    def __init__(self, newdict=None, rows=None, columns=None,tablename=None):
         """Constructor"""
         self.initialiseFields()
+        self.modelname = tablename
         self.setupModel(newdict, rows, columns)
         return
 
@@ -111,6 +112,7 @@ class TableModel(object):
         #self.editable={}
         self.nodisplay = []
         self.protected_cells = [] #*HL  list of cells that are not editable ("*",col) and (row,"*") for rows and columns
+        self.shapelist = [] #*HL list of shapes
         self.format_cells = {}
         self.columnwidths={}  #used to store col widths, not held in saved data
         self.lastUsedRow = 0
@@ -153,6 +155,7 @@ class TableModel(object):
             dictdata[count]=rec
             count=count+1
         self.importDict(dictdata)
+        self.modelname=filename
         return
 
     def importDict(self, newdata):
@@ -200,7 +203,8 @@ class TableModel(object):
         data["nodisplay"] = self.nodisplay
         data["protected_cells"] = self.protected_cells
         data["format_cells"]=self.format_cells
-        data["columnwidths"]=self.columnwidths        
+        data["columnwidths"]=self.columnwidths
+        data["shapelist"]=self.shapelist
         return data
 
     def getAllCells(self):
@@ -264,6 +268,19 @@ class TableModel(object):
         else:
             celldata=None
         return celldata
+    
+    def deleteShapeatPos(self,x1,y1,x2,y2):
+                
+        deleteList=[]
+        index=0
+        for shape in self.shapelist:
+            if shape.Left in range(int(x1),int(x2)) and shape.Top in range(int(y1),int(y2)):
+                deleteList.insert(0, index)
+        if len(deleteList)>0:
+            for item in deleteList:
+                del self.shapelist[item]
+           
+                
 
     def deleteCellRecord(self, rowIndex, columnIndex):
         """Remove the cell data at this row/column"""
@@ -435,27 +452,42 @@ class TableModel(object):
             self.data[key][k] = str(kwargs[k])
         self.reclist.append(key)
         return key
+    
+    def deleteShapeatRow(self,y1,y2):
+        deleteList=[]
+        index=0
+        for shape in self.shapelist:
+            if shape.Top in range(y1,y2):
+                deleteList.insert(0, index)
+        if len(deleteList)>0:
+            for item in deleteList:
+                del self.shapelist[item]
+        self.moveShapesVertical(y1,deltaY=y1-y2)
 
-    def deleteRow(self, rowIndex=None, key=None, update=True):
+
+    def deleteRow(self, rowIndex=None, key=None, update=True,y1=-1,y2=-1):
         """Delete a row"""
         if key == None or not key in self.reclist:
             key = self.getRecName(rowIndex)
         if rowIndex==None:
             rowIndex = self.getRecordIndex(key)
-            
+        if y1>=0 and y2>=0:
+            self.deleteShapeatRow(y1, y2)
         del self.data[key]
         if update==True:
             self.reclist.remove(key)
         self.removeRowfromLastUsedRow(rowIndex)
         return
 
-    def deleteRows(self, rowlist=None):
+    def deleteRows(self, rowlist=None,y1=-1,y2=-1):
         """Delete multiple or all rows"""
         if rowlist == None:
             rowlist = range(len(self.reclist))
         names = [self.getRecName(i) for i in rowlist]
         for name in names:
             self.deleteRow(key=name, update=True)
+        if y1>=0 and y2>=0:   
+            self.deleteShapeatRow(y1, y2)
         return
 
     def addColumn(self, colname=None, coltype=None):
@@ -502,22 +534,45 @@ class TableModel(object):
             self.deleteColumn(col)
         return
     
-    def moveRows(self,src_rowlist,dest_rowindex):
+    def moveRows(self,src_rowlist,dest_rowindex,minY1=None,maxY1=0,deltaY=0,deleteY=0):
         if src_rowlist[0]<dest_rowindex:
             dest_rowindex = dest_rowindex-len(src_rowlist)
         names = [self.getRecName(i) for i in src_rowlist]
-        self.moveRow(srckeylist=names,destindex=dest_rowindex)
+        self.moveRow(srckeylist=names,destindex=dest_rowindex,minY1=minY1,maxY1=maxY1,deltaY=deltaY,deleteY=deleteY)
     
-    def moveRow(self,srckeylist=None,destindex=None):
+    def moveRow(self,srckeylist=None,destindex=None,minY1=None,maxY1=0,deltaY=0,deleteY=0):
         if srckeylist and destindex:
             print("MoveRow:",srckeylist,destindex)
             for key in srckeylist:
                 self.reclist.remove(key)
             self.reclist[destindex:destindex]=srckeylist
             self.updateLastUsedRow(destindex+len(srckeylist))
-            print(self.reclist)
-            print(self.data)
-        
+
+            self.moveShapesVertical(minY1, y2=maxY1, deltaY=deltaY)
+            self.moveShapesVertical(minY1,deltaY=deleteY)
+            #print(self.reclist)
+            #print(self.data)
+            
+    def copyShape(self,shape,newY=None):
+        newshape = copy.copy(shape)
+        newshape.Top = newY
+        self.shapelist.append(newshape)
+            
+    def moveShapesVertical(self,y1,y2=-1,deltaY=0,copy=False,cY1=0):
+        tmp_Shapelist = self.shapelist.copy()
+        for shape in tmp_Shapelist:
+            if y2==-1:
+                if shape.Top >=y1:
+                    if shape.Top == cY1+1 and copy:
+                        self.copyShape(shape,newY=shape.Top+deltaY)
+                    else:
+                        shape.Top += deltaY
+            else:
+                if shape.Top in range(y1,y2+1):
+                    if copy:
+                        self.copyShape(shape,newY=shape.Top+deltaY)
+                    else:
+                        shape.Top += deltaY                
 
     def autoAddRows(self, numrows=None, atrow=None,copyfromrow=None):
         """Automatically add x number of records"""

@@ -750,7 +750,7 @@ def Open_MobaLedCheckColors_and_Insert_Set_ColTab_Macro():
     #UT-------------------------------------------------------------
     Open_MobaLedCheckColors(__Set_ColTab_Callback, P01.ActiveSheet.Name, P01.ActiveCell().Row)
 
-def Open_MobaLedCheckColors(Callback, Dest_Sheet=VBMissingArgument, Dest_Row=VBMissingArgument):
+def Open_MobaLedCheckColors(Callback, Dest_Sheet="", Dest_Row=-1):
     global __Proc_CheckColors_Form_Callback, __ColTab_Dest_Sheet, __ColTab_Dest_Row, ColTab
     #ProgDir = String()
 

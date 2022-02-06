@@ -99,7 +99,7 @@ def DCCSend():
 
     Direction = Byte()
     # VB2PY (UntranslatedCode) On Error Resume Next
-    Button = P01.ActiveSheet.Shapes.shapelist[P01.Application.caller]
+    Button = P01.ActiveSheet.Shapes.getShape(P01.Application.caller)
     callerName = Button.Name
     # VB2PY (UntranslatedCode) On Error GoTo 0
     if callerName == '':
@@ -111,7 +111,8 @@ def DCCSend():
     Addr = Addr - P01.val(M28.Get_String_Config_Var('DCC_Offset'))
     Direction = P01.val(Mid(callerName, 7, 2))
     if SendDCCAccessoryCommand(Addr, Direction):
-        for Button in P01.ActiveSheet.Shapes.shapelist:
+        
+        for Button in P01.ActiveSheet.Shapes.getlist():
             #Debug.Print Button.Name
             if Button.Name == callerName and Button.AlternativeText != '':
                 Tmp = Button.Name

@@ -126,7 +126,7 @@ def Get_Description_Range_from_Act_Row():
     fn_return_value = Cells(ActiveCell().Row, M25.Descrip_Col)
     return fn_return_value
 
-def Write_Macro_to_Act_Row(MacroTxt, LEDs, InCnt, LocInCh, Comment=VBMissingArgument, WrapText=VBMissingArgument):
+def Write_Macro_to_Act_Row(MacroTxt, LEDs, InCnt, LocInCh, Comment="", WrapText=False):
     #Row = Long()
 
     #LEDs_Channel = Long()
@@ -165,7 +165,7 @@ def __Get_WinStateName(State):
         fn_return_value = 'Unknown ' + State
     return fn_return_value
 
-def NotMinimizedWindow(NewState, Fource=VBMissingArgument):
+def NotMinimizedWindow(NewState, Fource=False):
     #--------------------------------------------------------------------------
     if P01.Application.WindowState == xlMinimized or Fource:
         Debug.Print('Set Application.WindowState to' + __Get_WinStateName(NewState))

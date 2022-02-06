@@ -35,7 +35,7 @@
 # 2022-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
 # 2022-01-08 V4.03 HL: - added Workbook Save and Load
 
-
+import logging
 
 from tkintertable import TableCanvas, TableModel
 import tkinter as tk
@@ -50,12 +50,19 @@ import subprocess
 import pickle
 import mlpyproggen.Prog_Generator as PG
 import mlpyproggen.F00_mainbuttons as F00
+import mlpyproggen.M18_Save_Load as M18
+import mlpyproggen.M37_Inst_Libraries as M37
 
 #import mlpyproggen.M01_Gen_Release_Version as M01
 import keyboard
 #import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M02_global_variables as M02
 
+def Dir(filepath):
+    if os.path.isfile(filepath):
+        return filepath
+    else:
+        return ""
 
 def Date_str():
     return "01.01.2022"
@@ -109,7 +116,7 @@ def Cells(row:int, column:int):
     return cell
 
 def Range(cell1,cell2):
-    return CRange(cell1,cell2)
+    return CRange(cell1,cell2,ws=ActiveSheet)
 
 def Sheets(sheetname):
     return ActiveWorkbook.Sheets(sheetname)
@@ -231,7 +238,7 @@ __VK_UP = 0x26
 __VK_DOWN = 0x28
 __VK_RETURN = 0xD
 __VK_ESCAPE = 0x1B
-__VK_CONTROL = 0x1C
+__VK_CONTROL = 0x11
 
 def GetAsyncKeyState(key):
     if key==__VK_UP:
@@ -458,6 +465,11 @@ class CWorkbook:
     def Activate(self):
         return
     
+    def notimplemented(self,command):
+        n = tk.messagebox.showinfo(command,
+                               "Not implemented yet",
+                                parent=self.master)
+    
     def Save(self,filename=None):
         if filename == None:
             filename = tk.filedialog.asksaveasfilename(parent=self.master,
@@ -483,13 +495,23 @@ class CWorkbook:
             return
         if filename:
             self.LoadWorkbook(filename)
-        return        
+        return
     
-    def SaveWorkbook(self,filename):
+    def SavePGF(self,filename=None):
+        M18.Save_Data_to_File()
+        return
+    
+    def LoadPGF(self,filename=None):
+        """load PGF from a file"""
+        M18.Load_Data_from_File()
+        return       
+    
+    def SaveWorkbook(self,filename,allsheets=False):
         workbookdata = {}
         for sheet in self.sheets:
-            sheetdata = sheet.getData()
-            workbookdata[sheet.Name] = sheetdata
+            if sheet.Datasheet or allsheets:
+                sheetdata = sheet.getData()
+                workbookdata[sheet.Name] = sheetdata
         
         fd = open(filename,'wb')
         pickle.dump(workbookdata,fd)
@@ -499,13 +521,37 @@ class CWorkbook:
     def LoadWorkbook(self,filename):
         fd=open(filename,'rb')
         workbookdata = pickle.load(fd)
-        
+
         for sheet in self.sheets:
             data = workbookdata.get(sheet.Name,{})
-            sheet.setData(data)
-            sheet.init_data()
-            
-        return        
+            if data !={}:
+                sheet.setData(data)
+                sheet.init_data()
+        return
+    
+    def update_library(self):
+        self.notimplemented("update_library")
+        #M37.Update_MobaLedLib_from_Arduino_and_Restart_Excel()
+    
+    def install_Betatest(self):
+        self.notimplemented("install_Betatest")
+    
+    def library_status(self):
+        self.notimplemented("library_status")
+        
+    
+    def install_fast_bootloader(self):
+        self.notimplemented("install_fast_bootloader")
+        
+    def start_patternconf(self):
+        self.notimplemented("start_patternconf")
+    
+    def send_to_patternconf(self):
+        self.notimplemented("send_to_patternconf")
+    
+    def receiver_from_patternconf(self):
+        self.notimplemented("receiver_from_patternconf")
+        
         
 
 class CWorksheet:
@@ -520,14 +566,13 @@ class CWorksheet:
         self.fieldnames = fieldnames
         self.formating_dict = formating_dict
         self.Name = Name
-        self.Shapes = CShapeList()
         if tablemodel:
             self.tablemodel = tablemodel
-            self.table = TableCanvas(frame, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
+            self.table = TableCanvas(frame, tablename=Name, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
         else:
             if csv_filepathname:
-                self.tablemodel = TableModel()
-                self.table = TableCanvas(frame, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
+                #self.tablemodel = TableModel()
+                self.table = TableCanvas(frame, tablename=Name, model=None,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
                 self.table.importCSV(filename=self.csv_filepathname, sep=';',fieldnames=self.fieldnames)
                 self.tablemodel = self.table.getModel()
                 if callback:
@@ -538,9 +583,8 @@ class CWorksheet:
             self.tablemodel.nodisplay = self.formating_dict.get("HideCells",[])
             self.tablemodel.protected_cells = self.formating_dict.get("ProtectedCells",[])
             self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
-        
         self.table.show()
-        self.update_table_properties()        
+        self.update_table_properties()
         
     def init_data(self):
         F00.worksheet_init(self)
@@ -551,10 +595,10 @@ class CWorksheet:
         self.LastUsedColumn_val = self.tablemodel.getColumnCount()
         self.UsedRange_val = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
         self.MaxRange_val  = CRange((0,0) , (self.LastUsedRow_val,self.LastUsedColumn_val),ws=self)
-        self.Rectangles = CRectangles()
+        #self.Rectangles = CRectangles()
         self.AutoFilterMode = False
         self.searchcache = {}
-        self.Shapes = CShapeList([])
+        self.Shapes = CShapeList(self.tablemodel)
         self.CellDict = CCellDict()
         self.End_val = self.LastUsedColumn_val        
         
@@ -807,49 +851,42 @@ class CWorksheet:
         self.Activate()
 
 class CShapeList(object):
-    def __init__(self,shapelist=[]):
-        self.shapelist = shapelist
+    def __init__(self,model=None):
+        self.tablemodel = model
+        self.tablemodel.shapelist = list()
+       
+        
+    def getShape(self,index):
+        shape = self.tablemodel.shapelist[index-1]
+        return shape
+    
+    def getlist(self):
+        return self.tablemodel.shapelist
         
     def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill):
         if shapetype == msoShapeRectangle:
-            shape = CShape(name, shapetype, Left, Top, Width, Height, Fill)
-            self.shapelist.append(shape)
-            shape.index = len(self.shapelist)-1
-            shape.tableshape=ActiveSheet.table.addShape(name, "rect", Left, Top, Width, Height, Fill,masteridx=shape.index)
+            shape=ActiveSheet.table.addShape(name, "rect", Left, Top, Width, Height, Fill)
             return shape
         
     def Delete(self,shape):
-        self.shapelist.remove(shape)
-            
+        if type(shape)==int:
+            del self.tablemodel.shapelist[shape-1]
+        else:
+            self.tablemodel.shapelist.remove(shape)
         
-    
-class CShape(object):
-    
-    def __init__(self, name, shapetype, Left, Top, Width, Height, Fill):
-        self.shapetype = shapetype
-        self.Left=Left
-        self.Top = Top
-        self.Width = Width
-        self.height = Height
-        self.Name = name
-        self.TextFrame2 = ""
-        self.AlternativeText = ""
-        self.TextFrame2 = ""
-        self.Fill = Fill
-        self.tableshape=None
-        
-    def updateShape(self):
-        self.tableshape.updateShape(Fill=self.Fill,Text=self.TextFrame2)
-        
-        
-    def Delete(self):
-        
-        pass
-        
+    def Count(self):
+        return len(self.tablemodel.shapelist)
+
         
 class CRange:
     def __init__(self,t1,t2,ws=None):
         #print("Range:",t1,t2)
+        if type(t1)==CCell:
+            t1=(t1.Row,t1.Column)
+        if type(t2)==CCell:
+            t2=(t2.Row,t2.Column)
+        self.start=(t1[0],t1[1])
+        self.end=(t2[0],t2[1])
         self.range_list=[]
         self.Rows=[]
         self.Columns = []
@@ -885,9 +922,11 @@ class CRectangles(object):
         
     def add(self,rectangle):
         self.rlist.append(rectangle)
+        self.Count+=1
         
     def delete(self,i):
         self.rlist.remove(i)
+        self.Count-=1
         
 
         
@@ -919,6 +958,7 @@ class CSelection:
         self.EntireColumn = CEntireColumn(cell.Column)
         self.Characters = ""
         self.selectedRows = []
+        self.Cells = []
         
     def EntireRow(self):
         self.selectedRows = []
@@ -932,6 +972,7 @@ class CRow:
     def __init__(self,rownumber):
         self.Row = rownumber
         self.EntireRow = CEntireRow(rownumber)
+        self.Hidden = False
         
 class CEntireRow:
     def __init__(self,rownumber):
@@ -944,6 +985,7 @@ class CColumn:
         self.Column=colnumber
         self.EntireColumn = CEntireColumn(colnumber)
         self.columnwidth = 5
+        self.Hidden = False
         
         
     def get_columnwidth(self):
@@ -979,6 +1021,7 @@ class CCell(str):
         self.Sheet = ActiveSheet
         self.Text = value
         self.Value = value
+        self.EntireRow = CEntireRow(self.Row)
         
     def __str__(self):
         return str(self.get_value())
@@ -998,8 +1041,11 @@ class CCell(str):
         return value # self.__value
     
     def set_row(self,row):
+        if row > self.tablemodel.getRowCount():
+            logging.debug("Set_row - Error - out of range: "+str(row))
+            self.tablemodel.autoAddRows(numrows=row-self.tablemodel.getRowCount())
         self.Row = row
-        self.Address = (self.Row,self.Column)
+        self.Address = (self.Row,self.Column)            
         
     def set_column(self,column):
         self.Column=column
@@ -1073,7 +1119,10 @@ class CCell(str):
     
     def Height(self):
         x1,y1,x2,y2 = ActiveSheet.table.getCellCoords(self.Row-1,self.Column-1)
-        return y2-y1    
+        return y2-y1
+    
+    def ClearContents(self):
+        self.set_value("")
     
     Value = property(get_value, set_value, doc='value of CCell')
     Text = property(get_value, set_value, doc='value of CCell')
@@ -1090,7 +1139,7 @@ class CCellDict():
         ccell = Cells(k[0],k[1])
         #print("Setitem",k, value,ccell.Sheet.Name)
         ccell.set_value(value)
-        
+
         
 class CWorksheetFunction:
     def __init__(self):
@@ -1118,6 +1167,7 @@ class CApplication:
         self.WindowState = 0
         self.caller=0
         self.canvas_leftclickcmd=None
+
         
     def set_canvas_leftclickcmd(self,cmd):
         self.canvas_leftclickcmd=cmd
@@ -1138,6 +1188,20 @@ class CApplication:
         else:
             return "Error"
         
+
+    def GetSaveAsFilename(self,InitialFileName="", fileFilter="", Title="" ):
+        filefilter_list = fileFilter.split(",")
+        filepath = tk.filedialog.asksaveasfilename(filetypes=[filefilter_list],defaultextension=".MLL_pgf",title=Title,initialfile=InitialFileName)
+        return filepath
+    
+    def GetOpenFilename(self,InitialFileName="", fileFilter="", Title="" ):
+        filefilter_list = fileFilter.split(",")
+        filepath = tk.filedialog.askopenfilename(filetypes=[filefilter_list],defaultextension=".MLL_pgf",title=Title,initialfile=InitialFileName)
+        return filepath
+    
+    def Quit(self):
+        pass
+        
 class CFont:
     def __init__(self,name,size):
         self.Name = name
@@ -1147,6 +1211,8 @@ class CActiveWindow:
     def __init__(self):
         Zoom = 100
         ScrollColumn = 1
+        self.SelectedSheets={}
+        self.SelectedSheets["Count"]=1        
         
 class SoundLines:
     def __init__(self):

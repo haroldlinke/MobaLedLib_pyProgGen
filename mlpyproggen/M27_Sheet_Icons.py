@@ -127,7 +127,7 @@ def Del_Icons(r):
         if Pic.Top > MinTop and Pic.Top < MaxTop and Pic.Left >= MinLeft and Pic.Left <= MaxLeft:
             Pic.Delete()
 
-def Del_one_Icon_in_IconCol(Row, Sh=VBMissingArgument):
+def Del_one_Icon_in_IconCol(Row, Sh=None):
     #----------------------------------------------
     if Sh is None:
         Sh = P01.ActiveSheet
@@ -194,7 +194,7 @@ def __Test_Hide_Icons_Column_in_Sheet():
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: MacroStr - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Row - ByVal 
-def FindMacro_and_Add_Icon_and_Name(MacroStr, Row, Sh, NameOnly=VBMissingArgument):
+def FindMacro_and_Add_Icon_and_Name(MacroStr, Row, Sh, NameOnly=False):
     LibMacRow = int()
     #-------------------------------------------------------------------------------------------------------------------------------------
     LibMacRow = Find_Macro_in_Lib_Macros_Sheet(MacroStr)
@@ -204,7 +204,7 @@ def FindMacro_and_Add_Icon_and_Name(MacroStr, Row, Sh, NameOnly=VBMissingArgumen
         if InStr(MacroStr, 'Pattern') > 0:
             OldEvents = P01.Application.EnableEvents
             P01.Application.EnableEvents = False
-            Sh.CellDict[Row, LanName_Col] = Get_Language_Str('Muster') + ' Pattern_Configurator'
+            Sh.CellDict[Row, M25.LanName_Col] = M09.Get_Language_Str('Muster') + ' Pattern_Configurator'
             P01.Application.EnableEvents = OldEvents
             if NameOnly == False:
                 Del_one_Icon_in_IconCol(Row, Sh)

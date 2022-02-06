@@ -171,10 +171,10 @@ def __Release_or_Debug_Version(Release):
                 P01.Columns(M02.Enable_Col).ColumnWidth = 5.8*factor #*HL
                 if Sh.Name == 'Examples':
                     P01.Columns(M25.Filter__Col).ColumnWidt = 11*factor
-                    P01.Columns(M25.Inp_Typ_Col).ColumnWidth = 16*factor
+                    P01.Columns(M25.Inp_Typ_Col).ColumnWidth = 22*factor
                 else:
                     P01.Columns(M25.Filter__Col).ColumnWidth = 5.8*factor
-                    P01.Columns(M25.Inp_Typ_Col).ColumnWidth = 12*factor
+                    P01.Columns(M25.Inp_Typ_Col).ColumnWidth = 22*factor
                 if M25.Page_ID != 'Selectrix':
                     P01.Columns(M25.DCC_or_CAN_Add_Col).ColumnWidth = 11.57*factor
                 else:

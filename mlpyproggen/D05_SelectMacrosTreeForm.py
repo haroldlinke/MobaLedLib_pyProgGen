@@ -506,7 +506,7 @@ class SelectMacrosTreeform:
         #    __mcTree.NodesClear()
         #    __mcTree.TerminateTree()
     
-    def __GetIcons(self,colImages, ImageNames=VBMissingArgument):
+    def __GetIcons(self,colImages, ImageNames=[]):
         fn_return_value = None
         v = Variant()
     

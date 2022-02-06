@@ -587,7 +587,8 @@ def Same_Name_already_open(FullName):
 
 def SheetEx(Name):
     #-------------------------------
-    for s in P01.Sheets:
+    fn_return_value=False
+    for s in P01.ActiveWorkbook.sheets:
         if s.Name == Name:
             fn_return_value = True
             return fn_return_value
@@ -1086,7 +1087,7 @@ def ConvertToUTF8(Source):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Source - ByRef 
 def ConvertToUTF8Str(Source):
-    fn_return_value =  Source.encode('utf-8')
+    fn_return_value =  Source #*HL.encode('utf-8')
     
     return fn_return_value
 

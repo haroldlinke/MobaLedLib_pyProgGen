@@ -109,7 +109,7 @@ from mlpyproggen.X01_Excel_Consts import *
 
 """
 
-Global_Rect_List = [] #vbObjectInitialize(objtype=String)
+Global_Rect_List = vbObjectInitialize(objtype=String)
 PriorCell = None #P01.CCell("") #range() # HaLi test
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Line - ByVal 
@@ -243,7 +243,7 @@ def Update_Start_LedNr():
                     Max_LEDs_Channel = P01.val(P01.Cells(r, M25.LED_Cha_Col))
     for row in P01.ActiveSheet.UsedRange.Rows:
         r = row.Row
-        P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Update Start LED: "+str(r)))
+        #P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Update Start LED: "+str(r)))
         #print("Update Start LED: Row=",r)
         if r >= M02.FirstDat_Row:
             if Row_is_Achtive(r):
@@ -324,7 +324,7 @@ def Get_LED_Nr_Column(LED_Channel):
         fn_return_value = M25.LED_TastCol + LED_Channel - 1
     return fn_return_value
 
-def Clear_LED_Nr_Columns(r, ExceptCol=VBMissingArgument):
+def Clear_LED_Nr_Columns(r, ExceptCol=-1):
     Nr = int()
     #---------------------------------------------------------------------
     for Nr in vbForRange(0, M02.LED_CHANNELS - 1):
@@ -353,7 +353,7 @@ def FirstNotFormatedRow(StartRow):
     fn_return_value = Row
     return fn_return_value
 
-def Format_Cells_to_Row(Row, UpdateAutofilter=True, AllRows=VBMissingArgument):
+def Format_Cells_to_Row(Row, UpdateAutofilter=True, AllRows=False):
     
     return #*HL
 """
@@ -920,26 +920,26 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
     i = 1
     if First_Call:
         Global_Rect_List = vbObjectInitialize(((1, LastRow),), str)
-        while i <= P01.ActiveSheet.Rectangles.Count:
+        while i <= P01.ActiveSheet.Shapes.Count():
             #  is it a SendButton Shape?
-            if P01.ActiveSheet.Rectangles(i).OnAction == 'DCCSend':
-                RectRow = P01.ActiveSheet.Rectangles.rlist(i).TopLeftCell.Row
+            if P01.ActiveSheet.Shapes.getShape(i).OnAction == 'DCCSend':
+                RectRow = P01.ActiveSheet.Shapes.getShape(i).TopLeftCell_Row
                 if RectRow <= LastRow:
                     Global_Rect_List[RectRow] = Global_Rect_List(RectRow) + str(i) + ' '
-                if P01.ActiveSheet.Rectangles(i).TopLeftCell.Row == Row:
+                if P01.ActiveSheet.Shapes.getShape(i).TopLeftCell_Row == Row:
                     #P01.ActiveSheet.Rectangles(i).Delete                   ' 25.03.21:
                     OldRect_List = vbObjectInitialize((OldRect_Cnt,), Variant, OldRect_List)
                     OldRect_List[OldRect_Cnt] = i
                     OldRect_Cnt = OldRect_Cnt + 1
                 else:
                     # find orphans
-                    Addr = M25.Get_First_Number_of_Range(P01.ActiveSheet.Rectangles.rlist(i).TopLeftCell.Row, AddrColumn)
+                    Addr = M25.Get_First_Number_of_Range(P01.ActiveSheet.Shapes.getShape(i).TopLeftCell_Row, AddrColumn)
                     if Addr == '':
-                        P01.ActiveSheet.Rectangles.rlist(i).Delete()
+                        P01.ActiveSheet.Shapes.Delete(i)
                         i = i - 1
             i = i + 1
     else:
-        if Global_Rect_List(Row) == '':
+        if Global_Rect_List[Row] == '':
             return
         Rect_List_In_Row = Split(Trim(Global_Rect_List(Row)), ' ')
         OldRect_Cnt = UBound(Rect_List_In_Row) + 1
@@ -1011,7 +1011,7 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
     #*HL    P01.Range[P01.Cells(1, TargetColumn), P01.Cells(1, TargetColumn)].ColumnWidth = WorksheetFunction.RoundUp(i / factor, 1)
     for i in vbForRange(1, ButtonCount):
         if Used_OldRect < OldRect_Cnt:
-            objButton = P01.ActiveSheet.Rectangles.rlist[OldRect_List(Used_OldRect)]
+            objButton = P01.ActiveSheet.Shapes.getlist()[OldRect_List(Used_OldRect)]
             Used_OldRect = Used_OldRect + 1
         else:
             #*HLobjButton = P01.ActiveSheet.Shapes.AddShape(msoShapeRectangle, Row, TargetColumn, 0, 0, 0, 0)
@@ -1037,8 +1037,6 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
                 # No text because it's confusing if 0/1 is used for OnOff switches
         if NewCreated:
             objButton.OnAction = 'DCCSend'
-            if P01.Application.canvas_leftclickcmd==None:
-                P01.Application.set_canvas_leftclickcmd(M32.DCCSend)
             #objButton.DrawingObject.Border.Color = rgb(0, 0, 0)
             #objButton.TextFrame2.Text.Range.ParagraphFormat.Alignment = msoAlignCenter
         objButton.Fill = GetButtonColor(ColorOffset)
@@ -1068,7 +1066,7 @@ def Update_TestButtons(Row, onValue=0, First_Call=True):
         ColorOffset = ValidateColorIndex(ColorOffset + ColorInc)
         objButton.updateShape()
     for i in vbForRange(Used_OldRect, OldRect_Cnt - 1):
-        P01.ActiveSheet.Rectangles(OldRect_List(i)).Delete()
+        P01.ActiveSheet.Shapes.Delete(OldRect_List(i))
 
 def ResetTestButtons(keepStatus):
     return #*HL

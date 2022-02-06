@@ -796,9 +796,11 @@ def GetOnOffStoreType(r, Addr, Inp_TypR, Channel_or_define):
     if Addr >= 0 and TypConst == 'S_ONOFF,':
         fn_return_value = M02.SST_S_ONOFF
         return fn_return_value
-    if int(P01.Cells(r, M25.InCnt___Col)) > 1 and P01.Cells(r, M25.LED_Nr__Col) != '':
-        fn_return_value = M02.SST_TRIGGER
-        return fn_return_value
+    value = str(P01.Cells(r, M25.InCnt___Col))
+    if  P01.Cells(r, M25.LED_Nr__Col) != '' and  value !='':
+        if int(value) > 1:
+            fn_return_value = M02.SST_TRIGGER
+            return fn_return_value
     return fn_return_value
 
 def Create_HeaderFile(CreateFilesOnly = False): #20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files

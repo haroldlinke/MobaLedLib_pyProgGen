@@ -52,16 +52,19 @@ import copy
 import platform
 from mlpyproggen.tooltip import Tooltip_Canvas
 
+global_tabledict = {}
+
 class TableCanvas(Canvas):
     """A tkinter class for providing table functionality"""
 
-    def __init__(self, parent=None, model=None, data=None, read_only=False,
+    def __init__(self, parent=None, tablename="dummy", model=None, data=None, read_only=False,
                  width=None, height=None, bgcolor='#F7F7FA', fgcolor='black',
                  rows=10, cols=5, **kwargs):
         Canvas.__init__(self, parent, bg=bgcolor,
                          width=width, height=height,
                          relief=GROOVE,
                          scrollregion=(0,0,width,height))
+        self.tablename=tablename
         self.parentframe = parent
         #get platform into a variable
         self.ostyp = self.checkOSType()
@@ -90,7 +93,6 @@ class TableCanvas(Canvas):
         self.left_click_callback = None
         self.Flag_move=False
         self.lastmultiplerowlist  = []
-        self.init_table()
 
         self.loadPrefs()
         #set any options passed in kwargs to overwrite defaults and prefs
@@ -111,7 +113,9 @@ class TableCanvas(Canvas):
         self.do_bindings()
         #initial sort order
         self.model.setSortOrder()
-
+        self.init_table()
+        global_tabledict[tablename]=self
+        
         #column specific actions, define for every column type in the model
         #when you add a column type you should edit this dict
         self.columnactions = {'text' : {"Edit":  'drawCellEntry' },
@@ -123,8 +127,7 @@ class TableCanvas(Canvas):
         self.left_click_callback = callback
         
     def init_table(self):
-        self.shapelist=CShapeList(self)
-        
+        self.model.shapelist=[]
 
     def set_defaults(self):
         """Set default settings"""
@@ -341,7 +344,7 @@ class TableCanvas(Canvas):
 
     def redrawVisible(self, event=None, callback=None):
         """Redraw the visible portion of the canvas"""
-        self.delete("Icons")
+        self.delete("Icon")
         self.delete("Shape")
 
         model = self.model
@@ -525,6 +528,18 @@ class TableCanvas(Canvas):
         if atrow == None:
             atrow=self.getSelectedRow()
         keys = self.model.autoAddRows(num,atrow=atrow,copyfromrow=copyfromrow)
+        
+        x1,y1,x2,y2=self.getCellCoords(atrow, 0)
+        if copyfromrow != None:
+            cX1,cY1,cX2,cY2 = self.getCellCoords(copyfromrow, 0)
+            copy=True
+        else:
+            cY1 = 0
+            copy=False
+        
+        moveheight = num*self.rowheight
+        self.model.moveShapesVertical(y1, deltaY=moveheight,copy=copy,cY1=cY1)
+            
         self.redrawTable()
         self.setSelectedRow(self.model.getRecordIndex(keys[0]))
         return
@@ -559,7 +574,12 @@ class TableCanvas(Canvas):
     
     def moveRows(self,src_rowlist, dest_rowindex):
         print("table.moveRows:",src_rowlist,dest_rowindex)
-        self.model.moveRows(src_rowlist, dest_rowindex)
+        minx1,miny1,minx2,miny2 = self.getCellCoords(src_rowlist[0],1)
+        maxx1,maxy1,maxx2,mmaxy2 = self.getCellCoords(src_rowlist[-1],1)
+        deltaY = (dest_rowindex-src_rowlist[0])*self.rowheight
+        deleteY=len(src_rowlist)*self.rowheight
+        
+        self.model.moveRows(src_rowlist, dest_rowindex,minY1=miny1+1,maxY1=maxy1+1,deltaY=deltaY,deleteY=deleteY)
         self.redrawTable()
 
     def deleteRow(self):
@@ -571,7 +591,11 @@ class TableCanvas(Canvas):
                                       parent=self.parentframe)
             if n == True:
                 rows = self.multiplerowlist
-                self.model.deleteRows(rows)
+                startrow=rows[0]
+                endrow=rows[-1]
+                sx1,sy1,sx2,sy2 = self.getCellCoords(startrow, 0)
+                ex1,ey1,ex2,ey2 = self.getCellCoords(endrow, 0)
+                self.model.deleteRows(rows,y1=sy1,y2=ey2)
                 self.clearSelected()
                 self.setSelectedRow(0)
                 self.redrawTable()
@@ -582,8 +606,8 @@ class TableCanvas(Canvas):
                                           "Delete This Record?",
                                           parent=self.parentframe)
                 if n:
-                    
-                    self.model.deleteRow(row)
+                    x1,y1,x2,y2=self.getCellCoords(row, 1)
+                    self.model.deleteRow(row,y1=y1,y2=y2)
                     self.setSelectedRow(row)
                     self.clearSelected()
                 self.redrawTable()
@@ -601,7 +625,7 @@ class TableCanvas(Canvas):
             self.currentcol = self.currentcol - 1
             self.redrawTable()
         return
-
+    
     def deleteCells(self, rows, cols,question=True):
         """Clear the cell contents"""
         if question:
@@ -613,13 +637,14 @@ class TableCanvas(Canvas):
         for col in cols:
             for row in rows:
                 #absrow = self.get_AbsoluteRow(row)
+                x1,y1,x2,y2 = self.getCellCoords(row, col)
+                self.model.deleteShapeatPos(x1,y1,x2,y2)
                 self.model.deleteCellRecord(row, col)
                 self.redrawCell(row,col)
         return
 
     def clearData(self, evt=None,question=True):
         """Delete cells from gui event"""
-
         rows = self.multiplerowlist
         cols = self.multiplecollist
         self.deleteCells(rows, cols,question=question)
@@ -797,7 +822,13 @@ class TableCanvas(Canvas):
         #print 'event.y',event.y, 'y',y
         #print ('rowclicked', rowc)
         return rowc
-
+    
+    def calc_row_from_y(self,y):
+        y_start=self.y_start
+        h=self.rowheight
+        rowc = int((int(y)-y_start)/h)
+        return rowc
+        
     def get_col_clicked(self,event):
         """get col where event on canvas occurs"""
 
@@ -1786,14 +1817,18 @@ class TableCanvas(Canvas):
         return 1
     
     def addShape(self, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
-        return self.shapelist.AddShape(name, shapetype, Left, Top, Width, Height, Fill, Text=Text,masteridx=masteridx)
+        newshape = CShape(self.tablename, name, shapetype, Left, Top, Width, Height, Fill, Text=Text)
+        self.model.shapelist.append(newshape)
+        newshape.masteridx=len(self.model.shapelist)
+        return newshape #self.model.shapelist.AddShape(name, shapetype, Left, Top, Width, Height, Fill, Text=Text,masteridx=masteridx)
         
     def drawShapes(self):
         self.delete("Shape")
-        for shape in self.shapelist.shapelist:
+        for shape in self.model.shapelist:
             self.drawShape(shape)
             
     def drawShape(self,shape):
+        #print("drawShapes:", self.model.modelname,shape.TopLeftCell_Row,shape.tablename)
         if shape.rectidx>0:
             self.delete(shape.rectidx)
         if shape.textidx>0:
@@ -2418,8 +2453,6 @@ class TableCanvas(Canvas):
 
     def importCSV(self, filename=None, sep=',',fieldnames=None):
         """Import from csv file"""
-        self.init_table()
-
         if filename is None:
             from .Tables_IO import TableImporter
             importer = TableImporter()
@@ -2427,10 +2460,13 @@ class TableCanvas(Canvas):
             self.master.wait_window(importdialog)
             model = TableModel()
             model.importDict(importer.data)
+            model.shapelist=[]
+            
         else:
-            self.init_table()
             model = TableModel()
             model.importCSV(filename, sep=sep,fieldnames=fieldnames)
+            model.shapelist=[]
+            
         self.updateModel(model)
         return
 
@@ -2954,23 +2990,23 @@ class AutoScrollbar(Scrollbar):
     #    raise TclError, "cannot use place with this widget"
     
 
-class CShapeList(object):
-    def __init__(self,canvas):
-        self.shapelist = []
-        self.canvas=canvas
-        
-    def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
-        if shapetype == "rect":
-            shape = CShape(self.canvas, name, "rect", Left, Top, Width, Height, Fill,masteridx=masteridx,Text=Text)
-            self.shapelist.append(shape)
-            shape.index = len(self.shapelist)-1
-            return shape
+#class CShapeList(object):
+#    def __init__(self,canvas):
+#        self.shapelist = []
+#        self.canvas=canvas
+#        
+#    def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
+#        if shapetype == "rect":
+#            shape = CShape(self.canvas, name, "rect", Left, Top, Width, Height, Fill,masteridx=masteridx,Text=Text)
+#            self.shapelist.append(shape)
+#            shape.index = len(self.shapelist)-1
+#            return shape
     
 class CShape(object):
-    def __init__(self, canvas, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
+    def __init__(self, tablename, name, shapetype, Left, Top, Width, Height, Fill, masteridx=0,Text=""):
         self.Shapetype = shapetype
-        self.canvas=canvas
-        self.Left=Left
+        self.tablename=tablename
+        self.Left = Left
         self.Top = Top
         self.Width = Width
         self.Height = Height
@@ -2983,30 +3019,36 @@ class CShape(object):
         self.rectidx=0
         self.textidx=0
         self.masteridx=masteridx
+        canvas = global_tabledict.get(self.tablename,None)
+        self.TopLeftCell_Row=canvas.calc_row_from_y(Top)+1
+       
         #self.canvas.tag_bind(shape.rectidx,"<Button-1>", self.shape_button_1)
         
     def shape_button_1(self,event=None):
         print("Shape Button_1 event")
         print(repr(event))
-        tags=self.canvas.gettags(self.rectidx)
-        print(tags)
-        if self.canvas.left_click_callback:
-            res_continue = self.canvas.left_click_callback(tags, "",callertype="canvas")
-            if res_continue == False:
-                return
+        canvas = global_tabledict.get(self.tablename,None)
+        if canvas:        
+            tags=canvas.gettags(self.rectidx)
+            print(tags)
+            if canvas.left_click_callback:
+                res_continue = canvas.left_click_callback(tags, "",callertype="canvas")
+                
+        return
             
     def updateShape(self,Fill=None,Text=None):
         if Fill:
             self.Fill=Fill
         if Text:
             self.TextFrame2=Text
-        self.canvas.drawShape(self)
+        canvas = global_tabledict.get(self.tablename,None)
+        if canvas:
+            canvas.drawShape(self)
 
         
-        
-        
     def Delete(self):
-        super().delete(self.index)
+        canvas = global_tabledict.get(self.tablename,None)
+        canvas.delete_shape(self.masteridx)
         pass
     
 

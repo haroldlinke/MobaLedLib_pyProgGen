@@ -44,6 +44,7 @@ from vb2py.vbdebug import *
 from vb2py.vbconstants import *
 from mlpyproggen.X01_Excel_Consts import *
 
+
 import os
 
 import mlpyproggen.M02_Public as M02
@@ -61,6 +62,7 @@ import mlpyproggen.M09_Select_Macro as M09SM
 import mlpyproggen.M09_SelectMacro_Treeview as M09SMT
 import mlpyproggen.M10_Par_Description as M10
 import mlpyproggen.M20_PageEvents_a_Functions as M20
+import mlpyproggen.M24_Mouse_Insert_Pos as M24
 import mlpyproggen.M25_Columns as M25
 import mlpyproggen.M27_Sheet_Icons as M27
 import mlpyproggen.M28_divers as M28
@@ -73,6 +75,8 @@ import mlpyproggen.M70_Exp_Libraries as M70
 import mlpyproggen.M80_Create_Mulitplexer as M80
 
 import mlpyproggen.D02_Userform_Select_Typ_DCC as D02
+import mlpyproggen.D09_StatusMsg_Userform as D09
+import mlpyproggen.F00_mainbuttons as F00
 
 import mlpyproggen.P01_Workbook as P01
 
@@ -364,7 +368,7 @@ def __Get_All_Library_States():
             __Get_State_of_Board_Row(Row)
         Row = Row + 1
     fn_return_value = True
-    P01.ThisWorkbook.Sheets[M02.LIBRARYS__SH].Range['Last_Update_Time'] = P01.Date + P01.Time
+    P01.ThisWorkbook.Sheets[M02.LIBRARYS__SH].Range['Last_Update_Time'] = P01.Date_str() + P01.Time_str()
     return fn_return_value
     # 07.06.20:
     P01.MsgBox(M09.Get_Language_Str('Fehler beim lesen des Verzeichnisses:') + vbCr + '  \'' + LibDir + '\'' + vbCr + 'Error Nr: ' + Err.Number + vbCr + Err.Description, vbCritical, M09.Get_Language_Str('Fehler beim lesen des Verzeichnisses:'))
@@ -517,7 +521,7 @@ def __Create_Do_Update_Script(Pause_at_End):
         VBFiles.writeText(fp, 'CHCP 65001 >NUL', '\n')
     Sh = P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH)
     ForceReinstall = False
-    if Sh.CheckBoxes('Check Box 10').Value == xlOn:
+    if False: #*HLSh.CheckBoxes('Check Box 10').Value == xlOn:
         Pause_at_End = True
         # Wait at End Checkbox
     Row = __First_Dat_Row
@@ -739,23 +743,25 @@ def __Test_Check_All_Selected_Libraries_Result():
     #UT---------------------------------------------------
     __Check_All_Selected_Libraries_Result()(True)
 
-def __Update_Status(Start=VBMissingArgument):
+def __Update_Status(Start=False):
     #---------------------------------------------------
     # Is called by OnTime
     if __Update_Time != 0 or Start:
         if Start:
             __Update_Time = Time
         else:
-            StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(Time - __Update_Time, 'hh:mm:ss'))
+            F00.StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(Time - __Update_Time, 'hh:mm:ss'))
         
         P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:01'), 'Update_Status')
 
 def __Stop_Status_Display():
+    global __Update_Time
     #--------------------------------
     __Update_Time = 0
-    U01.Unload(StatusMsg_UserForm)
+    P01.Unload(F00.StatusMsg_UserForm)
 
 def __Update_All_Selected_Libraries():
+    global __UnzipList
     fn_return_value = None
     Pause_at_End = Boolean()
 
@@ -778,10 +784,10 @@ def __Update_All_Selected_Libraries():
         select_0 = __Create_Do_Update_Script(Pause_at_End)
         if (select_0 == 0):
             P01.MsgBox(M09.Get_Language_Str('Es wurden keine Zeilen zur Installation ausgewählt. Die Zeilen müssen mit einem Häkchen in der Spalte \'Select\' markiert werden.' + vbCr + 'Für die ausgewählten Zeilen wird die neueste Software installiert, es sei den in der Spalte "Required Version" ist eine ' + 'bestimmte Version angegeben.'), vbInformation, M09.Get_Language_Str('Keine Zeilen zur Installation ausgewählt.'))
-            GoTo(EndFunc)
+            break #*HL GoTo(EndFunc)
         elif (select_0 == - 1):
-            GoTo(EndFunc)
-        StatusMsg_UserForm.ShowDialog(M09.Get_Language_Str('Aktualisiere Bibliotheken und Boards'), '')
+            break #*HL GoTo(EndFunc)
+        F00.StatusMsg_UserForm.ShowDialog(M09.Get_Language_Str('Aktualisiere Bibliotheken und Boards'), '')
         __Update_Status(Start_Update)
         Start_Update = False
         __Correct_Temp_Adrduino_nr_Dirs()
@@ -797,18 +803,18 @@ def __Update_All_Selected_Libraries():
             pass
         else:
             P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler #1# beim Starten der Update Programms \'#2#\''), "#1#", Res), '#2#', CommandStr), vbCritical, M09.Get_Language_Str('Fehler beim Aktualisieren der Bibliotheken'))
-            GoTo(EndFunc)
+            break #*HL GoTo(EndFunc)
         if WIN7_COMPATIBLE_DOWNLOAD:
             __Proc_UnzipList()
-        U01.Unload(StatusMsg_UserForm)
+        P01.Unload(F00.StatusMsg_UserForm)
         # Bring Excel to the top
         # Is not working if an other application has be moved above Excel with Alt+Tab
         # But this is a feature of Windows.
         #   See: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow
         # But it brings up excel again after the upload to the Arduino
         # Without this funchion an other program was activated after the upload for some reasons
-        Bring_to_front(hwnd)
-        DoEvents()
+        #*HL Bring_to_front(hwnd)
+        P01.DoEvents()
         if __Get_All_Library_States() == False:
             # VB2PY (UntranslatedCode) GoTo EndFunc
             pass
@@ -819,9 +825,10 @@ def __Update_All_Selected_Libraries():
         __Update_General_Versions()
         if not (__Check_All_Selected_Libraries_Result(Ask_User)):
             break
+
     fn_return_value = True
     __Stop_Status_Display()
-    #U01.Unload(StatusMsg_UserForm)
+    P01.Unload(F00.StatusMsg_UserForm)
     P01.ChDrive(P01.ThisWorkbook.Path)
     ChDir(P01.ThisWorkbook.Path)
     return fn_return_value
@@ -950,9 +957,11 @@ def __Select_from_Range(RangeStr):
         with_4.Value = ''
         Row = Row + 1
     # VB2PY (UntranslatedCode) On Error GoTo Range_Not_Found
-    Sh.Range[RangeStr] = ChrW(M02.Hook_CHAR)
+    #*HL Sh.Range[RangeStr] = ChrW(M02.Hook_CHAR)
+    fn_return_value = 9 #*HL
+    
     # VB2PY (UntranslatedCode) On Error GoTo 0
-    fn_return_value = Sh.Range(RangeStr).Row
+    #*HL fn_return_value = Sh.Range(RangeStr).Row
     return fn_return_value
     P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler: Der Bereich \'#1#\' wurde nicht im Blatt \'#2#\' gefunden'), "#1#", RangeStr), '#2#', Sh.Name), vbCritical, M09.Get_Language_Str('Fehler beim aktivieren der Update Zeile'))
     fn_return_value = - 1
@@ -960,11 +969,11 @@ def __Select_from_Range(RangeStr):
 
 def __Show_Close_Message_if_Other_WB_are_Open():
     fn_return_value = None
-    wb = Variant()
+    #wb = Variant()
     #--------------------------------------------------------------------
     for wb in P01.Workbooks:
         if wb.Name != P01.ThisWorkbook.Name:
-            Close_Other_Workbooks.Start('Start_Update_MobaLedLib_and_Restarte_Excel')
+            #*HL Close_Other_Workbooks.Start('Start_Update_MobaLedLib_and_Restarte_Excel')
             fn_return_value = True
             return fn_return_value
     return fn_return_value
@@ -984,7 +993,7 @@ def __Start_Update_MobaLedLib_and_Restarte_Excel():
     if CommandStr == '':
         return
     P01.ThisWorkbook.Save()
-    Shell('cmd /c start ' + CommandStr)
+    P01.Shell('cmd /c start ' + CommandStr)
     #  MsgBox "Warte"
     P01.Application.Quit()
 
@@ -997,8 +1006,8 @@ def __Update_MobaLedLib_from_Range_and_Restart_Excel(RangeStr):
     Row = __Select_from_Range(RangeStr)
     if Row < 0:
         return
-    Ctrl_Pressed = GetAsyncKeyState(VK_CONTROL) != 0
-    if Ctrl_Pressed:
+    #*HL Ctrl_Pressed = P01.GetAsyncKeyState(M24.VK_CONTROL) != 0
+    if False: #*HLCtrl_Pressed:
         currentUrl = P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH).Cells(Row, __Other_Src_Col)
         frm = UserForm_SingleInput()
         newUrl = frm.ShowForm(M09.Get_Language_Str('Beta-Test Installation'), M09.Get_Language_Str('Bitte geben sie die URL ein, von der sie die neue Beta Version herunterladen wollen'), currentUrl)

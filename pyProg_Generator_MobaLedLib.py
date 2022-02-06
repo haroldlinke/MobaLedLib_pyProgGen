@@ -310,9 +310,12 @@ class LEDColorTest(tk.Tk):
 #        filemenu.add_command(label="Farbpalette von Datei lesen", command=self.OpenFile)
 #        filemenu.add_command(label="Farbpalette speichern als ...", command=self.SaveFileas)
 #        filemenu.add_separator()
-        filemenu.add_command(label="MacroWorkbook von Datei lesen", command=self.OpenFileLEDTab)
-        filemenu.add_command(label="MacroWorkbook speichern als", command=self.SaveFileLEDTab)
+        filemenu.add_command(label="MacroWorkbook von Datei lesen", command=self.OpenFileWorkbook)
+        filemenu.add_command(label="MacroWorkbook speichern als", command=self.SaveFileWorkbook)
         filemenu.add_separator()
+        filemenu.add_command(label="Excel ProgGen PGF-Datei lesen", command=self.OpenFilePGF)
+        filemenu.add_command(label="Als Excel ProgGen PGF-Datei speichern", command=self.SaveFilePGF)
+        filemenu.add_separator()        
         filemenu.add_command(label="Beenden und Konfig-Daten speichern", command=self.ExitProg_with_save)
         filemenu.add_command(label="Beenden ohne Konfig-Daten zu speichern", command=self.ExitProg)
 
@@ -330,6 +333,19 @@ class LEDColorTest(tk.Tk):
         arduinomenu.add_command(label="Verbinden", command=self.ConnectArduino)
         arduinomenu.add_command(label="Trennen", command=self.DisconnectArduino)
         arduinomenu.add_command(label="Alle LED aus", command=self.SwitchoffallLEDs)
+        
+        optionsmenu = tk.Menu(menu)
+        menu.add_cascade(label="Optionen", menu=optionsmenu)
+        optionsmenu.add_command(label="Aktualisiere Bibliothek", command=self.update_library)
+        optionsmenu.add_command(label="Installiere Beta Test", command=self.install_Betatest)
+        optionsmenu.add_command(label="Status der Bibliotheken", command=self.library_status)
+        optionsmenu.add_command(label="Schnelle Bootloader installieren", command=self.install_fast_bootloader)
+        
+        patternconfmenu = tk.Menu(menu)
+        menu.add_cascade(label="Pattern Configurator", menu=patternconfmenu)
+        patternconfmenu.add_command(label="Starte Pattern Cofigurator", command=self.start_patternconf)
+        patternconfmenu.add_command(label="Daten an Pattern Conf senden", command=self.send_to_patternconf)
+        patternconfmenu.add_command(label="Daten von Pattern Conf empfangen", command=self.receiver_from_patternconf)
         
         helpmenu = tk.Menu(menu)
         menu.add_cascade(label="Hilfe", menu=helpmenu)
@@ -441,6 +457,11 @@ class LEDColorTest(tk.Tk):
             return SMALL_FONT
         else:
             return ("Verdana", int(font_size))
+        
+    def notimplemented(self,command):
+        n = tk.messagebox.showinfo(command,
+                               "Not implemented yet",
+                                parent=self)        
 
     def SaveFileas(self):
         filepath = filedialog.asksaveasfilename(filetypes=[("Color Palette files","*.clr.json")],defaultextension=".clr.json")
@@ -460,16 +481,27 @@ class LEDColorTest(tk.Tk):
             frame = self.tabdict["ColorCheckPage"]
             frame.readPalettefromFile(filepath)         
 
-    def SaveFileLEDTab(self):
+    def SaveFileWorkbook(self):
         #filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
         #if filepath:
         #    self.saveLEDTabtoFile(filepath)
         self.activeworkbook.Save()
 
-    def OpenFileLEDTab(self):
+    def OpenFileWorkbook(self):
         #filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
         # filepath:
         self.activeworkbook.Load()
+        
+    def SaveFilePGF(self):
+        #filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
+        #if filepath:
+        #    self.saveLEDTabtoFile(filepath)
+        self.activeworkbook.SavePGF()
+
+    def OpenFilePGF(self):
+        #filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
+        # filepath:
+        self.activeworkbook.LoadPGF()
 
     def About(self):
         tk.messagebox("MobaCheckColor by Harold Linke")
@@ -502,7 +534,29 @@ class LEDColorTest(tk.Tk):
         else:
             message = "#L 00 00 00 00 7FFF\n"          
         #message = "#L00 00 00 00 FF\n"
-        self.send_to_ARDUINO(message)        
+        self.send_to_ARDUINO(message)
+
+    def update_library(self):
+        self.activeworkbook.update_library()
+    
+    def install_Betatest(self):
+        self.activeworkbook.install_Betatest()
+    
+    def library_status(self):
+        self.activeworkbook.library_status()
+        
+    
+    def install_fast_bootloader(self):
+        self.activeworkbook.install_fast_bootloader()
+        
+    def start_patternconf(self):
+        self.activeworkbook.start_patternconf()
+    
+    def send_to_patternconf(self):
+        self.activeworkbook.send_to_patternconf()
+    
+    def receiver_from_patternconf(self):
+        self.activeworkbook.receiver_from_patternconf()
         
     def ExitProg(self):
         self.cancel()
