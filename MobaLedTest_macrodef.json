@@ -3237,6 +3237,7 @@
         "DISCONNECT_FILENAME": "MobaLedTest_disconnect.txt",
         "CLOSE_FILENAME": "MobaLedTest_close.txt",
         "TEMP_LEDEFFECTTABLE_FILENAME": "../temp_ledeffect_table.json",
+        "TEMP_WORKBOOK_FILENAME": "../temp_workbook.table",
         "InoName_DCC": "../../../examples/23_A.DCC_Interface/23_A.DCC_Interface.ino",
         "InoName_SX": "../../../examples/23_A.Selectrix_Interface/23_A.Selectrix_Interface.ino",
         "Ino_Dir_LED": "../../LEDs_AutoProg/",

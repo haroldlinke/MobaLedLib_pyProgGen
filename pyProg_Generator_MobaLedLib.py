@@ -253,6 +253,7 @@ class LEDColorTest(tk.Tk):
         self.show_pyPrgrammGenerator = self.getConfigData("ShowProgramGenerator")
         
         self.tempLedeffecttableFilname = macrodata.get("TEMP_LEDEFFECTTABLE_FILENAME","StartPage")
+        self.tempworkbookFilname = macrodata.get("TEMP_WORKBOOK_FILENAME","StartPage")
 
         # Structure:
         # self.serial_port_dict={"COM3": {
@@ -418,8 +419,8 @@ class LEDColorTest(tk.Tk):
         self.showFramebyName(startpagename)
         
         filedir = self.mainfile_dir # os.path.dirname(os.path.realpath(__file__))
-        temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)                
-        self.readLEDTabfromFile(temp_ledeffecttable_filename,tabselection=False)
+        temp_workbook_filename = os.path.join(filedir,self.tempworkbookFilname)
+        self.activeworkbook.Load(filename=temp_workbook_filename)
         
         self.messageframe = ttk.Frame(self)
         
@@ -450,6 +451,9 @@ class LEDColorTest(tk.Tk):
 
         self.lift()
         self.grab_set()
+        
+    def check_data_changed(self):
+        return self.paramDataChanged or self.activeworkbook.check_Data_Changed()
 
     def get_font(self,fontname):
         font_size = self.getConfigData(fontname)
@@ -601,8 +605,10 @@ class LEDColorTest(tk.Tk):
         self.SaveConfigData()
         self.SaveParamData()
         filedir = self.mainfile_dir # os.path.dirname(os.path.realpath(__file__))
-        temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)
-        self.saveLEDTabtoFile(temp_ledeffecttable_filename)
+        #temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)
+        #self.saveLEDTabtoFile(temp_ledeffecttable_filename)
+        temp_workbook_filename = os.path.join(filedir,self.tempworkbookFilname)
+        self.activeworkbook.Save(filename=temp_workbook_filename)        
         self.close_notification()
         
     def cancel_step2_without_save(self):
@@ -646,7 +652,7 @@ class LEDColorTest(tk.Tk):
     # ----------------------------------------------------------------
     def cancel(self):
         logging.debug("Cancel")
-        if self.paramDataChanged:
+        if self.check_data_changed():
             answer = tk.messagebox.askyesnocancel ('Das Programm wird beendet','Daten wurden verändert. Sollen die Daten gesichert werden?',default='no')
             if answer == None:
                 return # no cancelation

@@ -116,6 +116,7 @@ class TableModel(object):
         self.format_cells = {}
         self.columnwidths={}  #used to store col widths, not held in saved data
         self.lastUsedRow = 0
+        self.DataChanged = False
         return
 
     def createEmptyModel(self):
@@ -177,6 +178,7 @@ class TableModel(object):
         #add the data
         self.data.update(newdata)
         self.reclist = list(self.data.keys())
+        self.setDataChanged()
         #self.lastUsedRow = self.getRowCount()
         return
 
@@ -451,6 +453,7 @@ class TableModel(object):
                 self.addColumn(k)
             self.data[key][k] = str(kwargs[k])
         self.reclist.append(key)
+        self.setDataChanged()
         return key
     
     def deleteShapeatRow(self,y1,y2):
@@ -463,6 +466,7 @@ class TableModel(object):
             for item in deleteList:
                 del self.shapelist[item]
         self.moveShapesVertical(y1,deltaY=y1-y2)
+        self.setDataChanged()
 
 
     def deleteRow(self, rowIndex=None, key=None, update=True,y1=-1,y2=-1):
@@ -477,6 +481,7 @@ class TableModel(object):
         if update==True:
             self.reclist.remove(key)
         self.removeRowfromLastUsedRow(rowIndex)
+        self.setDataChanged()
         return
 
     def deleteRows(self, rowlist=None,y1=-1,y2=-1):
@@ -504,7 +509,7 @@ class TableModel(object):
             self.columntypes[colname]='text'
         else:
             self.columntypes[colname]=coltype
-        return
+        self.setDataChanged()
 
     def deleteColumn(self, columnIndex):
         """delete a column"""
@@ -520,6 +525,7 @@ class TableModel(object):
             currIndex = self.getColumnIndex(self.sortkey)
             if columnIndex == currIndex:
                 self.setSortOrder(0)
+        self.setDataChanged()
         #print 'column deleted'
         #print 'new cols:', self.columnNames
         return
@@ -550,6 +556,7 @@ class TableModel(object):
 
             self.moveShapesVertical(minY1, y2=maxY1, deltaY=deltaY)
             self.moveShapesVertical(minY1,deltaY=deleteY)
+            self.setDataChanged()
             #print(self.reclist)
             #print(self.data)
             
@@ -557,6 +564,7 @@ class TableModel(object):
         newshape = copy.copy(shape)
         newshape.Top = newY
         self.shapelist.append(newshape)
+        self.setDataChanged()
             
     def moveShapesVertical(self,y1,y2=-1,deltaY=0,copy=False,cY1=0):
         tmp_Shapelist = self.shapelist.copy()
@@ -600,6 +608,7 @@ class TableModel(object):
             pass
         else:
             self.reclist.extend(newdata.keys())
+        self.setDataChanged()
         return keys
 
     def autoAddColumns(self, numcols=None):
@@ -620,12 +629,14 @@ class TableModel(object):
         end = end + extra
         for x in range(start, end):
             self.addColumn(str(x))
+        self.setDataChanged()
         return
 
     def relabel_Column(self, columnIndex, newname):
         """Change the column label - can be used in a table header"""
         colname = self.getColumnName(columnIndex)
         self.columnlabels[colname]=newname
+        self.setDataChanged()
         return
 
     def getColumnType(self, columnIndex):
@@ -730,6 +741,7 @@ class TableModel(object):
     def removeRowfromLastUsedRow(self,rowIndex):
         if rowIndex<=self.lastUsedRow:
             self.lastUsedRow-=1
+        self.setDataChanged()
     
     def getLastUsedRow(self):
         return self.lastUsedRow
@@ -769,6 +781,7 @@ class TableModel(object):
         else:
             self.data[name][colname] = value
         self.updateLastUsedRow(rowIndex)
+        self.setDataChanged()
         return
 
     def setFormulaAt(self, f, rowIndex, columnIndex):
@@ -779,6 +792,7 @@ class TableModel(object):
         rec = {}
         rec['formula'] = f
         self.data[name][colname] = rec
+        self.setDataChanged()
         return
     
     def getCellFormatAt(self, rowIndex, columnIndex):
@@ -824,6 +838,7 @@ class TableModel(object):
         if not name in self.colors[key]:
             self.colors[key][name] = {}
         self.colors[key][name][colname] = str(color)
+        self.setDataChanged()
         return
 
     def resetcolors(self):
@@ -861,6 +876,7 @@ class TableModel(object):
         """Add the input cell to the formula"""
         cellRec = getRecColNames(rowIndex, colIndex)
         formula.append(cellRec)
+        self.setDataChanged()
         return
 
     def doFormula(self, cellformula):
@@ -887,6 +903,7 @@ class TableModel(object):
                 nc = list(self.getRecAtRow(recname, colname, offset, dim=dim))
             newcells.append(nc)
         newformula = Formula.doExpression(newcells, ops, getvalues=False)
+        self.setDataChanged()
         return newformula
 
     def merge(self, model, key='name', fields=None):
@@ -908,6 +925,7 @@ class TableModel(object):
                         if not f in self.columnNames:
                             self.addColumn(f)
                         self.data[rec][f] = model.data[rec][f]
+        self.setDataChanged()
         return
 
     def save(self, filename=None):
@@ -925,6 +943,7 @@ class TableModel(object):
         fd=open(filename,'rb')
         data = pickle.load(fd)
         self.setupModel(data)
+        self.setDataChanged()
         return
 
     def copy(self):
@@ -933,6 +952,15 @@ class TableModel(object):
         data = self.getData()
         M.setupModel(data)
         return M
+    
+    def setDataChanged(self):
+        self.DataChanged = True
+        
+    def checkDataChanged(self):
+        return self.DataChanged
+    
+    def resetDataChanged(self):
+        self.DataChanged = False   
 
     def __repr__(self):
         return 'Table Model with %s rows' %len(self.reclist)

@@ -182,6 +182,8 @@ class Prog_GeneratorPage(tk.Frame):
         #in_button_frame.grid(row=2, column=0, sticky="n", padx=4, pady=4)
         
         F00.workbook_init(self.workbook)
+        for sheet in self.workbook.sheets:
+            sheet.tablemodel.resetDataChanged()
         
         # ----------------------------------------------------------------
         # Standardprocedures for every tabpage

@@ -527,6 +527,7 @@ class CWorkbook:
             if data !={}:
                 sheet.setData(data)
                 sheet.init_data()
+                sheet.tablemodel.resetDataChanged()
         return
     
     def update_library(self):
@@ -552,6 +553,12 @@ class CWorkbook:
     def receiver_from_patternconf(self):
         self.notimplemented("receiver_from_patternconf")
         
+    def check_Data_Changed(self):
+        for sheet in self.sheets:
+            if sheet.check_Data_Changed():
+                return True
+        return False
+        
         
 
 class CWorksheet:
@@ -566,6 +573,7 @@ class CWorksheet:
         self.fieldnames = fieldnames
         self.formating_dict = formating_dict
         self.Name = Name
+        self.DataChanged=False
         if tablemodel:
             self.tablemodel = tablemodel
             self.table = TableCanvas(frame, tablename=Name, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
@@ -585,9 +593,11 @@ class CWorksheet:
             self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
         self.table.show()
         self.update_table_properties()
+        self.DataChanged=False
         
     def init_data(self):
         F00.worksheet_init(self)
+        self.DataChanged=False
 
         
     def update_table_properties(self):
@@ -849,6 +859,9 @@ class CWorksheet:
         #self.table.redraw()
         self.update_table_properties()
         self.Activate()
+        
+    def check_Data_Changed(self):
+        return self.DataChanged or self.tablemodel.checkDataChanged()
 
 class CShapeList(object):
     def __init__(self,model=None):
@@ -1060,6 +1073,7 @@ class CCell(str):
                 curval = self.tablemodel.getValueAt(self.Row-1, self.Column-1)
                 if curval != newval:
                     self.tablemodel.setValueAt(newval, self.Row-1, self.Column-1)
+                    #self.Sheet.setDataChanged()
                     if type(newval) != str:
                         print("Type not str",newval)
                     if Application.EnableEvents:
