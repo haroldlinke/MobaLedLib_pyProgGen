@@ -58,11 +58,193 @@ import keyboard
 #import mlpyproggen.M25_Columns as M25
 #import mlpyproggen.M02_global_variables as M02
 
-def Dir(filepath):
+datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
+datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
+                        "ProtectedCells"  : ((0,"*"),(1,"*"),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
+                        "left_click_callertype": "cell",
+                        "FontColor"       : { "1": {
+                                                    "font"     : ("Arial",10),
+                                                    "fg"       : "#FFFF00",
+                                                    "bg"       : "#0000FF",
+                                                    "Cells"    : ((0,"*"),(1,"*"))
+                                                    },
+                                              "2": {
+                                                    "font"     : ("Wingdings",10),
+                                                    "fg"       : "#000000",
+                                                    "bg"       : "#FFFFFF",
+                                                    "Cells"    : (("*",1),)
+                                                    },                                                          
+                                            "default": {
+                                                   "font"     : ("Arial",10),
+                                                   "fg"       : "#000000",
+                                                   "bg"       : "#FFFFFF",
+                                                   "Cells"    : (("*","*"),)
+                                                   }
+                                }
+                    }
+                        
+sheetdict_PROGGEN={"DCC":
+            {"Name":"DCC",
+             "Filename"  : "\\csv\\dcc.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "SheetType" : "Datasheet"
+             },
+           "Selectrix":
+            {"Name":"Selectrix",
+             "Filename"  : "\\csv\\Selectrix.csv",
+             "Fieldnames": "A;Aktiv;Filter;Channel oder\nName[0..99];Bitposition\n[1..8];Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment",
+             "Formating" : datasheet_formating,
+             "SheetType" : "Datasheet"
+             },
+           "CAN":
+            {"Name":"CAN",
+             "Filename"  : "\\csv\\CAN.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "SheetType" : "Datasheet"
+             },
+           "Examples":
+            {"Name":"Examples",
+             "Filename"  : "\\csv\\Examples.csv",
+             "Fieldnames": datasheet_fieldnames,
+             "Formating" : datasheet_formating,
+             "SheetType" : "Datasheet"
+             },                             
+           "Config":
+            {"Name":"Config",
+             "Filename":"\\csv\\Config.csv",
+             "Fieldnames": "A;B;C;D",
+             "SheetType" : "Config",
+             "Formating" : { "HideCells"       : (("*",3),),
+                            "ProtectedCells"  : ( ("*",1),("*",3)),
+                            "FontColor"       : { "1": {
+                                                        "font"     : ("Arial",10),
+                                                        "fg"       : "#0000FF",
+                                                        "bg"       : "#FFFFFF",
+                                                        "Cells"    : ((0,"*"),)
+                                                        },
+                                                "default": {
+                                                       "font"     : ("Arial",10),
+                                                       "fg"       : "#000000",
+                                                       "bg"       : "#FFFFFF",
+                                                       "Cells"    : (("*","*"),)
+                                                       }
+                                                }
+                            }
+            },
+           "Languages":
+            {"Name":"Languages",
+             "Filename":"\\csv\\Languages.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I"
+            },
+           "Lib_Macros":
+            {"Name":"Lib_Macros",
+             "Filename":"\\csv\\Lib_Macros.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS"
+            },
+           "Libraries":
+            {"Name":"Libraries",
+             "Filename":"\\csv\\Libraries.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I;J",
+             "Formating" : {"ProtectedCells"  : ((0,"*"),(1,"*"),(2,"*"),(3,"*"),(4,"*"),(5,"*"),(6,"*"),(7,"*")),
+                            "FontColor"       : { "1": {
+                                                        "font"     : ("Arial",10),
+                                                        "fg"       : "#FFFF00",
+                                                        "bg"       : "#0000FF",
+                                                        "Cells"    : ((6,"*"),)
+                                                        },
+                                                "default": {
+                                                       "font"     : ("Arial",10),
+                                                       "fg"       : "#000000",
+                                                       "bg"       : "#FFFFFF",
+                                                       "Cells"    : (("*","*"),)
+                                                       }
+                                                }
+                            }
+            },                   
+           "Par_Description":
+            {"Name":"Par_Description",
+             "Filename":"\\csv\\Par_Description.csv",
+              "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
+            },                  
+           "Platform_Parameters":
+            {"Name":"Platform_Parameters",
+             "Filename":"\\csv\\Platform_Parameters.csv",
+             "Fieldnames": "A;B;C;D;E"
+            },
+           "Named_Ranges":
+            {"Name":"Named_Ranges",
+             "Filename":"\\csv\\Named_Ranges.csv",
+             "Fieldnames": "A;B;C;D"
+            }           
+        }
+
+sheetdict_PatternGEN={"Main":
+            {"Name":"Main",
+             "Filename"  : "\\csv\\PA_main.csv",
+             "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS",
+             "Formating" : {"HideCells"       : ((0,0),),
+                            "HideRows"        : (12,15,16,17,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46),
+                            "ProtectedCells"  : ( ("*",0),("*",1),("*",2),("*",3)),
+                            "GridList"        : (((27,4),(27,63)),((48,3),(50,63))),
+                            "ColumnWidth"     : (5,17,1,8,22,7),
+                            "ColumnAlignment" : {3:"e",},
+                            "RowHeight"       : 20,
+                            "FontColor"       : { "1": {
+                                                        "font"     : ("Arial",9),
+                                                        "fg"       : "#000000",
+                                                        "bg"       : "#FFFF00",
+                                                        "Cells"    : ((1,4),(2,4),(3,4),(4,4),(5,4),(6,4),(7,4),(8,4),(9,4),(10,4),(11,4),(12,4),(13,4),(14,4),(15,4),(21,4))
+                                                        },
+                                                "default": {
+                                                       "font"     : ("Arial",9),
+                                                       "fg"       : "#000000",
+                                                       "bg"       : "#FFFFFF",
+                                                       "Cells"    : (("*","*"),)
+                                                       }
+                                                }
+                            },             
+             "SheetType" : "Datasheet"
+             },
+           "PA_Languages":
+            {"Name":"Languages",
+             "Filename"  : "\\csv\\PA_Languages.csv",
+             "Fieldnames": "A;B;C;D;E;F",
+             "Formating" : {}
+             },
+           "PA_Goto_Activation_Entries":
+            {"Name":"Goto_Activation_Entries",
+             "Filename"  : "\\csv\\PA_Goto_Activation_Entries.csv",
+             "Fieldnames": "A;B;C;D;E;F",
+             "Formating" : {},
+             },
+           "PA_Special_Mode_Dlg":
+            {"Name":"Special_Mode_Dlg",
+             "Filename"  : "\\csv\\PA_Special_Mode_Dlg.csv",
+             "Fieldnames": "A;B;C;D;E;F",
+             "Formating" : {},
+             },                             
+           "PA_Par_Description":
+            {"Name":"Par_Description",
+             "Filename":"\\csv\\PA_Par_Description.csv",
+              "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
+            },
+           "Named_Ranges":
+            {"Name":"Named_Ranges",
+             "Filename":"\\csv\\Named_Ranges.csv",
+             "Fieldnames": "A;B;C;D"
+            }                      
+        }
+
+def Dir(filepath,dummy=None):
     if os.path.isfile(filepath):
         return filepath
     else:
-        return ""
+        if os.path.isdir(filepath):
+            return filepath
+        else:
+            return ""
 
 def Date_str():
     return "01.01.2022"
@@ -102,9 +284,9 @@ def set_activeworkbook(workbook):
     ActiveSheet = ActiveWorkbook.Sheets("DCC")
     PG.global_controller.activeworkbook = workbook
     
-def create_workbook(frame=None, path=None,workbookName=None,workbookFilename=None):
+def create_workbook(frame=None, path=None,workbookName=None,workbookFilename=None,sheetdict=sheetdict_PROGGEN):
     global ThisWorkbook,ActiveSheet,ActiveWorkbook
-    workbook = ThisWorkbook = CWorkbook(frame=frame,path=path,workbookName=workbookName,workookFilename=workbookFilename)
+    workbook = ThisWorkbook = CWorkbook(frame=frame,path=path,workbookName=workbookName,workbookFilename=workbookFilename,sheetdict=sheetdict)
     set_activeworkbook(workbook)
     return workbook
     
@@ -121,9 +303,17 @@ def Range(cell1,cell2):
 def Sheets(sheetname):
     return ActiveWorkbook.Sheets(sheetname)
 
-def Rows(row:int):
+def Rows(row):
     sheet = ActiveSheet
-    return sheet.MaxRange.Rows[row]
+    if type(row)==str:
+        rows=[]
+        rowlist=row.split(":")
+        for row1 in range(int(rowlist[0]),int(rowlist[1])+1):
+            return CRow(row1)
+    else:
+        return CRow(row)
+        #sheet = ActiveSheet
+        #return sheet.MaxRange.Rows[row]
    
 def Columns(col:int):
     sheet = ActiveSheet
@@ -166,7 +356,9 @@ def Unload(UserForm):
     UserForm.destroy()
 
 def ChDrive(srcdir):
-    print("ChDrive:", srcdir)
+    #print("ChDrive:", srcdir)
+    drive = srcdir[0:2]
+    os.chdir(drive)
     return
 
 def Format(value,formatstring):
@@ -263,125 +455,9 @@ def SetCursorPos(x,y):
 def DoEvents():
     pass
 
-datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
-datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
-                        "ProtectedCells"  : ((0,"*"),(1,"*"),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
-                        "FontColor"       : { "1": {
-                                                    "font"     : ("Arial",10),
-                                                    "fg"       : "#FFFF00",
-                                                    "bg"       : "#0000FF",
-                                                    "Cells"    : ((0,"*"),(1,"*"))
-                                                    },
-                                              "2": {
-                                                    "font"     : ("Wingdings",10),
-                                                    "fg"       : "#000000",
-                                                    "bg"       : "#FFFFFF",
-                                                    "Cells"    : (("*",1),)
-                                                    },                                                          
-                                            "default": {
-                                                   "font"     : ("Arial",10),
-                                                   "fg"       : "#000000",
-                                                   "bg"       : "#FFFFFF",
-                                                   "Cells"    : (("*","*"),)
-                                                   }
-                                }
-                    }
-                        
-sheetdict={"DCC":
-            {"Name":"DCC",
-             "Filename"  : "\\csv\\dcc.csv",
-             "Fieldnames": datasheet_fieldnames,
-             "Formating" : datasheet_formating,
-             "SheetType" : "Datasheet"
-             },
-           "Selectrix":
-            {"Name":"Selectrix",
-             "Filename"  : "\\csv\\Selectrix.csv",
-             "Fieldnames": "A;Aktiv;Filter;Channel oder\nName[0..99];Bitposition\n[1..8];Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment",
-             "Formating" : datasheet_formating,
-             "SheetType" : "Datasheet"
-             },
-           "CAN":
-            {"Name":"CAN",
-             "Filename"  : "\\csv\\CAN.csv",
-             "Fieldnames": datasheet_fieldnames,
-             "Formating" : datasheet_formating,
-             "SheetType" : "Datasheet"
-             },
-           "Examples":
-            {"Name":"Examples",
-             "Filename"  : "\\csv\\Examples.csv",
-             "Fieldnames": datasheet_fieldnames,
-             "Formating" : datasheet_formating,
-             "SheetType" : "Datasheet"
-             },                             
-           "Config":
-            {"Name":"Config",
-             "Filename":"\\csv\\Config.csv",
-             "Fieldnames": "A;B;C;D",
-             "SheetType" : "Config",
-             "Formating" : { "HideCells"       : (("*",3),),
-                            "ProtectedCells"  : ( ("*",1),("*",3)),
-                            "FontColor"       : { "1": {
-                                                        "font"     : ("Arial",10),
-                                                        "fg"       : "#0000FF",
-                                                        "bg"       : "#FFFFFF",
-                                                        "Cells"    : ((0,"*"),)
-                                                        },
-                                                "default": {
-                                                       "font"     : ("Arial",10),
-                                                       "fg"       : "#000000",
-                                                       "bg"       : "#FFFFFF",
-                                                       "Cells"    : (("*","*"),)
-                                                       }
-                                                }
-                            }
-            },
-           "Languages":
-            {"Name":"Languages",
-             "Filename":"\\csv\\Languages.csv",
-             "Fieldnames": "A;B;C;D;E;F;G;H;I"
-            },
-           "Lib_Macros":
-            {"Name":"Lib_Macros",
-             "Filename":"\\csv\\Lib_Macros.csv",
-             "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS"
-            },
-           "Libraries":
-            {"Name":"Libraries",
-             "Filename":"\\csv\\Libraries.csv",
-             "Fieldnames": "A;B;C;D;E;F;G;H;I;J",
-             "Formating" : {"ProtectedCells"  : ((0,"*"),(1,"*"),(2,"*"),(3,"*"),(4,"*"),(5,"*"),(6,"*"),(7,"*")),
-                            "FontColor"       : { "1": {
-                                                        "font"     : ("Arial",10),
-                                                        "fg"       : "#FFFF00",
-                                                        "bg"       : "#0000FF",
-                                                        "Cells"    : ((6,"*"),)
-                                                        },
-                                                "default": {
-                                                       "font"     : ("Arial",10),
-                                                       "fg"       : "#000000",
-                                                       "bg"       : "#FFFFFF",
-                                                       "Cells"    : (("*","*"),)
-                                                       }
-                                                }
-                            }
-            },                   
-           "Par_Description":
-            {"Name":"Par_Description",
-             "Filename":"\\csv\\Par_Description.csv",
-              "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
-            },                  
-           "Platform_Parameters":
-            {"Name":"Platform_Parameters",
-             "Filename":"\\csv\\Platform_Parameters.csv",
-             "Fieldnames": "A;B;C;D;E"
-            }
-        }
-
 
 class CWorkbook:
-    def __init__(self, frame=None,path=None,workbookName=None, workookFilename=None):
+    def __init__(self, frame=None,path=None,workbookName=None, workbookFilename=None, sheetdict=sheetdict_PROGGEN):
         global Workbooks
         # Row and Columns are 0 based and not 1 based as in Excel
 
@@ -398,13 +474,17 @@ class CWorkbook:
             style = ttk.Style(frame)
             style.configure('downtab.TNotebook', tabposition='sw')
             self.container = ttk.Notebook(frame, style="downtab.TNotebook")
+            
+            self.container.grid_rowconfigure(0,weight=1)
+            self.container.grid_columnconfigure(0,weight=1)                 
 
             self.container.grid(row=0,column=0,columnspan=2,sticky="nesw")
             self.tabdict = dict()
             self.tabdict_frames = dict()
             self.sheets = list()
+            self.sheetdict = sheetdict
         
-            for sheetname in sheetdict.keys():
+            for sheetname in self.sheetdict.keys():
                 tabframe = ttk.Frame(self.container,relief="ridge", borderwidth=1)
                 worksheet = self.new_sheet(sheetname,tabframe)
                 tabframe.sheetname = sheetname
@@ -412,7 +492,7 @@ class CWorkbook:
                 self.sheets.append(worksheet)
                 self.container.add(tabframe, text=sheetname)
                 self.tabframedict[sheetname]=worksheet
-                if not self.showws and not PG.global_controller.show_pyPrgrammGenerator:
+                if not self.showws and not PG.global_controller.show_hiddentables:
                     self.container.tab(tabframe,state="hidden")
                     
             self.container.bind("<<NotebookTabChanged>>",self.TabChanged)
@@ -423,7 +503,7 @@ class CWorkbook:
             self.sheets = None
             
     def new_sheet(self,sheetname,tabframe):
-        sheetname_prop = sheetdict.get(sheetname)
+        sheetname_prop = self.sheetdict.get(sheetname)
         sheettype = sheetname_prop.get("SheetType","")
         callback = sheettype=="Datasheet"
         self.showws = sheettype in ["Datasheet","Config"]
@@ -443,7 +523,7 @@ class CWorkbook:
             sheet = newtab.sheet
             if sheet:
                 sheet.Activate()
-                print("Sheet activated:",sheet_name)
+                #print("Sheet activated:",sheet_name)
             
             #newtab.tabselected()
         #logging.debug("TabChanged %s - %s",self.oldTabName,newtab_name)        
@@ -474,7 +554,7 @@ class CWorkbook:
         if filename == None:
             filename = tk.filedialog.asksaveasfilename(parent=self.master,
                                                         defaultextension='.table',
-                                                        initialdir=os.getcwd(),
+                                                        #initialdir=os.getcwd(),
                                                         filetypes=[("pickle","*.table"),
                                                           ("All files","*.*")])
         if filename:
@@ -487,11 +567,11 @@ class CWorkbook:
         if filename == None:
             filename = tk.filedialog.askopenfilename(parent=self.master,
                                                       defaultextension='.table',
-                                                      initialdir=os.getcwd(),
+                                                      #initialdir=os.getcwd(),
                                                       filetypes=[("pickle","*.table"),
                                                         ("All files","*.*")])
         if not os.path.exists(filename):
-            print ('file does not exist')
+            #print ('file does not exist')
             return
         if filename:
             self.LoadWorkbook(filename)
@@ -531,8 +611,8 @@ class CWorkbook:
         return
     
     def update_library(self):
-        self.notimplemented("update_library")
-        #M37.Update_MobaLedLib_from_Arduino_and_Restart_Excel()
+        #self.notimplemented("update_library")
+        M37.Update_MobaLedLib_from_Arduino_and_Restart_Excel()
     
     def install_Betatest(self):
         self.notimplemented("install_Betatest")
@@ -562,10 +642,35 @@ class CWorkbook:
         
 
 class CWorksheet:
+    
+    
+    
     def __init__(self,Name,tablemodel=None,workbook=None,csv_filepathname=None,frame=None,fieldnames=None,formating_dict=None,Sheettype="",callback=False):
         
-        self.width = 1800
-        self.height = 600
+        sheetdict_popmenu = {"DCC":
+                             { "LED blinken Ein/Aus":self.LED_flash,
+                               "LED nacheinander blinken Ein/Aus":self.LED_flash_seq
+                             }
+                            }
+        
+        #controller = PG.get_global_controller()
+        #screen_width = controller.winfo_screenwidth()
+        #screen_height = controller.winfo_screenheight()
+        #pos_x = controller.winfo_x()
+        #pos_y = controller.winfo_y()
+        #root = tk.Tk()
+        #root.update_idletasks()
+        #root.geometry("+"+str(pos_x)+"+"+str(pos_y))
+        #root.attributes('-fullscreen', True)
+        #root.state('iconic')
+        #geometry = root.winfo_geometry()
+        #print(geometry)
+        screen_width = 1920 #root.winfo_screenwidth()
+        screen_height = 1080 #root.winfo_screenheight()        
+        #root.destroy()
+        self.rightclickactiondict = sheetdict_popmenu.get(Name,{})
+        self.width = screen_width-120
+        self.height = screen_height-450
         self.Workbook = workbook
         self.ProtectContents = False
         self.Datasheet = Sheettype == "Datasheet"
@@ -576,11 +681,11 @@ class CWorksheet:
         self.DataChanged=False
         if tablemodel:
             self.tablemodel = tablemodel
-            self.table = TableCanvas(frame, tablename=Name, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
+            self.table = TableCanvas(frame, tablename=Name, model=tablemodel,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height),rightclickactions=self.rightclickactiondict)
         else:
             if csv_filepathname:
                 #self.tablemodel = TableModel()
-                self.table = TableCanvas(frame, tablename=Name, model=None,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height))
+                self.table = TableCanvas(frame, tablename=Name, model=None,width=self.width,height=self.height,scrollregion=(0,0,self.width,self.height),rightclickactions=self.rightclickactiondict)
                 self.table.importCSV(filename=self.csv_filepathname, sep=';',fieldnames=self.fieldnames)
                 self.tablemodel = self.table.getModel()
                 if callback:
@@ -589,8 +694,16 @@ class CWorksheet:
                 return
         if self.formating_dict:
             self.tablemodel.nodisplay = self.formating_dict.get("HideCells",[])
+            self.tablemodel.hiderowslist = self.formating_dict.get("HideRows",[])
             self.tablemodel.protected_cells = self.formating_dict.get("ProtectedCells",[])
             self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
+            self.tablemodel.gridlist = self.formating_dict.get("GridList",[])
+            self.tablemodel.ColumnAlignment = self.formating_dict.get("ColumnAlignment",{})
+            colsizelist = self.formating_dict.get("ColumnWidth",[])
+            self.table.resizecolumns(colsizelist)
+            rowheight=self.formating_dict.get("RowHeight",30)
+            self.table.setRowHeight(rowheight)
+            self.table.left_click_callertype=self.formating_dict.get("left_click_callertype",None)
         self.table.show()
         self.update_table_properties()
         self.DataChanged=False
@@ -598,7 +711,6 @@ class CWorksheet:
     def init_data(self):
         F00.worksheet_init(self)
         self.DataChanged=False
-
         
     def update_table_properties(self):
         self.LastUsedRow_val = self.tablemodel.getLastUsedRow()+1
@@ -610,14 +722,54 @@ class CWorksheet:
         self.searchcache = {}
         self.Shapes = CShapeList(self.tablemodel)
         self.CellDict = CCellDict()
-        self.End_val = self.LastUsedColumn_val        
+        self.End_val = self.LastUsedColumn_val
+        
+    def LED_flash(self,row,col):
+        #print("LED Flash:",row,col)
+        lednum_str = Cells(row+1,13)
+        if lednum_str == "":
+            lednum_str = Cells(row,13) # take LED num from previous line
+            if lednum_str.isnumeric():
+                lednum = int(lednum_str)
+                ledcount_str = Cells(row,14)
+                if ledcount_str.isnumeric():
+                    ledcount=int(ledcount_str)
+                else:
+                    ledcount = 1
+                lednum = lednum+ledcount+1 # next LED after current
+                ledcount = 1
+        else:
+            if lednum_str.isnumeric():
+                lednum = int(lednum_str)
+                ledcount_str = Cells(row+1,14)
+                if ledcount_str.isnumeric():
+                    ledcount=int(ledcount_str)
+                else:
+                    ledcount = 1
+            else:
+                return
+            
+        PG.global_controller.blinking_on_off(lednum,ledcount)
+            
+    def LED_flash_seq(self,row,col):
+        #print("LED Flash_seq:",row,col)
+        lednum_str = Cells(row+1,13)
+        if lednum_str.isnumeric():
+            lednum = int(lednum_str)
+            ledcount_str = Cells(row+1,14)
+            if ledcount_str.isnumeric():
+                ledcount=int(ledcount_str)
+            else:
+                ledcount = 1
+            
+            PG.global_controller.blinking_on_off(lednum,ledcount,seq=True)    
         
     def left_click_callback(self,value1,value2,callertype="cell"):
         
         if callertype=="cell":
             row=value1
             col=value2
-            print("Left_Click_Call_Back:",row,col)
+            #print("Left_Click_Call_Back:",row,col)
             if col == 1:  # aktive column
                 cell = self.Cells(row+1,col+1)
                 if cell.Value == "":
@@ -629,7 +781,7 @@ class CWorksheet:
             else:
                 return True
         elif callertype=="canvas":
-            print("Leftclick-Canvas",value1)
+            #print("Leftclick-Canvas",value1)
             #callingshape = self.Shapes.shapelist[int(value1[0])]
             Application.caller = int(value1[0])
             if Application.canvas_leftclickcmd!=None:
@@ -654,8 +806,14 @@ class CWorksheet:
         
     def moveRows(self): #,sc_rowlist,destrow):
         self.table.Flag_move=True
-        print("Move started")
+        #print("Move started")
         return
+    
+    def UsedRange_Rows(self):
+        rowlist=[]
+        for row in range(1,self.get_LastUsedRow()+1):
+            rowlist.append(CRow(row))
+        return rowlist
         
     def get_LastUsedRow(self):
         self.LastUsedRow_val = self.tablemodel.getLastUsedRow()+1 #self.tablemodel.getRowCount()
@@ -684,8 +842,8 @@ class CWorksheet:
     def set_UsedRange(self,value):
         self.UsedRange_val = value
                
-    UsedRange = property(get_UsedRange, set_UsedRange, doc='used range')    
-    MaxRange  = property(get_UsedRange, set_UsedRange, doc='used range')         
+    UsedRange = property(get_UsedRange, set_UsedRange, doc='used range')
+    MaxRange  = property(get_UsedRange, set_UsedRange, doc='used range')
            
     def Cells(self,row, col):
         #print("Cells", self.Name, row, col)
@@ -700,15 +858,57 @@ class CWorksheet:
         cell.set_sheet(self)
         return cell
     
+    def get_cellvalue_direct(self,sheet,row,col):
+
+        tablemodel = sheet.tablemodel
+        max_cols = tablemodel.getColumnCount()
+        if col <= max_cols:
+            value = tablemodel.getValueAt(row-1,col-1)
+        else:
+            value = ""
+        return value
+    
+    def find_RangeName(self,rangestr):
+        # returns CCell with row and column of the Named_range
+        LSh = ThisWorkbook.Sheets("Named_Ranges")
+    
+        _row = LSh.find_in_col_ret_row(rangestr,1,cache=True)
+        if _row != None:
+            named_range_sheetname= self.get_cellvalue_direct(LSh,_row,2)
+            named_range_sheet = ThisWorkbook.Sheets(named_range_sheetname)
+            named_range_col = int(self.get_cellvalue_direct(LSh,_row,3))
+            named_range_row = int(self.get_cellvalue_direct(LSh,_row,4))
+            cell = CCell("")
+            cell.set_tablemodel(named_range_sheet.tablemodel)
+            cell.set_column(named_range_col)
+            cell.set_row(named_range_row)
+            cell.set_sheet(named_range_sheet)
+            
+            return cell
+        else:
+            return None
+    
     def Range(self,cell1,cell2):
         #print("Range,cell1,cell2,ws=self")
-        return CRange((cell1.Row,cell1.Column),(cell2.Row,cell2.Column),ws=self)
+        if type(cell1) == str:
+            named_cell = self.find_RangeName(cell1)
+            return named_cell
+        else:
+            return CRange((cell1.Row,cell1.Column),(cell2.Row,cell2.Column),ws=self)
         
         r=[]
         for row in range(cell1.Row,cell2.Row+1):
             for col in range(cell1.Column,cell2.Column+1):
                 r.append(self.Cells(row, col))
         return r
+    
+    def Range_set(self,rangestr,value):
+        oldflag = Application.EnableEvents
+        Application.EnableEvents=False
+        named_cell = self.find_RangeName(rangestr)
+        named_cell.Value = value
+        Application.EnableEvents = oldflag
+        
     
     def Unprotect(self):
         self.ProtectContents = False
@@ -854,6 +1054,7 @@ class CWorksheet:
         self.tablemodel = self.table.getModel()
         if self.formating_dict:
             self.tablemodel.nodisplay = self.formating_dict.get("HideCells",[])
+            self.tablemodel.hiderowslist = self.formating_dict.get("HideRows",[])
             self.tablemodel.protected_cells = self.formating_dict.get("ProtectedCells",[])
             self.tablemodel.format_cells = self.formating_dict.get("FontColor",{})
         #self.table.redraw()
@@ -876,10 +1077,13 @@ class CShapeList(object):
     def getlist(self):
         return self.tablemodel.shapelist
         
-    def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill):
+    def AddShape(self, name, shapetype, Left, Top, Width, Height, Fill,text=""):
+        shape=None
         if shapetype == msoShapeRectangle:
             shape=ActiveSheet.table.addShape(name, "rect", Left, Top, Width, Height, Fill)
-            return shape
+        elif shapetype == msoTextBox:
+            shape=ActiveSheet.table.addShape(name, "rect", Left, Top, Width, Height, Fill,text=text)
+        return shape
         
     def Delete(self,shape):
         if type(shape)==int:
@@ -980,17 +1184,61 @@ class CSelection:
         if self.selectedRows==[]:
             self.selectedRows=[ActiveSheet.table.getSelectedRow()+1]
         return self.selectedRows
+    
+    def Rows(self):
+        selectedrows = self.EntireRow()
+        selectedcrows = []
+        for row in selectedrows:
+            selectedcrows.append(CRow(row))
+        return selectedcrows
 
 class CRow:
     def __init__(self,rownumber):
         self.Row = rownumber
         self.EntireRow = CEntireRow(rownumber)
-        self.Hidden = False
+        self.Hidden_value = False
+        
+    def Select(self):
+        ActiveSheet.table.gotoCell(self.Row-1,0)
+        return    
+        
+        
+    def set_Hidden(self, newval):
+        self.Hidden_value = newval
+        if newval==True:
+            ActiveSheet.table.model.hiderowslist.append(self.Row-1)
+        else:
+            ActiveSheet.table.model.hiderowslist.remove(self.Row-1)
+    
+    def get_Hidden(self):
+        return self.Row-1 in ActiveSheet.table.model.hiderowslist
+        
+    Hidden = property(get_Hidden, set_Hidden, doc='Hiddenvalue of CRow')
+        
+        
+
         
 class CEntireRow:
     def __init__(self,rownumber):
         self.Rownumber = rownumber
-        self.Hidden = False
+        self.Hidden_value = False
+        
+    def set_Hidden(self, newval):
+        self.Hidden_value = newval
+        if newval==True:
+            if not self.Rownumber-1 in ActiveSheet.table.model.hiderowslist:
+                ActiveSheet.table.model.hiderowslist.append(self.Rownumber-1)
+                ActiveSheet.Redraw_table()
+        else:
+            if self.Rownumber-1 in ActiveSheet.table.model.hiderowslist:
+                ActiveSheet.table.model.hiderowslist.remove(self.Rownumber-1)
+                ActiveSheet.Redraw_table()
+    
+    def get_Hidden(self):
+        return self.Rownumber-1 in ActiveSheet.table.model.hiderowslist
+        
+    Hidden = property(get_Hidden, set_Hidden, doc='Hiddenvalue of CRow')        
+        
 
         
 class CColumn:
@@ -1075,7 +1323,7 @@ class CCell(str):
                     self.tablemodel.setValueAt(newval, self.Row-1, self.Column-1)
                     #self.Sheet.setDataChanged()
                     if type(newval) != str:
-                        print("Type not str",newval)
+                        Debug.Print("Type not str",newval)
                     if Application.EnableEvents:
                         #print("Workbook contents changed:",)
                         ActiveSheet.EventWSchanged(self)
@@ -1188,7 +1436,7 @@ class CApplication:
         
         
     def OnTime(self,time,cmd):
-        print("Application OnTime:",time,cmd)
+        #print("Application OnTime:",time,cmd)
         PG.global_controller.after(time,cmd)
         return
     
@@ -1212,6 +1460,13 @@ class CApplication:
         filefilter_list = fileFilter.split(",")
         filepath = tk.filedialog.askopenfilename(filetypes=[filefilter_list],defaultextension=".MLL_pgf",title=Title,initialfile=InitialFileName)
         return filepath
+    
+    def setActiveWorkbook(self,workbookName):
+        global ThisWorkbook,ActiveWorkbook
+        for wb in Workbooks:
+            if wb.Name == workbookName:
+                set_activeworkbook(wb)
+                break
     
     def Quit(self):
         pass
@@ -1265,7 +1520,7 @@ CellDict:CCellDict = CCellDict()
 
 Selection = CSelection(CCell(""))
 
-Workbooks = []
+Workbooks =[]
 
 ActiveWindow = CActiveWindow()
 

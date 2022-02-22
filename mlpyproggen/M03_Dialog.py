@@ -209,7 +209,6 @@ def Input_Address():
     if Valid:
         with_0 = P01.Cells(P01.ActiveCell().Row, M25.DCC_or_CAN_Add_Col + M25.SX_Channel_Col)
         with_0.Value = P01.val(Inp)
-        #M20.Global_Worksheet_Change(with_0) #*HL
         P01.Application.EnableEvents = False
         with_0.Offset(0, 1).Select()
         P01.Application.EnableEvents = True

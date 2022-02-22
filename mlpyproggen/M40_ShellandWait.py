@@ -160,9 +160,9 @@ def ShellAndWait(ShellCommand, TimeOutSeconds, ShellWindowState, BreakKey):
     try:
         
         if TimeOutSeconds == 0:
-            process = subprocess.run(ShellCommand,Shell=True)
+            process = subprocess.run(ShellCommand,shell=True)
         else:
-            process = subprocess.run(ShellCommand,timeout=TimeOutSeconds,Shell=True)
+            process = subprocess.run(ShellCommand,timeout=TimeOutSeconds,shell=True)
             
         errornumber = process.returncode
         

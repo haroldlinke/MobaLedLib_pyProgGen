@@ -39,7 +39,7 @@ class TableImporter:
     def __init__(self):
         """Setup globals"""
         #self.separator = ','
-        self.separator_list = [',',' ','\t',':']
+        self.separator_list = [',',' ','\t',':',";"]
         self.var_sep = StringVar()
         self.var_sep.set(',')
         return

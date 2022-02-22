@@ -172,7 +172,7 @@ def LastUsedRowIn(Sheet):
     else:
         Sh = Sheet
     #*HL fn_return_value = Sh.UsedRange.Rows(Sh.UsedRange.Rows.Count).Row
-    fn_return_value = len(Sh.UsedRange.Rows)-1
+    fn_return_value = len(Sh.UsedRange_Rows())-1
     Sh = None
     return fn_return_value
 
@@ -255,6 +255,7 @@ def Test_LastFilledRowIn_ChkAll():
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: s - ByVal 
 def DelLast(s, Cnt=1):
     #----------------------------------------------------------------------
+    fn_return_value=s
     if Len(s) > 0:
         fn_return_value = Left(s, Len(s) - Cnt)
     return fn_return_value
@@ -524,6 +525,9 @@ def All_Borderlines(r):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Name - ByVal 
 def FileNameExt(Name):
+    basename = os.path.basename(Name)
+    return basename
+
     Pos = int()
 
     Pos2 = int()
@@ -797,7 +801,7 @@ def CreateFolder(sFolder):
     # sFolder must have an "\" at the end
     # VB2PY (UntranslatedCode) On Error GoTo ErrorHandler
     s = GetPathOnly(sFolder)
-    if Dir(s) == r'':
+    if P01.Dir(s) == r'':
         s = CreateFolder(s)
         MkDir(s)
     fn_return_value = sFolder
@@ -817,7 +821,7 @@ def UnzipAFile(zippedFileFullName, unzipToPath):
     # VB2PY (UntranslatedCode) On Error GoTo 0
     
     zip = zipfile.ZipFile(zippedFileFullName)
-    os.mkdir(unzipToPath)
+    #os.mkdir(unzipToPath)
     zip.extractall(path=unzipToPath)    
     
     fn_return_value = True
@@ -1055,9 +1059,11 @@ def Replicate(RepeatString, NumOfTimes):
     #--------------------------------------------------------------------
     l = Len(RepeatString)
     c = l * NumOfTimes
-    s = Space(c)
+    s = "" #Space(c)
+    fn_return_value=""
     for i in vbForRange(1, c, l):
-        Mid[s, i, l] = RepeatString
+        s = s + RepeatString
+        #Mid[s, i, l] = RepeatString
     fn_return_value = s
     return fn_return_value
 
@@ -1128,6 +1134,7 @@ def ConvertUTF8Str(UTF8Str):
 
 def Dir_is_Empty(DirName):
     Res = String()
+    fn_return_value = False
     #---------------------------------------------------------
     # Return true it the directoriy contains at least one subdirectory or one file
     Res = Dir(DirName + r'\*.*', vbDirectory)
@@ -1145,6 +1152,7 @@ def Dir_is_Empty(DirName):
 
 def Get_First_SubDir(DirName):
     Res = String()
+    fn_return_value=""
     #------------------------------------------------------------
     Res = Dir(DirName + r'\*.*', vbDirectory)
     while Res != r'':
@@ -1221,6 +1229,7 @@ def Get_OperatingSystem():
     #  "Microsoft Windows 8.1 Pro         6.3.9600"
     #  "Microsoft Windows 7 Home Premium  6.1.7601"
     # VB2PY (UntranslatedCode) On Error GoTo Error_Handler
+    fn_return_value = ""
     localHost = r'.'
     objWMIService = GetObject(r'winmgmts:{impersonationLevel=impersonate}!\\' + localHost + r'\root\cimv2')
     colOperatingSystems = objWMIService.ExecQuery(r'Select * from Win32_OperatingSystem')

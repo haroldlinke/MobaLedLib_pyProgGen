@@ -38,7 +38,7 @@ from vb2py.vbconstants import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter.font import Font
-from PIL import Image, ImageTk
+#from PIL import Image, ImageTk
 import uuid
 import mlpyproggen.Prog_Generator as PG
 
@@ -111,7 +111,7 @@ class SelectMacrosTreeform:
         self.top = tk.Toplevel(self.controller)
         self.top.transient(self.controller)
         self.entry1_input.set("")
-        window_width=1000
+        
         self.std_font = Font(
             family = 'Tahoma',
             size = 11,
@@ -125,17 +125,19 @@ class SelectMacrosTreeform:
         
         self.top.resizable(False, False)  # This code helps to disable windows from resizing
         
-        window_height = 900
-        window_width = 1200
+        window_height = 700
+        window_width = 1400
         
-        screen_width = self.top.winfo_screenwidth()
-        screen_height = self.top.winfo_screenheight()
+        winfo_x = PG.global_controller.winfo_x()
+        winfo_y = PG.global_controller.winfo_y()
         
-        x_cordinate = int((screen_width/2) - (window_width/2))
-        y_cordinate = int((screen_height/2) - (window_height/2))
+        screen_width = PG.global_controller.winfo_width()
+        screen_height = PG.global_controller.winfo_height()
         
-        self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                
+        x_cordinate = winfo_x+int((screen_width/2) - (window_width/2))
+        y_cordinate = winfo_y+int((screen_height/2) - (window_height/2))
         
+        self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))             
         
         if len(self.title) > 0: self.top.title(self.title)
         self.label1 = ttk.Label(self.top, text=self.label1_txt,wraplength=window_width,font=("Tahoma", 11))
@@ -366,9 +368,9 @@ class SelectMacrosTreeform:
             PicNamesArr[i] = M30.NoExt(Trim(PicNamesArrInp(i)))
         iconimagename = PicNamesArrInp[len(PicNamesArrInp)-1]
         if iconimagename !="":
-            iconfilename = P01.ThisWorkbook.Path + '\\' + "icons\\"+Trim(iconimagename)+".bmp"
-            pic1 = Image.open(iconfilename)           # Open the image like this first
-            self.pic2 = ImageTk.PhotoImage(pic1)      # Then with PhotoImage. NOTE: self.root_pic2 =     and not     root_pic2 =
+            iconfilename = P01.ThisWorkbook.Path + '\\' + "icons\\"+Trim(iconimagename)+".png"
+            #pic1 = Image.open(iconfilename)           # Open the image like this first
+            self.pic2 = tk.PhotoImage(file=iconfilename)      # Then with PhotoImage. NOTE: self.root_pic2 =     and not     root_pic2 =
         else:
             self.pic2=None
         

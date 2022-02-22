@@ -234,14 +234,14 @@ def Update_Start_LedNr():
     # 03.04.21 Juergen - try to find out if only the main LED Channel is in use
     Max_LEDs_Channel = 0
     LEDs_Channel = 0
-    for row in P01.ActiveSheet.UsedRange.Rows:
+    for row in P01.ActiveSheet.UsedRange_Rows():
         r = row.Row
-        P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Max LEDs Channel: "+str(r)))
+        #*HL P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Max LEDs Channel: "+str(r)))
         if r >= M02.FirstDat_Row:
             if Row_is_Achtive(r):
                 if P01.val(P01.Cells(r, M25.LED_Cha_Col)) > Max_LEDs_Channel:
                     Max_LEDs_Channel = P01.val(P01.Cells(r, M25.LED_Cha_Col))
-    for row in P01.ActiveSheet.UsedRange.Rows:
+    for row in P01.ActiveSheet.UsedRange_Rows():
         r = row.Row
         #P01.set_statusmessage(M09.Get_Language_Str("Headerfile wird erstellt. Update Start LED: "+str(r)))
         #print("Update Start LED: Row=",r)
@@ -271,7 +271,7 @@ def Update_Start_LedNr():
                         NewValue = str(LEDNr(LEDs_Channel))
                 if P01.Cells(r, M25.LED_Nr__Col).Value == '' or P01.Cells(r, M25.LED_Nr__Col).Value != NewValue:
                     P01.Cells(r, M25.LED_Nr__Col).Value = NewValue
-                    print("New Value: ",r,NewValue)
+                    #print("New Value: ",r,NewValue)
                 if IsSingleChannelCmd:
                     LastusedChannel[LEDs_Channel] = Update_LastUsedChannel(LEDs, LastusedChannel(LEDs_Channel))
                     if LastusedChannel(LEDs_Channel) > 3:
@@ -758,7 +758,7 @@ def Global_Worksheet_Change(Target):
         if StartRow < M02.FirstDat_Row:
             StartRow = M02.FirstDat_Row
         # Don't fill in hooks if cells in the enable column should be changed/deleted
-        if Target.Columns(1).P01.Cells.Count != M02.MAX_ROWS:
+        if Target.Columns(1).Cells.Count != M02.MAX_ROWS:
             if Range_is_Empty(Target):
                 # Delete the icons                                     ' 22.10.21:
                 if Col_is_in_Range(M25.Inp_Typ_Col, Target):
@@ -773,7 +773,7 @@ def Global_Worksheet_Change(Target):
                 if not Col_is_in_Range(M02.Enable_Col, Target):
                     P01.Range[P01.Cells(StartRow, M02.Enable_Col), P01.Cells(Row + Target. P01.Rows.Count - 1, M02.Enable_Col)] = ChrW(M02.Hook_CHAR)
         # Format new cells at the end
-        EndRow = Row + Target. P01.Rows.Count - 1 + M02.SPARE_ROWS
+        EndRow = Row + Target.Rows.Count - 1 + M02.SPARE_ROWS
         if EndRow > M30.LastUsedRow() + M02.SPARE_ROWS:
             EndRow = M30.LastUsedRow()
             # Protection if whole columns are deleted
@@ -799,7 +799,7 @@ def Global_Worksheet_Calculate():
     if M02.DEBUG_CHANGEEVENT:
         Debug.Print('Global_Worksheet_Calculate()')
         # Debug
-    # Update_Start_LedNr                                                      ' 29.04.20: Disabled because I don't understand why it should be called here
+    #Update_Start_LedNr                                                      ' 29.04.20: Disabled because I don't understand why it should be called here
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Row - ByVal 
 def Update_StartValue(Row):

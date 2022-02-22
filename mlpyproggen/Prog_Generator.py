@@ -45,6 +45,8 @@ from locale import getdefaultlocale
 #from collections import OrderedDict
 from mlpyproggen.P01_Workbook import create_workbook
 
+import mlpyproggen.P01_Workbook as P01
+
 import os
 #import serial
 #import sys
@@ -136,7 +138,9 @@ class Prog_GeneratorPage(tk.Frame):
         
         self.frame=ttk.Frame(self,relief="ridge", borderwidth=2)
         self.frame.grid_columnconfigure(0,weight=1)
-        self.frame.grid_rowconfigure(0,weight=1)        
+        self.frame.grid_rowconfigure(0,weight=1)
+        #self.frame.columnconfigure(0,weight=1)
+        #self.frame.rowconfigure(0,weight=1)            
         
         #self.scroll_main_frame = ScrolledFrame(self.frame)
         #self.scroll_main_frame.grid_columnconfigure(0,weight=1)
@@ -158,6 +162,8 @@ class Prog_GeneratorPage(tk.Frame):
         self.filedir2 = os.path.dirname(filedir)
         self.workbook_frame.rowconfigure(0,weight=1)
         self.workbook_frame.columnconfigure(0,weight=1)
+        #self.workbook_frame.grid_rowconfigure(0,weight=1)
+        #self.workbook_frame.grid_columnconfigure(0,weight=1)        
         
         self.workbook = create_workbook(frame=self.workbook_frame,path=self.filedir2)
         
@@ -192,6 +198,7 @@ class Prog_GeneratorPage(tk.Frame):
     def tabselected(self):
         #self.controller.currentTabClass = self.tabClassName
         logging.debug("Tabselected: %s",self.tabname)
+        P01.Application.setActiveWorkbook(self.workbook.Name)
         #self.controller.send_to_ARDUINO("#END")
         #time.sleep(ARDUINO_WAITTIME)        
         pass
@@ -239,12 +246,12 @@ class Prog_GeneratorPage(tk.Frame):
     
     def wschangedcallback(self,changedcell):
         
-        print ("wschangedcallback ",changedcell.Row,":",changedcell.Column)
+        #print ("wschangedcallback ",changedcell.Row,":",changedcell.Column)
         M20.Global_Worksheet_Change(changedcell)
         
     def wsselectedcallback(self,changedcell):
         
-        print ("wsselectedcallback ",changedcell.Row,":",changedcell.Column)
+        #print ("wsselectedcallback ",changedcell.Row,":",changedcell.Column)
         M20.Global_Worksheet_SelectionChange(changedcell)    
         
         

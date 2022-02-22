@@ -111,10 +111,14 @@ class TableModel(object):
         #list of editable column types
         #self.editable={}
         self.nodisplay = []
+        self.hiderowslist = []
+        self.ColumnAlignment = {}
         self.protected_cells = [] #*HL  list of cells that are not editable ("*",col) and (row,"*") for rows and columns
         self.shapelist = [] #*HL list of shapes
         self.format_cells = {}
+        self.gridlist = []
         self.columnwidths={}  #used to store col widths, not held in saved data
+        self.rowwidths={}  #used to store row widths, not held in saved data
         self.lastUsedRow = 0
         self.DataChanged = False
         return
@@ -206,6 +210,7 @@ class TableModel(object):
         data["protected_cells"] = self.protected_cells
         data["format_cells"]=self.format_cells
         data["columnwidths"]=self.columnwidths
+        data["rowwidths"]=self.rowwidths
         data["shapelist"]=self.shapelist
         return data
 
@@ -271,6 +276,10 @@ class TableModel(object):
             celldata=None
         return celldata
     
+    def getCellAlignment(self,row,col):
+        colalignment = self.ColumnAlignment.get(col,"w")
+        return colalignment
+    
     def deleteShapeatPos(self,x1,y1,x2,y2):
                 
         deleteList=[]
@@ -296,14 +305,17 @@ class TableModel(object):
 
     def getRecName(self, rowIndex):
         """Get record name from row number"""
-
         if len(self.reclist)==0:
             return None
         if self.filteredrecs != None:
-            name = self.filteredrecs[rowIndex]
+            if rowIndex<len(self.filteredrecs):
+                name = self.filteredrecs[rowIndex]
+            else:
+                name=self.reclist[rowIndex]
         else:
             name = self.reclist[rowIndex]
         return name
+
 
     def setRecName(self, newname, rowIndex):
         """Set the record name to another value - requires re-setting in all
@@ -555,7 +567,7 @@ class TableModel(object):
             self.updateLastUsedRow(destindex+len(srckeylist))
 
             self.moveShapesVertical(minY1, y2=maxY1, deltaY=deltaY)
-            self.moveShapesVertical(minY1,deltaY=deleteY)
+            self.moveShapesVertical(minY1,deltaY=-deleteY)
             self.setDataChanged()
             #print(self.reclist)
             #print(self.data)

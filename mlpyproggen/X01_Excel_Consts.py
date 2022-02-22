@@ -1606,3 +1606,4 @@ xlOff = 0
 xldefault = 0
 
 msoShapeRectangle = 1
+msoTextBox = 17

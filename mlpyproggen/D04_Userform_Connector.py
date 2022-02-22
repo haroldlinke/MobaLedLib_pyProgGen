@@ -91,14 +91,17 @@ class UserForm_Connector:
         window_height = 600
         window_width = 450
         
-        screen_width = self.top.winfo_screenwidth()
-        screen_height = self.top.winfo_screenheight()
+        winfo_x = PG.global_controller.winfo_x()
+        winfo_y = PG.global_controller.winfo_y()
         
-        x_cordinate = int((screen_width/2) - (window_width/2))
-        y_cordinate = int((screen_height/2) - (window_height/2))
+        screen_width = PG.global_controller.winfo_width()
+        screen_height = PG.global_controller.winfo_height()
         
-        self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                
+        x_cordinate = winfo_x+int((screen_width/2) - (window_width/2))
+        y_cordinate = winfo_y+int((screen_height/2) - (window_height/2))
         
+        self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                 
+
         if len(self.title) > 0: self.top.title(self.title)
         self.label1 = ttk.Label(self.top, text=self.label1_txt,wraplength=window_width-20,font=("Tahoma", 11))
         self.label2 = ttk.Label(self.top, text=self.label2_txt,wraplength=window_width-20,font=("Tahoma", 11),foreground="#0000FF")

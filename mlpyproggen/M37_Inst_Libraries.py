@@ -205,9 +205,9 @@ def __Update_General_Versions():
     # Arduino IDE
     ArduinoDir = M30.FilePath(M08.Find_ArduinoExe())
     ArduinoVer = M30.Read_File_to_String(ArduinoDir + 'lib\\version.txt')
-    Sh.Range['Arduino_IDE_Ver'] = ArduinoVer
+    Sh.Range_set('Arduino_IDE_Ver', ArduinoVer)
     # Std. Boards (Nano, Uno, ...)
-    Sh.Range['Std_Boards_Ver'] = Get_Std_Arduino_Lib_Ver()
+    Sh.Range_set('Std_Boards_Ver', Get_Std_Arduino_Lib_Ver())
 
 def __Get_DetectVer_form_library_properties(LibDir):
     fn_return_value = None
@@ -241,7 +241,7 @@ def __Get_State_of_Board_Row(Row):
 
     #ProcessorTyp = String()
 
-    #VerList = String()
+    VerList = "" #String()
 
     #Res = String()
 
@@ -263,8 +263,8 @@ def __Get_State_of_Board_Row(Row):
     Board = Split(Board_and_Proc, ':')(0)
     ProcessorTyp = Split(Board_and_Proc, ':')(1)
     if Board == 'arduino' and ProcessorTyp == 'avr':
-        Sh.P01.CellDict[Row, __Installed_Col] = 1
-        Sh.P01.CellDict[Row, __DetectVer_Col] = Get_Std_Arduino_Lib_Ver()
+        Sh.CellDict[Row, __Installed_Col] = 1
+        Sh.CellDict[Row, __DetectVer_Col] = Get_Std_Arduino_Lib_Ver()
         return
     TestFile = Sh.Cells(Row, __Test_File_Col)
     BoardDir = Environ(M02.Env_USERPROFILE) + M02.AppLoc_Ardu + 'packages\\' + Board + '\\hardware\\'
@@ -279,7 +279,7 @@ def __Get_State_of_Board_Row(Row):
         if not M30.Dir_is_Empty(DirName):
             with_0 = Sh.Cells(Row, __Installed_Col)
             if Dir(DirName + TestFile) != '':
-                Sh.P01.CellDict[Row, __DetectVer_Col] = Ver
+                Sh.CellDict[Row, __DetectVer_Col] = Ver
                 with_0.Value = 1
             else:
                 with_0.Value = ''
@@ -298,9 +298,9 @@ def __Get_State_of_BoardExtras_Row(Row):
 
     #ExtraType = String()
 
-    #VerList = String()
+    VerList = "" #String()
 
-    #Res = String()
+    Res = "" #String()
 
     Ver = Variant()
     #----------------------------------------------
@@ -321,7 +321,7 @@ def __Get_State_of_BoardExtras_Row(Row):
         if not M30.Dir_is_Empty(DirName):
             with_1 = Sh.Cells(Row, __Installed_Col)
             if Dir(DirName + '\\' + TestFile) != '':
-                Sh.P01.CellDict[Row, __DetectVer_Col] = Ver
+                Sh.CellDict[Row, __DetectVer_Col] = Ver
                 with_1.Value = 1
             else:
                 with_1.Value = ''
@@ -340,14 +340,14 @@ def __Get_All_Library_States():
     # - DetectVer
     if M02.Read_Sketchbook_Path_from_preferences_txt() == False:
         return fn_return_value
-    P01.ThisWorkbook.Sheets[M02.LIBRARYS__SH].Range['Sketchbook_Path'] = M02.Sketchbook_Path
+    P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH).Range_set('Sketchbook_Path',M02.Sketchbook_Path)
     LibrariesDir = M02.Sketchbook_Path + '\\libraries\\'
     Sh = P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH)
     Row = __First_Dat_Row
     while Sh.Cells(Row, __Libr_Name_Col) != '':
         TestFile = Sh.Cells(Row, __Test_File_Col)
-        Sh.P01.CellDict[Row, __DetectVer_Col] = ''
-        Sh.P01.CellDict[Row, __Installed_Col] = ''
+        Sh.CellDict[Row, __DetectVer_Col] = ''
+        Sh.CellDict[Row, __Installed_Col] = ''
         if InStr(Sh.Cells(Row, __Lib_Board_Col), 'L') > 0:
             # *** Library ***
             LibDir = LibrariesDir + Sh.Cells(Row, __Libr_Name_Col) + '\\'
@@ -358,8 +358,11 @@ def __Get_All_Library_States():
                 if Dir(LibDir + TestFile) != '' or Dir(LibDir + 'src\\' + TestFile) != '':
                     with_2.Value = '1'
             # VB2PY (UntranslatedCode) On Error GoTo 0
-            if Sh.Cells(Row, __Installed_Col) > 0:
-                Sh.P01.CellDict[Row, __DetectVer_Col] = __Get_DetectVer_form_library_properties(LibDir)
+            installed = Sh.Cells(Row, __Installed_Col)
+            if installed == "":
+                installed = 0
+            if installed > 0:
+                Sh.CellDict[Row, __DetectVer_Col] = __Get_DetectVer_form_library_properties(LibDir)
         elif InStr(Sh.Cells(Row, __Lib_Board_Col), 'BE') > 0:
             # *** Board Extras ***
             __Get_State_of_BoardExtras_Row(Row)
@@ -368,7 +371,7 @@ def __Get_All_Library_States():
             __Get_State_of_Board_Row(Row)
         Row = Row + 1
     fn_return_value = True
-    P01.ThisWorkbook.Sheets[M02.LIBRARYS__SH].Range['Last_Update_Time'] = P01.Date_str() + P01.Time_str()
+    P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH).Range_set('Last_Update_Time',P01.Date_str() + P01.Time_str())
     return fn_return_value
     # 07.06.20:
     P01.MsgBox(M09.Get_Language_Str('Fehler beim lesen des Verzeichnisses:') + vbCr + '  \'' + LibDir + '\'' + vbCr + 'Error Nr: ' + Err.Number + vbCr + Err.Description, vbCritical, M09.Get_Language_Str('Fehler beim lesen des Verzeichnisses:'))
@@ -385,6 +388,7 @@ def Check_if_curl_is_Available_and_gen_Message_if_not(Name, InstLink):
     return fn_return_value
 
 def __Add_Update_from_Other_Source(fp, Row):
+    global __UnzipList
     #Sh = Worksheet()
 
     #LibName = String()
@@ -448,6 +452,7 @@ def __Add_Update_from_Other_Source(fp, Row):
     VBFiles.writeText(fp, '', '\n')
 
 def __Proc_UnzipList():
+    global __UnzipList
     LibName = Variant()
 
     LibName_with_path = String()
@@ -466,7 +471,10 @@ def __Proc_UnzipList():
         else:
             P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: Das Verzeichnis \'#1#\' wurde nicht erzeugt beim entzippen von:'), "#1#", LibName + '-master') + vbCr + '  \'' + LibName_with_path + '.zip', vbCritical, M09.Get_Language_Str('Fehler beim entzippen'))
         # VB2PY (UntranslatedCode) On Error Resume Next
-        Kill(LibName_with_path + '.zip')
+        try:
+            Kill(LibName_with_path + '.zip')
+        except:
+            pass
         # VB2PY (UntranslatedCode) On Error GoTo 0
     return
     P01.MsgBox(M09.Get_Language_Str('Fehler beim Umbenennen des Verzeichnisses:') + vbCr + '  \'' + LibName_with_path + '-master\'' + vbCr + 'nach \'...' + LibName + '\'', vbCritical, M09.Get_Language_Str('Verzeichnis kann nicht umbenannt werden'))
@@ -474,9 +482,10 @@ def __Proc_UnzipList():
 
 def Init_Libraries_Page():
     #-------------------------------
-    P01.ThisWorkbook.Sheets[M02.LIBRARYS__SH].CheckBoxes['Check Box 10'] = xlOff
+    P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH).CheckBoxes['Check Box 10'] = xlOff
 
 def __Create_Do_Update_Script(Pause_at_End):
+    global __UPDATE_LIB_CMD_NAME
     fn_return_value = None
     fp = Integer()
 
@@ -629,7 +638,7 @@ def __Test_Create_Do_Update_Script():
     __Create_Do_Update_Script()(True)
 
 def __Get_Original_Name_from_TestFile(LibDir):
-    fn_return_value = None
+    fn_return_value = ""
     Row = int()
 
     #Sh = Worksheet()
@@ -683,7 +692,10 @@ def __Correct_Temp_Adrduino_nr_Dirs():
         return
     P01.ChDrive(M02.Sketchbook_Path)
     ChDir(M02.Sketchbook_Path)
+    print(os.getcwd())
+    #dirpath = M02.Sketchbook_Path+'\\libraries\\Arduino_*.'
     Res = Dir('libraries\\Arduino_*.', vbDirectory)
+    #Res = Dir(dirpath, vbDirectory)
     while Res != '':
         DirList = DirList + Res + vbTab
         Res = Dir()
@@ -713,14 +725,14 @@ def CheckArduinoHomeDir():
 
 
 def __Check_All_Selected_Libraries_Result(Ask_User):
-    fn_return_value = None
-    #Row = int()
+    fn_return_value = False
+    Row = 0 # int()
 
     #Sh = Worksheet()
 
-    #NotInstCnt = int()
+    NotInstCnt = 0 #int()
 
-    #List = String()
+    List = "" #String()
     #-----------------------------------------------------------------------------------
     # Return true if the update should be repeated
     Sh = P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH)
@@ -744,6 +756,8 @@ def __Test_Check_All_Selected_Libraries_Result():
     __Check_All_Selected_Libraries_Result()(True)
 
 def __Update_Status(Start=False):
+    global __Update_Time
+    return #*HL
     #---------------------------------------------------
     # Is called by OnTime
     if __Update_Time != 0 or Start:
@@ -752,7 +766,7 @@ def __Update_Status(Start=False):
         else:
             F00.StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(Time - __Update_Time, 'hh:mm:ss'))
         
-        P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:01'), 'Update_Status')
+        P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:01'), __Update_Status)
 
 def __Stop_Status_Display():
     global __Update_Time
@@ -761,8 +775,8 @@ def __Stop_Status_Display():
     P01.Unload(F00.StatusMsg_UserForm)
 
 def __Update_All_Selected_Libraries():
-    global __UnzipList
-    fn_return_value = None
+    global __UnzipList, __UPDATE_LIB_CMD_NAME
+    fn_return_value = False
     Pause_at_End = Boolean()
 
     Trials = int()
@@ -793,16 +807,15 @@ def __Update_All_Selected_Libraries():
         __Correct_Temp_Adrduino_nr_Dirs()
         P01.ChDrive(M02.Sketchbook_Path)
         ChDir(M02.Sketchbook_Path)
-        if Dir('libraries\\*.*', vbDirectory) == '':
+        if Dir('libraries\\*', vbDirectory) == '':
             MkDir('libraries\\')
         ChDir(M02.Sketchbook_Path + '\\libraries\\')
         CommandStr = P01.ThisWorkbook.Path + '\\' + __UPDATE_LIB_CMD_NAME
-        PromptUser = ""
-        Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
+        Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, M40.PromptUser)
         if (Res == M40.Success) or (Res == M40.Timeout):
             pass
         else:
-            P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler #1# beim Starten der Update Programms \'#2#\''), "#1#", Res), '#2#', CommandStr), vbCritical, M09.Get_Language_Str('Fehler beim Aktualisieren der Bibliotheken'))
+            P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler #1# beim Starten der Update Programms \'#2#\''), "#1#", str(Res)), '#2#', CommandStr), vbCritical, M09.Get_Language_Str('Fehler beim Aktualisieren der Bibliotheken'))
             break #*HL GoTo(EndFunc)
         if WIN7_COMPATIBLE_DOWNLOAD:
             __Proc_UnzipList()
@@ -870,14 +883,15 @@ def __Select_Missing():
     # Special Check: FastLED >= 3.3.3 require GCC > 7.3.0  => arduino lib >= 1.6.23
     if Sh.Cells(Arduino_row, __SelectRow_Col) != ChrW(M02.Hook_CHAR):
         if M30.VersionStr_is_Greater(FastLED_Ver, '3.3.2') and not M30.VersionStr_is_Greater(Arduino_Ver, '1.6.23'):
-            Sh.P01.CellDict[Arduino_row, __SelectRow_Col] = ChrW(M02.Hook_CHAR)
+            Sh.CellDict[Arduino_row, __SelectRow_Col] = ChrW(M02.Hook_CHAR)
             if not M30.VersionStr_is_Greater(Sh.Cells(Arduino_row, __Reque_Ver_Col), '1.6.23'):
-                Sh.P01.CellDict[Arduino_row, __Reque_Ver_Col] = ''
+                Sh.CellDict[Arduino_row, __Reque_Ver_Col] = ''
             NotInstCnt = NotInstCnt + 1
     fn_return_value = NotInstCnt
     return fn_return_value
 
 def __Create_Restart_Cmd():
+    global __RESTART_PROGGEN_CMD
     fn_return_value = None
     fp = Integer()
 
@@ -957,12 +971,15 @@ def __Select_from_Range(RangeStr):
         with_4.Value = ''
         Row = Row + 1
     # VB2PY (UntranslatedCode) On Error GoTo Range_Not_Found
-    #*HL Sh.Range[RangeStr] = ChrW(M02.Hook_CHAR)
+    P01.Application.EnableEvents=False
+    Sh.Range_set(RangeStr,ChrW(M02.Hook_CHAR))
+    P01.Application.EnableEvents=True
     fn_return_value = 9 #*HL
     
     # VB2PY (UntranslatedCode) On Error GoTo 0
-    #*HL fn_return_value = Sh.Range(RangeStr).Row
+    fn_return_value = Sh.Range(RangeStr,None).Row
     return fn_return_value
+    
     P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler: Der Bereich \'#1#\' wurde nicht im Blatt \'#2#\' gefunden'), "#1#", RangeStr), '#2#', Sh.Name), vbCritical, M09.Get_Language_Str('Fehler beim aktivieren der Update Zeile'))
     fn_return_value = - 1
     return fn_return_value
@@ -992,10 +1009,10 @@ def __Start_Update_MobaLedLib_and_Restarte_Excel():
     CommandStr = __Create_Restart_Cmd()
     if CommandStr == '':
         return
-    P01.ThisWorkbook.Save()
-    P01.Shell('cmd /c start ' + CommandStr)
+    #*HL no retsrt needed P01.ThisWorkbook.Save()
+    #*HL P01.Shell('cmd /c start ' + CommandStr)
     #  MsgBox "Warte"
-    P01.Application.Quit()
+    #*HL P01.Application.Quit()
 
 def __Update_MobaLedLib_from_Range_and_Restart_Excel(RangeStr):
     
@@ -1013,7 +1030,7 @@ def __Update_MobaLedLib_from_Range_and_Restart_Excel(RangeStr):
         newUrl = frm.ShowForm(M09.Get_Language_Str('Beta-Test Installation'), M09.Get_Language_Str('Bitte geben sie die URL ein, von der sie die neue Beta Version herunterladen wollen'), currentUrl)
         if newUrl == '<Abort>':
             return
-        P01.ThisWorkbook.Sheets[M02.LIBRARYS__SH].CellDict[Row, __Other_Src_Col] = newUrl
+        P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH).CellDict[Row, __Other_Src_Col] = newUrl
     if __Show_Close_Message_if_Other_WB_are_Open():
         return
         # Other Workbooks are opened => "Start_Update_MobaLedLib_and_Restarte_Excel" is called after they ara closed

@@ -41,6 +41,7 @@ import mlpyproggen.M03_Dialog as M03
 import mlpyproggen.M01_Gen_Release_Version as M01
 import mlpyproggen.P01_Workbook as P01
 import mlpyproggen.Prog_Generator as PG
+import mlpyproggen.M22_Hide_UnHide as M22
 import mlpyproggen.M23_Add_Move_Del_Row as M23
 import mlpyproggen.M20_PageEvents_a_Functions as M20
 import mlpyproggen.M30_Tools as M30
@@ -131,8 +132,8 @@ def __EnableAllButtons():
 def Hide_Button_Click():
     #------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Hide/Unhide")
-    #Proc_Hide_Unhide()
+    #notimplemented("Hide/Unhide")
+    M22.Proc_Hide_Unhide()
 
 def Insert_Button_Click():
     __Button_Pressed_Proc()
@@ -165,8 +166,8 @@ def Options_Button_Click():
 def UnHideAll_Button_Click():
     #-----------------------------------
     __Button_Pressed_Proc()
-    notimplemented("UnHide All")
-    #Proc_UnHide_All()
+    #notimplemented("UnHide All")
+    M22.Proc_UnHide_All()
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Target - ByVal 
 def __Worksheet_Change(Target):

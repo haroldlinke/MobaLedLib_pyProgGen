@@ -1506,8 +1506,30 @@
         "Min": "0",
         "Max": "255",
         "Default": "",
-        "Input Text": "Python Programmgenerator anzeigen",
-        "Hint": "Python Programmgenerator anzeigen (verlangsamt die Anzeige)"
+        "Input Text": "Programmgenerator anzeigen",
+        "Hint": "Die ProgrammGenerator Seite wird nach Neustart angezeigt"
+    },
+    "ShowPatternGenerator": {
+        "ParName": "ShowPatternGenerator",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "ShowPatternGenerator",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Patterngenerator anzeigen (Test)",
+        "Hint": "Die Patterngenerator Seite wird nach Neustart angezeigt (nur zum Testen)"
+    },
+    "ShowHiddentables": {
+        "ParName": "ShowHiddentables",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "ShowHiddentables",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Programmgenerator versteckte Tabellen anzeigen",
+        "Hint": "Die versteckten Tabellen werden im ProgrammGenerator angezeigt"
     },
     "SerialMonitorInput": {
         "ParName": "SerialMonitorInput",

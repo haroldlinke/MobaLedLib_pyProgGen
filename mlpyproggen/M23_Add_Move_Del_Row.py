@@ -136,6 +136,7 @@ def Proc_Move_Row():
         return
     
     ActSh.moveRows()
+    M20.Update_Start_LedNr()
     
     """
     selectedrows = P01.Selection.EntireRow()

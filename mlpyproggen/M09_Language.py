@@ -442,7 +442,7 @@ def __Add_Entry_to_Languages_Sheet(GermanTxt):
         LSh = P01.ThisWorkbook.Sheets(M02.LANGUAGES_SH)
         _with10 = LSh
         Row = M30.LastUsedRowIn(LSh) + 1
-        _with10.P01.CellDict[Row, FirstLangCol] = GermanTxt
+        _with10.CellDict[Row, FirstLangCol] = GermanTxt
 
 def __Debug_Find_Diff(s1, s2):
     i = int()
