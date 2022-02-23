@@ -64,8 +64,8 @@ from mlpyproggen.ColorCheckPage import ColorCheckPage
 from mlpyproggen.EffectTestPage import EffectTestPage
 from mlpyproggen.EffectMacroPage import EffectMacroPage
 from mlpyproggen.DCC_KeyboardPage import DCCKeyboardPage
-from mlpyproggen.Prog_Generator import Prog_GeneratorPage
-from mlpyproggen.Pattern_Generator import Pattern_GeneratorPage
+from proggen.Prog_Generator import Prog_GeneratorPage
+from pattgen.Pattern_Generator import Pattern_GeneratorPage
 from mlpyproggen.ServoTestPage import ServoTestPage
 from mlpyproggen.Z21MonitorPage import Z21MonitorPage
 from mlpyproggen.ARDUINOMonitorPage import ARDUINOMonitorPage
@@ -82,7 +82,7 @@ from tkcolorpicker.limitvar import LimitVar
 from tkcolorpicker.functions import hsv_to_rgb, hexa_to_rgb, rgb_to_hexa, col2hue, rgb_to_hsv, convert_K_to_RGB
 import platform
 
-import mlpyproggen.P01_Workbook as P01
+import ExcelAPI.P01_Workbook as P01
 
 from locale import getdefaultlocale
 import os
