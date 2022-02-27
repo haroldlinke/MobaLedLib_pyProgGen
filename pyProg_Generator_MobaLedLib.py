@@ -153,9 +153,10 @@ tabClassList_pyProg_only = ( StartPage, Prog_GeneratorPage, EffectTestPage, Effe
 # for compatibility with the "old" startpagenumber in the config file
 # if startpagenumber is in this list the corresponding start page is opened, otherwise "ColorCheckPage"
 startpageNumber2Name = { 
-    "0": "ConfigurationPage",
-    "1": "ColorCheckPage",
-    "2": "SerialMonitorPage"
+    "0": "ColorCheckPage",
+    "1": "Prog_GeneratorPage",
+    "2": "SerialMonitorPage",
+    "3": "StartPage"
 }
 
 defaultStartPage = "ColorCheckPage"
@@ -1885,7 +1886,10 @@ class LEDColorTest(tk.Tk):
                 elif param_type == "Checkbutton": # Checkbutton param
                     paramvar = tk.IntVar(value=0)
                     paramvar.key = paramkey
-                     
+                    if param_default!="":
+                        paramvar.set(1)
+                    else:                        
+                        paramvar.set(0)
                     label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,variable=paramvar,font=self.fontlabel,onvalue = 1, offvalue = 0)
                     label.grid(row=row+valuerow, column=column, columnspan=2,sticky=STICKY, padx=2, pady=2)
                     self.ToolTip(label, text=param_tooltip)
@@ -2637,7 +2641,7 @@ def main_entry():
     parser = argparse.ArgumentParser(description='Generate MLL Programs',exit_on_error=False)
     parser.add_argument('--loglevel',choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"],help="Logginglevel to be printed inot the logfile")
     parser.add_argument('--logfile',help="Logfilename")
-    parser.add_argument('--startpage',choices=['StartPage', 'EffectTestPage', 'EffectMacroPage', 'ColorCheckPage', 'SoundCheckPage', 'DCCKeyboardPage', 'ServoTestPage', 'Z21MonitorPage', 'SerialMonitorPage', 'ARDUINOMonitorPage', 'ConfigurationPage'],help="Name of the first page shown after start")
+    parser.add_argument('--startpage',choices=['StartPage', 'ColorCheckPage', 'Prog_GeneratorPage', 'SoundCheckPage', 'DCCKeyboardPage', 'ServoTestPage', 'Z21MonitorPage', 'SerialMonitorPage', 'ARDUINOMonitorPage', 'ConfigurationPage'],help="Name of the first page shown after start")
     parser.add_argument('--port',help="Name of the port where the ARDUINO is connected to")
     parser.add_argument('--z21simulator',choices=["True","False"],help="if <True> the Z21simulator will be started automatically")
     parser.add_argument('--caller',choices=["SetColTab",""],help="Only for MLL-ProgrammGenerator: If <SetColTab> only the Colorcheckpage is available and the chnage coltab is returned after closing the program")

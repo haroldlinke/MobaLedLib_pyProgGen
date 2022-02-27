@@ -612,7 +612,13 @@ DEFAULT_CONFIG = {
                     "FontLabel": "8",
                     "FontSpinbox": "8",
                     "FontScale" : "8",
-                    "RMbusTimer": "0"
+                    "RMbusTimer": "0",
+                    "ShowProgramGenerator": 1,
+                    "ShowPatternGenerator": 0,
+                    "ShowHiddentables": 0,
+                    "AutoLoadWorkbooks":1,
+                    "languagename": "Auto",
+                    "language": 0
                 }
 
 DEFAULT_PARAM = {}
