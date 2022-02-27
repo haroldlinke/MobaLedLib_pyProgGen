@@ -67,6 +67,7 @@ class LimitVar(tk.StringVar):
                     val = self._to
                     self.set(val)
         except ValueError:
-            val = 0
-            self.set(0)
+            #val = 0
+            #self.set(0)
+            pass
         return val

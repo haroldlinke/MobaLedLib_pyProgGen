@@ -1,15 +1,11 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#         MobaLedCheckColors: Color checker for WS2812 and WS2811 based MobaLedLib
+#         Write header
 #
-# * Version: 1.39
+# * Version: 4.03
 # * Author: Harold Linke
-# * Date: January 1st, 2020
-# * Copyright: Harold Linke 2020
-# *
-# *
-# * MobaLedCheckColors on Github: https://github.com/haroldlinke/MobaLedCheckColors
+# * Date: January 7, 2021
+# * Copyright: Harold Linke 2021
 # *
 # *  
 # * https://github.com/Hardi-St/MobaLedLib
@@ -50,6 +46,13 @@
 # * License: http://creativecommons.org/licenses/by-sa/3.0/
 # ***************************************************************************
 
+#------------------------------------------------------------------------------
+# CHANGELOG:
+# 2020-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
+# 2021-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
+# 2021-01-08 V4.03 HL: - added Workbook Save and Load
+
+
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog, colorchooser, scrolledtext
 from mlpyproggen.configfile import ConfigFile
@@ -61,6 +64,8 @@ from mlpyproggen.ColorCheckPage import ColorCheckPage
 from mlpyproggen.EffectTestPage import EffectTestPage
 from mlpyproggen.EffectMacroPage import EffectMacroPage
 from mlpyproggen.DCC_KeyboardPage import DCCKeyboardPage
+from proggen.Prog_Generator import Prog_GeneratorPage
+from pattgen.Pattern_Generator import Pattern_GeneratorPage
 from mlpyproggen.ServoTestPage import ServoTestPage
 from mlpyproggen.Z21MonitorPage import Z21MonitorPage
 from mlpyproggen.ARDUINOMonitorPage import ARDUINOMonitorPage
@@ -69,13 +74,15 @@ from mlpyproggen.LEDListPage import LEDListPage
 from mlpyproggen.SoundCheckPage import SoundCheckPage
 from mlpyproggen.tooltip import Tooltip
 from mlpyproggen.DefaultConstants import COLORCOR_MAX, CONFIG2PARAMKEYS, DEFAULT_CONFIG, DEFAULT_PALETTE, DEFAULT_PARAM, LARGE_FONT, SMALL_FONT, VERY_LARGE_FONT, PROG_VERSION, SIZEFACTOR,\
-PARAM_FILENAME, CONFIG_FILENAME, DISCONNECT_FILENAME, CLOSE_FILENAME, FINISH_FILE, PERCENT_BRIGHTNESS, TOOLTIPLIST, SerialIF_teststring1, SerialIF_teststring2, MACRODEF_FILENAME, MACROPARAMDEF_FILENAME,LOG_FILENAME, ARDUINO_WAITTIME, COLORTESTONLY_FILE
+PARAM_FILENAME, CONFIG_FILENAME, DISCONNECT_FILENAME, CLOSE_FILENAME, FINISH_FILE, PERCENT_BRIGHTNESS, TOOLTIPLIST, SerialIF_teststring1, SerialIF_teststring2, MACRODEF_FILENAME, MACROPARAMDEF_FILENAME,LOG_FILENAME, ARDUINO_WAITTIME, COLORTESTONLY_FILE,BLINKFRQ
 from mlpyproggen.LedEffectTable import ledeffecttable_class
 from scrolledFrame.ScrolledFrame import VerticalScrolledFrame,ScrolledFrame,HorizontalScrolledFrame
 from tkcolorpicker.spinbox import Spinbox
 from tkcolorpicker.limitvar import LimitVar
 from tkcolorpicker.functions import hsv_to_rgb, hexa_to_rgb, rgb_to_hexa, col2hue, rgb_to_hsv, convert_K_to_RGB
 import platform
+
+import ExcelAPI.P01_Workbook as P01
 
 from locale import getdefaultlocale
 import os
@@ -133,9 +140,12 @@ def _(text):
 # ------------------------------
 
 
-tabClassList_all = ( StartPage, EffectTestPage, EffectMacroPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
-tabClassList_mll_only = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_all = ( StartPage, Prog_GeneratorPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_all_patterngen = ( StartPage, Prog_GeneratorPage, Pattern_GeneratorPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_mll_only = ( StartPage, Prog_GeneratorPage,  ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 tabClassList_SetColTab = (ColorCheckPage, SerialMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+tabClassList_pyProg_only = ( StartPage, Prog_GeneratorPage, EffectTestPage, EffectMacroPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
+
 
 #tabClassList_all = ( StartPage, ColorCheckPage, SoundCheckPage, DCCKeyboardPage, ServoTestPage, Z21MonitorPage, SerialMonitorPage, ARDUINOMonitorPage, ARDUINOConfigPage, ConfigurationPage)
 
@@ -168,6 +178,11 @@ class LEDColorTest(tk.Tk):
         self.setcoltab_only = False
         caller_setcoltab = (caller == "SetColTab")
         self.colortest_only = COMMAND_LINE_ARG_DICT.get("colortest_only","")== "True"
+        self.coltab = None
+        self.checkcolor_callback = None
+        self.ledhighlight = False
+        
+        self.oldTabName = ""
         
         self.show_colorcheckpage_only = caller_setcoltab
         self.show_setcoltab_save_button = caller_setcoltab or not self.colortest_only
@@ -215,6 +230,7 @@ class LEDColorTest(tk.Tk):
         self.max_ledcnt_list = []
         self.LED_baseadress = 0
         self.mobaledlib_version = 0
+        self.activeworkbook = None
         
         #self.fontdict={}
         #self.fontdict["FontGeneral"] = ("Verdana", int(8 * self.getConfigData("FontGeneral")/100))
@@ -240,8 +256,11 @@ class LEDColorTest(tk.Tk):
         macrodata = self.MacroDef.data.get("StartPage",{})
         
         self.show_pyPrgrammGenerator = self.getConfigData("ShowProgramGenerator")
+        self.show_pyPatternGenerator = self.getConfigData("ShowPatternGenerator")
+        self.show_hiddentables = self.getConfigData("ShowHiddentables")
         
         self.tempLedeffecttableFilname = macrodata.get("TEMP_LEDEFFECTTABLE_FILENAME","StartPage")
+        self.tempworkbookFilname = macrodata.get("TEMP_WORKBOOK_FILENAME","StartPage")
 
         # Structure:
         # self.serial_port_dict={"COM3": {
@@ -261,22 +280,25 @@ class LEDColorTest(tk.Tk):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         logging.debug("Screenwidht: %s Screenheight: %s",screen_width,screen_height)
-        
+        geometry = self.winfo_geometry()
+        print(geometry)
         if screen_width<1280:
             SIZEFACTOR_width = screen_width/1280
             window_width=screen_width
         else:
-            window_width = 1280
+            window_width = 1920 # 1280
         
         if screen_height < 900:
             window_height=screen_height
         else:
-            window_height=900
+            window_height=1000
         
         if self.getConfigData("pos_x") < screen_width and self.getConfigData("pos_y") < screen_height:
             self.geometry('%dx%d+%d+%d' % (window_width,window_height,self.getConfigData("pos_x"), self.getConfigData("pos_y")))
         else:
             self.geometry("%dx%d+0+0" % (window_width,window_height))
+        #geometry = self.winfo_geometry()
+        #print(geometry, self.getConfigData("pos_x"), self.getConfigData("pos_y"))        
 
         tk.Tk.wm_title(self, "MobaLedLib " + PROG_VERSION)
 
@@ -299,11 +321,14 @@ class LEDColorTest(tk.Tk):
 #        filemenu.add_command(label="Farbpalette von Datei lesen", command=self.OpenFile)
 #        filemenu.add_command(label="Farbpalette speichern als ...", command=self.SaveFileas)
 #        filemenu.add_separator()
-        filemenu.add_command(label="LED Liste von Datei lesen", command=self.OpenFileLEDTab)
-        filemenu.add_command(label="LED Liste speichern als", command=self.SaveFileLEDTab)
+        filemenu.add_command(label="MacroWorkbook von Datei lesen", command=self.OpenFileWorkbook)
+        filemenu.add_command(label="MacroWorkbook speichern als", command=self.SaveFileWorkbook)
         filemenu.add_separator()
-        filemenu.add_command(label="Beenden und Daten speichern", command=self.ExitProg_with_save)
-        filemenu.add_command(label="Beenden ohne Daten zu speichern", command=self.ExitProg)
+        filemenu.add_command(label="Excel ProgGen PGF-Datei lesen", command=self.OpenFilePGF)
+        filemenu.add_command(label="Als Excel ProgGen PGF-Datei speichern", command=self.SaveFilePGF)
+        filemenu.add_separator()        
+        filemenu.add_command(label="Beenden und Konfig-Daten speichern", command=self.ExitProg_with_save)
+        filemenu.add_command(label="Beenden ohne Konfig-Daten zu speichern", command=self.ExitProg)
 
         colormenu = tk.Menu(menu)
         menu.add_cascade(label="Farbpalette", menu=colormenu)
@@ -319,6 +344,19 @@ class LEDColorTest(tk.Tk):
         arduinomenu.add_command(label="Verbinden", command=self.ConnectArduino)
         arduinomenu.add_command(label="Trennen", command=self.DisconnectArduino)
         arduinomenu.add_command(label="Alle LED aus", command=self.SwitchoffallLEDs)
+        
+        optionsmenu = tk.Menu(menu)
+        menu.add_cascade(label="Optionen", menu=optionsmenu)
+        optionsmenu.add_command(label="Aktualisiere Bibliothek", command=self.update_library)
+        optionsmenu.add_command(label="Installiere Beta Test", command=self.install_Betatest)
+        optionsmenu.add_command(label="Status der Bibliotheken", command=self.library_status)
+        optionsmenu.add_command(label="Schnelle Bootloader installieren", command=self.install_fast_bootloader)
+        
+        #patternconfmenu = tk.Menu(menu)
+        #menu.add_cascade(label="Pattern Configurator", menu=patternconfmenu)
+        #patternconfmenu.add_command(label="Starte Pattern Cofigurator", command=self.start_patternconf)
+        #patternconfmenu.add_command(label="Daten an Pattern Conf senden", command=self.send_to_patternconf)
+        #patternconfmenu.add_command(label="Daten von Pattern Conf empfangen", command=self.receiver_from_patternconf)
         
         helpmenu = tk.Menu(menu)
         menu.add_cascade(label="Hilfe", menu=helpmenu)
@@ -339,9 +377,9 @@ class LEDColorTest(tk.Tk):
         self.shutdown_frame.grid_columnconfigure(0,weight=1)
         self.shutdown_frame.grid_rowconfigure(0,weight=1)
         
-        use_horizontalscroll=False
-        use_fullscroll=False
-        use_verticalscroll = False
+        use_horizontalscroll=True
+        use_fullscroll=True
+        use_verticalscroll = True
         if use_verticalscroll:
             self.scrolledcontainer = VerticalScrolledFrame(self)
         if use_horizontalscroll:
@@ -372,8 +410,11 @@ class LEDColorTest(tk.Tk):
         else:
             if self.show_pyPrgrammGenerator:
                 tabClassList = tabClassList_all
+                if self.show_pyPatternGenerator:
+                    tabClassList = tabClassList_all_patterngen
             else:
                 tabClassList = tabClassList_mll_only
+        
         
         for tabClass in tabClassList:
             frame = tabClass(self.container,self)
@@ -391,18 +432,28 @@ class LEDColorTest(tk.Tk):
         self.showFramebyName(startpagename)
         
         filedir = self.mainfile_dir # os.path.dirname(os.path.realpath(__file__))
-        temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)                
-        self.readLEDTabfromFile(temp_ledeffecttable_filename,tabselection=False)
         
-        self.connectstatusmessage = tk.Label(self, text='Status:', fg="black",bd=1, relief="sunken", anchor="w")
-        self.connectstatusmessage.grid(row=1,column=0,sticky="ew")
+        for wb in P01.Workbooks:
+            temp_workbook_filename = os.path.join(filedir,self.tempworkbookFilname+"_"+wb.Name)
+            #wb.Load(filename=temp_workbook_filename)
+        
+        self.messageframe = ttk.Frame(self)
+        
+        self.connectstatusmessage = tk.Label(self.messageframe, text='Status:', fg="black",bd=1, relief="sunken", anchor="w")
+        self.connectstatusmessage.grid(row=0,column=0,sticky="ew")
         #self.statusmessage.pack(side="bottom", fill="x")
         self.ToolTip(self.connectstatusmessage, text="Zeigt den Status der Verbindung zum ARDUINO an: \nVerbunden - eine Verbindung zum ARDUINO steht\nNicht verbunden - keine Verbindung zum ARDUINO")
         
-        self.statusmessage = tk.Label(self, text='', fg="black",bd=1, relief="sunken", anchor="w")
-        self.statusmessage.grid(row=1,column=1,sticky="ew")
+        self.statusmessage = tk.Label(self.messageframe, text=' ', fg="black",bd=1, relief="sunken", anchor="w")
+        self.statusmessage.grid(row=0,column=1,sticky="ew")
         #self.statusmessage.pack(side="bottom", fill="x")
         self.ToolTip(self.statusmessage, text="Zeigt Meldungen und Fehler an")
+        
+        self.messageframe.grid_columnconfigure(0, weight=1, uniform="group1")
+        self.messageframe.grid_columnconfigure(1, weight=1, uniform="group1")
+        self.messageframe.grid_rowconfigure(0, weight=1)
+        
+        self.messageframe.grid(row=1,column=0,sticky="nesw")
         
         if COMMAND_LINE_ARG_DICT.get("z21simulator","")=="True":
             # start the Z21 simulator
@@ -415,6 +466,9 @@ class LEDColorTest(tk.Tk):
 
         self.lift()
         self.grab_set()
+        
+    def check_data_changed(self):
+        return self.paramDataChanged or self.activeworkbook.check_Data_Changed()
 
     def get_font(self,fontname):
         font_size = self.getConfigData(fontname)
@@ -422,6 +476,11 @@ class LEDColorTest(tk.Tk):
             return SMALL_FONT
         else:
             return ("Verdana", int(font_size))
+        
+    def notimplemented(self,command):
+        n = tk.messagebox.showinfo(command,
+                               "Not implemented yet",
+                                parent=self)        
 
     def SaveFileas(self):
         filepath = filedialog.asksaveasfilename(filetypes=[("Color Palette files","*.clr.json")],defaultextension=".clr.json")
@@ -441,15 +500,27 @@ class LEDColorTest(tk.Tk):
             frame = self.tabdict["ColorCheckPage"]
             frame.readPalettefromFile(filepath)         
 
-    def SaveFileLEDTab(self):
-        filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
-        if filepath:
-            self.saveLEDTabtoFile(filepath)
+    def SaveFileWorkbook(self):
+        #filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
+        #if filepath:
+        #    self.saveLEDTabtoFile(filepath)
+        self.activeworkbook.Save()
 
-    def OpenFileLEDTab(self):
-        filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
-        if filepath:
-            self.readLEDTabfromFile(filepath)     
+    def OpenFileWorkbook(self):
+        #filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
+        # filepath:
+        self.activeworkbook.Load()
+        
+    def SaveFilePGF(self):
+        #filepath = filedialog.asksaveasfilename(filetypes=[("JSON files","*.led.json")],defaultextension=".led.json")
+        #if filepath:
+        #    self.saveLEDTabtoFile(filepath)
+        self.activeworkbook.SavePGF()
+
+    def OpenFilePGF(self):
+        #filepath = filedialog.askopenfilename(filetypes=[("LED List files","*.led.json"),("All JSON files","*.json")],defaultextension=".led.json")
+        # filepath:
+        self.activeworkbook.LoadPGF()
 
     def About(self):
         tk.messagebox("MobaCheckColor by Harold Linke")
@@ -482,7 +553,28 @@ class LEDColorTest(tk.Tk):
         else:
             message = "#L 00 00 00 00 7FFF\n"          
         #message = "#L00 00 00 00 FF\n"
-        self.send_to_ARDUINO(message)        
+        self.send_to_ARDUINO(message)
+
+    def update_library(self):
+        self.activeworkbook.update_library()
+    
+    def install_Betatest(self):
+        self.activeworkbook.install_Betatest()
+    
+    def library_status(self):
+        self.activeworkbook.library_status()
+    
+    def install_fast_bootloader(self):
+        self.activeworkbook.install_fast_bootloader()
+        
+    def start_patternconf(self):
+        self.activeworkbook.start_patternconf()
+    
+    def send_to_patternconf(self):
+        self.activeworkbook.send_to_patternconf()
+    
+    def receiver_from_patternconf(self):
+        self.activeworkbook.receiver_from_patternconf()
         
     def ExitProg(self):
         self.cancel()
@@ -527,8 +619,11 @@ class LEDColorTest(tk.Tk):
         self.SaveConfigData()
         self.SaveParamData()
         filedir = self.mainfile_dir # os.path.dirname(os.path.realpath(__file__))
-        temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)
-        self.saveLEDTabtoFile(temp_ledeffecttable_filename)
+        #temp_ledeffecttable_filename = os.path.join(filedir,self.tempLedeffecttableFilname)
+        #self.saveLEDTabtoFile(temp_ledeffecttable_filename)
+        for wb in P01.Workbooks:
+            temp_workbook_filename = os.path.join(filedir,self.tempworkbookFilname+"_"+wb.Name)
+            wb.Save(filename=temp_workbook_filename)        
         self.close_notification()
         
     def cancel_step2_without_save(self):
@@ -572,7 +667,7 @@ class LEDColorTest(tk.Tk):
     # ----------------------------------------------------------------
     def cancel(self):
         logging.debug("Cancel")
-        if self.paramDataChanged:
+        if self.check_data_changed():
             answer = tk.messagebox.askyesnocancel ('Das Programm wird beendet','Daten wurden verändert. Sollen die Daten gesichert werden?',default='no')
             if answer == None:
                 return # no cancelation
@@ -619,17 +714,17 @@ class LEDColorTest(tk.Tk):
     # ----------------------------------------------------------------        
     def TabChanged(self,_event=None):
         
-        oldtab_name = self.currentTabClass
-        if oldtab_name != "":
-            oldtab = self.nametowidget(oldtab_name)
-            oldtab.tabunselected()
+        self.oldTabName = self.currentTabClass
+        if self.oldTabName != "":
+            self.oldtab = self.nametowidget(self.oldTabName)
+            self.oldtab.tabunselected()
         newtab_name = self.container.select()
         if newtab_name != "":
             newtab = self.nametowidget(newtab_name)
             self.currentTabClass = newtab_name
             self.current_tab = newtab
             newtab.tabselected()
-        logging.debug("TabChanged %s - %s",oldtab_name,newtab_name)
+        logging.debug("TabChanged %s - %s",self.oldTabName,newtab_name)
 
     # ----------------------------------------------------------------
     # setParamDataChanged
@@ -2160,7 +2255,7 @@ class LEDColorTest(tk.Tk):
         return value
         
     
-    def determine_filepath(filename_key):
+    def determine_filepath(self,filename_key):
         #macrodata = self.MacroDef.data.get("StartPage",{})
         #filename = macrodata.get(filename_key,"")
         filename = self.get_macrodef_data("StartPage",filename_key)
@@ -2385,6 +2480,84 @@ class LEDColorTest(tk.Tk):
         if ThreadEvent:
             ThreadEvent.set()
         #time.sleep(1)
+        
+        
+    def _send_ledcolor_to_ARDUINO(self, lednum, ledcount, ledcolor):
+        lednum_int = int(lednum)
+        lednum_int += self.LED_baseadress
+        if self.mobaledlib_version == 1:
+            message="#L"
+        else:
+            message="#L "
+        message = message + '{:02x}'.format(lednum_int) + " " + ledcolor[1:3] + " " + ledcolor[3:5] + " " + ledcolor[5:7] + " " + '{:02x}'.format(ledcount) + "\n"
+        self.send_to_ARDUINO(message)
+        time.sleep(ARDUINO_WAITTIME)
+        
+    def led_off(self,_event=None):
+    # switch off all LED
+        self.ledhighlight = False
+        if self.mobaledlib_version == 1:
+            message = "#L00 00 00 00 FF\n"
+        else:
+            message = "#L 00 00 00 00 7FFF\n"
+        self.send_to_ARDUINO(message)        
+        
+    def blinking_on_off(self,lednum,ledcount,seq=False):
+    # switch off all LED
+        self.LED_flash_sequence=seq
+        if self.ledhighlight:
+            self.ledhighlight = False
+            self.led_off()    
+        else:
+            self._highlight_led(lednum, ledcount)    
+            
+    def _highlight_led(self,lednum, ledcount):
+        if self.ledhighlight: # onblink is already running, change only lednum and ledcount
+            # reset all blinking led with their colors
+            #for i in range(self.on_ledcount):
+            #    lednum_str = '{:03}'.format(self.on_lednum+i)
+            #    self._send_ledcolor_to_ARDUINO(lednum_str,1,self.controller.ledtable.get(lednum_str,"#000000"))
+            #    time.sleep(ARDUINO_WAITTIME)
+            #set the blinking led to highlight
+            self._send_ledcolor_to_ARDUINO(self.on_lednum,self.on_ledcount,"#000000")
+            self._send_ledcolor_to_ARDUINO(lednum, ledcount, "#FFFFFF")
+            # save current lednum and led count
+            self.on_lednum_seq=lednum
+            self.on_lednum = lednum
+            self.on_ledcount = ledcount
+            self.on_ledon = True
+        else:
+            self.ledhighlight = True
+            self.on_lednum_seq=lednum
+            self.on_led_doubleflash = True
+            self.on_lednum = lednum
+            self.on_ledcount = ledcount
+            self.on_ledon = True       
+            self.onblink_led()
+
+         
+    def onblink_led(self):
+        if self.ledhighlight:
+            lednum=self.on_lednum
+            ledcount=self.on_ledcount
+            if self.on_ledon:
+                if self.LED_flash_sequence and ledcount>1:
+                    if self.on_led_doubleflash:
+                        self.on_led_doubleflash=False
+                    else:
+                        self.on_lednum_seq+=1
+                    if self.on_lednum_seq>lednum+ledcount-1:
+                        self.on_lednum_seq=lednum
+                        self.on_led_doubleflash=True
+                    lednum = self.on_lednum_seq
+                    ledcount=1
+                self._send_ledcolor_to_ARDUINO(lednum, ledcount, "#FFFFFF")
+                self.on_ledon = False
+                self.after(int(500/BLINKFRQ),self.onblink_led)
+            else:
+                self._send_ledcolor_to_ARDUINO(lednum, ledcount, "#000000")
+                self.on_ledon = True
+                self.after(int(500/BLINKFRQ),self.onblink_led)    
 
 
 class SerialThreadx(threading.Thread):

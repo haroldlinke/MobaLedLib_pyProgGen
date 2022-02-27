@@ -691,8 +691,11 @@ class ColorCheckPage(tk.Frame):
  
     def tabselected(self):
         logging.debug("Tabselected: %s",self.tabname)
-        if self.controller.currentTabClass == "ConfigurationPage":
+        if "configurationpage" in self.controller.oldTabName:
             self._update_cor_rgb()
+        if "prog_generator" in self.controller.oldTabName:
+            self.update_palette_from_coltab(self.controller.coltab)
+            
         #self.controller.currentTabClass = self.tabClassName
         #self.controller.send_to_ARDUINO("#BEGIN")
         #time.sleep(ARDUINO_WAITTIME)
@@ -780,6 +783,19 @@ class ColorCheckPage(tk.Frame):
     # ----------------------------------------------------------------
     # End of Standardprocedures for every tabpage
     # ----------------------------------------------------------------    
+    def update_palette_from_coltab(self,Colortable):
+        print("Palette:",self.palette)
+        
+        for index in range(0,len(Colortable)):
+            print("ColTab:", Colortable(index).r,Colortable(index).g,Colortable(index).b)
+       
+        index = 0
+        for key in self.palette.keys():
+            self.palette[key] = rgb_to_hexa(Colortable(index).r,Colortable(index).g,Colortable(index).b)
+            index = index+1
+        print("Palette:",self.palette)
+        self._update_preview()
+        return
     
 
     def bind_right_click_menu_to_palettelabel(self, palettelabel):
@@ -992,7 +1008,21 @@ class ColorCheckPage(tk.Frame):
                 self.controller.cancel()
                 return
             else:
-                return    
+                return
+        else:
+            answer = tk.messagebox.askyesnocancel ('Zurück zur ColTab','Soll die Farbbearbeitung beendet und zurück zur Tabelle gewechselt werden?',default='yes')
+            if answer == None:
+                return # no cancelation
+            if answer:
+                if not self.controller.paramDataChanged:
+                    answer = tk.messagebox.askyesno ('Zurück zur ColTab','Sie haben keine Daten geändert.\nIst das richtig (<ja> ancklicken)\n oder haben Sie vergessen, die Änderungen in der Palette zu speichern und möchten dies nachholen - mit <Rechter Maustaste>? (<Nein> ancklicken)',default='yes')
+                    if answer == False:
+                        return # no cancelation                   
+                self.controller.checkcolor_callback(self.palette)
+                self.controller.showFramebyName("ProgGeneratorPage")
+                return
+            else:
+                return
         
         effecttestpage_frame = self.controller.getFramebyName("EffectTestPage")
         if effecttestpage_frame:

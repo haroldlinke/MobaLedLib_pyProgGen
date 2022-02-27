@@ -1,37 +1,52 @@
-# MobaLedLib_pyProgGen
-Python based Programgenerator for the MobaLedLib
+# MobaLedLib_pyProgGen Proof of Concept
+Proof of Concept of Python based Programgenerator for the MobaLedLib
 
-Version für den Betatest.
 
 Requirements:
-MobaledLib 2.1.3 has to be installed
+MobaledLib 3.1.0 has to be installed
 
-Installation option 1: Via MLL Program Generator Excel file
-1. Open the MLL Prog_Generator Excel file
-2. Click on the "Optionen"-Button
-3. Click on "LED_Farbtest starten" - this action downloads the latest pyProgen program if not already downloaded
-4. pyProgGen starts with the "LED Farbtest"-page
-5. you can now select the other function tabs of PyProggen
 
-Installation option 2: Exe File
+
+Installation using Python files
 1. search for the MLL-subfolder LEDs_Autoprog - this folder must contain the file "LEDs_AutoProg.ino"
 2. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
-3. download the pyProg_Generator_MobaLedLib.exe file to the Subfolder LEDs_Autoprog\pyProg_Generator_MobaLedLib
-4. open the folder MobaLedLib\V2.x.xpyLEDs_Autoprog\pyProg_Generator_MobaLedLib
-5. start the program file: pyProg_Generator_MobaLedLib.exe
-6. continue with first configuration described below
-
-Installation option 3: Python files - e.g. for LINUX and MAC
-1. search for the MLL-subfolder LEDs_Autoprog - this folder must contain the file "LEDs_AutoProg.ino"
-2. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
-3. Clone MobaLedLib_PyProgGen to the folder pyProg_Generator_MobaLedLib - the file pyProg_Generator_MobaLedLib.py must be in this folder
-4. open the folder pyProg_Generator_MobaLedLib
-5. start the Python file: pyProg_Generator_MobaLedLib.py
-6. continue with first configuration described below
+3. create a subfolder Python
+4. Clone MobaLedLib_PyProgGen to the folder pyProg_Generator_MobaLedLib/Python - the file pyProg_Generator_MobaLedLib.py must be in this folder
+5. or download the branch as ZIP-file: unpack the ZIP file and copy the contents of the folder MobaLedLib_pyProgGen-4.0 into the folder pyProg_Generator_MobaLedLib/Python
+6. open the folder pyProg_Generator_MobaLedLib/Python
+7. start the Python file: pyProg_Generator_MobaLedLib.py
+8. continue with first configuration described below
 
 First configuration of PyProgGen:
-1. open the tab "ARDUINO Einstellungen" - pyProgGen tries to find the connected ARDUINOs and determines the typ and COM port. If only one ARDUINO is found the com port is automatically selected. You can chnage this selection of the ARDUINO and the ARDUINO Type - save the changes - if the com-port is not included in the list it is possible to enter the port string by hand
+1. open the tab "ARDUINO Einstellungen" - pyProgGen tries to find the connected ARDUINOs and determines the typ and COM port. If only one ARDUINO is found the com port is automatically selected. You can change this selection of the ARDUINO and the ARDUINO Type - save the changes - if the com-port is not included in the list it is possible to enter the port string by hand
 2. For other OS than Windows select the Check-box "Individuellen Pfad zur ARDUINO IDE verwenden and select the path to the ARDUINO IDE - the name in Windows is "ARDUINO_DEBUG.exe" for all other OS "arduino"
 3. Do not forget to save the changed parameters with the button "geänderte Einstellungen übernehmen"
 
 Further information can be found in the MobaLedLib Wiki: https://wiki.mobaledlib.de/anleitungen/spezial/pyprogramgenerator
+
+
+This Version is only a Proof of Concept for a Python based MLL-Programm Generator that simulates the UserInterface of the Excel based Program Generator.
+
+The VBA code was translated 1 to 1 to Python using the Wedbased VB2PY-converter: http://vb2py.sourceforge.net/online_conversion.html
+
+The Tables are based on Tkintertable: https://github.com/dmnfarrell/tkintertable
+
+All Dialog-Buttons except Hide/Unhide and unhide all are implemented.
+The main Dialogs are implemented focusing on the main way to enter data and create the MACRO definition in the table.
+
+It is possible to use the dialog to create House/Gaslights Macros and Macros using the Generic Form UserFormOther. Editing of Macros via Dialog is possible too.
+Sending of Macros to ARDUINO is possible. The headerfile creation is using the original VBA logic. The sending to the ARDUINO is done using the Python based logic of the "old" pyProgramGenerator. Check the ARDUINO Einstellungen - Page if the ARDUINO is recognized correctly.
+
+Limitations:
+Editing individual cells is possible. There is no automatic update of the LEDNr columns yet.
+
+There are a lot of hidden issues with sytactical/logical differences between VBA and Python that may cause crashes or wrong behavior:
+- handling of global variables
+- handling of by_ref parameters
+- construction using automatic type translation: e.g. string = string + integer + string
+
+
+
+
+
+

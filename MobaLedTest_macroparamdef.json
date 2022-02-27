@@ -132,7 +132,7 @@
         "Max": "255",
         "Default": "",
         "Input Text": "ARDUINO blinken lassen",
-        "Hint": "ARDUINO blinkt, wenn er ausgewählt wird. \nACHTUNG: Das Reaktionszeit der Benutzeroberfläche wir dadurch langsamer"
+        "Hint": "ARDUINO blinkt, wenn er ausgewählt wird. \nACHTUNG: Die Reaktionszeit der Benutzeroberfläche wird dadurch langsamer"
     },
     "ARDUINOConnected": {
         "ParName": "ARDUINO-Connected",
@@ -380,7 +380,7 @@
         "ConfigName": "led_correction_b",
         "Min": "0",
         "Max": "255",
-        "Default": "239",
+        "Default": "1",
         "Input Text": "Blue",
         "Hint": "Blue"
     },
@@ -391,7 +391,7 @@
         "ConfigName": "led_correction_g",
         "Min": "0",
         "Max": "255",
-        "Default": "175",
+        "Default": "1",
         "Input Text": "Green",
         "Hint": "Green"
     },
@@ -402,7 +402,7 @@
         "ConfigName": "led_correction_r",
         "Min": "0",
         "Max": "255",
-        "Default": "255",
+        "Default": "1",
         "Input Text": "RED",
         "Hint": "RED"
     },
@@ -857,6 +857,40 @@
         "Input Text": "Reset Eingangsvariable",
         "Hint": "",
         "Implementation comment": ""
+    },
+    "Language": {
+        "ParName": "Language",
+        "Cnt": "1",
+        "Type": "Combo",
+        "Values": [
+            "Auto",
+            "Deutsch",
+            "English",
+            "Nederlands (Dutch)",
+            "French",
+            "Italian",
+            "Spanish",
+            "Denmark"
+        ],
+        "ValuesText": [
+            "Auto",
+            "Deutsch",
+            "English",
+            "Nederlands (Dutch)",
+            "French",
+            "Italian",
+            "Spanish",
+            "Denmark"
+        ],
+        "ConfigName": [
+            "languagename",
+            "language"
+        ],
+        "Min": "0",
+        "Max": "255",
+        "Default": "Auto",
+        "Input Text": "Sprache",
+        "Hint": "Sprache der Benutzeroberflaeche (Auto=Windowseinstellung)"
     },
     "LED": {
         "ParName": "LED",
@@ -1506,8 +1540,30 @@
         "Min": "0",
         "Max": "255",
         "Default": "",
-        "Input Text": "Python Programmgenerator anzeigen",
-        "Hint": "Python Programmgenerator anzeigen (verlangsamt die Anzeige)"
+        "Input Text": "Programmgenerator anzeigen",
+        "Hint": "Die ProgrammGenerator Seite wird nach Neustart angezeigt"
+    },
+    "ShowPatternGenerator": {
+        "ParName": "ShowPatternGenerator",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "ShowPatternGenerator",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Patterngenerator anzeigen (Test)",
+        "Hint": "Die Patterngenerator Seite wird nach Neustart angezeigt (nur zum Testen)"
+    },
+    "ShowHiddentables": {
+        "ParName": "ShowHiddentables",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "ShowHiddentables",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Programmgenerator versteckte Tabellen anzeigen",
+        "Hint": "Die versteckten Tabellen werden im ProgrammGenerator angezeigt"
     },
     "SerialMonitorInput": {
         "ParName": "SerialMonitorInput",
@@ -1530,13 +1586,8 @@
         "Max": "9999",
         "Persistent": "True",
         "Default": "1",
-<<<<<<< Updated upstream
         "Input Text": "Servo Modul Adresse",
-        "Hint": "Adresse des Servo Moduls (LED-Nummer des Anschlusses)"
-=======
-        "Input Text": "Servo Modul Addresse",
-        "Hint": "Addresse des Servomoduls (LED-Nummer des Anschlusses)"
->>>>>>> Stashed changes
+        "Hint": "Moduladresse des Servos (LED-Nummer des Anschlusses)"
     },
     "ServoChannel": {
         "ParName": "ServoChannel",
