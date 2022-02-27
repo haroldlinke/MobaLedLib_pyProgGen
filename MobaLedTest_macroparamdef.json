@@ -1730,7 +1730,7 @@
         "Type": "Combo",
         "Values": [
             "ColorCheckPage",
-            "EffectTestPage",
+            "Prog_GeneratorPage",
             "SerialMonitorPage",
             "StartPage"
         ],
