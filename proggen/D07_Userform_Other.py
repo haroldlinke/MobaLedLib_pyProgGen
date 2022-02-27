@@ -79,8 +79,8 @@ class UserForm_Other():
 
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
+        self.button1_txt = M09.Get_Language_Str("Abbrechen")
+        self.button2_txt = M09.Get_Language_Str("Ok")
         self.res = False
         self.UserForm_Res = ""
         
@@ -622,6 +622,8 @@ class UserForm_Other():
             self.ToolTip(label, text=param_tooltip)
             if param_max == "":
                 param_max = 255
+            if param_min == "":
+                param_min = 0
             paramvar = LimitVar(param_min, param_max, parent_frame)
             paramvar.set(param_default)
             paramvar.key = paramkey
@@ -816,8 +818,9 @@ class UserForm_Other():
         x_cordinate = winfo_x+int((screen_width/2) - (window_width/2))
         y_cordinate = winfo_y+int((screen_height/2) - (window_height/2))
         
-        self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                 
-        
+        #self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                 
+        self.top.geometry("+{}+{}".format(x_cordinate, y_cordinate))                 
+               
         if len(self.title) > 0: 
             self.top.title(self.title)
             
@@ -931,6 +934,8 @@ class UserForm_Other():
                     self.LED_Channel_TextBox_svar.set(str(Def_Channel))
                 
         # Add parameters
+        else:
+            self.LED_Channel_TextBox_svar = None
         
         self.Param_Frame = ttk.Frame(self.top)
 
@@ -1212,8 +1217,9 @@ class UserForm_Other():
                 P01.MsgBox(M09.Get_Language_Str('Fehler der Parameter \'') + p + M09.Get_Language_Str('\' wurde nicht gefunden'), vbCritical, M09.Get_Language_Str('Programm Fehler'))
             Res = Res + str(val) + ', '
         Res = self.FuncName + '(' + M30.DelLast(Res, 2) + ')'
-        if self.LED_Channel_TextBox_svar.get():
-            Res = Res + '$' + self.LED_Channel_TextBox_svar.get()
+        if self.LED_Channel_TextBox_svar:
+            if self.LED_Channel_TextBox_svar.get():
+                Res = Res + '$' + self.LED_Channel_TextBox_svar.get()
         fn_return_value = Res
         return fn_return_value
     

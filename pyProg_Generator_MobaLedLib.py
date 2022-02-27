@@ -352,11 +352,11 @@ class LEDColorTest(tk.Tk):
         optionsmenu.add_command(label="Status der Bibliotheken", command=self.library_status)
         optionsmenu.add_command(label="Schnelle Bootloader installieren", command=self.install_fast_bootloader)
         
-        patternconfmenu = tk.Menu(menu)
-        menu.add_cascade(label="Pattern Configurator", menu=patternconfmenu)
-        patternconfmenu.add_command(label="Starte Pattern Cofigurator", command=self.start_patternconf)
-        patternconfmenu.add_command(label="Daten an Pattern Conf senden", command=self.send_to_patternconf)
-        patternconfmenu.add_command(label="Daten von Pattern Conf empfangen", command=self.receiver_from_patternconf)
+        #patternconfmenu = tk.Menu(menu)
+        #menu.add_cascade(label="Pattern Configurator", menu=patternconfmenu)
+        #patternconfmenu.add_command(label="Starte Pattern Cofigurator", command=self.start_patternconf)
+        #patternconfmenu.add_command(label="Daten an Pattern Conf senden", command=self.send_to_patternconf)
+        #patternconfmenu.add_command(label="Daten von Pattern Conf empfangen", command=self.receiver_from_patternconf)
         
         helpmenu = tk.Menu(menu)
         menu.add_cascade(label="Hilfe", menu=helpmenu)

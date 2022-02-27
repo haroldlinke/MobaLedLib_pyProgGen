@@ -38,6 +38,8 @@
 import tkinter as tk
 from tkinter import ttk,messagebox
 
+import time
+
 from mlpyproggen.DefaultConstants import ARDUINO_WAITTIME,LARGE_FONT, SMALL_FONT, VERY_LARGE_FONT, PROG_VERSION,ARDUINO_LONG_WAITTIME
 #from mlpyproggen.configfile import ConfigFile
 from locale import getdefaultlocale
@@ -121,6 +123,7 @@ class Prog_GeneratorPage(tk.Frame):
         macrodata = self.controller.MacroDef.data.get(self.tabClassName,{})
         self.tabname = macrodata.get("MTabName",self.tabClassName)
         self.title = macrodata.get("Title",self.tabClassName)
+        self.Start_Compile_Time = 0
         
         #button1_text = macrodata.get("Button_1",self.tabClassName)
         #button2_text = macrodata.get("Button_2",self.tabClassName)
@@ -350,6 +353,7 @@ class Prog_GeneratorPage(tk.Frame):
     def write_stdout_to_text_window(self):
         if self.continue_loop:
             output = self.process.stdout.readline()
+            #print(P01.Format(int(time.time()), 'hh:mm:ss')," write_stdout-start")
     
             if output != '' and self.continue_loop:
                 try:
@@ -364,16 +368,75 @@ class Prog_GeneratorPage(tk.Frame):
                 self.rc = self.process.poll()
                 if self.rc==1:
                     self.arduinoMonitorPage.add_text_to_textwindow("\n******** "+self.ARDUINO_message3+" ********\n",highlight="Error")
+                    error_flag=True
                 else:
                     self.arduinoMonitorPage.add_text_to_textwindow("\n"+self.ARDUINO_message2+"\n*******************************************************\n",highlight="OK")
+                    error_flag=False
+                self.upload_to_ARDUINO_end(error_flag)
+                
+        #print(P01.Format(int(time.time()), 'hh:mm:ss')," write_stdout-end")
     
         if self.continue_loop:
             self.after(10,self.write_stdout_to_text_window)
+            
+    def EndProg(self):
+        #-------------------
+        # Is called in case of an fatal error
+        # Normaly this function should not be called because the
+        # global variables and dialog positions are cleared.
+        #ShowHourGlassCursor(False)
+        P01.Application.EnableEvents = True
+        P01.Application.ScreenUpdating = True
+        sys.exit(0)
+        
+    def Update_Compile_Time(self, Start=False):
+        #---------------------------------------------------------
+        #global Start_Compile_Time
+        # Is called by OnTime
+        print(P01.Format(int(time.time()), 'hh:mm:ss')," write_update_compile_time")
+        if self.Start_Compile_Time != 0 or Start:
+            if Start:
+                self.Start_Compile_Time = int(time.time())
+            else:
+                F00.StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(int(time.time()) - self.Start_Compile_Time, 'hh:mm:ss'))
+            P01.Application.OnTime(1000, self.Update_Compile_Time)
     
+        
+    def Stop_Compile_Time_Display(self):
+        #--------------------------------------
+        global Start_Compile_Time
+        self.upload_duration = int(time.time()) - self.Start_Compile_Time
+        self.Start_Compile_Time = 0
+        #P01.Unload(F00.StatusMsg_UserForm)
+        
+    def ClearStatusbar(self):
+        #--------------------------
+        # Is called by onTime to clear the status bar after a while
+        P01.set_statusmessage("")
+    
+        
+    def Show_Status_for_a_while(self, Txt, Duration=r'00:00:15'):
+        #-------------------------------------------------------------------------------------------
+        P01.set_statusmessage(Txt)
+        if Txt != r'':
+            P01.Application.OnTime(15000, self.ClearStatusbar)
+        else:
+            P01.Application.OnTime(15000, self.ClearStatusbar)    
+            
+    def upload_to_ARDUINO_end(self,error_flag):
+        pass
+        if error_flag:
+            P01.MsgBox(M09.Get_Language_Str('Es ist ein Fehler aufgetreten ;-(' + vbCr + vbCr + 'Zur Fehlersuche kann man die letzten Änderungen wieder rückgängig machen und es noch mal versuchen. ' + vbCr + vbCr + 'Kommunikationsprobleme erkennt man an dieser Meldung: ' + vbCr + '   avrdude: ser_open(): can\'t open device "\\\\.\\COM') + P01.Cells(M02.SH_VARS_ROW, ComPortColumn) + '":' + vbCr + M09.Get_Language_Str('   Das System kann die angegebene Datei nicht finden.' + vbCr + 'In diesem Fall müssen die Verbindungen überprüft und der Arduino durch einen neuen ersetzt werden.' + vbCr + vbCr + 'Der Fehler kann auch auftreten wenn der DCC/Selextrix Arduino noch nicht programmiert wurde.' + vbCr + 'Am besten man steckt den rechten Arduino erst dann ein wenn er benötigt wird.' + vbCr + vbCr + 'Wenn der Fehler nicht zu finden ist und immer wieder auftritt, dann kann ein Screenshot des ' + 'vorangegangenen Bildschirms (Nach oben scrollen so dass die erste Meldung nach dem Arduino Bild zu sehen ist) ' + 'zusammen mit dem Excel Programm und einer ausführlichen Beschreibung an ' + vbCr + '  MobaLedLib@gmx.de' + vbCr + 'geschickt werden.'), vbInformation, M09.Get_Language_Str('Fehler beim Hochladen des Programms'))
+            self.EndProg()
+        else:
+            self.Stop_Compile_Time_Display()
+            #Debug.Print('Compile and upload duration: ' + P01.Format(P01.Time() - Start, 'hh:mm:ss'))
+            self.Show_Status_for_a_while(M09.Get_Language_Str('Programm erfolgreich hochgeladen. Kompilieren und Hochladen dauerte ') + P01.Format(self.upload_duration, 'hh:mm:ss'), '00:02:00')
             
     def start_ARDUINO_program_Popen(self):
+        self.Update_Compile_Time(Start=True)
         try:
-            self.process = subprocess.Popen(self.startfile, stdout=subprocess.PIPE,stderr=subprocess.STDOUT,stdin = subprocess.DEVNULL)
+            self.process = subprocess.Popen(self.startfile, stdout=subprocess.PIPE,stderr=subprocess.STDOUT,stdin = subprocess.DEVNULL,shell=True)
             self.continue_loop=True
             self.write_stdout_to_text_window()
         except BaseException as e:

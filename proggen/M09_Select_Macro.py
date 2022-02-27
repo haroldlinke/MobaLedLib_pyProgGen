@@ -227,6 +227,7 @@ def __Proc_General(LEDs, Macro, Description, LedChannels, LED_Channel, Def_Chann
     Res = String()
 
     Param = Variant()
+    Res_LED_Channel = ""
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------------
     if Macro == '' or Macro == "<Abort>":
         return _ret
@@ -301,7 +302,7 @@ def __Get_PriorLine_LEDs(Row):
     while Row >= M02.FirstDat_Row:
         if M20.Row_is_Achtive(Row):
             _ret = P01.Cells(Row, M25.LEDs____Col)
-            return _ret
+            return _ret, Row
         Row = Row - 1
     return _ret, Row #*HL
 
@@ -519,7 +520,7 @@ def __SelectMacros_Sub():
                     PriorChan = P01.val(P01.Cells(PriorLine, M25.LED_Cha_Col))
                     if M20.Check_IsSingleChannelCmd(PriorLeds):
                         if PriorLeds == LEDs and PriorChan == P01.val(LED_Channel):
-                            Answ = P01.MsgBox(Replace(M09.Get_Language_Str('Achtung: Die LED Kanäle sind gleich wie der vorangegangenen Zeile (#1#)!' + vbCr + 'Das kann zu ungewollten Effekten führen.' + vbCr + 'Bei Funktionen welche einen Kanal nur kurzzeitig ansteuern kann das sinnvoll sein.' + vbCr + 'Ein Beispiel dafür ist die Ansteuerung von Sound Modulen. Hier steuern mehrere Tasten ' + 'den gleichen Kanal mit unterschiedlichen Werten an. Je nach abzuspielendem Sound wird ' + 'eine andere \'Helligkeit\' gesendet. Da die Tasten werden aber nicht gleichzeitig betätigt ' + 'werden ist das unproblematisch.' + vbCr + vbCr + 'Soll der neue Befehl die gleiche LED Adressieren wie der Vorangegangene Befehl?'), "#1#", PriorLine), vbQuestion + vbYesNoCancel, M09.Get_Language_Str('Überlappende Kanäle entdeckt'))
+                            Answ = P01.MsgBox(Replace(M09.Get_Language_Str('Achtung: Die LED Kanäle sind gleich wie der vorangegangenen Zeile (#1#)!' + vbCr + 'Das kann zu ungewollten Effekten führen.' + vbCr + 'Bei Funktionen welche einen Kanal nur kurzzeitig ansteuern kann das sinnvoll sein.' + vbCr + 'Ein Beispiel dafür ist die Ansteuerung von Sound Modulen. Hier steuern mehrere Tasten ' + 'den gleichen Kanal mit unterschiedlichen Werten an. Je nach abzuspielendem Sound wird ' + 'eine andere \'Helligkeit\' gesendet. Da die Tasten werden aber nicht gleichzeitig betätigt ' + 'werden ist das unproblematisch.' + vbCr + vbCr + 'Soll der neue Befehl die gleiche LED Adressieren wie der Vorangegangene Befehl?'), "#1#", str(PriorLine)), vbQuestion + vbYesNoCancel, M09.Get_Language_Str('Überlappende Kanäle entdeckt'))
                             _select5 = Answ
                             if (_select5 == vbYes):
                                 LEDs = '^ ' + LEDs

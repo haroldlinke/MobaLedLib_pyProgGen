@@ -858,6 +858,40 @@
         "Hint": "",
         "Implementation comment": ""
     },
+    "Language": {
+        "ParName": "Language",
+        "Cnt": "1",
+        "Type": "Combo",
+        "Values": [
+            "Auto",
+            "Deutsch",
+            "English",
+            "Nederlands (Dutch)",
+            "French",
+            "Italian",
+            "Spanish",
+            "Denmark"
+        ],
+        "ValuesText": [
+            "Auto",
+            "Deutsch",
+            "English",
+            "Nederlands (Dutch)",
+            "French",
+            "Italian",
+            "Spanish",
+            "Denmark"
+        ],
+        "ConfigName": [
+            "languagename",
+            "language"
+        ],
+        "Min": "0",
+        "Max": "255",
+        "Default": "Auto",
+        "Input Text": "Sprache",
+        "Hint": "Sprache der Benutzeroberflaeche (Auto=Windowseinstellung)"
+    },
     "LED": {
         "ParName": "LED",
         "Cnt": "67",

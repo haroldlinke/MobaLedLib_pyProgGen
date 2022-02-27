@@ -304,18 +304,25 @@ class TableCanvas(Canvas):
         x2, y2 = self.canvasx(w), self.canvasy(h)
         return x1, y1, x2, y2
 
-    def getRowPosition(self, y):
+    def getRowPosition(self, y, ignorehiddenrows=False):
         """Get current row from canvas position"""
 
         h = self.rowheight
         y_start = self.y_start
         y_test = int(y)-y_start
         y_curr = 0
-        for row in range(self.rows):
-            if not row in self.model.hiderowslist:
-                y_curr += h
-                if y_curr >=y_test:
-                    break
+        if ignorehiddenrows:
+            row = int((int(y)-y_start)/h)
+            if row < 0:
+                row = 0
+            if row > self.rows:
+                row = self.rows        
+        else:
+            for row in range(self.rows):
+                if not row in self.model.hiderowslist:
+                    y_curr += h
+                    if y_curr >=y_test:
+                        break
         #row1=row
                     
         #row = (int(y)-y_start)/h
@@ -1982,19 +1989,26 @@ class TableCanvas(Canvas):
             
     def drawShape(self,shape):
         #print("drawShapes:", self.model.modelname,shape.TopLeftCell_Row,shape.tablename)
-        if shape.rectidx>0:
-            self.delete(shape.rectidx)
-        if shape.textidx>0:
-            self.delete(shape.textidx)
-        if shape.Shapetype == "rect":
-            if shape.TextFrame2 == "":
-                shape.TextFrame2 = "0"
-            shape.rectidx = self.create_rectangle(shape.Left,shape.Top,shape.Left+shape.Width,shape.Top+shape.Height,fill=shape.Fill,tags=(shape.masteridx,shape.Name,"Shape"))
-            shape.textidx = self.create_text(int(shape.Left+shape.Width/2),int(shape.Top+shape.Height/2),width=shape.Left+shape.Width,text=shape.TextFrame2,tags=(shape.masteridx,shape.Name,"Shape"))
-            self.tag_raise(shape.rectidx)
-            self.tag_raise(shape.textidx)
-            self.tag_bind(shape.rectidx,"<Button-1>", shape.shape_button_1)
-            self.tag_bind(shape.textidx,"<Button-1>", shape.shape_button_1)
+        shapeY = shape.Top
+        shaperow = self.getRowPosition(shapeY, ignorehiddenrows=True)
+        
+        if not shaperow in self.model.hiderowslist:
+            numhiddenrows = self.calc_nohidenrows(shaperow)
+            shapeY = shapeY - numhiddenrows*self.rowheight
+        
+            if shape.rectidx>0:
+                self.delete(shape.rectidx)
+            if shape.textidx>0:
+                self.delete(shape.textidx)
+            if shape.Shapetype == "rect":
+                if shape.TextFrame2 == "":
+                    shape.TextFrame2 = "0"
+                shape.rectidx = self.create_rectangle(shape.Left,shapeY,shape.Left+shape.Width,shapeY+shape.Height,fill=shape.Fill,tags=(shape.masteridx,shape.Name,"Shape"))
+                shape.textidx = self.create_text(int(shape.Left+shape.Width/2),int(shapeY+shape.Height/2),width=shape.Left+shape.Width,text=shape.TextFrame2,tags=(shape.masteridx,shape.Name,"Shape"))
+                self.tag_raise(shape.rectidx)
+                self.tag_raise(shape.textidx)
+                self.tag_bind(shape.rectidx,"<Button-1>", shape.shape_button_1)
+                self.tag_bind(shape.textidx,"<Button-1>", shape.shape_button_1)
 
     def drawText(self, row, col, celltxt, fgcolor=None, align=None,font=None):
         """Draw the text inside a cell area"""

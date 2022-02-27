@@ -915,7 +915,7 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         ArduName =  M25.Page_ID
     #P01.Unload(UserForm_Options) # already done
     F00.StatusMsg_UserForm.ShowDialog(Replace(M09.Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + vbCr + M30.FileNameExt(InoName), '...')
-    Update_Compile_Time(True)
+    #Update_Compile_Time(True)
     
     """
     
@@ -976,7 +976,8 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         #*HL Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
         PG.dialog_parent.upload_to_ARDUINO()
         Res = M40.Success
-        Stop_Compile_Time_Display()
+        #Stop_Compile_Time_Display()
+        return True
     # Bring Excel to the top                                                ' 19.05.20:
     # Is not working if an other application has be moved above Excel with Alt+Tab
     # But this is a feature of Windows.

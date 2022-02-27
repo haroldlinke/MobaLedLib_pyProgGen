@@ -37,17 +37,19 @@ from vb2py.vbdebug import *
 import tkinter as tk
 from tkinter import ttk
 import proggen.Prog_Generator as PG
+import proggen.M09_Language as M09
+
 
 class UserForm_Description:
     def __init__(self):
-        self.title = "Eingabe der Beschreibung"
-        self.label1_txt = "Zu jeder Zeile sollte eine aussagekräftige Beschreibung eingegeben werden damit man später noch versteht was die Funktion macht und welches Haus oder andere Objekt von der Zeile gesteuert wird. Die Beschreibung kann beliebig lang sein. Es können auch mehrere Zeilen verwendet werden. \n\nMögliche Angaben:\n* Beschreibung des Objekts (z.B.: Hauptbahnhof)\n* Angaben zur Funktion (z.B: Wird automatisch bei Dunkelheit aktiviert)\n* ..."
-        self.label2_txt = "Mit Shift+Enter wird eine neue Zeile begonnen"
+        self.title = M09.Get_Language_Str("Eingabe der Beschreibung")
+        self.label1_txt = M09.Get_Language_Str("Zu jeder Zeile sollte eine aussagekräftige Beschreibung eingegeben werden damit man später noch versteht was die Funktion macht und welches Haus oder andere Objekt von der Zeile gesteuert wird. Die Beschreibung kann beliebig lang sein. Es können auch mehrere Zeilen verwendet werden. \n\nMögliche Angaben:\n* Beschreibung des Objekts (z.B.: Hauptbahnhof)\n* Angaben zur Funktion (z.B: Wird automatisch bei Dunkelheit aktiviert)\n* ...")
+        self.label2_txt = M09.Get_Language_Str("Mit Shift+Enter wird eine neue Zeile begonnen")
         #self.label3_txt = "Der Dialog muss dazu nicht beendet werden.Zusätzliche Zeilen können mit der Schaltfläche ""Zeile einfügen"" hinzugefügt werden. Wenn die Zeile bereits Daten enthält, dann werden diese ab der ausgewählten Position vervollständigt. "
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
+        self.button1_txt = M09.Get_Language_Str("Abbrechen")
+        self.button2_txt = M09.Get_Language_Str("Ok")
         self.Userform_res = ""
  
  

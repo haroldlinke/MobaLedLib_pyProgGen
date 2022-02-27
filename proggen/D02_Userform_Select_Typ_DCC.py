@@ -46,17 +46,17 @@ import proggen.M09_Language as M09
 class UserForm_Select_Typ_DCC:
     def __init__(self):
         
-        self.title = "Einführung und Auswahl der Zielzeile"
-        self.label1_txt = "Ein Steuereingang von der Zentrale kann entweder als Ein- / Ausschalter oder als Taster (Rot/Grün) interpretiert werden.\n\n* Ein- / Ausschalter verwendet man z.B. bei Häusern.\n* Taster werden Beispielsweise bei Sounds eingesetzt.\n\nBeim Taster können zwei verschiedene Aktionen über einer Adresse ausgelöst werden.\nAnstelle von ""Rot"" und ""Grün"" kann je nach Zentrale auch ""Abbiegen"" oder ""Gerade"", 0 oder 1 angezeigt werden. "
-        self.label2_txt = " ""Rot"" und ""Grün"" ist symbolisch zu verstehen und hat nichts mit den LED Farben zu tun."
+        self.title = M09.Get_Language_Str("Einführung und Auswahl der Zielzeile")
+        self.label1_txt = M09.Get_Language_Str('Ein Steuereingang von der Zentrale kann entweder als \nEin- / Ausschalter oder als Taster (Rot/Grün) interpretiert werden.\n\n* Ein- / Ausschalter verwendet man z.B. bei Häusern. \n* Taster werden Beispielsweise bei Sounds eingesetzt.\n\nBeim Taster können zwei verschiedene Aktionen über einer Adresse ausgelöst werden.\nAnstelle von "Rot" und "Grün" kann je nach Zentrale auch "Abbiegen" oder "Gerade",0 oder 1 angezeigt werden.')
+        self.label2_txt = M09.Get_Language_Str('"Rot" und "Grün" ist symbolisch zu verstehen und hat nichts mit den LED Farben zu tun.')
         #self.label3_txt = "Der Dialog muss dazu nicht beendet werden.Zusätzliche Zeilen können mit der Schaltfläche ""Zeile einfügen"" hinzugefügt werden. Wenn die Zeile bereits Daten enthält, dann werden diese ab der ausgewählten Position vervollständigt. "
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
-        self.radiobtn1_txt = "An / Aus"
-        self.radiobtn2_txt = "Rot"
-        self.radiobtn3_txt = "Grün"
+        self.button1_txt = M09.Get_Language_Str("Abbrechen")
+        self.button2_txt = M09.Get_Language_Str("Ok")
+        self.radiobtn1_txt = M09.Get_Language_Str("An / Aus")
+        self.radiobtn2_txt = M09.Get_Language_Str("Rot")
+        self.radiobtn3_txt = M09.Get_Language_Str("Grün")
         self.res = tk.IntVar()
         self.Userform_res = ""
         

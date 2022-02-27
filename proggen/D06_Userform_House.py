@@ -71,26 +71,27 @@ gaslights_button_list_str = 'NEON_LIGHT,NEON_LIGHT1,NEON_LIGHT2,NEON_LIGHT3,NEON
 
 class UserForm_House:
     def __init__(self,MacroName="House"):
-        self.title = 'House: Simulation eines "belebten" Hauses  in dem zufällig und abwechselnd  nur einige der Räume beleuchtet sind'
-        self.Description_Label_txt = 'Das ist vermutlich die am häufigsten genutzte Funktion auf einer Modelleisenbahn. Mit Ihr wird ein „belebtes“ Haus nachgebildet. In diesem Haus sind zufällig nur einige der Räume beleuchtet. Die Farbe und die Helligkeit der Beleuchtungen können individuell vorgegeben werden. Es lassen sich auch bestimmte Effekte wie Fernseher flackern oder ein offener Kamin für einzelne Räume konfigurieren. Außerdem kann das Einschaltverhalten angepasst werden (Neonröhrenflackern oder langsam heller werdende Gaslampen)'
-        self.Label_Beleuchtungstypen_txt = "Mögliche Beleuchtungstypen:"
-        self.Label_NotchangableCol_txt = "* = Unveränderbare Farben\nAlle anderen Farben können mit dem Set_ColTab Befehl\nund dem Farbtest Programm angepasst werden.\nDie Candle Farben werden über Set_CandleTab angepasst."
-        self.label4_txt = "Ausgewählte Beleuchtungen:"
-        self.label5_txt = "Mit einem Klick in das Feld unten kann die Position zum Einfügen / Löschen der Beleuchtungen gewählt werden. "
-        self.RoomCnt_Label_txt = "Anzahl:0"
-        self.Label1_MinCnt_txt = "Minimale Anzahl der zufällig aktiven Beleuchtungen"
-        self.Label2_MaxCnt_txt = "Maximale Anzahl der zufällig aktiven Beleuchtungen"
-        self.Used_RGB_LEDs_Label_txt = "RGB LED Kanäle: 0"
-        self.MinTime_Label_txt ="Minimale Zeit bis zur nächsten Änderung [sek]"
-        self.MaxTime_Label_txt ="Maximale Zeit bis zur nächsten Änderung [sek]"
-        self.Label9_LED_Channel_txt = "LED Kanal"
-        self.IndividualTimes_CheckBox_txt = "Individuelle Zeiten"
-        self.button_delete_room_txt = "Lösche Raum"
+        self.title = M09.Get_Language_Str('House: Simulation eines "belebten" Hauses  in dem zufällig und abwechselnd  nur einige der Räume beleuchtet sind')
+        self.Description_Label_txt =  M09.Get_Language_Str('Das ist vermutlich die am häufigsten genutzte Funktion auf einer Modelleisenbahn. Mit Ihr wird ein „belebtes“ Haus nachgebildet. In diesem Haus sind zufällig nur einige der Räume beleuchtet. Die Farbe und die Helligkeit der Beleuchtungen können individuell vorgegeben werden. Es lassen sich auch bestimmte Effekte wie Fernseher flackern oder ein offener Kamin für einzelne Räume konfigurieren. Außerdem kann das Einschaltverhalten angepasst werden (Neonröhrenflackern oder langsam heller werdende Gaslampen).')
+        self.Label_Beleuchtungstypen_txt =  M09.Get_Language_Str("Mögliche Beleuchtungstypen:")
+        self.Label_NotchangableCol_txt =  M09.Get_Language_Str("* = Unveränderbare Farben\n      Alle anderen Farben können mit dem Set_ColTab Befehl\n      und dem Farbtest Programm angepasst werden.\n      Die Candle Farben werden über Set_CandleTab angepasst.")
+        self.label4_txt =  M09.Get_Language_Str("Ausgewählte Beleuchtungen:")
+        self.label5_txt =  M09.Get_Language_Str("Mit einem Klick in das Feld unten kann die Position zum Einfügen / Löschen der Beleuchtungen gewählt werden. ")
+        self.RoomCnt_Label_txt =  M09.Get_Language_Str("Anzahl:0")
+        self.Label1_MinCnt_txt =  M09.Get_Language_Str("Minimale Anzahl der zufällig aktiven Beleuchtungen")
+        self.Label2_MaxCnt_txt =  M09.Get_Language_Str("Maximale Anzahl der zufällig aktiven Beleuchtungen")
+        self.Used_RGB_LEDs_Label_txt =  M09.Get_Language_Str("RGB LED Kanäle: 0")
+        self.MinTime_Label_txt = M09.Get_Language_Str("Minimale Zeit bis zur nächsten Änderung [sek]")
+        self.MaxTime_Label_txt = M09.Get_Language_Str("Maximale Zeit bis zur nächsten Änderung [sek]")
+        self.Label9_LED_Channel_txt =  M09.Get_Language_Str("LED Kanal")
+        self.IndividualTimes_CheckBox_txt =  M09.Get_Language_Str("Individuelle Zeiten")
+        self.button_delete_room_txt =  M09.Get_Language_Str("Lösche Raum")
+        self.InpInversBox_txt = M09.Get_Language_Str("Eingang invertieren")
                 
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
+        self.button1_txt =  M09.Get_Language_Str("Abbrechen")
+        self.button2_txt =  M09.Get_Language_Str("Ok")
         self.Dist_Nr_R = ""
         self.Conn_Nr_R = ""
         self.res = False
@@ -149,7 +150,7 @@ class UserForm_House:
         
         self.InpInversBox_svar = tk.StringVar(self.controller)
         self.InpInversBox_svar.set(0)
-        self.InpInversBox = tk.Checkbutton(self.top, offvalue=0, onvalue=1, text="Eingang invertieren",variable=self.InpInversBox_svar)
+        self.InpInversBox = tk.Checkbutton(self.top, offvalue=0, onvalue=1, text= self.InpInversBox_txt,variable=self.InpInversBox_svar)
         
         self.MinTime_TextBox_svar = tk.StringVar(self.controller)
         self.MinTime_TextBox_svar.set("1")
@@ -187,6 +188,8 @@ class UserForm_House:
         Txt = ""
         self.SelectedRooms_TextBox = tk.Text(self.top,height=3,width=40,wrap="word")  
         self.SelectedRooms_TextBox.insert("end",Txt)
+        
+        self.SelectedRooms_TextBox.bind("<Key>", self.dummy_proc)
         
         self.button_delete_room = tk.Button(self.top, text=self.button_delete_room_txt, command=self.delete_room,width=10,font=("Tahoma", 11))
 
@@ -265,7 +268,11 @@ class UserForm_House:
                                    ' SINGLE_LED3D:3        SINGLE_LED3D:3        SINGLE_LED3D:3')
 
         self.__UserForm_Initialize()
-        P01.Center_Form(self.top)        
+        P01.Center_Form(self.top)
+        
+    def dummy_proc(self, event=None):
+        print(event)
+        pass
  
     def ok(self, event=None):
         self.IsActive = False
@@ -284,7 +291,7 @@ class UserForm_House:
         self.res = False
         
     def delete_room(self, event=None):
-        pass
+        self.__DelRoom_Button_Click()
 
     def show(self):
         
@@ -513,7 +520,7 @@ class UserForm_House:
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Y - ByVal 
     def __SelectedRooms_TextBox_MouseDown(self, Button, Shift, X, Y):
         #---------------------------------------------------------------------------------------------------------------------------------
-        with_1 = SelectedRooms_TextBox
+        with_1 = self.SelectedRooms_TextBox
         for Word in Split(with_1.Text, ','):
             ChrCnt = Len(Txt) + 0.5 + Len(Word) / 2
             if with_1.SelStart < ChrCnt:
@@ -522,7 +529,7 @@ class UserForm_House:
             Txt = Txt + Word + ','
         with_1.SelStart = Len(with_1.Text)
     
-    def __Correct_Selection(self):
+    def __Correct_Selection(self,direction=" -1 chars"):
         
         fn_return_value = False
         #-----------------------------------
@@ -531,15 +538,19 @@ class UserForm_House:
         
         #if SelectedRooms_TextBox.SelLength > 0:
         #    SelectedRooms_TextBox.SelLength = 0
-        self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos + " -1 chars")
+        self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos + direction)
         
+        if direction == " -1 chars":
+            loopend = "1.0"
+        else:
+            loopend = self.SelectedRooms_TextBox.index(tk.END + " -1 chars")
 
-        while curpos !="1.0":
+        while curpos !=loopend:
             curchar = self.SelectedRooms_TextBox.get(curpos)
             if curchar == ",":
                 self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos)
                 return False
-            self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos + " -1 chars") #SelectedRooms_TextBox.SelStart = SelectedRooms_TextBox.SelStart - 1
+            self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos + direction) #SelectedRooms_TextBox.SelStart = SelectedRooms_TextBox.SelStart - 1
             curpos = self.SelectedRooms_TextBox.index(tk.INSERT)
         fn_return_value = False
         self.__Set_Fokus_To_Selected_Rooms_to_Show_Cursor()
@@ -555,29 +566,22 @@ class UserForm_House:
         if self.SelectedRooms_TextBox.get(1.0, tk.END+"-1c") == '':
             self.__Set_Fokus_To_Selected_Rooms_to_Show_Cursor()
             return
-        if self.__Correct_Selection():
-            return
-        e = SelectedRooms_TextBox.SelStart
-        if e == 0:
-            self.__Set_Fokus_To_Selected_Rooms_to_Show_Cursor()
-            return
-        p = e - 1
+        curpos1 = self.SelectedRooms_TextBox.index(tk.INSERT)
+        
+        curchar = self.SelectedRooms_TextBox.get(curpos1)
+        if curchar == ",":
+            self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos1 + "-1c")     
+        
+        dummy=self.__Correct_Selection()
+        curpos2 = self.SelectedRooms_TextBox.index(tk.INSERT)
+        self.SelectedRooms_TextBox.mark_set(tk.INSERT, curpos1)
+        dummy=self.__Correct_Selection(direction=" +1 chars")
+        curpos3 = self.SelectedRooms_TextBox.index(tk.INSERT)
+             
+        self.SelectedRooms_TextBox.delete(curpos2,curpos3)
+        
         Txt = self.SelectedRooms_TextBox.get(1.0, tk.END+"-1c")
-        while Mid(Txt, p, 1) != ',':
-            p = p - 1
-            if p <= 0:
-                break
-        Txt = Trim(Left(Txt, p) + Mid(Txt, e + 1))
-        if Right(Txt, 1) == ',':
-            Txt = M02.DelLast(Txt)
-        self.SelectedRooms_TextBox.insert(1.0, Txt)
-        #SelectedRooms_TextBox.SelStart = p
-        # Delete the last element in LED_CntList
-        Txt = self.__LED_CntList
-        if Right(Txt, 1) == ' ':
-            Txt = Left(Txt, Len(Txt) - 1)
-        while Right(Txt, 1) != ' ' and Len(Txt) > 0:
-            Txt = Left(Txt, Len(Txt) - 1)
+                
         self.__LED_CntList = Txt
         self.__Set_RoomCount(self.__Count_Rooms())
     

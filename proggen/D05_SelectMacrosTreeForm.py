@@ -75,14 +75,14 @@ STD_FONT = ("SANS_SERIF",10)
 
 class SelectMacrosTreeform:
     def __init__(self):
-        self.title = "Auswahl des Makros"
-        self.label1_txt = "Macroauswahl:"
-        self.label2_txt = "Filter"
+        self.title = M09.Get_Language_Str("Auswahl des Makros")
+        self.label1_txt = M09.Get_Language_Str("Makroauswahl:")
+        self.label2_txt = M09.Get_Language_Str("Filter")
         #self.label3_txt = ""
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
+        self.button1_txt = M09.Get_Language_Str("Abbrechen")
+        self.button2_txt = M09.Get_Language_Str("Ok")
         self.res = False
         self.SelectMame = ""
         self.SelectRow = 0
@@ -259,7 +259,7 @@ class SelectMacrosTreeform:
         self.tree = ScrollableTV(TreeFrame, height=20, columns=("description"),show="tree") #ttk.Treeview(TreeFrame, columns=('Values'))
         #style = ttk.Style()
         #style.configure("Treeview", font=ttk.STD_FONT)
-        self.tree.heading("description", text="Beschreibung", anchor="w")
+        self.tree.heading("description", text=M09.Get_Language_Str("Beschreibung"), anchor="w")
         #self.tree.heading("dummy", text="dummy", anchor="w")
          
         #tree.column("#0", width=200, stretch=False)

@@ -329,6 +329,7 @@ def __Update_Language_in_All_Sheets():
 
 def Check_SIMULATE_LANGUAGE():
     #-----------------------------------
+    global __Simulate_Language
     if __Simulate_Language >= 0:
         P01.MsgBox(r'Attention the compiler switch "SIMULATE_LANGUAGE" is set to ' + __Simulate_Language + vbCr + r'This is used to test the languages. It must be disabled in the release version!', vbInformation)
 
@@ -348,8 +349,8 @@ def Set_Language_Def(LanguageNr):
     P01.ThisWorkbook.Sheets[M02.ConfigSheet].Range[r'Language_Def'] = LanguageNr
 
 def Get_ExcelLanguage():
+    global __Simulate_Language,__Check_Languages
     _ret = 0
-    Simulate_Language = int()
     #---------------------------------------------
     # Return a number corrosponding to the actual language used in excel
     #  0 = German
@@ -362,17 +363,17 @@ def Get_ExcelLanguage():
     #
     # Is working if the office language is changed or the Window language
     ## VB2PY (CheckDirective) VB directive took path 1 on PATTERN_CONFIG_PROG
-    if Simulate_Language >= 0:
-        _ret = Simulate_Language
+    if __Simulate_Language >= 0:
+        _ret = __Simulate_Language
         return _ret
     if __Check_Languages:
         _ret = __Test_Language
         return _ret
     _ret = 1
     ## VB2PY (CheckDirective) VB directive took path 1 on PROG_GENERATOR_PROG
-    Simulate_Language = __Get_Language_Def()
-    if Simulate_Language >= 0:
-        _ret = Simulate_Language
+    __Simulate_Language = __Get_Language_Def()
+    if __Simulate_Language >= 0:
+        _ret = __Simulate_Language
         return _ret
     #Debug.Print "Achtung: Get_ExcelLanguage() liefert immer 1"
     #Exit Function
@@ -532,6 +533,7 @@ def Get_Language_Str(Desc, GenError=False, Look_At=xlPart):
     if Desc == r'':
         return _ret
         # 23.01.20:
+    Desc = Replace(Desc, "\n",vbCr)
     Desc = Replace(Desc, r'| ', r'|')
     if InStr(Desc, vbCr + vbLf) > 0:
         Use_CrLf = True

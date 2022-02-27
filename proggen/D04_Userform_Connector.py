@@ -37,17 +37,18 @@ from vb2py.vbdebug import *
 import tkinter as tk
 from tkinter import ttk
 import proggen.Prog_Generator as PG
+import proggen.M09_Language as M09
 
 class UserForm_Connector:
     def __init__(self):
-        self.title = "Verteiler und Stecker Nummer"
-        self.label1_txt = "Zur Dokumentation des benutzten Anschlusses können eine Beschreibung der Verteilerplatine (Ort/Nummer/...) und die Nummer des benutzten Steckplatzes in die Tabelle eingetragen werden.\n\nDamit kann man später leichter nachvollziehen an welcher Stelle innerhalb der LED Kette ein Objekt angeschlossen ist.\n\nDie LEDs werden über ihre Position in der Kette adressiert. Die erste LED in der Kette bekommt die Nummer 0. Die Zweite die Nummer 1...\n\nDadurch dass die Verteilerplatinen kaskadiert werden können kann es schnell passieren, dass man den Überblick verliert. Darum ist eine ausführliche Dokumentation besonders wichtig.\n\nDetails dazu findet man auch in der Dokumentation."
-        self.label2_txt = "Verteilernummer oder Beschreibung:"
-        self.label3_txt = "Steckernummer"
+        self.title = M09.Get_Language_Str("Verteiler und Stecker Nummer")
+        self.label1_txt = M09.Get_Language_Str("Zur Dokumentation des benutzten Anschlusses können eine Beschreibung der Verteilerplatine (Ort/Nummer/...) und die Nummer des benutzten Steckplatzes in die Tabelle eingetragen werden. \n\nDamit kann man später leichter nachvollziehen an welcher Stelle innerhalb der LED Kette ein Objekt angeschlossen ist. \n\nDie LEDs werden über ihre Position in der Kette adressiert. Die erste LED in der Kette bekommt die Nummer 0. Die Zweite die Nummer 1... \n\nDadurch dass die Verteilerplatinen kaskadiert werden können kann es schnell passieren, dass man den Überblick verliert. Darum ist eine ausführliche Dokumentation besonders wichtig. \n\nDetails dazu findet man auch in der Dokumentation.\n")
+        self.label2_txt = M09.Get_Language_Str("Verteilernummer oder Beschreibung:")
+        self.label3_txt = M09.Get_Language_Str("Steckernummer:")
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
+        self.button1_txt = M09.Get_Language_Str("Abbrechen")
+        self.button2_txt = M09.Get_Language_Str("Ok")
         self.Dist_Nr_R = ""
         self.Conn_Nr_R = ""
         self.res = False    

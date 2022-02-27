@@ -354,14 +354,14 @@ def __Get_All_Library_States():
             with_2 = Sh.Cells(Row, __Installed_Col)
             with_2.Value = ''
             # VB2PY (UntranslatedCode) On Error GoTo ErrDontExist
-            if Dir(LibDir, vbDirectory) != '':
-                if Dir(LibDir + TestFile) != '' or Dir(LibDir + 'src\\' + TestFile) != '':
+            if os.path.isdir(LibDir): # Dir(LibDir, vbDirectory) != '':
+                if os.path.exists(LibDir + TestFile) or os.path.exists(LibDir + 'src\\' + TestFile): #Dir(LibDir + TestFile) != '' or Dir(LibDir + 'src\\' + TestFile) != '':
                     with_2.Value = '1'
             # VB2PY (UntranslatedCode) On Error GoTo 0
             installed = Sh.Cells(Row, __Installed_Col)
             if installed == "":
                 installed = 0
-            if installed > 0:
+            if int(installed) > 0:
                 Sh.CellDict[Row, __DetectVer_Col] = __Get_DetectVer_form_library_properties(LibDir)
         elif InStr(Sh.Cells(Row, __Lib_Board_Col), 'BE') > 0:
             # *** Board Extras ***
@@ -411,7 +411,7 @@ def __Add_Update_from_Other_Source(fp, Row):
     VBFiles.writeText(fp, 'if EXIST ' + LibName + '\\NUL (', '\n')
     VBFiles.writeText(fp, '   ECHO deleting old directory ' + LibName + '\\', '\n')
     VBFiles.writeText(fp, '   rmdir ' + LibName + '\\ /s /q', '\n')
-    VBFiles.writeText(fp, '   timeout /T 3 /nobreak', '\n')
+    VBFiles.writeText(fp, '   REM timeout /T 3 /nobreak', '\n')
     VBFiles.writeText(fp, ')', '\n')
     VBFiles.writeText(fp, 'if EXIST ' + LibName + '\\NUL (', '\n')
     VBFiles.writeText(fp, '   ECHO Error deleting old directory ' + LibName + '\\', '\n')
@@ -462,10 +462,10 @@ def __Proc_UnzipList():
         LibName_with_path = M02.Get_Ardu_LibDir() + LibName
         if not M30.UnzipAFile(LibName_with_path + '.zip', M02.Get_Ardu_LibDir()):
             return
-        if Dir(LibName_with_path + '-master', vbDirectory) != '':
+        if os.path.isdir(LibName_with_path + '-master'): # Dir(LibName_with_path + '-master', vbDirectory) != '':
             # VB2PY (UntranslatedCode) On Error GoTo RenameErr
             os.rename(LibName_with_path + '-master', LibName_with_path)
-        elif Dir(LibName_with_path + '-beta', vbDirectory) != '':
+        elif os.path.isdir(LibName_with_path + '-beta'): # Dir(LibName_with_path + '-beta', vbDirectory) != '':
             # VB2PY (UntranslatedCode) On Error GoTo RenameErr
             os.rename(LibName_with_path + '-beta', LibName_with_path)
         else:
@@ -829,6 +829,8 @@ def __Update_All_Selected_Libraries():
         #*HL Bring_to_front(hwnd)
         P01.DoEvents()
         if __Get_All_Library_States() == False:
+            fn_return_value = False
+            break
             # VB2PY (UntranslatedCode) GoTo EndFunc
             pass
         Trials = Trials + 1
@@ -837,9 +839,9 @@ def __Update_All_Selected_Libraries():
             Pause_at_End = True
         __Update_General_Versions()
         if not (__Check_All_Selected_Libraries_Result(Ask_User)):
+            fn_return_value = True
             break
-
-    fn_return_value = True
+        
     __Stop_Status_Display()
     P01.Unload(F00.StatusMsg_UserForm)
     P01.ChDrive(P01.ThisWorkbook.Path)
@@ -985,7 +987,9 @@ def __Select_from_Range(RangeStr):
     return fn_return_value
 
 def __Show_Close_Message_if_Other_WB_are_Open():
-    fn_return_value = None
+    return False #*HL
+
+    fn_return_value = False
     #wb = Variant()
     #--------------------------------------------------------------------
     for wb in P01.Workbooks:
@@ -1001,9 +1005,9 @@ def __Start_Update_MobaLedLib_and_Restarte_Excel():
     CommandStr = String()
     #-------------------------------------------------------
     # Close all other workbooks without saving (The user has been warned before)
-    for wb in P01.Workbooks:
-        if wb.Name != P01.ThisWorkbook.Name:
-            wb.Close(Savechanges=False)
+    #*HLfor wb in P01.Workbooks:
+    #*HL    if wb.Name != P01.ThisWorkbook.Name:
+    #*HL        wb.Close(Savechanges=False)
     if __Update_All_Selected_Libraries() == False:
         return
     CommandStr = __Create_Restart_Cmd()

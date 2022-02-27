@@ -36,18 +36,19 @@ from tkinter import ttk
 import proggen.Prog_Generator as PG
 from vb2py.vbconstants import *
 import ExcelAPI.P01_Workbook as P01
+import proggen.M09_Language as M09
 
 class UserForm_DialogGuide1:
     def __init__(self):
         
-        self.title = "Einführung und Auswahl der Zielzeile"
-        self.label1_txt = "Mit dem Dialog Knopf ist die Eingabe einer Konfigurationszeile ganz einfach. Das Programm zeigt zu jedem Schritt die wichtigsten Informationen. \nDie Eingaben können aber auch jederzeit direkt in der Tabelle gemacht werden.\n\nZunächst muss die Zeile in der Tabelle ausgewählt werden. Die Reihenfolge der Zeilen muss der LEDs Anordnung entsprechen. Die erste Zeile in der Tabelle steuert die erste LED Gruppe auf der Anlage. Mit der zweiten Zeile wird die zweite Gruppe konfiguriert...\nEine Gruppe kann wie bei einem Haus aus mehreren LEDs oder nur aus einer einzigen LED bestehen. Anstelle von LEDs können auch andere Effekte wie Sound, Servos, ... angesteuert werden. Hier wird immer der Begriff LED verwendet.\nFalls die Reihenfolge nicht stimmt können die Zeilen nachträglich verschoben werde."
-        self.label2_txt = "Mit einem Klick in die Tabelle kann die Zeile jetzt ausgewählt werden."
-        self.label3_txt = "Der Dialog muss dazu nicht beendet werden.Zusätzliche Zeilen können mit der Schaltfläche ""Zeile einfügen"" hinzugefügt werden. Wenn die Zeile bereits Daten enthält, dann werden diese ab der ausgewählten Position vervollständigt. "
+        self.title = M09.Get_Language_Str("Einführung und Auswahl der Zielzeile")
+        self.label1_txt = M09.Get_Language_Str("Mit dem Dialog Knopf ist die Eingabe einer Konfigurationszeile ganz einfach. Das Programm zeigt zu jedem Schritt die wichtigsten Informationen. \nDie Eingaben können aber auch jederzeit direkt in der Tabelle gemacht werden.\n\nZunächst muss die Zeile in der Tabelle ausgewählt werden. Die Reihenfolge der Zeilen muss der LEDs Anordnung entsprechen. Die erste Zeile in der Tabelle steuert die erste LED Gruppe auf der Anlage. Mit der zweiten Zeile wird die zweite Gruppe konfiguriert... \nEine Gruppe kann wie bei einem Haus aus mehreren LEDs oder nur aus einer einzigen LED bestehen. Anstelle von LEDs können auch andere Effekte wie Sound, Servos, ... angesteuert werden. Hier wird immer der Begriff LED verwendet. \nFalls die Reihenfolge nicht stimmt können die Zeilen nachträglich verschoben werde.\n")
+        self.label2_txt = M09.Get_Language_Str("Mit einem Klick in die Tabelle kann die Zeile jetzt ausgewählt werden.")
+        self.label3_txt = M09.Get_Language_Str('Der Dialog muss dazu nicht beendet werden.\nZusätzliche Zeilen können mit der Schaltfläche "Zeile einfügen" hinzugefügt werden. \nWenn die Zeile bereits Daten enthält, dann werden diese ab der ausgewählten Position vervollständigt.')
         self.controller = PG.get_global_controller()
         self.IsActive = False
-        self.button1_txt = "Abbrechen"
-        self.button2_txt = "Ok"
+        self.button1_txt = M09.Get_Language_Str("Abbrechen")
+        self.button2_txt = M09.Get_Language_Str("Ok")
         self.res = None
  
     def ok(self, event=None):
@@ -73,7 +74,7 @@ class UserForm_DialogGuide1:
         
         self.top.resizable(False, False)  # This code helps to disable windows from resizing
         
-        window_height = 400
+        window_height = 500
         window_width  = 700
         
         screen_width = PG.global_controller.winfo_width()
@@ -82,7 +83,9 @@ class UserForm_DialogGuide1:
         x_cordinate = winfo_x+int((screen_width/2) - (window_width/2))
         y_cordinate = winfo_y+int((screen_height/2) - (window_height/2))
         
-        self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                
+        #self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                
+        self.top.geometry("+{}+{}".format(x_cordinate, y_cordinate))                
+                
         
         if len(self.title) > 0: self.top.title(self.title)
         self.label1 = ttk.Label(self.top, text=self.label1_txt,wraplength=window_width-20,font=("Tahoma", 11))

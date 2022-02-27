@@ -151,7 +151,7 @@ def __Check_if_all_Variables_in_sequece_of_N_exists(r, N):
     Adr_or_Name = Trim(P01.Cells(r, M25.Get_Address_Col()))
     if Adr_or_Name == '':
         P01.Cells(r, M25.Get_Address_Col()).Select()
-        P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: In Zeile #1# ist keine Adresse, kein Schalter oder keine Variable eingetragen'), "#1#", r), vbCritical, Replace(M09.Get_Language_Str('Kein Eintrag in \'#1#\' Spalte'), "#1#", M25.Get_Address_String(M02.Header_Row)))
+        P01.MsgBox(Replace(M09.Get_Language_Str('Fehler: In Zeile #1# ist keine Adresse, kein Schalter oder keine Variable eingetragen'), "#1#", str(r)), vbCritical, Replace(M09.Get_Language_Str('Kein Eintrag in \'#1#\' Spalte'), "#1#", M25.Get_Address_String(M02.Header_Row)))
         return _ret
     if not IsNumeric(Split(Adr_or_Name, ' ')(0)):
         Nr,TxtLen = __Get_Nr_From_Var(Adr_or_Name, TxtLen)

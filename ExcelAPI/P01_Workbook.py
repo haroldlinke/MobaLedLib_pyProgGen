@@ -36,6 +36,7 @@
 # 2022-01-08 V4.03 HL: - added Workbook Save and Load
 
 import logging
+import locale
 
 from tkintertable import TableCanvas, TableModel
 import tkinter as tk
@@ -365,6 +366,8 @@ def ChDrive(srcdir):
 
 def Format(value,formatstring):
     if formatstring == "hh:mm:ss":
+        time_val = time.gmtime(value)
+        return time.strftime("%H:%M:%S",time_val)
         time_sec = value%60
         value=int(value/60)
         time_min = value % 60
@@ -850,18 +853,17 @@ class CWorksheet:
     def Cells(self,row, col):
         #print("Cells", self.Name, row, col)
         if row <=self.tablemodel.getRowCount() and col <=self.tablemodel.getColumnCount():
-            cell = CCell(self.tablemodel.getCellRecord(row-1, col-1))
+            cell = CCell(self.tablemodel.getCellRecord(row-1, col-1),row=row,column=col,tablemodel=self.tablemodel,parent=self,Sheet=self)
         else:
-            cell=CCell("")
-        cell.set_tablemodel(self.tablemodel)
-        cell.set_row(row)
-        cell.set_column(col)
-        cell.set_parent(self)
-        cell.set_sheet(self)
+            cell=CCell("",row=row,column=col,tablemodel=self.tablemodel,parent=self,Sheet=self)
+        #cell.set_tablemodel(self.tablemodel)
+        #cell.set_row(row)
+        #cell.set_column(col)
+        #cell.set_parent(self)
+        #cell.set_sheet(self)
         return cell
     
     def get_cellvalue_direct(self,sheet,row,col):
-
         tablemodel = sheet.tablemodel
         max_cols = tablemodel.getColumnCount()
         if col <= max_cols:
@@ -889,7 +891,7 @@ class CWorksheet:
         else:
             return None
     
-    def Range(self,cell1,cell2):
+    def Range(self,cell1,cell2=None):
         #print("Range,cell1,cell2,ws=self")
         if type(cell1) == str:
             named_cell = self.find_RangeName(cell1)
@@ -960,6 +962,8 @@ class CWorksheet:
         self.searchcache[searchcol]={}
         searchcol_dict = self.searchcache[searchcol]
         for col in colcontent:
+            if len(col)>50:
+                col=col[:50]
             searchcol_dict[col]=row
             row=row+1
         return
@@ -971,6 +975,8 @@ class CWorksheet:
             if not colcache:
                 self.create_search_colcache(searchcol)
                 colcache = self.searchcache.get(searchcol,None)
+            if len(searchtext)>50:
+                searchtext=searchtext[:50]
             res_row = colcache.get(searchtext,None)
             if not res_row:
                 return None # searchtext not found
@@ -1107,17 +1113,17 @@ class CRange:
         self.currentcell=self.start
                 
     def Find(self,What="", LookIn=xlFormulas, LookAt= xlWhole, SearchOrder= xlByRows, SearchDirection= xlNext, MatchCase= True, SearchFormat= False):
-        for cell in self.range_list:
+        for cell in self.Cells:
             if cell.Value == What:
                 return cell
             
     def Offset(self, offset_row, offset_col):
-        for cell in self.range_list:
+        for cell in self.Cells:
             cell.offset(offset_row,offset_col)
         return self
     
     def Activate(self):
-        for cell in self.range_list:
+        for cell in self.Cells:
             cell.Activate()
             
     def get_rows(self):
@@ -1302,23 +1308,27 @@ class CEntireColumn:
     
     
 class CCell(str):
-    def __init__(self,value,tablemodel=None):
-        str.__init__(value)
-        self.Orientation = 0
-        self.Row = -1
-        self.Column = -1
-        self.Formula = ""
-        self.tablemodel = tablemodel
-        self.CountLarge = 1
-        self.Parent = None
-        self.Address = (self.Row,self.Column)
-        self.Comment = None
-        self.Font = CFont("Arial",10)
-        self.HorizontalAlignment = xlCenter
-        self.Sheet = ActiveSheet
-        self.Text = value
-        self.Value = value
-        self.EntireRow = CEntireRow(self.Row)
+    def __new__(cls,value,row=-1,column=-1,tablemodel=None,parent=None,Sheet=None):
+        obj=str.__new__(cls,value)
+        obj.Orientation = 0
+        obj.Row = row
+        obj.Column = column
+        obj.Formula = ""
+        obj.tablemodel = tablemodel
+        obj.CountLarge = 1
+        obj.Parent = parent
+        obj.Address = (obj.Row,obj.Column)
+        obj.Comment = None
+        obj.Font = CFont("Arial",10)
+        obj.HorizontalAlignment = xlCenter
+        if Sheet==None:
+            obj.Sheet = ActiveSheet
+        else:
+            obj.Sheet = Sheet
+        obj.Text = value
+        obj.Value = value
+        obj.EntireRow = CEntireRow(obj.Row)
+        return obj
         
     def __str__(self):
         return str(self.get_value())
@@ -1354,16 +1364,17 @@ class CCell(str):
                 #print("Set_value",self.Row, self.Column,newval,self.Sheet.Name)
                 if self.tablemodel == None:
                     self.tablemodel = ActiveSheet.tablemodel
-                curval = self.tablemodel.getValueAt(self.Row-1, self.Column-1)
-                if curval != newval:
-                    self.tablemodel.setValueAt(newval, self.Row-1, self.Column-1)
-                    #self.Sheet.setDataChanged()
-                    if type(newval) != str:
-                        Debug.Print("Type not str",newval)
-                    if Application.EnableEvents:
-                        #print("Workbook contents changed:",)
-                        ActiveSheet.EventWSchanged(self)
-                            #M20.Global_Worksheet_Change(self)
+                if self.Row <=self.tablemodel.getRowCount() and self.Column <=self.tablemodel.getColumnCount():
+                    curval = self.tablemodel.getValueAt(self.Row-1, self.Column-1)
+                    if curval != newval:
+                        self.tablemodel.setValueAt(newval, self.Row-1, self.Column-1)
+                        #self.Sheet.setDataChanged()
+                        if type(newval) != str:
+                            Debug.Print("Type not str",newval)
+                        if Application.EnableEvents:
+                            #print("Workbook contents changed:",)
+                            ActiveSheet.EventWSchanged(self)
+                                #M20.Global_Worksheet_Change(self)
                 
     def set_tablemodel(self,tablemodel):
         self.tablemodel = tablemodel
@@ -1465,7 +1476,7 @@ class CApplication:
         self.WindowState = 0
         self.caller=0
         self.canvas_leftclickcmd=None
-
+        self.LanguageSettings = CLanguageSettings()
         
     def set_canvas_leftclickcmd(self,cmd):
         self.canvas_leftclickcmd=cmd
@@ -1506,6 +1517,38 @@ class CApplication:
     
     def Quit(self):
         pass
+    
+locale2msoid={"de":msoLanguageIDGerman,
+              "en":msoLanguageIDEnglishUK,
+              "nl":msoLanguageIDDutch,
+              "fr":msoLanguageIDFrench,
+              "it":msoLanguageIDItalian,
+              "es":msoLanguageIDSpanish,
+              "da":msoLanguageIDDanish
+              }
+msoid_list = ("de","en","nl","fr","it","es","da")
+
+class CLanguageSettings:
+    def __init__(self):
+        id = -1
+        
+    def LanguageID(self,id):
+        if id == msoLanguageIDUI:
+            lngconfstr = PG.global_controller.getConfigData("language")
+            if lngconfstr == "":
+                lngconfnum=0
+            else:
+                lngconfnum= int(lngconfstr)
+            if lngconfnum==0:
+                loc = locale.getdefaultlocale()
+                locstr=loc[0][:2]
+                msoid = locale2msoid.get(locstr,msoLanguageIDEnglishUK)
+                return msoid
+            else:
+                msoid = locale2msoid.get(msoid_list[lngconfnum-1],msoLanguageIDEnglishUK)
+                return msoid
+        else:
+            return msoLanguageIDEnglishUK
         
 class CFont:
     def __init__(self,name,size):

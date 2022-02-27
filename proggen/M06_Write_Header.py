@@ -121,7 +121,7 @@ def Init_HeaderFile_Generation():
     Nr = int()
     #-------------------------------------------------------
     
-    
+    fn_return_value = False
     Erase(AddrList)
     M25.Make_sure_that_Col_Variables_match()
     LocInChNr = 0

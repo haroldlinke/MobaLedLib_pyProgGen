@@ -16,7 +16,7 @@ ECHO **********************
 if EXIST MobaLedLib\NUL (
    ECHO deleting old directory MobaLedLib\
    rmdir MobaLedLib\ /s /q
-   timeout /T 3 /nobreak
+   REM timeout /T 3 /nobreak
 )
 if EXIST MobaLedLib\NUL (
    ECHO Error deleting old directory MobaLedLib\
