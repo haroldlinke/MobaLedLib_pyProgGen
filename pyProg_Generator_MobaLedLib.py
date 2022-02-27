@@ -433,9 +433,10 @@ class LEDColorTest(tk.Tk):
         
         filedir = self.mainfile_dir # os.path.dirname(os.path.realpath(__file__))
         
-        for wb in P01.Workbooks:
-            temp_workbook_filename = os.path.join(filedir,self.tempworkbookFilname+"_"+wb.Name)
-            #wb.Load(filename=temp_workbook_filename)
+        if self.getConfigData("AutoLoadWorkbooks"):
+            for wb in P01.Workbooks:
+                temp_workbook_filename = os.path.join(filedir,self.tempworkbookFilname+"_"+wb.Name)
+                wb.Load(filename=temp_workbook_filename)
         
         self.messageframe = ttk.Frame(self)
         

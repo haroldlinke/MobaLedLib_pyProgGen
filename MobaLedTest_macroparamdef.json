@@ -252,6 +252,17 @@
         "Input Text": "Automatisch verbinden",
         "Hint": "Es wird automatisch eine Verbindung zum ARDUINO aufgebaut"
     },
+    "AutoLoadWorkbooks": {
+        "ParName": "AutoLoadWorkbooks",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "AutoLoadWorkbooks",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Workbooks automatisch laden",
+        "Hint": "Beim Start werden die letzten Workbooks automatisch geladen"
+    },
     "BW_B": {
         "ParName": "BW_B",
         "Cnt": "2",
