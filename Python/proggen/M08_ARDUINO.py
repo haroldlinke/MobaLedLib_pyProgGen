@@ -202,6 +202,7 @@ def Create_Start_Sub(BoardName, ResultName, ComPort, BuildOptions, InoName, SrcD
         #*** 14.07.20: Faster way to compile from Jürgen (10 sec instead of 22 sec) ***
         # Create_PrivateBuild_cmd_if_missing SrcDir                           ' 28.10.20: Jürgen: Disabled
         if True == M28.Get_Bool_Config_Var('Fast_Build_and_Upload'):
+            Debug.Print("Fast Build and Upload")
             OptParts = Split(BuildOptions, ' ')
             if UBound(OptParts) >= 1:
                 BuildOptOnly=""
@@ -228,7 +229,7 @@ def Create_Start_Sub(BoardName, ResultName, ComPort, BuildOptions, InoName, SrcD
         VBFiles.writeText(fp, 'IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > "' + ResultName + '"', '\n')
         VBFiles.writeText(fp, 'goto :eof', '\n')
         for i in vbForRange(1, 100):
-            VBFiles.writeText(fp, '', '\n')
+            VBFiles.writeText(fp, '', '\n') # generate empty lines to hide the following to courious people (Jürgen)
         VBFiles.writeText(fp, ':build', '\n')
         M08FA.Create_Build(BoardName, fp) # M08_Fast_ARDUINO
         VBFiles.closeFile(fp)
@@ -1079,7 +1080,7 @@ def Ask_To_Upload_the_Right_Arduino_Prog(Focus_Button):
         fn_return_value = False
         return fn_return_value
     Other_Prog = Replace(Trim(Replace(M02.Prog_for_Right_Ardu, M25.Page_ID + ' ', '')), ' ', ', ')
-    select_variable_ = 3 #*HLSelect_COM_Port_UserForm.ShowDialog(Get_Language_Str('Ist das Programm für den rechten Arduino installiert?'), Get_Language_Str('Programm für ') + M25.Page_ID + ' Arduino', Replace(Replace(Get_Language_Str('Wurde das Programm des rechten #DCC# Arduinos bereits ' + 'installiert?' + vbCr + vbCr + 'Das Programm muss nur beim ersten mal auf den Arduino hochgeladen werden. ' + 'Danach muss es nicht mehr verändert werden solange es keine neue Version der ' + 'MobaLedLib gibt (oder auf #SELECTRIX# umgestellt wird).' + vbCr + vbCr + 'Ja: Diese Frage wird nicht mehr gestellt.' + vbCr + 'Installieren: Das Programm wird installiert.'), '#DCC#', M25.Page_ID), '#SELECTRIX#', Other_Prog), 'DCC_Image', 'I Installieren; A Abbrechen; J Ja', Focus_Button, False, Replace(Get_Language_Str('#DCC# Programm für aktuelle MobaLedLib Version installiert?'), '#DCC#', M25.Page_ID), ComPortUnused)
+    select_variable_ = F00.Select_COM_Port_UserForm.ShowDialog(M09.Get_Language_Str('Ist das Programm für den rechten Arduino installiert?'), M09.Get_Language_Str('Programm für ') + M25.Page_ID + ' Arduino', Replace(Replace(M09.Get_Language_Str('Wurde das Programm des rechten #DCC# Arduinos bereits ' + 'installiert?' + vbCr + vbCr + 'Das Programm muss nur beim ersten mal auf den Arduino hochgeladen werden. ' + 'Danach muss es nicht mehr verändert werden solange es keine neue Version der ' + 'MobaLedLib gibt (oder auf #SELECTRIX# umgestellt wird).' + vbCr + vbCr + 'Ja: Diese Frage wird nicht mehr gestellt.' + vbCr + 'Installieren: Das Programm wird installiert.'), '#DCC#', M25.Page_ID), '#SELECTRIX#', Other_Prog), 'DCC_Image', 'I Installieren; A Abbrechen; J Ja', Focus_Button, False, Replace(M09.Get_Language_Str('#DCC# Programm für aktuelle MobaLedLib Version installiert?'), '#DCC#', M25.Page_ID), ComPortUnused)
     if (select_variable_ == 1):
         fn_return_value = True
     elif (select_variable_ == 2):
@@ -1091,7 +1092,7 @@ def Ask_To_Upload_the_Right_Arduino_Prog(Focus_Button):
 def Display_Connect_to_Left_Arduino():
     #------------------------------------------------------------
     M25.Make_sure_that_Col_Variables_match()
-    if 3 == Select_COM_Port_UserForm.ShowDialog(M09.Get_Language_Str('Linken Arduino anschließen'), M09.Get_Language_Str('Linken (LED) Arduino anstecken'), M09.Get_Language_Str('Das Programm wurde erfolgreich auf den rechten Arduino geladen.' + vbCr + vbCr + 'Dieser Vorgang muss nur ein mal durchgeführt werden. In Zukunft ' + 'wird nur noch das Programm des linken (LED) Arduinos verändert.' + vbCr + vbCr + 'Das USB Kabel muss jetzt an den linken Arduino angeschlossen werden.' + vbCr + vbCr + 'Wenn das geschehen ist die "OK" Taste betätigen'), 'LED_Image', M09.Get_Language_Str('; A Abbrechen; O OK'), 'Default_Button', False, M09.Get_Language_Str('Umstecken zum Linken Arduino'), 0):
+    if 3 == F00.Select_COM_Port_UserForm.ShowDialog(M09.Get_Language_Str('Linken Arduino anschließen'), M09.Get_Language_Str('Linken (LED) Arduino anstecken'), M09.Get_Language_Str('Das Programm wurde erfolgreich auf den rechten Arduino geladen.' + vbCr + vbCr + 'Dieser Vorgang muss nur ein mal durchgeführt werden. In Zukunft ' + 'wird nur noch das Programm des linken (LED) Arduinos verändert.' + vbCr + vbCr + 'Das USB Kabel muss jetzt an den linken Arduino angeschlossen werden.' + vbCr + vbCr + 'Wenn das geschehen ist die "OK" Taste betätigen'), 'LED_Image', M09.Get_Language_Str('; A Abbrechen; O OK'), 'Default_Button', False, M09.Get_Language_Str('Umstecken zum Linken Arduino'), 0):
         fn_return_value = True
     return fn_return_value
 

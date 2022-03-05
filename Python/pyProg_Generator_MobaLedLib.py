@@ -1890,7 +1890,7 @@ class LEDColorTest(tk.Tk):
                         paramvar.set(1)
                     else:                        
                         paramvar.set(0)
-                    label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,variable=paramvar,font=self.fontlabel,onvalue = 1, offvalue = 0)
+                    label=tk.Checkbutton(parent_frame, text=param_title,width=PARAMLABELWIDTH*2,wraplength = PARAMLABELWRAPL*2,anchor="w",variable=paramvar,font=self.fontlabel,onvalue = 1, offvalue = 0)
                     label.grid(row=row+valuerow, column=column, columnspan=2,sticky=STICKY, padx=2, pady=2)
                     self.ToolTip(label, text=param_tooltip)
                                     

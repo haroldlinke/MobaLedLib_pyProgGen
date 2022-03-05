@@ -60,11 +60,11 @@ import keyboard
 #import proggen.M02_global_variables as M02
 
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
-datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
-                        "ProtectedCells"  : ((0,"*"),(1,"*"),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
+datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,8),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
+                        "ProtectedCells"  : ((0,0),(1,0),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
                         "left_click_callertype": "cell",
                         "FontColor"       : { "1": {
-                                                    "font"     : ("Arial",10),
+                                                    "font"     : ("Arial",8),
                                                     "fg"       : "#FFFF00",
                                                     "bg"       : "#0000FF",
                                                     "Cells"    : ((0,"*"),(1,"*"))
@@ -1580,6 +1580,12 @@ class CButton:
         self.AlternativeText = ""
         self.TextFrame2 = ""
         self.Fill = (0,0,0)
+
+        
+class CControl:
+    def __init__(self,value):
+        self.Value=value
+
         
 def rgbtohex(r,g,b):
     return f'#{r:02x}{g:02x}{b:02x}'

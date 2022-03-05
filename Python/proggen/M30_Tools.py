@@ -143,12 +143,15 @@ def IsArrayEmpty(anArray):
     fn_return_value = True
     return fn_return_value
 
-def LastUsedRow():
+def LastUsedRow(sheet=None):
     #-----------------------------
     # Return the last used row in the active sheet.
     # Attention: Rows containing only format informations are also 'used' rows.
     #fn_return_value = P01.ActiveSheet.UsedRange.Rows(P01.ActiveSheet.UsedRange.Rows.Count).Row
-    fn_return_value = P01.ActiveSheet.LastUsedRow
+    if sheet==None:
+        fn_return_value = P01.ActiveSheet.LastUsedRow
+    else:
+        fn_return_value = P01.Sheets(sheet).LastUsedRow
     return fn_return_value
 
 def LastUsedColumn():
@@ -347,7 +350,7 @@ def Get_Position_In_Array(Txt, Arr):
     fn_return_value = - 1
     if not isInitialised(Arr):
         return fn_return_value
-    Nr = LBound(Arr)
+    Nr = 0 #LBound(Arr)
     Txt = Trim(Txt)
     for e in Arr:
         if Trim(e) == Txt:
@@ -1037,6 +1040,9 @@ def Button_Setup(Button, Text):
             M30.EndProg()
         Button.Caption = Mid(Text, 3, 255)
         Button.Accelerator = Left(Text, 1)
+
+
+        
 
 def Bring_to_front(hwnd):
     #----------------------------------------

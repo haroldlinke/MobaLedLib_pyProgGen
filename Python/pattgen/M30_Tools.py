@@ -779,11 +779,11 @@ def ClearStatusbar():
 
 def Show_Status_for_a_while(Txt, Duration='00:00:15'):
     #-------------------------------------------------------------------------------------------
-    Application.StatusBar = Txt
+    P01.Application.StatusBar = Txt
     if Txt != '':
-        Application.OnTime(Now + TimeValue(Duration), 'ClearStatusbar')
+        P01.Application.OnTime(Duration, 'ClearStatusbar')
     else:
-        Application.OnTime(Now + TimeValue('00:00:00'), 'ClearStatusbar')
+        pass # Application.OnTime(0, 'ClearStatusbar')
 
 def __InputBoxMov(prompt, Title=VBMissingArgument, Default=VBMissingArgument, Left=VBMissingArgument, Top=VBMissingArgument, helpfile=VBMissingArgument, HelpContextID=VBMissingArgument):
     fn_return_value = None

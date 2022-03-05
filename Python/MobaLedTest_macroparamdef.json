@@ -1858,6 +1858,17 @@
         "Hint": "",
         "Implementation comment": ""
     },
+    "UseCOM_Port_UserForm": {
+        "ParName": "UseCOM_Port_UserForm",
+        "Cnt": "1",
+        "Type": "Checkbutton",
+        "ConfigName": "UseCOM_Port_UserForm",
+        "Min": "0",
+        "Max": "255",
+        "Default": "",
+        "Input Text": "Use COM_Port_UserForm",
+        "Hint": "COM-Port mit COM-Port UserForm abfragen und nicht ARDUINO-Einstellungen-Seite verwenden"
+    },
     "UseZ21Data": {
         "ParName": "UseZ21Data",
         "Cnt": "1",

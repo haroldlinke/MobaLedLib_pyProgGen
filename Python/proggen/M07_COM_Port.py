@@ -388,17 +388,21 @@ def EnumComPorts_old(Show_Unknown, ResNames, PrintDebug=True):
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ResNames - ByRef 
 def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
     Ports = vbObjectInitialize((50,), Byte)
+    ESP_Inst = ( M02.Get_BoardTyp() == 'ESP32' )
+    PICO_Inst = ( M02.Get_BoardTyp() == 'PICO' )
+         
 
     temp_comports_list = portlist.comports(include_links=False)
 
     NumberOfPorts = len(temp_comports_list)
-    Ports = vbObjectInitialize((NumberOfPorts - 1,), Variant)
-    ResNames = vbObjectInitialize((NumberOfPorts - 1,), Variant)    
+    Ports = [] #vbObjectInitialize((NumberOfPorts - 1,), Variant)
+    ResNames = [] #vbObjectInitialize((NumberOfPorts - 1,), Variant)    
     idx=0
     for comport in temp_comports_list:
-        Ports[idx] = comport.device.replace("COM","")
-        ResNames[idx] = comport.description
-        idx=idx+1
+        if Show_Unknown or ( ESP_Inst == False and PICO_Inst == False and  (InStr(comport.description, 'CH340') > 0 or InStr(comport.description, 'Arduino') > 0 or InStr(comport.description, 'USB Serial Port') > 0 ) ) or ( ESP_Inst == True and InStr(comport.description, 'Silicon Labs CP210x') > 0 )  or  ( PICO_Inst == True and InStr(comport.description, 'USB\\\\VID_2E8A&PID_000A\\') > 0 ):
+            Ports.append(comport.device.replace("COM",""))
+            ResNames.append(comport.description)
+            idx=idx+1
 
     fn_return_value = Ports
     return fn_return_value, ResNames
@@ -416,7 +420,7 @@ def Check_If_Port_is_Available(PortNr):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: PortNr - ByVal 
 def Check_If_Port_is_Available_And_Get_Name(PortNr):
-    fn_return_value = None
+    fn_return_value = ""
     Ports = vbObjectInitialize(objtype=Byte)
 
     ResNames = vbObjectInitialize(objtype=String)
@@ -426,7 +430,7 @@ def Check_If_Port_is_Available_And_Get_Name(PortNr):
     Ports,ResNames = EnumComPorts(False, ResNames)
     Res = M30.Get_Position_In_Array(PortNr, Ports)
     if Res >= 0:
-        fn_return_value = ResNames(Res)
+        fn_return_value = ResNames[Res]
     return fn_return_value
 
 def __Test_Check_If_Port_is_Available():
@@ -586,7 +590,7 @@ def getdeviceinformation():
     if len(Data)==5:
         if Data[4].to_bytes(1,byteorder="little") == Resp_STK_OK:
             DeviceSignatur = Data[1:4]
-            logging.debug("getdeviceinformation: %s",str(DeviceSignatur))
+            #logging.debug("getdeviceinformation: %s",str(DeviceSignatur))
             if DeviceSignatur == b'\x1E\x95\x0F':
                 logging.info("ATMEGA328P")
             else:
@@ -664,7 +668,7 @@ def DetectArduino(port,baudrate, HWVersion=255, SWMajorVersion=255, SWMinorVersi
                 if res==True:
                     fn_return_value=1
                     PG.global_controller.arduino.close()
-            return fn_return_value, devicesignatur
+                    return fn_return_value, devicesignatur
         if fn_return_value != 1:
             logging.debug("Give up after %s trials",No_of_trials)
     return fn_return_value, None
@@ -777,10 +781,10 @@ def __transact(bytemessage,nNumberOfBytesToRead=10):
     for i in range (no_of_trials):
         # read from serport nNumberOfBytesToRead
         read_data = PG.global_controller.arduino.read(size=nNumberOfBytesToRead)
-        logging.debug("transact: %s",read_data)
+        #logging.debug("transact: %s",read_data)
         if (read_data[:1] == Resp_STK_INSYNC and read_data[-1:] == Resp_STK_OK) or read_data[-1:] == Resp_STK_FAILED:
         # return response
-            logging.debug("transact data_ok: %s",read_data)
+            #logging.debug("transact data_ok: %s",read_data)
             return read_data
     return b''
 

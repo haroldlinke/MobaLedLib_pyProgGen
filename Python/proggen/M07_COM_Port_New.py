@@ -69,6 +69,7 @@ import proggen.M30_Tools as M30
 import ExcelAPI.P01_Workbook as P01
 
 import proggen.D08_Select_COM_Port_Userform as D08
+import proggen.M07_COM_Port as M07
 import  proggen.F00_mainbuttons as F00
 
 from vb2py.vbfunctions import *
@@ -161,13 +162,13 @@ End Function
 """
 
 __PRINT_DEBUG = False
-CheckCOMPort = Long()
-CheckCOMPort_Txt = String()
+#CheckCOMPort = Long()
+#CheckCOMPort_Txt = String()
 __CheckCOMPort_Res = Long()
 
 def __Blink_Arduino_LED():
-    global CheckCOMPort,__CheckCOMPort_Res,CheckCOMPort_Txt
-    return
+    global __CheckCOMPort_Res
+    
     SWMajorVersion = Byte()
 
     SWMinorVersion = Byte()
@@ -185,28 +186,31 @@ def __Blink_Arduino_LED():
     # because this would be to slow. In addition the blinking frequence is more visible if
     # A baudrate of 50 is used.
     BaudRate = 50
-    if CheckCOMPort > 0:
+    
+    if M07.CheckCOMPort > 0:
+        #print("Blink_LED start")
         F00.Select_COM_Port_UserForm.Update_SpinButton(0)
-        if CheckCOMPort != 999:
-            __CheckCOMPort_Res, DeviceSignatur = M07.DetectArduino(CheckCOMPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur, 1, PrintDebug= __PRINT_DEBUG)
+        if M07.CheckCOMPort != 999:
+            __CheckCOMPort_Res, DeviceSignatur = M07.DetectArduino(M07.CheckCOMPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur, 1, PrintDebug= __PRINT_DEBUG)
         else:
             __CheckCOMPort_Res = - 9
         #*HLApplication.Cursor = xlNorthwestArrow
         #Debug.Print "CheckCOMPort_Res=" & CheckCOMPort_Res & "  CheckCOMPort=" & CheckCOMPort
         if __CheckCOMPort_Res < 0:
-            if CheckCOMPort == 999:
+            if M07.CheckCOMPort == 999:
                 F00.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Kein COM Port erkannt.' + vbCr + 'Bitte Arduino an einen USB Anschluss des Computers anschließen'))
             else:
                 F00.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Achtung: Der Arduino wird von einem anderen Programm benutzt.' + vbCr + '(Serieller Monitor?)' + vbCr + 'Das Programm muss geschlossen werden! '))
         else:
-            F00.Select_COM_Port_UserForm.Show_Status(False, CheckCOMPort_Txt)
+            F00.Select_COM_Port_UserForm.Show_Status(False, M07.CheckCOMPort_Txt)
         #*HL Sleep(10)
         P01.DoEvents()
         P01.Application.OnTime(1000, __Blink_Arduino_LED)
+        #print("Blink_LED end")
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort_IO - ByRef 
 def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons, ComPort_IO):
-    global CheckCOMPort,__CheckCOMPort_Res,CheckCOMPort_Txt
+    global __CheckCOMPort_Res
     fn_return_value = None
     Res = Long()
     #--------------------------------------------------------------------------------------
@@ -223,16 +227,17 @@ def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons
     #  1: If the left   Button is pressed  (Install, ...)
     #  2: If the middle Button is pressed  (Abort)
     #  3: If the right  Button is pressed  (OK)
-    CheckCOMPort = 999
-    #*HL P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:00'), __Blink_Arduino_LED)
+    M07.CheckCOMPort = 999
+    P01.Application.OnTime(1000, __Blink_Arduino_LED)
+    #__Blink_Arduino_LED()
     # Return values of Select_COM_Port_UserForm.ShowDialog:
     #  -1: If Abort is pressed
     #   0: If No COM Port is available
     #  >0: Selected COM Port
     # The variable "CheckCOMPort_Res" is >= 0 if the Port is available
-    #*HL fn_return_value = F00.Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, M09.Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
     ComPort_IO = 3 #*HL
-    fn_return_value = 3
+    fn_return_value = 3    
+    fn_return_value, ComPort_IO = F00.Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, M09.Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
     if __CheckCOMPort_Res < 0:
         ComPort_IO = - ComPort_IO
         # Port is buzy
@@ -279,10 +284,12 @@ def USB_Port_Dialog(ComPortColumn):
     ComPort = Long()
     #----------------------------------------------------------------
     res, ComPort= __Show_USB_Port_Dialog(ComPortColumn, ComPort)
-    if res:    
-        if ComPort > 0:
-            fn_return_value = True
+    if res:
+        if IsNumeric(ComPort):
+            if int(ComPort) > 0:
+                fn_return_value = True
         M07.ComPortPage().CellDict[M02.SH_VARS_ROW, ComPortColumn] = ComPort
+        P01.ActiveSheet.Redraw_table()
     return fn_return_value
 
 def __Test_USB_Port_Dialog():
@@ -319,7 +326,7 @@ def __Test_Check_If_Arduino_could_be_programmed_and_set_Board_type():
     with_0 = P01.Cells(M02.SH_VARS_ROW, M25.BuildOT_COL)
     if with_0.Value == '':
         with_0.Value = 115200
-    Debug.Print(M08.Check_If_Arduino_could_be_programmed_and_set_Board_type(COMPrtT_COL, BuildOT_COL, BuildOptions, DeviceSignature) + ' BuildOptions: ' + BuildOptions)
+    Debug.Print(M08.Check_If_Arduino_could_be_programmed_and_set_Board_type(M25.COMPrtT_COL, M08.BuildOT_COL, BuildOptions, DeviceSignature) + ' BuildOptions: ' + BuildOptions)
 
 # VB2PY (UntranslatedCode) Option Explicit
 

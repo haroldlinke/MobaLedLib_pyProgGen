@@ -95,21 +95,22 @@ def __Flash_LED():
         __Act_LED_Pattern = __Act_LED_Pattern + 1
         if __Act_LED_Pattern >= __LED_Flash_Cnt:
             __Act_LED_Pattern = 0
-        __Next_Fash_LED_Time = Now + TimeSerial(0, 0, 1)
+        __Next_Fash_LED_Time = 1000 #Now + TimeSerial(0, 0, 1)
         # Here is a dscription how to ude windows calls, but this seames to be critical:
         #  http://www.cpearson.com/excel/OnTime.aspx
-        Application.OnTime(__Next_Fash_LED_Time, 'Flash_LED')
+        P01.Application.OnTime(__Next_Fash_LED_Time, __Flash_LED)
 
 def Set_Flash_LED(LedNr):
+    global __Act_LED_Pattern, __LED_Flash_Nr
     Old_LED = Integer()
 
     Cmd = String()
     #-----------------------------------------
-    Application.EnableEvents = False
+    P01.Application.EnableEvents = False
     Old_LED = __LED_Flash_Nr
     __Act_LED_Pattern = 0
     __LED_Flash_Nr = LedNr
-    Application.EnableEvents = True
+    P01.Application.EnableEvents = True
     if __LED_Flash_Act and __LED_Flash_PortId > 0:
         Cmd = '#L' + Hex02(Old_LED) + ' 00 00 00 01' + vbLf
         Write_Com(__LED_Flash_PortId, Cmd)
@@ -133,14 +134,14 @@ def Start_Flash_LED(PortId, LedNr):
             #         Red                            Green                    Blue Cnt
             __LED_Flash_Pattern[0] = ' ' + Hex02(Get_Goto_pwm(0)) + ' ' + Hex02(Get_Goto_pwm(1)) + ' FF 01' + vbLf
             __LED_Flash_Pattern[1] = ' ' + Hex02(Get_Goto_pwm(1)) + ' ' + Hex02(Get_Goto_pwm(0)) + ' 00 01' + vbLf
-        Application.OnTime(Now, 'Flash_LED')
+        P01.Application.OnTime(1000, 'Flash_LED')
 
 def Stop_Flash_LED():
     #--------------------------
     if __LED_Flash_Act:
         __LED_Flash_Act = False
         # VB2PY (UntranslatedCode) On Error Resume Next
-        Application.OnTime(__Next_Fash_LED_Time, 'Flash_LED', Schedule=False)
+        P01.Application.OnTime(1000, 'Flash_LED', Schedule=False)
         # VB2PY (UntranslatedCode) On Error GoTo 0
         Sleep(100)
         Debug.Print('Stop_Flash_LED ' + __LED_Flash_Nr)
