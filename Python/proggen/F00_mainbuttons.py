@@ -161,7 +161,7 @@ def Copy_Button_Click():
 def Options_Button_Click():
     #----------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Options")
+    #notimplemented("Options")
     M20.Option_Dialog()
 
 def UnHideAll_Button_Click():

@@ -60,7 +60,7 @@ import proggen.M08_Install_FastBootLoader as M08IN
 #import proggen.M09_Select_Macro as M09SM
 #import proggen.M09_SelectMacro_Treeview as M09SMT
 #import proggen.M10_Par_Description as M10
-#import proggen.m17_Import_old_Data as M17
+import proggen.M17_Import_old_Data as M17
 import proggen.M18_Save_Load as M18
 #import proggen.M20_PageEvents_a_Functions as M20
 import proggen.M25_Columns as M25
@@ -100,12 +100,33 @@ class CUserForm_Options:
         self.rb_res = {"_R": tk.IntVar(),
                        "_L": tk.IntVar()}
         self.__Disable_Set_Arduino_Typ = True
+        
+        self.radiobuttons = {"Nano_Normal_L": {"text":M09.Get_Language_Str("Nano Normal (old Bootloader)"), "value": 1,"board": M02.BOARD_NANO_OLD},
+                             "Nano_New_L"   : {"text":M09.Get_Language_Str("Nano (neue Version)"), "value": 2,"board": M02.BOARD_NANO_NEW},
+                             "Nano_Full_L"  : {"text":M09.Get_Language_Str("Nano (Full memory)"), "value": 3,"board": M02.BOARD_NANO_FULL},
+                             "Uno_L"        : {"text":M09.Get_Language_Str("Uno"), "value": 4,"board": M02.BOARD_UNO_NORM},
+                             "Board_IDE_L"  : {"text":M09.Get_Language_Str("Typ von Arduino IDE benutzen"), "value": 5,"board": ''},
+                             "ESP32_L"      : {"text":M09.Get_Language_Str("ESP32 Wroom"), "value": 6,"board": M02.BOARD_ESP32},
+                             "Pico_L"       : {"text":M09.Get_Language_Str("Raspberry Pico (Experimental)"), "value": 7,"board": M02.BOARD_PICO},
+                             "Nano_Normal_R": {"text":M09.Get_Language_Str("Nano Normal (old Bootloader)"), "value": 1,"board": M02.BOARD_NANO_OLD},
+                             "Nano_New_R"   : {"text":M09.Get_Language_Str("Nano (neue Version)"), "value": 2,"board":  M02.BOARD_NANO_NEW},
+                             "Nano_Full_R"  : {"text":M09.Get_Language_Str("Nano (Full memory)"), "value": 3,"board": M02.BOARD_NANO_FULL},
+                             "Uno_R"        : {"text":M09.Get_Language_Str("Uno"), "value": 4,"board": M02.BOARD_UNO_NORM},
+                             "Board_IDE_R"  : {"text":M09.Get_Language_Str("Typ von Arduino IDE benutzen"), "value": 5,"board": ''},
+                             }
+        
+        self.boardlist = ("dummy",M02.BOARD_NANO_OLD, M02.BOARD_NANO_NEW, M02.BOARD_NANO_FULL, M02.BOARD_UNO_NORM,'', M02.BOARD_ESP32, M02.BOARD_PICO)
+        
+        self.defaultboard = 7
+        
         #*HL Center_Form(Me)                
 
     
     def __Close_Button_Click(self):
         #-------------------------------
         self.Hide()
+        board=self.radiobutton_to_board(True)
+        self.Change_Board(True, board)        
     
     def __ColorTest_Button_Click(self):
         #-----------------------------------
@@ -115,12 +136,17 @@ class CUserForm_Options:
     def __Detect_LED_Port_Button_Click(self):
         #-----------------------------------------
         self.Hide()
+        board=self.radiobutton_to_board(True)
+        self.Change_Board(True, board)
+        
         M07.Detect_Com_Port_and_Save_Result(False)
         self.Show()
     
     def __Detect_Right_Port_Button_Click(self):
         #-------------------------------------------
         self.Hide()
+        board=self.radiobutton_to_board(False)
+        self.Change_Board(False, board)        
         M07.Detect_Com_Port_and_Save_Result(True)
         self.Show()
     
@@ -132,8 +158,8 @@ class CUserForm_Options:
     def __HardiForum_Button_Click(self):
         #------------------------------------
         self.Hide()
-        if P01.MsgBox(M09.Get_Language_Str('Öffnet das Profil von Hardi im Stummi Forum.' + vbCr + vbCr + 'Dort findet man, wenn man im Forum angemeldet ist, einen Link zur ' + 'Email Adresse des Autors zum senden einer E-Mail oder PN.' + vbCr + vbCr + 'Alternativ kann auch eine Mail an \'MobaLedlib@gmx.de\' geschickt werden wenn ' + 'es Fragen oder Anregungen zu dem Programm oder zur MobaLedLib gibt.'), vbOKCancel, Get_Language_Str('Profil des Autors öffnen')) == vbOK:
-            P01.Shell('Explorer "https://www.stummiforum.de/memberlist.php?mode=viewprofile&u=26419"')
+        if P01.MsgBox(M09.Get_Language_Str('Öffnet das Profil von Hardi im Stummi Forum.' + vbCr + vbCr + 'Dort findet man, wenn man im Forum angemeldet ist, einen Link zur ' + 'Email Adresse des Autors zum senden einer E-Mail oder PN.' + vbCr + vbCr + 'Alternativ kann auch eine Mail an \'MobaLedlib@gmx.de\' geschickt werden wenn ' + 'es Fragen oder Anregungen zu dem Programm oder zur MobaLedLib gibt.'), vbOKCancel, M09.Get_Language_Str('Profil des Autors öffnen')) == vbOK:
+            P01.Shell('Explorer "https://www.stummiforum.de/u26419_Hardi.html"')
     
     def __Pattern_Config_Button_Click(self):
         #----------------------------------------
@@ -195,22 +221,19 @@ class CUserForm_Options:
         M28.Change_Board_Typ(LeftArduino, NewBrd)
     
     def __Change_Autodetect(self,LeftArduino):
-        Side = String()
-    
+        
         Col = Long()
         #----------------------------------------------------
         if LeftArduino:
             Col = M25.BUILDOP_COL
-            Side = 'L'
             self.__Set_Autodetect_Value(Col, self.Autodetect_Typ_L_CheckBox_var.get())
         else:
             Col = M25.BUILDOpRCOL
-            Side = 'R'
-            self.__Set_Autodetect_Value(Col, self.Autodetect_Typ_R_CheckBox_var.get()) #Controls('Autodetect_Typ_' + Side + '_CheckBox'))
+            self.__Set_Autodetect_Value(Col, self.Autodetect_Typ_R_CheckBox_var.get()) #Controls('Autodetect_Typ_R_CheckBox'))
     
     def __Set_Autodetect_Value(self,BuildOpt_Col, Value):
         #--------------------------------------------------------------------------
-        with_0 = P01.Cells(M02.SH_VARS_ROW, M25.BuildOpt_Col)
+        with_0 = P01.Cells(M02.SH_VARS_ROW, BuildOpt_Col)
         if Value:
             if InStr(with_0.Value, M02.AUTODETECT_STR) == 0:
                 with_0.Value = M02.AUTODETECT_STR + ' ' + Trim(with_0.Value)
@@ -224,6 +247,8 @@ class CUserForm_Options:
     
         BuildOpt = String()
         #---------------------------------------------------
+        #BuildOpt = P01.Cells(M02.SH_VARS_ROW, Col)
+        #self.Controls['Autodetect_Typ_' + Side + '_CheckBox'] = ( InStr(BuildOpt, M02.AUTODETECT_STR) > 0 )        
         if LeftArduino:
             Col = M25.BUILDOP_COL
             Side = 'L'
@@ -234,8 +259,6 @@ class CUserForm_Options:
             Side = 'R'
             BuildOpt = P01.Cells(M02.SH_VARS_ROW, Col)
             self.Autodetect_Typ_R_CheckBox_var.set(InStr(BuildOpt, M02.AUTODETECT_STR) > 0)
-        #BuildOpt = P01.Cells(M02.SH_VARS_ROW, Col)
-        #self.Controls['Autodetect_Typ_' + Side + '_CheckBox'] = ( InStr(BuildOpt, M02.AUTODETECT_STR) > 0 )
         if InStr(BuildOpt, M02.BOARD_NANO_OLD) > 0:
             self.Controls['Nano_Normal_' + Side].Value = True
             return
@@ -272,7 +295,7 @@ class CUserForm_Options:
             P01.MsgBox(M09.Get_Language_Str('Unbekannte Board Option: ') + vbCr + BuildOpt, vbInformation, M09.Get_Language_Str('Unbekanntes Board'))
         self.Controls['Board_IDE_' + Side].Value = True
     
-    def __Test_Get_Arduino_Typ():
+    def __Test_Get_Arduino_Typ(self):
         #UT-------------------------------
         self.__Get_Arduino_Typ(True)
     
@@ -303,7 +326,7 @@ class CUserForm_Options:
     def __Update_Beta_Button_Click(self):
         #-------------------------------------
         self.Hide()
-        M27.Update_MobaLedLib_from_Beta_and_Restart_Excel()
+        M37.Update_MobaLedLib_from_Beta_and_Restart_Excel()
     
     def __Show_Lib_and_Board_Page_Button_Click(self):
         #-------------------------------------------------
@@ -312,46 +335,40 @@ class CUserForm_Options:
         with_1.Visible = True
         with_1.Select()
         
-    def Button_Setup(self,button_frame,Text,Command,Accelerator,Row=0):
+    def Button_Setup(self,button_frame,Text,Command,Accelerator,Row=0,label_text="",state=tk.NORMAL):
         Text = Trim(Text)
-        Button = tk.Button(button_frame, text=Text, command=Command,width=20,font=("Tahoma", 8))
-        Button.grid(row=Row,column=0,sticky="e",padx=10,pady=10)
-        self.top.bind(Accelerator, Command)
+        Button = tk.Button(button_frame, text=Text, command=Command,width=20,height=2,font=("Tahoma", 8),state=state)
+        Button.grid(row=Row,column=0,sticky="n",padx=10,pady=10)
+        
+        if Accelerator!="":            
+            button_frame.bind(Accelerator, Command)
+        
+        if label_text!="":
+            label = ttk.Label(button_frame, text=M09.Get_Language_Str(label_text),wraplength=300,font=("Tahoma", 11))
+            label.grid(row=Row,column=1,sticky="NESW")            
         return
         
         
     def create_arduinopage(self,frame,LeftArduino):
         
-        self.radiobuttons = {"Nano_Normal_L": {"text":"Nano Normal (old Bootloader)", "value": 1},
-                             "Nano_New_L"   : {"text":"Nano (neue Version)", "value": 2},
-                             "Nano_Full_L"  : {"text":"Nano (Full memory)", "value": 3},
-                             "Uno_L"        : {"text":"Uno", "value": 4},
-                             "Board_IDE_L"  : {"text":"Typ von Arduino IDE benutzen", "value": 5},
-                             "ESP32_L"      : {"text":"ESP32 Wroom", "value": 6},
-                             "Pico_L"       : {"text":"Raspberry Pico (Experimental)", "value": 7},
-                             "Nano_Normal_R": {"text":"Nano Normal (old Bootloader)", "value": 1},
-                             "Nano_New_R"   : {"text":"Nano (neue Version)", "value": 2},
-                             "Nano_Full_R"  : {"text":"Nano (Full memory)", "value": 3},
-                             "Uno_R"        : {"text":"Uno", "value": 4},
-                             "Board_IDE_R"  : {"text":"Typ von Arduino IDE benutzen", "value": 5},
-                             }
-        
-        self.Button_Setup(frame,M09.Get_Language_Str("USB Port erkennen"),self.__Detect_LED_Port_Button_Click,"U",Row=0)
+        self.right_frame=tk.Frame(frame,relief=tk.RIDGE)
         
         if LeftArduino:
+            self.Button_Setup(frame,M09.Get_Language_Str("USB Port erkennen"),self.__Detect_LED_Port_Button_Click,"U",Row=0)
             #self.Button_Setup(M09.Get_Language_Str("Version lesen"),self.CommandButton4_,"U",Row=2)
             side="_L"
             self.Autodetect_Typ_L_CheckBox_var = tk.IntVar(master=self.top)
             self.Autodetect_Typ_L_CheckBox_var.set(0)
-            self.Autodetect_Typ_L_CheckBox = tk.Checkbutton(frame, text=M09.Get_Language_Str("Automatisch erkennen"),width=30,wraplength = 200,anchor="w",variable=self.Autodetect_Typ_L_CheckBox_var,font=("Tahoma", 8),onvalue = 1, offvalue = 0)
-            self.Autodetect_Typ_L_CheckBox.grid(row=0, column=1,sticky="nw", padx=2, pady=2)                    
+            self.Autodetect_Typ_L_CheckBox = tk.Checkbutton(self.right_frame, text=M09.Get_Language_Str("Automatisch erkennen"),width=30,wraplength = 200,anchor="w",variable=self.Autodetect_Typ_L_CheckBox_var,font=("Tahoma", 8),onvalue = 1, offvalue = 0)
+            self.Autodetect_Typ_L_CheckBox.grid(row=0, column=0,sticky="nw", padx=2, pady=2)                    
         else:
             side="_R"
+            self.Button_Setup(frame,M09.Get_Language_Str("USB Port erkennen"),self.__Detect_Right_Port_Button_Click,"U",Row=0)
             self.Button_Setup(frame,M09.Get_Language_Str("Prog. Installieren"),self.__ProInstall_Button_Click,"U",Row=2)    
             self.Autodetect_Typ_R_CheckBox_var = tk.IntVar(master=self.top)
             self.Autodetect_Typ_R_CheckBox_var.set(0)
-            self.Autodetect_Typ_R_CheckBox = tk.Checkbutton(frame, text=M09.Get_Language_Str("Automatisch erkennen"),width=30,wraplength = 200,anchor="w",variable=self.Autodetect_Typ_R_CheckBox_var,font=("Tahoma", 8),onvalue = 1, offvalue = 0)
-            self.Autodetect_Typ_R_CheckBox.grid(row=0, column=1,sticky="nw", padx=2, pady=2)                  
+            self.Autodetect_Typ_R_CheckBox = tk.Checkbutton(self.right_frame, text=M09.Get_Language_Str("Automatisch erkennen"),width=30,wraplength = 200,anchor="w",variable=self.Autodetect_Typ_R_CheckBox_var,font=("Tahoma", 8),onvalue = 1, offvalue = 0)
+            self.Autodetect_Typ_R_CheckBox.grid(row=0, column=0,sticky="nw", padx=2, pady=2)                  
         
         for rb in self.radiobuttons.keys():
             rb_text = self.radiobuttons[rb]["text"]
@@ -362,17 +379,19 @@ class CUserForm_Options:
                 if rb_text.startswith("Pico"):
                     if not M37.PICO_Lib_Installed():
                         continue                    
-                rbutton=tk.Radiobutton(frame, text=rb_text, variable=self.rb_res.get(side), value=self.radiobuttons[rb]["value"])
+                rbutton=tk.Radiobutton(self.right_frame, text=rb_text, variable=self.rb_res.get(side), value=self.radiobuttons[rb]["value"])
                 row = self.radiobuttons[rb]["value"]
                 if row > 3:
                     row+=1
-                rbutton.grid(row=row,column=1,sticky="nw",padx=10,pady=0)
+                rbutton.grid(row=row,column=0,sticky="nw",padx=10,pady=0)
                 self.radiobuttons[rb]["button"]=rbutton
                 self.Controls[rb]=P01.CControl(False)
+                
+        self.right_frame.grid(row=0,column=1)
         
         subtitle_txt = M09.Get_Language_Str("Für andere Hauptplatine")
-        self.subtitle_Label = ttk.Label(frame, text=subtitle_txt,font=("Tahoma", 8),width=40,wraplength=350,relief=tk.FLAT, borderwidth=1)
-        self.subtitle_Label.grid(row=4,column=1,sticky="w",padx=10,pady=0)
+        self.subtitle_Label = ttk.Label(self.right_frame, text=subtitle_txt,font=("Tahoma", 8),width=40,wraplength=350,relief=tk.FLAT, borderwidth=1)
+        self.subtitle_Label.grid(row=4,column=0,sticky="w",padx=10,pady=0)
    
     def __UserForm_Initialize(self):
         #--------------------------------
@@ -389,7 +408,7 @@ class CUserForm_Options:
         self.top.resizable(True, True)  # This code helps to disable windows from resizing
         
         window_height = 500
-        window_width = 800
+        window_width = 600
         
         winfo_x = PG.global_controller.winfo_x()
         winfo_y = PG.global_controller.winfo_y()
@@ -402,7 +421,6 @@ class CUserForm_Options:
         
         #self.top.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))                 
         self.top.geometry("+{}+{}".format(x_cordinate, y_cordinate))                   
-        
         
         self.top.title(M09.Get_Language_Str("Optionen und spezielle Funktionien")) 
          
@@ -427,17 +445,43 @@ class CUserForm_Options:
         File_frame = tk.Frame(self.container)
         File_frame_Name = M09.Get_Language_Str("Dateien")
         self.tabdict[File_frame_Name] = File_frame
-        self.container.add(File_frame, text=File_frame_Name)        
+        self.container.add(File_frame, text=File_frame_Name)
+        
+        self.Button_Setup(File_frame,M09.Get_Language_Str("Importieren v. altem Prog."),self.__Import_Button_Click,"I",Row=0,state=tk.DISABLED)
+        self.Button_Setup(File_frame,M09.Get_Language_Str("Speichern in Datei"),self.__Save_Button_Click,"S",Row=1)
+        self.Button_Setup(File_frame,M09.Get_Language_Str("Laden aus Datei"),self.__Load_Button_Click,"L",Row=2)
+        self.Button_Setup(File_frame,M09.Get_Language_Str("Kopiere von Seite zu Seite"),self.__Copy_Page_Button_Click,"K",Row=3,state=tk.DISABLED)
+        
+        self.label5 = ttk.Label(File_frame, text=M09.Get_Language_Str("Speichern und Laden einzelner oder mehrerer Seiten"),wraplength=window_width/2-20,font=("Tahoma", 11))
+        self.label6 = ttk.Label(File_frame, text=M09.Get_Language_Str("Mit den Knöpfen links können die Daten der aktuellen Seite gespeichert und wieder geladen werden."),wraplength=window_width/2-20,font=("Tahoma", 8))
+        self.label5.grid(row=0,column=1)
+        self.label6.grid(row=1,column=1,rowspan=3)
         
         Update_frame = tk.Frame(self.container)
         Update_frame_Name = M09.Get_Language_Str("Update")
         self.tabdict[Update_frame_Name] = Update_frame
         self.container.add(Update_frame, text=Update_frame_Name)
         
+        self.Button_Setup(Update_frame,M09.Get_Language_Str("Aktualisiere Bibliotheke"),self.__Update_to_Arduino_Button_Click,"",Row=0,label_text="Aktualisiert die MobaLedLib auf den offiziellen freigegebenen Stand welcher in der Arduino IDE verfügbar ist.")
+        self.Button_Setup(Update_frame,M09.Get_Language_Str("Installiere Beta Test"),self.__Update_Beta_Button_Click,"",Row=1,label_text="Installiert die Beta Test Version der MobaLedLib Bibliothek.\n(Nur für Experten)")
+        self.Button_Setup(Update_frame,M09.Get_Language_Str("Status der Bibliotheken"),self.__Show_Lib_and_Board_Page_Button_Click,"",Row=2,label_text="Zeigt den Status aller installierten Bibliotheken und Boards an.")
+                       
         Bootloader_frame = tk.Frame(self.container)
         Bootloader_frame_Name = M09.Get_Language_Str("Bootloader")
         self.tabdict[Bootloader_frame_Name] = Bootloader_frame
         self.container.add(Bootloader_frame, text=Bootloader_frame_Name)
+        
+        self.Button_Setup(Bootloader_frame,M09.Get_Language_Str("Schnellen Bootloader"),self.__FastBootloader_Button_Click,"",Row=0,label_text="Installiert den schnellen Bootloader auf dem linken Arduino.")
+        
+        
+        self.lower_Button_frame = tk.Frame(self.top)
+        self.lower_Button_frame.grid(row=2,column=0)
+        
+        self.Button_Setup(self.lower_Button_frame,M09.Get_Language_Str("Mail an Hardi"),self.__HardiForum_Button_Click,"H",Row=0)
+        
+        self.Button_Setup(self.lower_Button_frame,M09.Get_Language_Str("Schließen"),self.__Close_Button_Click,"S",Row=1)
+                       
+        
                 
     def UserForm_Activate(self):
         #------------------------------
@@ -458,7 +502,13 @@ class CUserForm_Options:
             if control.Value==True:
                 rb_var=self.rb_res.get(rb[-2:])
                 rb_var.set(self.radiobuttons[rb]["value"])
-        
+                
+    def radiobutton_to_board(self,leftarduino):
+        if leftarduino:
+            buttonvalue = self.rb_res["_L"].get()
+        else:
+            buttonvalue = self.rb_res["_R"].get()
+        return self.boardlist[buttonvalue]
         
     def Show(self):
         self.IsActive = True

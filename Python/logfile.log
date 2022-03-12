@@ -1,172 +1,59 @@
-18:45:07: Python Version: 3.9.1 (tags/v3.9.1:1e5d33e, Dec  7 2020, 16:33:24) [MSC v.1928 32 bit (Intel)]
-18:45:07: MLL Proggenerator started V04.14a 05.03.2022
-18:45:07:  Platform: Windows-10-10.0.19041-SP0
-18:45:07: Installationfolder D:\data\doc\GitHub\MobaLedLib_pyProgGen\Python
-18:45:07:  Startpage: StartPage
-18:45:07: [Errno 2] No such file or directory: 'D:\\data\\doc\\GitHub\\MobaLedLib_pyProgGen\\Python\\ColorTestOnly.txt'
-18:45:07: Commandline args: {'startpagename': 'StartPage'}
-18:45:07: readConfigData
-18:45:07: Warning: Config File D:\data\doc\GitHub\MobaLedLib_pyProgGen\Python\MobaLedTest_param.json not found
-18:45:07: Read Paramdata: {}
-18:45:07: ReadConfig: ../../MobaLedTest_config.json D:\data\doc\GitHub\MobaLedLib_pyProgGen\Python
-{'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': -1928, 'pos_y': -8, 'colorview': 1, 'startpage': 3, 'startpagename': 'StartPage', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': False, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
-18:45:07: running in a normal Python process
-18:45:07: ReadConfig: {'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': -1928, 'pos_y': -8, 'colorview': 1, 'startpage': 3, 'startpagename': 'StartPage', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': False, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
-18:45:07: Screenwidht: 2560 Screenheight: 1440
-18:45:07: *** Translation not found for:Alle|
+12:24:21: Python Version: 3.9.1 (tags/v3.9.1:1e5d33e, Dec  7 2020, 16:33:24) [MSC v.1928 32 bit (Intel)]
+12:24:21: MLL Proggenerator started V04.14a 05.03.2022
+12:24:21:  Platform: Windows-10-10.0.19041-SP0
+12:24:21: Installationfolder D:\data\doc\GitHub\MobaLedLib_pyProgGen\Python
+12:24:21:  Startpage: StartPage
+12:24:21: [Errno 2] No such file or directory: 'D:\\data\\doc\\GitHub\\MobaLedLib_pyProgGen\\Python\\ColorTestOnly.txt'
+12:24:21: Commandline args: {'startpagename': 'StartPage'}
+12:24:21: readConfigData
+12:24:21: Warning: Config File D:\data\doc\GitHub\MobaLedLib_pyProgGen\Python\MobaLedTest_param.json not found
+12:24:21: Read Paramdata: {}
+12:24:21: ReadConfig: ../../MobaLedTest_config.json D:\data\doc\GitHub\MobaLedLib_pyProgGen\Python
+{'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': -1928, 'pos_y': -8, 'colorview': 1, 'startpage': 3, 'startpagename': 'StartPage', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': True, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
+12:24:21: running in a normal Python process
+12:24:21: ReadConfig: {'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': -1928, 'pos_y': -8, 'colorview': 1, 'startpage': 3, 'startpagename': 'StartPage', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': True, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
+12:24:21: Screenwidht: 2560 Screenheight: 1440
+12:24:21: *** Translation not found for:Alle|
 Einblenden
-18:45:07: *** Translation not found for:Hilfe
-18:45:07: Switching back to DCC in Make_sure_that_Col_Variables_match()
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:07: Type not str	None
-18:45:08: SoundCheckPage - Multipleparams
-18:45:08: ARDUINOConfigPage - Multipleparams
-18:45:08: ARDUINOConfigPage - Multipleparams
-18:45:08: ARDUINOConfigPage - Multipleparams
-18:45:08: ConfigurationPage - Multipleparams
-18:45:08: ConfigurationPage - Multipleparams
-18:45:08: ConfigurationPage - Multipleparams
-18:45:08: Tabselected: Start
-18:45:08: Start
-18:45:08: TabChanged  - .!scrolledframe.!canvas.!frame.!notebook.!startpage
-18:45:10: Tabunselected: Start
-18:45:10: Tabselected: ProgGeneratorPage
-18:45:10: TabChanged .!scrolledframe.!canvas.!frame.!notebook.!startpage - .!scrolledframe.!canvas.!frame.!notebook.!prog_generatorpage
-18:45:20: *** Translation not found for:Optionen und spezielle Funktionien
-18:45:38: Tabunselected: ProgGeneratorPage
-18:45:38: Tabselected: ARDUINO Einstellungen
-18:45:38: disconnect start
-18:45:38: set_connectstatusmessage: Nicht Verbunden
-18:45:38: Create Portlist
-18:45:38: Portlist.ComPorts:COM1 Kommunikationsanschluss (COM1) ACPI\PNP0501\0
-18:45:38: Portlist.ComPorts:COM3 Arduino Uno (COM3) USB VID:PID=2341:0043 SER=8543130363635191C142 LOCATION=1-11
-18:45:38: {'COM3': {'Description': 'Arduino Uno (COM3)', 'Baudrate': '???', 'DeviceSignature': '???', 'Status': 'unchecked'}}
-18:45:38: TabChanged .!scrolledframe.!canvas.!frame.!notebook.!prog_generatorpage - .!scrolledframe.!canvas.!frame.!notebook.!arduinoconfigpage
-18:45:39: on_update_ARDUINO_data
-18:45:39: determine_new_and_removed_ports ['COM1', 'COM3']
-18:45:39: Try to add Port COM1 to ARDUINO portlist
-18:45:39: Trying COM COM1 with Baudrate 115200
-18:45:39: detect_arduino: COM1
-18:45:39: SleepTime=20
-18:45:39: transact: b''
-18:45:39: transact: b''
-18:45:40: transact: b''
-18:45:40: transact: b''
-18:45:40: Give up after 2 trials
-18:45:40: COM1:no ARDUINO detected, baudrate: 115200
-18:45:40: Trying COM COM1 with Baudrate 57600
-18:45:40: detect_arduino: COM1
-18:45:40: SleepTime=20
-18:45:40: transact: b''
-18:45:40: transact: b''
-18:45:41: transact: b''
-18:45:41: transact: b''
-18:45:41: Give up after 2 trials
-18:45:41: COM1:no ARDUINO detected, baudrate: 57600
-18:45:41: Trying COM COM1 with Baudrate 115200
-18:45:41: detect_arduino: COM1
-18:45:41: SleepTime=20
-18:45:41: transact: b''
-18:45:42: transact: b''
-18:45:42: transact: b''
-18:45:42: transact: b''
-18:45:42: Give up after 2 trials
-18:45:42: COM1:no ARDUINO detected, baudrate: 115200
-18:45:42: Trying COM COM1 with Baudrate 57600
-18:45:42: detect_arduino: COM1
-18:45:42: SleepTime=20
-18:45:42: transact: b''
-18:45:43: transact: b''
-18:45:43: transact: b''
-18:45:43: transact: b''
-18:45:43: Give up after 2 trials
-18:45:43: COM1:no ARDUINO detected, baudrate: 57600
-18:45:43: on_update_ARDUINO_data
-18:45:43: determine_new_and_removed_ports ['COM3']
-18:45:43: Try to add Port COM3 to ARDUINO portlist
-18:45:43: Trying COM COM3 with Baudrate 115200
-18:45:43: detect_arduino: COM3
-18:45:43: SleepTime=20
-18:45:44: transact: b'\x14\x10'
-18:45:44: transact data_ok: b'\x14\x10'
-18:45:44: getdeviceinformation
-18:45:44: transact: b'\x14\x1e\x95\x0f\x10'
-18:45:44: transact data_ok: b'\x14\x1e\x95\x0f\x10'
-18:45:44: getdeviceinformation: b'\x1e\x95\x0f'
-18:45:44: ATMEGA328P
-18:45:44:   Serial Port     : COM3
-18:45:44:   Serial Baudrate : 115200
-18:45:44:   Device signature: b'\x1e\x95\x0f'
-18:45:44: ATMega328P
-18:45:44: Device: b'\x1e\x95\x0f' - ATmega328P (Nano/Uno)
-18:45:44: on_update_ARDUINO_data
-18:45:45: on_update_ARDUINO_data
-18:45:45: SaveConfigData
-18:45:45: SaveConfig: ARDUINO Einstellungen - {'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': 1, 'pos_y': 23, 'colorview': 1, 'startpage': 3, 'startpagename': 'StartPage', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': False, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
-18:45:46: on_update_ARDUINO_data
-18:45:47: on_update_ARDUINO_data
-18:45:48: on_update_ARDUINO_data
-18:45:48: Tabunselected: ARDUINO Einstellungen
-18:45:48: Tabselected: ProgGeneratorPage
-18:45:48: TabChanged .!scrolledframe.!canvas.!frame.!notebook.!arduinoconfigpage - .!scrolledframe.!canvas.!frame.!notebook.!prog_generatorpage
-18:45:49: on_update_ARDUINO_data
-18:45:50: Cancel
-18:45:50: Cancel_without_save
-18:45:50: set_connectstatusmessage: Closing program...
-18:45:50: Cancel_without_save2
-18:45:50: Close_notification
-18:45:50: Stop_process_Z21
-18:45:50: Stop_process_Z21 - disconnect_all_serial_interfaces
-18:45:50: disconnect start
-18:45:50: Error write message to ARDUINO #L 00 00 00 00 7FFF
-
-18:45:50: Attempting to use a port that is not open
-18:45:50: stop_process_serial
-18:45:50: Error write message to ARDUINO #X
-
-18:45:50: Attempting to use a port that is not open
-18:45:50: close ARDUINO port COM3
-18:45:50: set_connectstatusmessage: Nicht Verbunden
-18:45:50: disconnect Z21 serial port: NO DEVICE
-18:45:50: Pyrog-Stop_process_serial
-18:45:50: disconnect start
-18:45:50: set_connectstatusmessage: Nicht Verbunden
-18:45:50: disconnect Z21 serial port: NO DEVICE
-18:45:50: Pyrog-Stop_process_serial
-18:45:50: disconnect start
-18:45:50: set_connectstatusmessage: Nicht Verbunden
-18:45:50: disconnect Z21 serial port: NO DEVICE
-18:45:50: Pyrog-Stop_process_serial
-18:45:50: Stop_process_Z21 - reset_z21_data
-18:45:50: reset_z21_data-end
-18:45:51: Stop_process_Z21 - socket.close
-18:45:51: stop_process_serial
-18:45:51: SaveConfigData
-18:45:51: SaveConfig: ARDUINO Einstellungen - {'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': 1, 'pos_y': 23, 'colorview': 1, 'startpage': 3, 'startpagename': 'StartPage', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': False, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
-18:45:51: ['ConfigurationPage', 'Z21Data', '0']
-18:45:51: ['ConfigurationPage', 'Z21Data', '1']
-18:45:51: ['ConfigurationPage', 'Z21Data', '2']
-18:45:51: ['ConfigurationPage', 'Z21Data', '0']
-18:45:51: ['ConfigurationPage', 'Z21Data', '1']
-18:45:51: ['ConfigurationPage', 'Z21Data', '2']
-18:45:51: SaveConfigData
-18:45:51: SaveConfig: Einstellungen - {'serportnumber': 0, 'serportname': 'COM3', 'baudrate': 115200, 'maxLEDcount': 255, 'lastLedCount': 1, 'lastLed': 0, 'pos_x': 0, 'pos_y': 0, 'colorview': 1, 'startpage': 3, 'startpagename': 'Startseite', 'led_correction_r': 255, 'led_correction_g': 175, 'led_correction_b': 239, 'use_led_correction': True, 'old_color': '#FFFFFF', 'palette': {'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'GAS_LIGHT D': '#323232', 'GAS LIGHT': '#FFFFFF', 'NEON_LIGHT D': '#14141B', 'NEON_LIGHT M': '#464650', 'NEON_LIGHT': '#F5F5FF', 'ROOM_TV0 A': '#323214', 'ROOM_TV0 B': '#46461E', 'ROOM_TV1 A': '#323208', 'ROOM_TV1 B': '#323208', 'SINGLE_LED': '#FFFFFF', 'SINGLE_LED D': '#323232'}, 'effectpalette': {'House': {'ROOM_DARK': '#323232', 'ROOM_BRIGHT': '#FFFFFF', 'ROOM_WARM_W': '#934D08', 'ROOM_RED': '#FF0000', 'ROOM_D_RED': '#320009', 'ROOM_COL0': '#0F0D03', 'ROOM_COL1': '#162C1B', 'ROOM_COL2': '#9B4905', 'ROOM_COL3': '#271201', 'ROOM_COL4': '#1E0000', 'ROOM_COL5': '#4F2707', 'ROOM_COL345': '#271201', 'FIRE': '#000000', 'FIRED': '#000000', 'FIREB': '#000000', 'ROOM_CHIMNEY': '#000000', 'ROOM_CHIMNEYD': '#000000', 'ROOM_CHIMNEYB': '#000000', 'ROOM_TV0': '#323214', 'ROOM_TV0_CHIMNEY': '#323214', 'ROOM_TV0_CHIMNEYD': '#323214', 'ROOM_TV0_CHIMNEYB': '#323214', 'ROOM_TV1': '#323208', 'ROOM_TV1_CHIMNEY': '#323208', 'ROOM_TV1_CHIMNEYD': '#323208', 'ROOM_TV1_CHIMNEYB': '#323208', 'NEON_LIGHT': '#F5F5FF', 'NEON_LIGHT_SGL': '#F5F5FF', 'NEON_LIGHT1': '#F5F5FF', 'NEON_LIGHT2': '#F5F5FF', 'NEON_LIGHT3': '#F5F5FF', 'NEON_LIGHTD': '#14141B', 'NEON_LIGHTD_SGL': '#14141B', 'NEON_LIGHT1D': '#14141B', 'NEON_LIGHT2D': '#14141B', 'NEON_LIGHT3D': '#14141B', 'NEON_LIGHTM': '#464650', 'NEON_LIGHTM_SGL': '#464650', 'NEON_LIGHT1M': '#464650', 'NEON_LIGHT2M': '#464650', 'NEON_LIGHT3M': '#464650', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': '#14141B', 'NEON_DEF_D_SGL': '#14141B', 'NEON_DEF1D': '#14141B', 'NEON_DEF2D': '#14141B', 'NEON_DEF3D': '#14141B', 'LED_SGL': '#FFFFFF', 'SINGLE_LED1': '#FFFFFF', 'SINGLE_LED2': '#FFFFFF', 'SINGLE_LED3': '#FFFFFF', 'LED_D_SGL': '#323232', 'SINGLE_LED1D': '#323232', 'SINGLE_LED2D': '#323232', 'SINGLE_LED3D': '#323232', 'GAS_LIGHT': '#FFFFFF', 'GAS_LIGHT_SGL': '#FFFFFF', 'GAS_LIGHT1': '#FFFFFF', 'GAS_LIGHT2': '#FFFFFF', 'GAS_LIGHT3': '#FFFFFF', 'GAS_LIGHTD': '#323232', 'GAS_LIGHTD_SGL': '#323232', 'GAS_LIGHT1D': '#323232', 'GAS_LIGHT2D': '#323232', 'GAS_LIGHT3D': '#323232', 'SKIP_ROOM': '#000000'}, 'Const': {}, 'GasLights': {'NEON_LIGHT': 'NEON_LIGHT', 'NEON_LIGHT_SGL': 'NEON_LIGHT', 'NEON_LIGHT1': 'NEON_LIGHT', 'NEON_LIGHT2': 'NEON_LIGHT', 'NEON_LIGHT3': 'NEON_LIGHT', 'NEON_LIGHTD': 'NEON_LIGHT D', 'NEON_LIGHTD_SGL': 'NEON_LIGHT D', 'NEON_LIGHT1D': 'NEON_LIGHT D', 'NEON_LIGHT2D': 'NEON_LIGHT D', 'NEON_LIGHT3D': 'NEON_LIGHT D', 'NEON_LIGHTM': 'NEON_LIGHT M', 'NEON_LIGHTM_SGL': 'NEON_LIGHT M', 'NEON_LIGHT1M': 'NEON_LIGHT M', 'NEON_LIGHT2M': 'NEON_LIGHT M', 'NEON_LIGHT3M': 'NEON_LIGHT M', 'NEON_LIGHTL': '#464650', 'NEON_LIGHTL_SGL': '#464650', 'NEON_LIGHT1L': '#464650', 'NEON_LIGHT2L': '#464650', 'NEON_LIGHT3L': '#464650', 'NEON_DEF_D': 'NEON_LIGHT D', 'NEON_DEF_D_SGL': 'NEON_LIGHT D', 'NEON_DEF1D': 'NEON_LIGHT D', 'NEON_DEF2D': 'NEON_LIGHT D', 'NEON_DEF3D': 'NEON_LIGHT D', 'GAS_LIGHT': 'GAS LIGHT', 'GAS_LIGHT_SGL': 'GAS LIGHT', 'GAS_LIGHT1': 'GAS LIGHT', 'GAS_LIGHT2': 'GAS LIGHT', 'GAS_LIGHT3': 'GAS LIGHT', 'GAS_LIGHTD': 'GAS_LIGHT D', 'GAS_LIGHTD_SGL': 'GAS_LIGHT D', 'GAS_LIGHT1D': 'GAS_LIGHT D', 'GAS_LIGHT2D': 'GAS_LIGHT D', 'GAS_LIGHT3D': 'GAS_LIGHT D'}}, 'old_effect': 'ROOM_DARK', 'group_name': 'Group001', 'autoconnect': False, 'lastSound': 0, 'lastSoundImpuls': 200, 'startcmdcb': False, 'startcmd_filename': ' ', 'ArduinoTypeName': 'Nano/Uno (neu)', 'ArduinoTypeNumber': 1, 'Z21Data': {'0': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '1': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}, '2': {'serportname': 'NO DEVICE', 'dcc_start': 1, 'dcc_end': 9999}}, 'lastservo_channel': 1, 'DCC BaseAddress': 100, 'ServoAddress': 0, 'ServoChannel': 0, 'SoundAddress': 0, 'SoundImpulsLength': 200, 'Sound_RED': 8, 'Sound_GREEN': 3, 'Sound_BLUE': 6, 'baudratenumber': 0, 'ARDUINOMessage': 0, 'Autoconnect': 0, 'ARDUINOShowAll': True, 'ARDUINOTakeOver': True, 'UseZ21Data': False, 'ARDUINOBlink': False, 'MLLDigSysName': 'Kein System', 'MLLDigSysNumber': 0, 'Baudrate': '115200', 'FontTitle': 12, 'FontLabel': 8, 'FontSpinbox': 8, 'FontScale': 8, 'RMbusTimer': 0, 'ShowProgramGenerator': True, 'ShowPatternGenerator': False, 'ShowHiddentables': False, 'AutoLoadWorkbooks': True, 'UseCOM_Port_UserForm': True, 'languagename': 'Auto', 'language': 0, 'LEDchannel': ''}
-18:45:51: SaveConfigData
-18:45:51: disconnect start
-18:45:51: set_connectstatusmessage: Nicht Verbunden
-18:45:51: Destroy
-18:45:51: Program End
+12:24:21: *** Translation not found for:Hilfe
+12:24:21: Switching back to DCC in Make_sure_that_Col_Variables_match()
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: Type not str	None
+12:24:21: SoundCheckPage - Multipleparams
+12:24:21: ARDUINOConfigPage - Multipleparams
+12:24:21: ARDUINOConfigPage - Multipleparams
+12:24:21: ARDUINOConfigPage - Multipleparams
+12:24:21: ConfigurationPage - Multipleparams
+12:24:21: ConfigurationPage - Multipleparams
+12:24:21: ConfigurationPage - Multipleparams
+12:24:22: Tabselected: Start
+12:24:22: Start
+12:24:22: TabChanged  - .!scrolledframe.!canvas.!frame.!notebook.!startpage
+12:24:25: Tabunselected: Start
+12:24:25: Tabselected: ProgGeneratorPage
+12:24:25: TabChanged .!scrolledframe.!canvas.!frame.!notebook.!startpage - .!scrolledframe.!canvas.!frame.!notebook.!prog_generatorpage
+12:24:26: *** Translation not found for:Optionen und spezielle Funktionien
+12:24:26: *** Translation not found for:Mit den Knöpfen links können die Daten der aktuellen Seite gespeichert und wieder geladen werden.
+12:24:26: *** Translation not found for:Aktualisiere Bibliotheke
+12:24:30: *** Translation not found for:DFastBootloader not implemented yet.
+12:24:30: *** Translation not found for:Not implemented
+12:25:14: *** Translation not found for:Optionen und spezielle Funktionien
+12:25:14: *** Translation not found for:Mit den Knöpfen links können die Daten der aktuellen Seite gespeichert und wieder geladen werden.
+12:25:14: *** Translation not found for:Aktualisiere Bibliotheke
+12:25:26: set_statusmessage: Aktualisiere Bibliotheken und Boards 
+12:25:33: Get_Sketchbook_Path called
+12:25:33: Get_Sketchbook_Path called
