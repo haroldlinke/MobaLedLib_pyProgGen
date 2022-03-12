@@ -93,6 +93,7 @@
             "ShowPatternGenerator",
             "ShowHiddentables",
             "AutoLoadWorkbooks",
+            "UseCOM_Port_UserForm",
             "Startseite",
             "Language",
             "LEDchannel",

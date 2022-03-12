@@ -9,35 +9,16 @@ REM This program must be started from the arduino libraries directory
 REM
 
 CHCP 65001 >NUL
-
-ECHO **********************
-ECHO Updating MobaLedLib...
-ECHO **********************
-if EXIST MobaLedLib\NUL (
-   ECHO deleting old directory MobaLedLib\
-   rmdir MobaLedLib\ /s /q
-   REM timeout /T 3 /nobreak
-)
-if EXIST MobaLedLib\NUL (
-   ECHO Error deleting old directory MobaLedLib\
-   ECHO For some reasons the directory could not be deleted ;-(
-   ECHO Check if an other program is active which prevents the deleting
-   ECHO of the directory
-   ECHO.
-   ECHO Going to try a second time
-   PAUSE
-   rmdir MobaLedLib\ /s /q
-   timeout /T 3 /nobreak
-)
-if EXIST MobaLedLib\NUL (
-   COLOR 4F
-   ECHO Error: Still not able to delete the old directory MobaLedLib\   ;-(((
-   PAUSE
-)
-powershell Invoke-WebRequest "https://github.com/Hardi-St/MobaLedLib/archive/master.zip" -o:MobaLedLib.zip
-ECHO Invoke-WebRequest result: %ERRORLEVEL%
-IF ERRORLEVEL 1 Goto ErrorMsg
+ECHO ************************************
+ECHO  Installing the following libraries
+ECHO ************************************
+ECHO   FastLED
 ECHO.
+@if exist "%USERPROFILE%\AppData\Local\Temp\MobaLedLib_build\ESP32\includes.cache" del "%USERPROFILE%\AppData\Local\Temp\MobaLedLib_build\ESP32\includes.cache"
+"C:\Program Files (x86)\Arduino\arduino_debug.exe" --install-library "FastLED" 2>&1 | find /v " StatusLogger " | find /v " INFO c.a" | find /v " WARN p.a" | find /v " WARN c.a"
+ECHO.
+ECHO Error %ERRORLEVEL%
+IF ERRORLEVEL 1 Goto ErrorMsg
 
 Exit
 

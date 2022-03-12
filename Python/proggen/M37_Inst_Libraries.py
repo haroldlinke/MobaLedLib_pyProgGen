@@ -766,7 +766,7 @@ def __Update_Status(Start=False):
         else:
             F00.StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(Time - __Update_Time, 'hh:mm:ss'))
         
-        P01.Application.OnTime(P01.Now + P01.TimeValue('00:00:01'), __Update_Status)
+        P01.Application.OnTime(1000, __Update_Status)
 
 def __Stop_Status_Display():
     global __Update_Time

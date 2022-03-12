@@ -702,7 +702,7 @@ class SelectMacrosTreeform:
             if __StartTime_Update_TextBox != 0:
                 # VB2PY (UntranslatedCode) On Error Resume Next
                 Application.OnTime(__StartTime_Update_TextBox, 'Update_TextBoxFilter_onTime', Schedule=False)
-            __StartTime_Update_TextBox = Now + TimeValue('00:00:01')
+            __StartTime_Update_TextBox = 1000 #Now + TimeValue('00:00:01')
             Application.OnTime(__StartTime_Update_TextBox, 'Update_TextBoxFilter_onTime')
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: lngRotation - ByVal 

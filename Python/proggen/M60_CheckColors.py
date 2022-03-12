@@ -730,7 +730,7 @@ def __Update_Wait_CheckColors_Form():
             Run(__Proc_CheckColors_Form_Callback)
     else:
         if Wait_CheckColors_Form.Visible:
-            Application.OnTime(Now + TimeValue('00:00:01'), 'Update_Wait_CheckColors_Form')
+            Application.OnTime(1000, 'Update_Wait_CheckColors_Form')
 
 def __Set_ColTab_Callback(palette):
     global ColTab

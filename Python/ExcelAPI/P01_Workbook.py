@@ -45,6 +45,7 @@ from ExcelAPI.X01_Excel_Consts import *
 from vb2py.vbconstants import *
 from vb2py.vbfunctions import *
 import time
+import datetime
 
 #import proggen.M20_PageEvents_a_Functions as M20
 import subprocess
@@ -60,11 +61,11 @@ import keyboard
 #import proggen.M02_global_variables as M02
 
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
-datasheet_formating = { "HideCells" : ((0,"*"),(1,"*")),
-                        "ProtectedCells"  : ((0,"*"),(1,"*"),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
+datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,8),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
+                        "ProtectedCells"  : ((0,0),(1,0),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
                         "left_click_callertype": "cell",
                         "FontColor"       : { "1": {
-                                                    "font"     : ("Arial",10),
+                                                    "font"     : ("Arial",8),
                                                     "fg"       : "#FFFF00",
                                                     "bg"       : "#0000FF",
                                                     "Cells"    : ((0,"*"),(1,"*"))
@@ -246,12 +247,14 @@ def Dir(filepath,dummy=None):
             return filepath
         else:
             return ""
+        
 
 def Date_str():
-    return "01.01.2022"
+    return Date()
 
 def Time_str():
-    return "12:00:00"
+    t = datetime.datetime.now()
+    return t.strftime("%X")
 
 def Center_Form(form):
     return
@@ -263,12 +266,11 @@ def updateWindow():
     PG.global_controller.update()
 
 def TimeValue(Duration):
-    return 5
+    return str(Duration)
 
 def getvalue(row,column):
     value=ActiveSheet.tablemodel.getValueAt(row-1,column-1)
     #print("P01.getvalue:",row,column,value)
-    
     return value
 
 def ActiveCell():
@@ -421,6 +423,10 @@ def InputBox(Message:str, Title:str, Default=None):
 def Time():
     return time.time()
 
+def Date():
+    x = datetime.datetime.now()
+    return x.strftime("%x")
+
 def Run(cmd):
     subprocess.run(cmd,shell=True)
     
@@ -475,7 +481,8 @@ class CWorkbook:
             self.Path = path
             self.master = frame
             self.tabframedict = {}
-            
+
+            self.FullName = workbookFilename
             style = ttk.Style(frame)
             style.configure('downtab.TNotebook', tabposition='sw')
             self.container = ttk.Notebook(frame, style="downtab.TNotebook")
@@ -1580,6 +1587,12 @@ class CButton:
         self.AlternativeText = ""
         self.TextFrame2 = ""
         self.Fill = (0,0,0)
+
+        
+class CControl:
+    def __init__(self,value):
+        self.Value=value
+
         
 def rgbtohex(r,g,b):
     return f'#{r:02x}{g:02x}{b:02x}'

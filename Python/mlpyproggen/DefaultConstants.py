@@ -56,7 +56,7 @@
 # * License: http://creativecommons.org/licenses/by-sa/3.0/
 # ***************************************************************************
 
-PROG_VERSION ="V04.13a 27.02.2022"
+PROG_VERSION ="V04.14a 05.03.2022"
 LARGE_FONT= ("Verdana", 12)
 VERY_LARGE_FONT = ("Verdana", 14)
 NORMAL_FONT = ("Verdana", 10)
@@ -617,6 +617,7 @@ DEFAULT_CONFIG = {
                     "ShowPatternGenerator": 0,
                     "ShowHiddentables": 0,
                     "AutoLoadWorkbooks":1,
+                    "UseCOM_Port_UserForm":0,
                     "languagename": "Auto",
                     "language": 0
                 }

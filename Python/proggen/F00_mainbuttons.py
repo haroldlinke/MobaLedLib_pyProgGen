@@ -51,6 +51,7 @@ import proggen.D02_Userform_Select_Typ_DCC as D02
 import proggen.D02_Userform_Select_Typ_SX as D02SX
 import proggen.D09_StatusMsg_Userform as D09
 import proggen.D08_Select_COM_Port_Userform as D08
+import proggen.D10_UserForm_Options as D10
 
 def Arduino_Button_Click():
     #---------------------------------
@@ -160,8 +161,8 @@ def Copy_Button_Click():
 def Options_Button_Click():
     #----------------------------------
     __Button_Pressed_Proc()
-    notimplemented("Options")
-    #Option_Dialog()
+    #notimplemented("Options")
+    M20.Option_Dialog()
 
 def UnHideAll_Button_Click():
     #-----------------------------------
@@ -216,11 +217,12 @@ def worksheet_init(worksheet):
             first_call=False
     
 def init_UserForms():
-    global StatusMsg_UserForm, UserForm_Select_Typ_DCC, UserForm_Select_Typ_SX, Select_COM_Port_UserForm
+    global StatusMsg_UserForm, UserForm_Select_Typ_DCC, UserForm_Select_Typ_SX, Select_COM_Port_UserForm,UserForm_Options
     StatusMsg_UserForm = D09.CStatusMsg_UserForm()
     UserForm_Select_Typ_DCC = D02.UserForm_Select_Typ_DCC()
     UserForm_Select_Typ_SX = D02SX.UserForm_Select_Typ_SX()
     Select_COM_Port_UserForm = D08.CSelect_COM_Port_UserForm()
+    UserForm_Options = D10.CUserForm_Options()
 
     
 def notimplemented(command):

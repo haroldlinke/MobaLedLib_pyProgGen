@@ -562,8 +562,8 @@ def myUnhideRows_Event():
 
 def Option_Dialog():
     #-------------------------
-    Check_Version()
-    UserForm_Options.Show()
+    M30.Check_Version()
+    F00.UserForm_Options.Show()
 
 def ClearSheet():
     #----------------------
