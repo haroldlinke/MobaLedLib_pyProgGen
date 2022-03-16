@@ -10,21 +10,21 @@ Option Explicit
 #If VBA7 And Win64 Then    ' 64 bit Excel under 64-bit windows
                            ' Use LongLong and LongPtr
                            
-    Private Declare PtrSafe Function SetTimer Lib "user32" (ByVal hwnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As LongLong, ByVal lpTimerFunc As LongPtr) As LongLong
-    Private Declare PtrSafe Function KillTimer Lib "user32" (ByVal hwnd As LongPtr, ByVal nIDEvent As LongPtr) As LongLong
+    Private Declare PtrSafe Function SetTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As LongLong, ByVal lpTimerFunc As LongPtr) As LongLong
+    Private Declare PtrSafe Function KillTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr) As LongLong
     
     Private hTimer As LongPtr ' Müsste es hier nicht LongLong heißen ?
 
 #ElseIf VBA7 Then           ' 64 bit Excel in all environments
                             ' Use LongPtr only, LongLong is not available
-    Private Declare PtrSafe Function SetTimer Lib "user32" (ByVal hwnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr) As LongPtr ' 01.12.20: Old: nIDEvent As Long
-    Private Declare PtrSafe Function KillTimer Lib "user32" (ByVal hwnd As LongPtr, ByVal nIDEvent As LongPtr) As Long                                                        '    "              "
+    Private Declare PtrSafe Function SetTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr) As LongPtr ' 01.12.20: Old: nIDEvent As Long
+    Private Declare PtrSafe Function KillTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr) As Long                                                        '    "              "
 
     Private hTimer As LongPtr
     
 #Else    ' 32 bit Excel
-    Private Declare Function SetTimer Lib "user32" (ByVal hwnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
-    Private Declare Function KillTimer Lib "user32" (ByVal hwnd As Long, ByVal nIDEvent As Long) As Long
+    Private Declare Function SetTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
+    Private Declare Function KillTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long) As Long
 
     Private hTimer As Long
 #End If
@@ -134,8 +134,8 @@ Private Function Show_InsertLine_until_Mousepressed(MinRow As Long, SheetName As
     If GetAsyncKeyState(VK_RETURN) <> 0 Then EnterKey_Pressed = True
     
     If MoveByKey Then
-          SetCursorPos ActiveWindow.ActivePane.PointsToScreenPixelsX(ActiveCell.Left + (ActiveCell.Width / 2)), _
-              ActiveWindow.ActivePane.PointsToScreenPixelsY(ActiveCell.Top + (ActiveCell.Height / 2))
+          SetCursorPos ActiveWindow.ActivePane.PointsToScreenPixelsX(ActiveCell.left + (ActiveCell.Width / 2)), _
+              ActiveWindow.ActivePane.PointsToScreenPixelsY(ActiveCell.top + (ActiveCell.Height / 2))
           Set rng = ActiveCell
     Else: Set rng = GetRange(llCoord.Xcoord, llCoord.Ycoord)
     End If

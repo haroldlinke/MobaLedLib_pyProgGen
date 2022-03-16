@@ -189,7 +189,7 @@ Private Sub Get_State_of_Board_Row(Row As Long)
   Dim Res As String
   Res = Dir(BoardDir & ProcessorTyp & "\*.*", vbDirectory) ' The Dir() result seames to be sorted
   While Res <> ""
-     If Left(Res, 1) <> "." Then
+     If left(Res, 1) <> "." Then
         VerList = VerList & Res & vbTab
      End If
      Res = Dir() ' Mit Excel für Mac 2016 wird der ursprüngliche Dir-Funktionsaufruf erfolgreich ausgeführt. Nachfolgende Aufrufe zum Durchlaufen des angegebenen Verzeichnisses führen jedoch zu einem Fehler. Dies ist leider ein bekanntes Problem.
@@ -227,7 +227,7 @@ Private Sub Get_State_of_BoardExtras_Row(Row As Long)
   Dim Res As String
   Res = Dir(BoardDir & "\" & ExtraType & "\*.*", vbDirectory) ' The Dir() result seames to be sorted
   While Res <> ""
-     If Left(Res, 1) <> "." Then
+     If left(Res, 1) <> "." Then
         VerList = VerList & Res & vbTab
      End If
      Res = Dir() ' Mit Excel für Mac 2016 wird der ursprüngliche Dir-Funktionsaufruf erfolgreich ausgeführt. Nachfolgende Aufrufe zum Durchlaufen des angegebenen Verzeichnisses führen jedoch zu einem Fehler. Dies ist leider ein bekanntes Problem.
@@ -689,12 +689,12 @@ Public Function CheckArduinoHomeDir()
   Exit Function
 DirError:
   On Error GoTo 0
-  Dim message
-  message = Replace(Get_Language_Str("Das Arduino Sketchbook Verzeichnis #1# existiert nicht." & _
+  Dim Message
+  Message = Replace(Get_Language_Str("Das Arduino Sketchbook Verzeichnis #1# existiert nicht." & _
     "Bitte prüfen und korrigieren sie die Einstellungen in der Arduino IDE."), "#1#", _
     Sketchbook_Path & vbCrLf)
       
-  MsgBox message, vbCritical, Get_Language_Str("Es sind Fehler aufgetreten")
+  MsgBox Message, vbCritical, Get_Language_Str("Es sind Fehler aufgetreten")
 End Function
 
 '-----------------------------------------------------------------------------------
@@ -766,9 +766,9 @@ Private Function Update_All_Selected_Libraries() As Boolean
   Start_Update = True
   
   #If VBA7 Then                                                             ' 05.06.20:
-    Dim hwnd As LongPtr: hwnd = Application.hwnd
+    Dim hWnd As LongPtr: hWnd = Application.hWnd
   #Else
-    Dim hwnd As Long:    hwnd = Application.hwnd
+    Dim hWnd As Long:    hWnd = Application.hWnd
   #End If
   
   Do
@@ -816,7 +816,7 @@ Private Function Update_All_Selected_Libraries() As Boolean
     '   See: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow
     ' But it brings up excel again after the upload to the Arduino
     ' Without this funchion an other program was activated after the upload for some reasons
-    Bring_to_front hwnd
+    Bring_to_front hWnd
     
     DoEvents
     
@@ -929,7 +929,7 @@ Private Function Create_Restart_Cmd() As String                             ' 30
   Print #fp, "ECHO."
   Print #fp, "ECHO  Going to start the Prog_Generator_MobaLedLib again"
   Print #fp, "CHCP 65001 > NUL" ' Change the code Page to be able to use special characters like "ä" in the path
-  Print #fp, Left(Sketchbook_Path, 2)
+  Print #fp, left(Sketchbook_Path, 2)
   Print #fp, "CD """ & ConvertToUTF8Str(Sketchbook_Path) & "\libraries\MobaLedLib\extras\""" ' 13.11.21: Juergen fix issue #6894
 '  Print #fp, "CD"    ' Debug
 '  Print #fp, "PAUSE" ' Debug

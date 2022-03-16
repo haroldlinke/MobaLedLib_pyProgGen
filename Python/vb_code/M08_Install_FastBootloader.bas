@@ -111,9 +111,9 @@ End Sub
 Private Function Write_Bootloader() As Boolean
 '---------------------------------------------
   #If VBA7 Then
-    Dim hwnd As LongPtr: hwnd = Application.hwnd
+    Dim hWnd As LongPtr: hWnd = Application.hWnd
   #Else
-    Dim hwnd As Long:    hwnd = Application.hwnd
+    Dim hWnd As Long:    hWnd = Application.hWnd
   #End If
   
   Dim CmdName As String, CommandStr As String
@@ -129,7 +129,7 @@ Private Function Write_Bootloader() As Boolean
                            MsgBox Get_Language_Str("Fehler ") & Res & Get_Language_Str(" beim Starten des Arduino Programms '") & CommandStr & "'", vbCritical, _
                                   Get_Language_Str("Fehler beim Starten des Arduino programms")
   End Select
-  Bring_to_front hwnd
+  Bring_to_front hWnd
   Write_Bootloader = True
 End Function
 

@@ -176,7 +176,7 @@ End Sub
 'End Sub
 
 '--------------------------------------------------------------------------------------------------------------------
-Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Description As String, LedChannels As Long)
+Public Sub Show_UserForm_Other(ByVal par As String, ByVal Name As String, Description As String, LedChannels As Long)
 '--------------------------------------------------------------------------------------------------------------------
   FuncName = Name
   Const CNames = "Val0 Val1 Period Duration Timeout DstVar MinTime MaxTime Par1"
@@ -193,11 +193,11 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
 '  Debug.Print                         ' Debug
 '  Debug.Print Name & " (" & Par & ")" ' Debug
 
-  ParList = Split(Par, ",")
+  ParList = Split(par, ",")
 
   Dim OldCmdLine As String, UseOldParams As Boolean, OldParams() As String
   OldCmdLine = Cells(ActiveCell.Row, Config__Col)
-  If Len(OldCmdLine) > Len(Name) And Left(OldCmdLine, Len(Name)) = Name Then
+  If Len(OldCmdLine) > Len(Name) And left(OldCmdLine, Len(Name)) = Name Then
      UseOldParams = True
      OldParams = Split(Trim(Replace(Mid(OldCmdLine, Len(Name) + 2), ")", "")), ",")
   End If
@@ -209,7 +209,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
     If UsedParNr = 7 Then
         Debug.Print "Achtung"
     End If
-    If Left(p, 1) <> "#" Then
+    If left(p, 1) <> "#" Then
         If UsedParNr >= MAX_PAR_CNT Then
             MsgBox "Internal error: The number of parameters is to large in Show_UserForm_Other()"
             EndProg
@@ -381,7 +381,7 @@ Private Sub Set_CheckBox(Options As Integer)
 
     For CbxNr = 1 To 8
         binOptions = DecToBin(Options)
-        If Right(binOptions, 1) = 1 Then
+        If right(binOptions, 1) = 1 Then
             ' LSB = 1
             Me.Controls("CheckBox" & CbxNr) = True
         Else
@@ -447,7 +447,7 @@ Private Function Create_Result(ByRef Res As String) As Boolean
       Dim val As Variant
       val = "Not Found"
       p = Trim(p)
-      If Left(p, 1) = "#" Then
+      If left(p, 1) = "#" Then
         If p = "#Options" Then
             val = Get_Options_Byte(val)
         ElseIf p = "#CtrMode" Then

@@ -210,6 +210,7 @@ class CUserForm_Options:
     
     def __Autodetect_Typ_L_CheckBox_Click(self):
         self.__Change_Autodetect(True)
+        self.Check_Board (self.Autodetect_Typ_L_CheckBox_var.get())
     
     def __Autodetect_Typ_R_CheckBox_Click(self):
         self.__Change_Autodetect(False)
@@ -219,6 +220,16 @@ class CUserForm_Options:
         if self.__Disable_Set_Arduino_Typ:
             return
         M28.Change_Board_Typ(LeftArduino, NewBrd)
+        
+    def Check_Board(self,AutodetectChecked):
+        #----------------------------------------------------
+        if AutodetectChecked:
+            buttonvalue = self.rb_res["_L"].get()
+            if buttonvalue in range (4,7):
+            #if ESP32_L or Pico_L or Uni_L or Board_IDE_L:
+                # change back to Nano
+                #self.Nano_New_L = True
+                self.rb_res["_L"].set(2)
     
     def __Change_Autodetect(self,LeftArduino):
         
@@ -487,6 +498,11 @@ class CUserForm_Options:
         #------------------------------
         # Is called every time when the form is shown
         M25.Make_sure_that_Col_Variables_match()
+        
+        #self.ESP32_L = ESP32_Lib_Installed()                                   ' 11.11.20:
+        #self.Pico_L = PICO_Lib_Installed()                                    ' 18.04.21: Juergen
+        #self.Uno_L = True
+        #self.Board_IDE_L = True
         
         self.__Disable_Set_Arduino_Typ = True
         self.__Get_Arduino_Typ(True)

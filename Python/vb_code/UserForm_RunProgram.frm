@@ -60,7 +60,7 @@ Private CancelMessage As String
     Private Declare PtrSafe Function GetFileSize Lib "kernel32" (ByVal hFile As LongPtr, lpFileSizeHigh As Long) As Long
     Private Declare PtrSafe Function ReadFile Lib "kernel32" (ByVal hFile As LongPtr, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, ByVal lpOverlapped As LongPtr) As Long
     Private Declare PtrSafe Function WriteFile Lib "kernel32.dll" (ByVal hFile As LongPtr, Buffer As String, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal lpOverlapped As LongPtr) As Long
-    Private Declare PtrSafe Function EnableWindow Lib "user32.dll" (ByVal hwnd As LongPtr, ByVal fEnable As Long) As Long
+    Private Declare PtrSafe Function EnableWindow Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal fEnable As Long) As Long
     Private Declare PtrSafe Function CreateJobObject Lib "kernel32" Alias "CreateJobObjectA" (ByVal lpJobAttributes As Long, ByVal lpName As String) As LongPtr
     Private Declare PtrSafe Function SetInformationJobObject Lib "kernel32" (ByVal hJob As LongPtr, ByVal JobObjectInfoClass As Long, ByRef lpJobObjectInfo As Any, ByVal cbJobObjectInfoLength As Long) As Boolean
 #Else
@@ -77,7 +77,7 @@ Private CancelMessage As String
     Private Declare PtrSafe Function GetFileSize Lib "kernel32" (ByVal hFile As Long, lpFileSizeHigh As Long) As Long
     Private Declare PtrSafe Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
     Private Declare PtrSafe Function WriteFile Lib "kernel32.dll" (ByVal hFile As Long, ByRef Buffer As Any, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal lpOverlapped As Long) As Long
-    Private Declare PtrSafe Function EnableWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal fEnable As Long) As Long
+    Private Declare PtrSafe Function EnableWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal fEnable As Long) As Long
     Private Declare PtrSafe Function CreateJobObject Lib "kernel32" Alias "CreateJobObjectA" (ByVal lpJobAttributes As Long, ByVal lpName As String) As Long
     Private Declare PtrSafe Function SetInformationJobObject Lib "kernel32" (ByVal hJob As Long, ByVal JobObjectInfoClass As Long, ByRef lpJobObjectInfo As Any, ByVal cbJobObjectInfoLength As Long) As Boolean
   #Else
@@ -93,7 +93,7 @@ Private CancelMessage As String
     Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, lpFileSizeHigh As Long) As Long
     Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
     Private Declare Function WriteFile Lib "kernel32.dll" (ByVal hFile As Long, ByRef Buffer As Any, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal lpOverlapped As Long) As Long
-    Private Declare Function EnableWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal fEnable As Long) As Long
+    Private Declare Function EnableWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal fEnable As Long) As Long
     Private Declare Function CreateJobObject Lib "kernel32" Alias "CreateJobObjectA" (ByVal lpJobAttributes As Long, ByVal lpName As String) As Long
     Private Declare Function SetInformationJobObject Lib "kernel32" (ByVal hJob As Long, ByVal JobObjectInfoClass As Long, ByRef lpJobObjectInfo As Any, ByVal cbJobObjectInfoLength As Long) As Boolean
   #End If
@@ -103,16 +103,16 @@ Private CancelMessage As String
   Private Declare PtrSafe Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
   Private Declare PtrSafe Function GetLastError Lib "kernel32.dll" () As Long
   Private Declare PtrSafe Sub GetStartupInfo Lib "kernel32" Alias "GetStartupInfoA" (lpStartupInfo As STARTUPINFO)
-  Private Declare PtrSafe Sub LockWindowUpdate Lib "user32.dll" (ByVal hwnd As LongPtr)
-  Private Declare PtrSafe Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As LongPtr, ByVal nIndex As Long) As Long
-  Private Declare PtrSafe Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hwnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+  Private Declare PtrSafe Sub LockWindowUpdate Lib "user32.dll" (ByVal hWnd As LongPtr)
+  Private Declare PtrSafe Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
+  Private Declare PtrSafe Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 #Else
   Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
   Private Declare Function GetLastError Lib "kernel32.dll" () As Long
   Private Declare Sub GetStartupInfo Lib "kernel32" Alias "GetStartupInfoA" (lpStartupInfo As STARTUPINFO)
-  Private Declare Sub LockWindowUpdate Lib "user32.dll" (ByVal hwnd As Long)
-  Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
-  Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+  Private Declare Sub LockWindowUpdate Lib "user32.dll" (ByVal hWnd As Long)
+  Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+  Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 #End If
 
 Private Type LARGE_INTEGER
@@ -280,13 +280,13 @@ Private Const POLL_INTERVAL = 50
 
 #If Win64 Then
     Private mlnghWnd As LongPtr
-    Public Property Get hwnd() As LongPtr
-        hwnd = mlnghWnd
+    Public Property Get hWnd() As LongPtr
+        hWnd = mlnghWnd
     End Property
 #Else
     Private mlnghWnd As Long
-    Public Property Get hwnd() As Long
-        hwnd = mlnghWnd
+    Public Property Get hWnd() As Long
+        hWnd = mlnghWnd
     End Property
 #End If
 
@@ -327,8 +327,8 @@ Private Sub StorehWnd()
 End Sub
 
 Private Sub UserForm_Initialize()
-   Me.Top = Application.Top + (Application.UsableHeight / 2) - (Me.Height / 2)
-   Me.Left = Application.Left + (Application.UsableWidth / 2) - (Me.Width / 2)
+   Me.top = Application.top + (Application.UsableHeight / 2) - (Me.Height / 2)
+   Me.left = Application.left + (Application.UsableWidth / 2) - (Me.Width / 2)
    hJob = 0
    StorehWnd
    BreakKey = AbandonWait
@@ -342,11 +342,11 @@ End Sub
 Public Sub FormResizable()
 
 Dim lStyle As Long
-lStyle = GetWindowLong(hwnd, GWL_STYLE) Or WS_THICKFRAME
-SetWindowLong hwnd, GWL_STYLE, lStyle
+lStyle = GetWindowLong(hWnd, GWL_STYLE) Or WS_THICKFRAME
+SetWindowLong hWnd, GWL_STYLE, lStyle
 
-lStyle = GetWindowLong(hwnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED           ' to avoid flickering
-SetWindowLong hwnd, GWL_EXSTYLE, lStyle
+lStyle = GetWindowLong(hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED           ' to avoid flickering
+SetWindowLong hWnd, GWL_EXSTYLE, lStyle
 
 End Sub
 
@@ -393,12 +393,12 @@ Private Sub UserForm_Resize()
     If Me.InsideWidth > 8 Then console.Width = Me.InsideWidth - 8           ' 19.01.21: Jürgen: Added: If
     If Me.InsideHeight > 24 Then                                            '     "
         console.Height = Me.InsideHeight - 24
-        LabelTime.Top = Me.InsideHeight - 18
+        LabelTime.top = Me.InsideHeight - 18
     End If
 End Sub
 
 Private Sub userform_terminate()
-    EnableWindow Application.hwnd, Modeless
+    EnableWindow Application.hWnd, Modeless
     If tSA_CreateProcessPrcInfo.hProcess <> 0 Then
         TerminateProcess tSA_CreateProcessPrcInfo.hProcess, -1
     End If
@@ -526,7 +526,7 @@ console.ForeColor = TextColor
 console.BackColor = BackgroundColor
 
 Me.Show vbModeless                                                          ' 19.01.21: Added vbModeless
-EnableWindow Application.hwnd, Modal
+EnableWindow Application.hWnd, Modal
 Application.EnableCancelKey = xlDisabled
 Application.ScreenUpdating = False
 
@@ -559,8 +559,8 @@ If CreatePipe(hRead, hWrite, tSA_CreatePipe, 0&) <> 0& And CreatePipe(hReadOut, 
     Buffer = StrConv(ProcEnv, vbFromUnicode)    ' Convert string to singleByte
    
     Dim basePath As String
-    basePath = Left(ShellCommand, InStrRev(ShellCommand, Application.PathSeparator))  ' get the base directory
-    If Left(basePath, 1) = """" Then basePath = Mid(basePath, 2)
+    basePath = left(ShellCommand, InStrRev(ShellCommand, Application.PathSeparator))  ' get the base directory
+    If left(basePath, 1) = """" Then basePath = Mid(basePath, 2)
     
     lngResult = CreateProcess(0, ShellCommand, tSA_CreateProcessPrc, tSA_CreateProcessThrd, True, _
     CREATE_SUSPENDED + CREATE_NEW_PROCESS_GROUP + NORMAL_PRIORITY_CLASS, _
@@ -641,23 +641,23 @@ Unload UserForm_RunProgram
 
 End Function
 
-Public Sub AddToConsole(message As String)
+Public Sub AddToConsole(Message As String)
 '----------------------------------------------------
-  message = Replace(message, vbCrLf, vbCr)
-  message = Replace(message, vbLf, vbCr)
-  message = ConvertUTF8Str(message)
-  LockWindowUpdate hwnd
+  Message = Replace(Message, vbCrLf, vbCr)
+  Message = Replace(Message, vbLf, vbCr)
+  Message = ConvertUTF8Str(Message)
+  LockWindowUpdate hWnd
   With console
       .setFocus '//required
-      If Left(message, 1) = Chr$(13) And Len(message) > 1 Then ' start with newline only
-          If Left(message, 2) <> Chr$(10) And InStrRev(.Text, Chr$(13) + Chr$(10)) > 0 Then
-            .Text = Left(.Text, InStrRev(.Text, Chr$(13))) + Mid(message, 2)
+      If left(Message, 1) = Chr$(13) And Len(Message) > 1 Then ' start with newline only
+          If left(Message, 2) <> Chr$(10) And InStrRev(.Text, Chr$(13) + Chr$(10)) > 0 Then
+            .Text = left(.Text, InStrRev(.Text, Chr$(13))) + Mid(Message, 2)
           Else
-              .Text = .Text + message
+              .Text = .Text + Message
           End If
          
       Else
-          .Text = .Text + message
+          .Text = .Text + Message
       End If
       .SelStart = Len(.Text)
       .HideSelection = False

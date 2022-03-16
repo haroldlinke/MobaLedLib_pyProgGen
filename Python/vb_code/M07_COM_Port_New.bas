@@ -104,6 +104,7 @@ Private Function Show_USB_Port_Dialog(ComPortColumn As Long, ByRef ComPort As Lo
     Dim Res As Long, Picture As String, ArduName As String
     ComPort = val(Cells(SH_VARS_ROW, ComPortColumn))
     If ComPort < 0 Then ComPort = -ComPort
+    If ComPort > 255 Then ComPort = 0                                                 ' 03.03.22: Juergen avoid overrun error
     Select Case ComPortColumn
         Case COMPort_COL: Picture = "LED_Image":  ArduName = "LED"
         Case COMPrtR_COL: Picture = "DCC_Image":  ArduName = Page_ID

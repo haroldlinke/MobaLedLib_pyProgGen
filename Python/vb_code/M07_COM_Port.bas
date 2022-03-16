@@ -168,11 +168,11 @@ Private Const Parm_STK_SW_MINOR = &H82
 '-------------------------
 Private Sub Test_Get_COM()
 '-------------------------
-  Dim Res As String, line As Variant
+  Dim Res As String, Line As Variant
   Res = F_shellExec("cmd /c mode")
-  For Each line In Split(Res, vbCr)
-      Debug.Print line;
-  Next line
+  For Each Line In Split(Res, vbCr)
+      Debug.Print Line;
+  Next Line
 End Sub
 
 
@@ -192,21 +192,21 @@ Private Function Get_USB_Ports() As Variant
   End If
   
   Res = Replace(Res, ":", "")
-  Dim line As Variant, p As Long, ResStr As String, Cnt As Long
+  Dim Line As Variant, p As Long, ResStr As String, cnt As Long
   ResStr = "-10 "
-  For Each line In Split(Res, vbCr)
-     p = InStr(line, "COM")
+  For Each Line In Split(Res, vbCr)
+     p = InStr(Line, "COM")
      If p > 0 Then
-        ResStr = ResStr & Trim(Mid(line, p + Len("COM"), 255)) & " "
-        Cnt = Cnt + 1
+        ResStr = ResStr & Trim(Mid(Line, p + Len("COM"), 255)) & " "
+        cnt = cnt + 1
      End If
-  Next line
+  Next Line
   ResStr = DelLast(ResStr)
   Dim ResSplit As Variant
   ResSplit = Split(ResStr, " ")
   Dim ResArray() As Long, i As Long
-  ReDim ResArray(Cnt)
-  For i = 0 To Cnt
+  ReDim ResArray(cnt)
+  For i = 0 To cnt
      ResArray(i) = val(ResSplit(i))
   Next
   Get_USB_Ports = ResArray
@@ -215,16 +215,16 @@ End Function
 
 
 '-----------------------------------------------------------
-Public Sub Detect_Com_Port_and_Save_Result(Right As Boolean)
+Public Sub Detect_Com_Port_and_Save_Result(right As Boolean)
 '-----------------------------------------------------------
   Dim ComPortColumn As Long, BuildOptColumn As Long, Pic_ID As String
-  If Right Then
+  If right Then
         ComPortColumn = COMPrtR_COL: Pic_ID = "DCC": BuildOptColumn = BUILDOpRCOL
   Else: ComPortColumn = COMPort_COL: Pic_ID = "LED": BuildOptColumn = BUILDOP_COL
   End If
   
   Dim Port As Long
-  Port = Detect_Com_Port(Right, Pic_ID)
+  Port = Detect_Com_Port(right, Pic_ID)
   If Port > 0 Then
      Cells(SH_VARS_ROW, ComPortColumn) = Port
      
@@ -276,10 +276,10 @@ End Sub
 
 
 '-----------------------------------------------------------------------------
-Public Function Get_USB_Port_with_Dialog(Optional Right As Boolean) As Integer  ' 30.12.19:
+Public Function Get_USB_Port_with_Dialog(Optional right As Boolean) As Integer  ' 30.12.19:
 '-----------------------------------------------------------------------------
   Dim ComPortColumn As Long
-  If Right Then
+  If right Then
         ComPortColumn = COMPrtR_COL
   Else: ComPortColumn = COMPort_COL
   End If
@@ -456,7 +456,7 @@ Private Sub TestDetect()
                     Debug.Print "  Device signature: ";
                     If DeviceSignatur = 2004239 Then Debug.Print "ATMega328 ";
                     If DeviceSignatur = &H1E9651 Then Debug.Print "ATMega4809 ";   ' 28.10.20: Jürgen
-                    Debug.Print "0x" & Right("00000" + Hex(DeviceSignatur), 6) & vbCr
+                    Debug.Print "0x" & right("00000" + Hex(DeviceSignatur), 6) & vbCr
                     Exit For
         Case 0:     ' Retry with other baud rate
         Case Else:  Exit For
@@ -505,7 +505,7 @@ Public Function Get_Arduino_Baudrate(ByVal ComPort As Byte, Start_Baudrate As Lo
                         Debug.Print "  Device signature: ";
                         If DeviceSignatur = 2004239 Then Debug.Print "ATMega328 ";
                         If DeviceSignatur = &H1E9651 Then Debug.Print "ATMega4809 ";      ' 28.10.20: Jürgen
-                        Debug.Print "0x" & Right("00000" + Hex(DeviceSignatur), 6) & vbCr
+                        Debug.Print "0x" & right("00000" + Hex(DeviceSignatur), 6) & vbCr
                     End If
                     FirmwareVer = SWMajorVersion & "." & SWMinorVersion
                     Get_Arduino_Baudrate = BaudRate
@@ -595,7 +595,7 @@ Public Function DetectArduino(ByVal Port As Byte, ByVal BaudRate As Long, _
     Exit Function
   End If
   DoEvents
-  If Left(CheckCOMPort_Txt, 18) = "Arduino NANO Every" Then ' 29.10.20: Jürgen
+  If left(CheckCOMPort_Txt, 18) = "Arduino NANO Every" Then ' 29.10.20: Jürgen
        DetectArduino = 1
        DeviceSignatur = 2004561   ' m4809
        HWVersion = 1
@@ -603,11 +603,11 @@ Public Function DetectArduino(ByVal Port As Byte, ByVal BaudRate As Long, _
        SWMinorVersion = 7
        If BaudRate = 115200 Then DetectArduino = 1 Else DetectArduino = 0
   Else
-       Dim message() As Byte
+       Dim Message() As Byte
        For i = 1 To Trials
-           message = Transact(handle, Chr(Cmnd_STK_GET_SYNC), 2)
-           If UBound(message) = 1 Then
-              If message(0) = Resp_STK_INSYNC And message(1) = Resp_STK_OK Then
+           Message = Transact(handle, Chr(Cmnd_STK_GET_SYNC), 2)
+           If UBound(Message) = 1 Then
+              If Message(0) = Resp_STK_INSYNC And Message(1) = Resp_STK_OK Then
                  'if PrintDebug then Debug.Print "in sync with arduino"
                  If GetDeviceInformation(handle, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur) Then
                     DetectArduino = 1
@@ -630,15 +630,15 @@ NativeError:
 End Function
 
 '-----------------------------------------------------------------------------------------------------------------------
-Private Function Transact(ByVal handle As Long, message As String, Optional nNumberOfBytesToRead As Long = 10) As Byte()
+Private Function Transact(ByVal handle As Long, Message As String, Optional nNumberOfBytesToRead As Long = 10) As Byte()
 '-----------------------------------------------------------------------------------------------------------------------
   Dim CbWritten, CbRead, ToSend, j  As Long
   Dim Buffer() As Byte
-  message = message + Chr(Sync_CRC_EOP)
-  ToSend = Len(message)
+  Message = Message + Chr(Sync_CRC_EOP)
+  ToSend = Len(Message)
   ReDim Buffer(ToSend)
   For j = 0 To ToSend - 1
-    Buffer(j) = Asc(Mid(message, j + 1, 1))
+    Buffer(j) = Asc(Mid(Message, j + 1, 1))
   Next
   
   'Debug.Print "nNumberOfBytesToRead = 10"
@@ -717,7 +717,7 @@ Private Function GetDeviceInformation(ByVal handle As Long, _
 End Function
 
 '-----------------------------------------------------------------------------------------------------------------------
-Public Function SendMLLCommand(ByVal ComPort As Integer, message As String, UseHardwareHandshake As Boolean, ShowResult As Boolean) As Boolean
+Public Function SendMLLCommand(ByVal ComPort As Integer, Message As String, UseHardwareHandshake As Boolean, ShowResult As Boolean) As Boolean
     Dim handle As Long
     Dim CbWritten, CbRead As Long
     Dim t, Repeat As Integer
@@ -744,7 +744,7 @@ Public Function SendMLLCommand(ByVal ComPort As Integer, message As String, UseH
         EscapeCommFunction handle, COM_SETDTR                                 ' pico serial USB port needs DTR to be on
     End If
     If UseHardwareHandshake Then Repeat = 1 Else Repeat = 2     ' 03.04.20: Old: to 10
-    If DEBUG_DCCSEND Then Debug.Print Format(Time, "hh.mm.ss") & " sending " & Repeat & " times to receiver: '" & message & "'" ' Debug
+    If DEBUG_DCCSEND Then Debug.Print Format(Time, "hh.mm.ss") & " sending " & Repeat & " times to receiver: '" & Message & "'" ' Debug
     ' The interrupts in the Arduino are locked while the LEDs are updatet
     ' => To avoid loosing bits maximal one byte could be send over the RS232 while the interrupts are locked
     ' The delay is calculated by:
@@ -756,8 +756,8 @@ Public Function SendMLLCommand(ByVal ComPort As Integer, message As String, UseH
     
     While Repeat > 0
         Repeat = Repeat - 1
-        For t = 1 To Len(message)
-            by = Asc(Mid(message, t, 1))
+        For t = 1 To Len(Message)
+            by = Asc(Mid(Message, t, 1))
             WriteFile handle, by, 1, CbWritten, 0&
             If UseHardwareHandshake = False Then Sleep (10)       ' 03.04.20: Added delay
         Next

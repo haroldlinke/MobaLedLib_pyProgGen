@@ -75,6 +75,7 @@ import proggen.M28_divers as M28
 import proggen.M30_Tools as M30
 #import proggen.M31_Sound as M31
 import proggen.M37_Inst_Libraries as M37
+import proggen.M39_Simulator as M39
 import proggen.M40_ShellandWait as M40
 #import proggen.M60_CheckColors as M60
 #import proggen.M70_Exp_Libraries as M70
@@ -198,40 +199,54 @@ def Create_Start_Sub(BoardName, ResultName, ComPort, BuildOptions, InoName, SrcD
         if M30.Win10_or_newer():
             VBFiles.writeText(fp, 'CHCP 65001 >NUL', '\n')
         VBFiles.writeText(fp, '', '\n')
-        FindStr = ' 2>&1 | find /v "Set log4j store directory" | find /v " StatusLogger " | find /v "serial.SerialDiscovery"'
-        #*** 14.07.20: Faster way to compile from Jürgen (10 sec instead of 22 sec) ***
-        # Create_PrivateBuild_cmd_if_missing SrcDir                           ' 28.10.20: Jürgen: Disabled
-        if True == M28.Get_Bool_Config_Var('Fast_Build_and_Upload'):
-            Debug.Print("Fast Build and Upload")
+        
+        if M28.Get_Bool_Config_Var("Use_PlatformIO") == False:
+            FindStr = ' 2>&1 | find /v "Set log4j store directory" | find /v " StatusLogger " | find /v "serial.SerialDiscovery"'
+            #*** 14.07.20: Faster way to compile from Jürgen (10 sec instead of 22 sec) ***
+            # Create_PrivateBuild_cmd_if_missing SrcDir                           ' 28.10.20: Jürgen: Disabled
+            if True == M28.Get_Bool_Config_Var('Fast_Build_and_Upload'):
+                Debug.Print("Fast Build and Upload")
+                OptParts = Split(BuildOptions, ' ')
+                if UBound(OptParts) >= 1:
+                    BuildOptOnly=""
+                    if OptParts(0) == '--board':
+                        BuildOptOnly = OptParts(1)
+                    elif OptParts(1) == '--board':
+                        BuildOptOnly = OptParts(2)
+                    if BuildOptOnly!="":
+                        if InStr(BuildOptions, M02.BOARD_NANO_OLD) or InStr(BuildOptions, M02.BOARD_UNO_NORM) > 0:
+                            BaudRate = '57600'
+                        else:
+                            BaudRate = '115200'
+                        CommandStr = '"' + M30.FilePath(Find_ArduinoExe()) + '" "' + InoName + '" ' + ComPort + ' "' + BuildOptOnly + '" ' + BaudRate + '  "' + GetShortPath(M30.DelLast(M02.Get_Ardu_LibDir())) + '" ' + CPUType
+                        CommandStr = CommandStr + " %*"      # 19.12.21: Jürgen: Added noflash option
+                        VBFiles.writeText(fp, 'if not exist MyPrivateBuildScript.cmd (', '\n')
+                        VBFiles.writeText(fp, '  REM embedded Fast Build and Upload', '\n')
+                        VBFiles.writeText(fp, '  call :build ' + CommandStr, '\n')
+                        VBFiles.writeText(fp, ') else (', '\n')
+                        VBFiles.writeText(fp, '  REM user defined Build and Upload', '\n')
+                        VBFiles.writeText(fp, '  call MyPrivateBuildScript.cmd ' + CommandStr, '\n')
+                        VBFiles.writeText(fp, ')', '\n')
+                        #CommandStr = "call privateBuild.cmd """ & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & DelLast(Get_Ardu_LibDir()) & """"
+                        FindStr = ''
+            VBFiles.writeText(fp, 'IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > "' + ResultName + '"', '\n')
+            VBFiles.writeText(fp, 'goto :eof', '\n')
+            for i in vbForRange(1, 100):
+                VBFiles.writeText(fp, '', '\n') # generate empty lines to hide the following to courious people (Jürgen)
+            VBFiles.writeText(fp, ':build', '\n')
+            M08FA.Create_Build(BoardName, fp) # M08_Fast_ARDUINO
+        else:
+            __Environment = 'nano_new'
             OptParts = Split(BuildOptions, ' ')
             if UBound(OptParts) >= 1:
-                BuildOptOnly=""
                 if OptParts(0) == '--board':
                     BuildOptOnly = OptParts(1)
-                elif OptParts(1) == '--board':
-                    BuildOptOnly = OptParts(2)
-                if BuildOptOnly!="":
-                    if InStr(BuildOptions, M02.BOARD_NANO_OLD) or InStr(BuildOptions, M02.BOARD_UNO_NORM) > 0:
-                        BaudRate = '57600'
-                    else:
-                        BaudRate = '115200'
-                    CommandStr = '"' + M30.FilePath(Find_ArduinoExe()) + '" "' + InoName + '" ' + ComPort + ' "' + BuildOptOnly + '" ' + BaudRate + '  "' + GetShortPath(M30.DelLast(M02.Get_Ardu_LibDir())) + '" ' + CPUType
-                    CommandStr = CommandStr + " %*"      # 19.12.21: Jürgen: Added noflash option
-                    VBFiles.writeText(fp, 'if not exist MyPrivateBuildScript.cmd (', '\n')
-                    VBFiles.writeText(fp, '  REM embedded Fast Build and Upload', '\n')
-                    VBFiles.writeText(fp, '  call :build ' + CommandStr, '\n')
-                    VBFiles.writeText(fp, ') else (', '\n')
-                    VBFiles.writeText(fp, '  REM user defined Build and Upload', '\n')
-                    VBFiles.writeText(fp, '  call MyPrivateBuildScript.cmd ' + CommandStr, '\n')
-                    VBFiles.writeText(fp, ')', '\n')
-                    #CommandStr = "call privateBuild.cmd """ & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & DelLast(Get_Ardu_LibDir()) & """"
-                    FindStr = ''
-        VBFiles.writeText(fp, 'IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > "' + ResultName + '"', '\n')
-        VBFiles.writeText(fp, 'goto :eof', '\n')
-        for i in vbForRange(1, 100):
-            VBFiles.writeText(fp, '', '\n') # generate empty lines to hide the following to courious people (Jürgen)
-        VBFiles.writeText(fp, ':build', '\n')
-        M08FA.Create_Build(BoardName, fp) # M08_Fast_ARDUINO
+                    if InStr(BuildOptions, M02.BOARD_NANO_OLD):
+                        __Environment = 'nano_old'
+                    elif InStr(BuildOptions, M02.BOARD_NANO_FULL):
+                        __Environment = 'nano_full'
+            Create_PIO_Build(fp, __Environment, ResultName, ComPort, SrcDir)            
+            
         VBFiles.closeFile(fp)
         # VB2PY (UntranslatedCode) On Error GoTo 0
         fn_return_value = 'Call ' + CMD_Name + ' ' + FindStr
@@ -241,6 +256,106 @@ def Create_Start_Sub(BoardName, ResultName, ComPort, BuildOptions, InoName, SrcD
         VBFiles.closeFile(fp)
         P01.MsgBox(M09.Get_Language_Str('Fehler beim schreiben der Datei \'') + Name + '\'', vbCritical, M09.Get_Language_Str('Fehler beim erzeugen der Arduino Start Datei'))
         return fn_return_value
+
+    
+def __Create_PIO_Build(fp, Environment, ResultName, ComPort, SrcDir):
+    fn_return_value = False
+    fp2 = Integer()
+    #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    VBFiles.writeText(fp, '', '\n')
+    VBFiles.writeText(fp, 'set path=%path%;' + GetShortPath(Environ(M02.Env_USERPROFILE)) + '\\.platformio\\penv\\Scripts', '\n')
+    VBFiles.writeText(fp, 'set ' + M02.Env_USERPROFILE + '=' + GetShortPath(Environ(M02.Env_USERPROFILE)), '\n')
+    VBFiles.writeText(fp, 'cd ..', '\n')
+    VBFiles.writeText(fp, 'if "%1"=="rebuild" pio run -t clean -e ' + Environment, '\n')
+    VBFiles.writeText(fp, 'set flash=-t upload', '\n')
+    VBFiles.writeText(fp, 'if "%1"=="noflash" set flash=', '\n')
+    VBFiles.writeText(fp, 'pio run %flash% -e ' + Environment + ' --upload-port ' + ComPort, '\n')
+    VBFiles.writeText(fp, 'IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > "%~p0' + ResultName + '"', '\n')
+    VBFiles.writeText(fp, 'cd "%~p0"', '\n')
+    VBFiles.writeText(fp, '', '\n')
+    fp2 = FreeFile()
+    VBFiles.openFile(fp2, SrcDir + '..\\platformio.ini', 'w') 
+    #Open Replace(SrcDir, "\LEDs_AutoProg\", "\platformio.inx") For Output As #fp2
+    VBFiles.writeText(fp2, '[platformio]', '\n')
+    VBFiles.writeText(fp2, 'src_dir = LEDs_AutoProg', '\n')
+    VBFiles.writeText(fp2, '    ', '\n')
+    VBFiles.writeText(fp2, '[env]', '\n')
+    VBFiles.writeText(fp2, 'framework = arduino', '\n')
+    VBFiles.writeText(fp2, 'src_build_flags =', '\n')
+    VBFiles.writeText(fp2, 'lib_deps =', '\n')
+    VBFiles.writeText(fp2, '    FastLED', '\n')
+    VBFiles.writeText(fp2, '    NmraDcc', '\n')
+    VBFiles.writeText(fp2, '    MobaLedLib=file://../../libraries/MobaLedLib', '\n')
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, '[env:esp32]', '\n')
+    VBFiles.writeText(fp2, 'Platform = espressif32', '\n')
+    VBFiles.writeText(fp2, 'Board = esp32dev', '\n')
+    VBFiles.writeText(fp2, 'src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>', '\n')
+    VBFiles.writeText(fp2, 'lib_deps = ${env.lib_deps}', '\n')
+    VBFiles.writeText(fp2, '    WiFiManager=https://github.com/tzapu/WiFiManager.git', '\n')
+    VBFiles.writeText(fp2, '    EspSoftwareSerial', '\n')
+    if not Write_PIO_Extension(fp2):
+        VBFiles.closeFile(fp2)
+        return fn_return_value
+    VBFiles.writeText(fp2, 'build_unflags = -Wall', '\n')
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, '[env:nano_new]', '\n')
+    VBFiles.writeText(fp2, 'Platform = atmelavr', '\n')
+    VBFiles.writeText(fp2, 'Board = nanoatmega328new', '\n')
+    VBFiles.writeText(fp2, 'src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>', '\n')
+    VBFiles.writeText(fp2, 'lib_deps = ${env.lib_deps}', '\n')
+    VBFiles.writeText(fp2, '    EEProm', '\n')
+    VBFiles.writeText(fp2, '    SPI', '\n')
+    VBFiles.writeText(fp2, '    AnalogScanner=https://github.com/merose/AnalogScanner/archive/master.zip', '\n')
+    if not Write_PIO_Extension(fp2):
+        VBFiles.closeFile(fp2)
+        return fn_return_value
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, 'build_unflags = -Wall', '\n')
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, 'upload_flags =', '\n')
+    VBFiles.writeText(fp2, '    -u', '\n')
+    VBFiles.writeText(fp2, '    -V', '\n')
+    VBFiles.writeText(fp2, '[env:nano_old]', '\n')
+    VBFiles.writeText(fp2, 'Platform = atmelavr', '\n')
+    VBFiles.writeText(fp2, 'Board = nanoatmega328', '\n')
+    VBFiles.writeText(fp2, 'src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>', '\n')
+    VBFiles.writeText(fp2, 'lib_deps = ${env.lib_deps}', '\n')
+    VBFiles.writeText(fp2, '    EEProm', '\n')
+    VBFiles.writeText(fp2, '    SPI', '\n')
+    VBFiles.writeText(fp2, '    AnalogScanner=https://github.com/merose/AnalogScanner/archive/master.zip', '\n')
+    if not Write_PIO_Extension(fp2):
+        VBFiles.closeFile(fp2)
+        return fn_return_value
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, 'build_unflags = -Wall', '\n')
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, 'upload_flags =', '\n')
+    VBFiles.writeText(fp2, '    -u', '\n')
+    VBFiles.writeText(fp2, '    -V', '\n')
+    # 15.02.22: Hardi
+    VBFiles.writeText(fp2, '[env:nano_full]', '\n')
+    VBFiles.writeText(fp2, 'Platform = atmelavr', '\n')
+    VBFiles.writeText(fp2, 'Board = nanoatmega328full', '\n')
+    VBFiles.writeText(fp2, 'src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>', '\n')
+    VBFiles.writeText(fp2, 'lib_deps = ${env.lib_deps}', '\n')
+    VBFiles.writeText(fp2, '    EEProm', '\n')
+    VBFiles.writeText(fp2, '    SPI', '\n')
+    VBFiles.writeText(fp2, '    AnalogScanner=https://github.com/merose/AnalogScanner/archive/master.zip', '\n')
+    if not Write_PIO_Extension(fp2):
+        VBFiles.closeFile(fp2)
+        return fn_return_value
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, 'build_unflags = -Wall', '\n')
+    VBFiles.writeText(fp2, '', '\n')
+    VBFiles.writeText(fp2, 'upload_flags =', '\n')
+    VBFiles.writeText(fp2, '    -u', '\n')
+    VBFiles.writeText(fp2, '    -V', '\n')
+    VBFiles.closeFile(fp2)
+    fn_return_value = True
+    return fn_return_value
+
+
 
 def Create_Start_ESP32_Sub(ResultName, ComPort, BuildOptions, InoName, SrcDir, CPUType):
     CMD_Name = 'Start_ESP32_Sub.cmd'
@@ -314,233 +429,238 @@ def Create_Start_ESP32_Sub(ResultName, ComPort, BuildOptions, InoName, SrcDir, C
     VBFiles.writeText(fp, '', '\n')
     if M30.Win10_or_newer():
         VBFiles.writeText(fp, 'CHCP 65001 >NUL', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, "set ArduinoLib=" & GetShortPath(M30.DelLast(M27.Get_Ardu_LibDir())), '\n')
-    VBFiles.writeText(fp, 'if not exist MyPrivateBuildScript.cmd (', '\n')
-    VBFiles.writeText(fp, '       REM embedded Fast Build and Upload', '\n')
-    VBFiles.writeText(fp, '       call :build "' + M30.FilePath(Find_ArduinoExe()) + '" "LEDs_AutoProg.ino" ' + ComPort + ' "' + BuildOptOnly + '" 115200  "%ArduinoLib%" esp32 %*', '\n')
-    VBFiles.writeText(fp, ') else (', '\n')
-    VBFiles.writeText(fp, '       REM user defined Build and Upload', '\n')
-    VBFiles.writeText(fp, '       call MyPrivateBuildScript.cmd "' + M30.FilePath(Find_ArduinoExe()) + '" "LEDs_AutoProg.ino" ' + ComPort + ' "' + BuildOptions + '" 115200  "%ArduinoLib%" esp32 %*', '\n')
-    VBFiles.writeText(fp, '       )', '\n')
-    VBFiles.writeText(fp, 'IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > "Start_Arduino_Result.txt"', '\n')
-    VBFiles.writeText(fp, 'goto :eof', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':build', '\n')
-    VBFiles.writeText(fp, 'REM                                                                           **** ToDo: Aktualisieren ***', '\n')
-    VBFiles.writeText(fp, 'REM Compile and flash time for ESP 14 sec on Hardis laptop', '\n')
-    VBFiles.writeText(fp, 'REM', '\n')
-    VBFiles.writeText(fp, 'REM', '\n')
-    VBFiles.writeText(fp, 'REM This file could be modified by the user to support special compiler switches', '\n')
-    VBFiles.writeText(fp, 'REM It is called if the switch the "Schnelles Build und Upload verwenden:" in the \'Config\' sheet is enabled', '\n')
-    VBFiles.writeText(fp, 'REM', '\n')
-    VBFiles.writeText(fp, 'REM Parameter:               Example', '\n')
-    VBFiles.writeText(fp, 'REM  1: Arduino EXE Path:    "' + M30.FilePath(Find_ArduinoExe()) + '"', '\n')
-    VBFiles.writeText(fp, 'REM  2: Ino Name:            "LEDs_AutoProg.ino"', '\n')
-    VBFiles.writeText(fp, 'REM  3: Com port:            "COM3"', '\n')
-    VBFiles.writeText(fp, 'REM  4: Build options:       "arduino:avr:nano:cpu=atmega328"', '\n')
-    VBFiles.writeText(fp, 'REM  5: Baudrate:            "57600" or "115200"', '\n')
-    VBFiles.writeText(fp, 'REM  6: Arduino Library path "%USERPROFILE%\\Documents\\Arduino\\libraries"', '\n')
-    VBFiles.writeText(fp, 'REM  7: CPU type:            "atmega328p, atmega4809, esp32"', '\n')
-    VBFiles.writeText(fp, 'REM  8: options:             ""noflash|norebuild""', '\n')
-    VBFiles.writeText(fp, 'REM  additional argument from caller', '\n')
-    VBFiles.writeText(fp, 'REM', '\n')
-    VBFiles.writeText(fp, 'REM The program uses the captured and adapted command line from the Arduino IDE', '\n')
-    VBFiles.writeText(fp, 'REM', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'SET aHome=%~1', '\n')
-    VBFiles.writeText(fp, 'SET fqbn=%~4', '\n')
-    VBFiles.writeText(fp, 'SET lib=%~6', '\n')
-    VBFiles.writeText(fp, 'SET ESP32_BOARD_VERSION=' + Board_Version, '\n')
-    VBFiles.writeText(fp, 'SET ESP32_TOOL_VERSION=' + Tool_Version, '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'call :short aTemp "%USERPROFILE%\\AppData\\Local\\Temp\\MobaLedLib_build\\ESP32"', '\n')
-    VBFiles.writeText(fp, 'SET aCache=%aTemp%\\cache', '\n')
-    VBFiles.writeText(fp, 'call :short packages "%USERPROFILE%' + M02.AppLoc_Ardu + 'packages"', '\n')
-    VBFiles.writeText(fp, 'if not exist "%aTemp%\\Sketch"  md "%aTemp%\\Sketch"', '\n')
-    VBFiles.writeText(fp, 'if not exist "%aCache%" md "%aCache%"', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'SetLocal EnableDelayedExpansion', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'copy "..\\LEDs_AutoProg\\LEDs_AutoProg.h" "%aTemp%\\Sketch" >nul:', '\n')
-    VBFiles.writeText(fp, 'if errorlevel 1 (', '\n')
-    VBFiles.writeText(fp, '   echo can\'t copy ..\\LEDs_AutoProg\\LEDs_AutoProg.h to build folder', '\n')
-    VBFiles.writeText(fp, '   exit /b 1', '\n')
-    VBFiles.writeText(fp, '   )', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'call ::getDirectory headerDir ..\\LEDs_AutoProg\\LEDs_AutoProg.h', '\n')
-    VBFiles.writeText(fp, 'call ::getDirectory sketchDir %2', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'if not "%headerDir%"=="%sketchDir%" (', '\n')
-    VBFiles.writeText(fp, '   REM Necessary for rebuild         11.11.20:', '\n')
-    VBFiles.writeText(fp, '   copy "..\\LEDs_AutoProg\\LEDs_AutoProg.h" . >nul:', '\n')
-    VBFiles.writeText(fp, '   if errorlevel 1 (', '\n')
-    VBFiles.writeText(fp, '      echo can\'t copy ..\\LEDs_AutoProg\\LEDs_AutoProg.h to actual dir', '\n')
-    VBFiles.writeText(fp, '      exit /b 1', '\n')
-    VBFiles.writeText(fp, '      )', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, 'REM !! developer option copy additional files !!', '\n')
-    VBFiles.writeText(fp, 'if exist AdditionalBuildFiles.txt (', '\n')
-    VBFiles.writeText(fp, '   echo updating extra files', '\n')
-    VBFiles.writeText(fp, '   for /F %%f in (AdditionalBuildFiles.txt) do (', '\n')
-    VBFiles.writeText(fp, '      if exist "%%f" (', '\n')
-    VBFiles.writeText(fp, '             echo update file %%f', '\n')
-    VBFiles.writeText(fp, '             copy "%%f" "%aTemp%\\Sketch" >nul:', '\n')
-    VBFiles.writeText(fp, '             if errorlevel 1 (', '\n')
-    VBFiles.writeText(fp, '                echo can\'t copy %%file to build folder', '\n')
-    VBFiles.writeText(fp, '                exit /b 1', '\n')
-    VBFiles.writeText(fp, '             )', '\n')
-    VBFiles.writeText(fp, '      ) else (', '\n')
-    VBFiles.writeText(fp, '             echo Additional build file \'%%f\' not found', '\n')
-    VBFiles.writeText(fp, '             pause', '\n')
-    VBFiles.writeText(fp, '             )', '\n')
-    VBFiles.writeText(fp, '      )', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'rem check if prebuild targets exist and the current ino isn\'t newer', '\n')
-    VBFiles.writeText(fp, 'set srcFile=%~2', '\n')
-    VBFiles.writeText(fp, 'set cppFile=%aTemp%\\sketch\\%srcFile%.cpp', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    ## VB2PY (CheckDirective) VB directive took path 1 on 1
-    VBFiles.writeText(fp, 'copy "%srcFile%" "%cppFile%" /Y >nul:', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'if exist "%aTemp%\\rebuildFailed.txt" (', '\n')
-    VBFiles.writeText(fp, '   echo Last rebuild failed ;-(', '\n')
-    VBFiles.writeText(fp, '   echo Press ENTER to rebuild everything', '\n')
-    VBFiles.writeText(fp, '   if ""%8""=="""" pause', '\n')
-    VBFiles.writeText(fp, '   goto :rebuild', '\n')
-    VBFiles.writeText(fp, '   )', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'rem if the pre-build files are not there we need to do a complete new build', '\n')
-    VBFiles.writeText(fp, 'if not exist "%cppFile%" (', '\n')
-    VBFiles.writeText(fp, '   echo CPP File "%cppFile%" does\'n exist, rebuild ...', '\n')
-    VBFiles.writeText(fp, '   goto :rebuild', '\n')
-    VBFiles.writeText(fp, '   )', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'if "%8"=="rebuild" (', '\n')
-    VBFiles.writeText(fp, '   echo Rebuild called from the command line', '\n')
-    VBFiles.writeText(fp, '   goto :rebuild', '\n')
-    VBFiles.writeText(fp, '   )', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'if "%8"=="flash" (', '\n')
-    VBFiles.writeText(fp, '   goto :download', '\n')
-    VBFiles.writeText(fp, '   )', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'rem now get date/time of both files to see if time is equal', '\n')
-    VBFiles.writeText(fp, 'FOR /F "tokens=* USEBACKQ" %%F IN (`forfiles /p "%atemp%\\sketch" /m "%srcFile%.cpp" /C "cmd /c echo @fdate @ftime"`) DO SET DATE1=%%F', '\n')
-    VBFiles.writeText(fp, 'FOR /F "tokens=* USEBACKQ" %%F IN (`forfiles /m "%srcFile%" /C "cmd /c echo @fdate @ftime"`) DO SET DATE2=%%F', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'echo %srcFile%.cpp has date %date1%', '\n')
-    VBFiles.writeText(fp, 'echo %srcFile% has date %date2%', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'rem if equal then srcfile isn\'t newer', '\n')
-    VBFiles.writeText(fp, 'IF "%DATE1%"=="%DATE2%" goto fastbuild', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'rem now get the newest file', '\n')
-    VBFiles.writeText(fp, 'rem to compare, both file must be in same directory', '\n')
-    VBFiles.writeText(fp, 'copy "%srcFile%" "%aTemp%\\sketch\\" >nul:', '\n')
-    VBFiles.writeText(fp, 'FOR /F %%i IN (\'DIR /B /O:D "%cppFile%" "%aTemp%\\sketch\\%srcFile%"\') DO SET NEWEST=%%i', '\n')
-    VBFiles.writeText(fp, 'del "%aTemp%\\sketch\\%srcFile%" >nul:', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'rem check which file is newer, if source is new we need to run a arduino build to recreate the .ino.cpp file', '\n')
-    VBFiles.writeText(fp, 'if "%NEWEST%"=="%srcFile%" (', '\n')
-    VBFiles.writeText(fp, '   echo New file detected "%NEWEST%", rebuild...', '\n')
-    VBFiles.writeText(fp, '   goto :rebuild', '\n')
-    VBFiles.writeText(fp, '   ) ', '\n')
-    VBFiles.writeText(fp, 'ECHO Newer file is %NEWEST%', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'goto :fastbuild', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':getDirectory <resultVar> <pathVar>', '\n')
-    VBFiles.writeText(fp, '(', '\n')
-    VBFiles.writeText(fp, '    set "%~1=%~d2%~p2"', '\n')
-    VBFiles.writeText(fp, '    goto :eof', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':getShortName <resultVar> <filename>', '\n')
-    VBFiles.writeText(fp, '(', '\n')
-    VBFiles.writeText(fp, '    set %~1=%~s2', '\n')
-    VBFiles.writeText(fp, '    goto :eof', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':fastbuild', '\n')
-    VBFiles.writeText(fp, 'echo Running fastbuild', '\n')
-    VBFiles.writeText(fp, 'call Fastbuild.cmd %8', '\n')
-    VBFiles.writeText(fp, 'if errorlevel 1 (', '\n')
-    VBFiles.writeText(fp, '    rem use argument norebuild to avoid rebuild in this case', '\n')
-    VBFiles.writeText(fp, '    if "%8"=="" (', '\n')
-    VBFiles.writeText(fp, '        rem in case that FastBuild.cmd returned errolevel 9 also a rebuild won\'t help', '\n')
-    VBFiles.writeText(fp, '        if not errorlevel 9 (', '\n')
-    VBFiles.writeText(fp, '            echo Fastbuild failed, trying a rebuild...', '\n')
-    VBFiles.writeText(fp, '            goto rebuild', '\n')
-    VBFiles.writeText(fp, '        )', '\n')
-    VBFiles.writeText(fp, '    )', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'goto download', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':rebuild', '\n')
-    VBFiles.writeText(fp, 'echo.', '\n')
-    VBFiles.writeText(fp, 'echo Running rebuild... Be patient, this will take up to 3 minutes ;-(((', '\n')
-    VBFiles.writeText(fp, 'echo.', '\n')
-    VBFiles.writeText(fp, 'if exist "%aTemp%" del "%aTemp%" /s/q >nul:', '\n')
-    VBFiles.writeText(fp, 'if exist "%aTemp%\\link.cmd" del "%aTemp%\\link.cmd"', '\n')
-    VBFiles.writeText(fp, 'echo %date% > "%aTemp%\\rebuildFailed.txt"', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'REM *** Call the arduino builder ***', '\n')
-    VBFiles.writeText(fp, 'call :write "%aHome%\\arduino-builder" -compile -logger=human ^', '\n')
-    VBFiles.writeText(fp, '     -hardware "%packages%" ^', '\n')
-    VBFiles.writeText(fp, '     -tools "%aHome%\\tools-builder" ^', '\n')
-    VBFiles.writeText(fp, '     -tools "%aHome%\\hardware\\tools\\avr" ^', '\n')
-    VBFiles.writeText(fp, '     -built-in-libraries "%aHome%\\libraries" -libraries "%LIB%" ^', '\n')
-    VBFiles.writeText(fp, '     -fqbn=%fqbn% -build-path "%aTemp%" ^', '\n')
-    VBFiles.writeText(fp, '     -warnings=default ^', '\n')
-    VBFiles.writeText(fp, '     -build-cache "%aCache%" ^', '\n')
-    VBFiles.writeText(fp, '     -prefs=build.warn_data_percentage=75 ^', '\n')
-    VBFiles.writeText(fp, '     -prefs=runtime.tools.avrdude.path="%aHome%\\hardware\\tools\\avr" ^', '\n')
-    VBFiles.writeText(fp, '     -prefs=runtime.tools.avr-gcc.path="%aHome%\\hardware\\tools\\avr" >"%aTemp%\\compile.cmd"', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'if exist AdditionalBuildOptions.txt (', '\n')
-    VBFiles.writeText(fp, '  for /F "delims=" %%i in (AdditionalBuildOptions.txt) do call :write %%i >>"%aTemp%\\compile.cmd"', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, 'call :write %srcFile% >>"%aTemp%\\compile.cmd"', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, 'call "%aTemp%\\compile.cmd"', '\n')
-    VBFiles.writeText(fp, 'if not errorlevel 1 (', '\n')
-    VBFiles.writeText(fp, '  if exist "%aTemp%\\rebuildFailed.txt" del "%aTemp%\\rebuildFailed.txt" >nul:', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':download', '\n')
-    VBFiles.writeText(fp, 'if not errorlevel 1 (', '\n')
-    VBFiles.writeText(fp, '   set uploadTo=%3', '\n')
-    VBFiles.writeText(fp, '   if not "%target%"=="" set uploadTo=%target%', '\n')
-    VBFiles.writeText(fp, '   echo Uploading to !uploadTo!', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, '   REM *** Flash program ***', '\n')
-    VBFiles.writeText(fp, '   if "!uploadTo:~0,3!"=="COM" (', '\n')
-    # 17.11.20: Added: 0x8000 ...
-    # 11.03.21: Added: 0xE000 and 0x1000
-    VBFiles.writeText(fp, '          "%packages%\\esp32\\tools\\esptool_py\\%ESP32_TOOL_VERSION%/esptool.exe" --chip esp32 --port \\\\.\\!uploadTo! --baud 921600 --before default_reset --after hard_reset write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect ' + ' 0xE000  "%packages%\\esp32\\hardware\\esp32\\%ESP32_BOARD_VERSION%/tools/partitions/boot_app0.bin"' + ' 0x1000  "%packages%\\esp32\\hardware\\esp32\\%ESP32_BOARD_VERSION%/tools/sdk/bin/bootloader_qio_80m.bin"' + ' 0x10000 "%aTemp%\\%srcFile%.bin"' + ' 0x8000  "%aTemp%\\%srcFile%.partitions.bin"', '\n')
-    VBFiles.writeText(fp, '   ) else (', '\n')
-    VBFiles.writeText(fp, '          "%packages%\\esp32\\hardware\\esp32\\%ESP32_BOARD_VERSION%/tools/espota.exe" -i !uploadTo! -p 3232 --auth= -f "%aTemp%\\%srcFile%.bin"', '\n')
-    VBFiles.writeText(fp, '          )', '\n')
-    VBFiles.writeText(fp, '    REM *** caller expects a positive errorlevel in error case, but ESPTOOL returns errorlevel -1', '\n')
-    VBFiles.writeText(fp, '    if not errorlevel 0 exit /b 1', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ')', '\n')
-    VBFiles.writeText(fp, 'Goto :EOF', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':: write a text without newline', '\n')
-    VBFiles.writeText(fp, ':write', '\n')
-    VBFiles.writeText(fp, 'echo | set /p x="%* "', '\n')
-    VBFiles.writeText(fp, 'goto :eof', '\n')
-    VBFiles.writeText(fp, '', '\n')
-    VBFiles.writeText(fp, ':short', '\n')
-    VBFiles.writeText(fp, 'set %1=%~s2', '\n')
-    VBFiles.writeText(fp, 'goto :eof', '\n')
-    VBFiles.writeText(fp, '', '\n')
+        
+    if M28.Get_Bool_Config_Var("Use_PlatformIO") == False:
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, "set ArduinoLib=" & GetShortPath(M30.DelLast(M27.Get_Ardu_LibDir())), '\n')
+        VBFiles.writeText(fp, 'if not exist MyPrivateBuildScript.cmd (', '\n')
+        VBFiles.writeText(fp, '       REM embedded Fast Build and Upload', '\n')
+        VBFiles.writeText(fp, '       call :build "' + M30.FilePath(Find_ArduinoExe()) + '" "LEDs_AutoProg.ino" ' + ComPort + ' "' + BuildOptOnly + '" 115200  "%ArduinoLib%" esp32 %*', '\n')
+        VBFiles.writeText(fp, ') else (', '\n')
+        VBFiles.writeText(fp, '       REM user defined Build and Upload', '\n')
+        VBFiles.writeText(fp, '       call MyPrivateBuildScript.cmd "' + M30.FilePath(Find_ArduinoExe()) + '" "LEDs_AutoProg.ino" ' + ComPort + ' "' + BuildOptions + '" 115200  "%ArduinoLib%" esp32 %*', '\n')
+        VBFiles.writeText(fp, '       )', '\n')
+        VBFiles.writeText(fp, 'IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > "Start_Arduino_Result.txt"', '\n')
+        VBFiles.writeText(fp, 'goto :eof', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':build', '\n')
+        VBFiles.writeText(fp, 'REM                                                                           **** ToDo: Aktualisieren ***', '\n')
+        VBFiles.writeText(fp, 'REM Compile and flash time for ESP 14 sec on Hardis laptop', '\n')
+        VBFiles.writeText(fp, 'REM', '\n')
+        VBFiles.writeText(fp, 'REM', '\n')
+        VBFiles.writeText(fp, 'REM This file could be modified by the user to support special compiler switches', '\n')
+        VBFiles.writeText(fp, 'REM It is called if the switch the "Schnelles Build und Upload verwenden:" in the \'Config\' sheet is enabled', '\n')
+        VBFiles.writeText(fp, 'REM', '\n')
+        VBFiles.writeText(fp, 'REM Parameter:               Example', '\n')
+        VBFiles.writeText(fp, 'REM  1: Arduino EXE Path:    "' + M30.FilePath(Find_ArduinoExe()) + '"', '\n')
+        VBFiles.writeText(fp, 'REM  2: Ino Name:            "LEDs_AutoProg.ino"', '\n')
+        VBFiles.writeText(fp, 'REM  3: Com port:            "COM3"', '\n')
+        VBFiles.writeText(fp, 'REM  4: Build options:       "arduino:avr:nano:cpu=atmega328"', '\n')
+        VBFiles.writeText(fp, 'REM  5: Baudrate:            "57600" or "115200"', '\n')
+        VBFiles.writeText(fp, 'REM  6: Arduino Library path "%USERPROFILE%\\Documents\\Arduino\\libraries"', '\n')
+        VBFiles.writeText(fp, 'REM  7: CPU type:            "atmega328p, atmega4809, esp32"', '\n')
+        VBFiles.writeText(fp, 'REM  8: options:             ""noflash|norebuild""', '\n')
+        VBFiles.writeText(fp, 'REM  additional argument from caller', '\n')
+        VBFiles.writeText(fp, 'REM', '\n')
+        VBFiles.writeText(fp, 'REM The program uses the captured and adapted command line from the Arduino IDE', '\n')
+        VBFiles.writeText(fp, 'REM', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'SET aHome=%~1', '\n')
+        VBFiles.writeText(fp, 'SET fqbn=%~4', '\n')
+        VBFiles.writeText(fp, 'SET lib=%~6', '\n')
+        VBFiles.writeText(fp, 'SET ESP32_BOARD_VERSION=' + Board_Version, '\n')
+        VBFiles.writeText(fp, 'SET ESP32_TOOL_VERSION=' + Tool_Version, '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'call :short aTemp "%USERPROFILE%\\AppData\\Local\\Temp\\MobaLedLib_build\\ESP32"', '\n')
+        VBFiles.writeText(fp, 'SET aCache=%aTemp%\\cache', '\n')
+        VBFiles.writeText(fp, 'call :short packages "%USERPROFILE%' + M02.AppLoc_Ardu + 'packages"', '\n')
+        VBFiles.writeText(fp, 'if not exist "%aTemp%\\Sketch"  md "%aTemp%\\Sketch"', '\n')
+        VBFiles.writeText(fp, 'if not exist "%aCache%" md "%aCache%"', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'SetLocal EnableDelayedExpansion', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'copy "..\\LEDs_AutoProg\\LEDs_AutoProg.h" "%aTemp%\\Sketch" >nul:', '\n')
+        VBFiles.writeText(fp, 'if errorlevel 1 (', '\n')
+        VBFiles.writeText(fp, '   echo can\'t copy ..\\LEDs_AutoProg\\LEDs_AutoProg.h to build folder', '\n')
+        VBFiles.writeText(fp, '   exit /b 1', '\n')
+        VBFiles.writeText(fp, '   )', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'call ::getDirectory headerDir ..\\LEDs_AutoProg\\LEDs_AutoProg.h', '\n')
+        VBFiles.writeText(fp, 'call ::getDirectory sketchDir %2', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'if not "%headerDir%"=="%sketchDir%" (', '\n')
+        VBFiles.writeText(fp, '   REM Necessary for rebuild         11.11.20:', '\n')
+        VBFiles.writeText(fp, '   copy "..\\LEDs_AutoProg\\LEDs_AutoProg.h" . >nul:', '\n')
+        VBFiles.writeText(fp, '   if errorlevel 1 (', '\n')
+        VBFiles.writeText(fp, '      echo can\'t copy ..\\LEDs_AutoProg\\LEDs_AutoProg.h to actual dir', '\n')
+        VBFiles.writeText(fp, '      exit /b 1', '\n')
+        VBFiles.writeText(fp, '      )', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, 'REM !! developer option copy additional files !!', '\n')
+        VBFiles.writeText(fp, 'if exist AdditionalBuildFiles.txt (', '\n')
+        VBFiles.writeText(fp, '   echo updating extra files', '\n')
+        VBFiles.writeText(fp, '   for /F %%f in (AdditionalBuildFiles.txt) do (', '\n')
+        VBFiles.writeText(fp, '      if exist "%%f" (', '\n')
+        VBFiles.writeText(fp, '             echo update file %%f', '\n')
+        VBFiles.writeText(fp, '             copy "%%f" "%aTemp%\\Sketch" >nul:', '\n')
+        VBFiles.writeText(fp, '             if errorlevel 1 (', '\n')
+        VBFiles.writeText(fp, '                echo can\'t copy %%file to build folder', '\n')
+        VBFiles.writeText(fp, '                exit /b 1', '\n')
+        VBFiles.writeText(fp, '             )', '\n')
+        VBFiles.writeText(fp, '      ) else (', '\n')
+        VBFiles.writeText(fp, '             echo Additional build file \'%%f\' not found', '\n')
+        VBFiles.writeText(fp, '             pause', '\n')
+        VBFiles.writeText(fp, '             )', '\n')
+        VBFiles.writeText(fp, '      )', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'rem check if prebuild targets exist and the current ino isn\'t newer', '\n')
+        VBFiles.writeText(fp, 'set srcFile=%~2', '\n')
+        VBFiles.writeText(fp, 'set cppFile=%aTemp%\\sketch\\%srcFile%.cpp', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        ## VB2PY (CheckDirective) VB directive took path 1 on 1
+        VBFiles.writeText(fp, 'copy "%srcFile%" "%cppFile%" /Y >nul:', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'if exist "%aTemp%\\rebuildFailed.txt" (', '\n')
+        VBFiles.writeText(fp, '   echo Last rebuild failed ;-(', '\n')
+        VBFiles.writeText(fp, '   echo Press ENTER to rebuild everything', '\n')
+        VBFiles.writeText(fp, '   if ""%8""=="""" pause', '\n')
+        VBFiles.writeText(fp, '   goto :rebuild', '\n')
+        VBFiles.writeText(fp, '   )', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'rem if the pre-build files are not there we need to do a complete new build', '\n')
+        VBFiles.writeText(fp, 'if not exist "%cppFile%" (', '\n')
+        VBFiles.writeText(fp, '   echo CPP File "%cppFile%" does\'n exist, rebuild ...', '\n')
+        VBFiles.writeText(fp, '   goto :rebuild', '\n')
+        VBFiles.writeText(fp, '   )', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'if "%8"=="rebuild" (', '\n')
+        VBFiles.writeText(fp, '   echo Rebuild called from the command line', '\n')
+        VBFiles.writeText(fp, '   goto :rebuild', '\n')
+        VBFiles.writeText(fp, '   )', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'if "%8"=="flash" (', '\n')
+        VBFiles.writeText(fp, '   goto :download', '\n')
+        VBFiles.writeText(fp, '   )', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'rem now get date/time of both files to see if time is equal', '\n')
+        VBFiles.writeText(fp, 'FOR /F "tokens=* USEBACKQ" %%F IN (`forfiles /p "%atemp%\\sketch" /m "%srcFile%.cpp" /C "cmd /c echo @fdate @ftime"`) DO SET DATE1=%%F', '\n')
+        VBFiles.writeText(fp, 'FOR /F "tokens=* USEBACKQ" %%F IN (`forfiles /m "%srcFile%" /C "cmd /c echo @fdate @ftime"`) DO SET DATE2=%%F', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'echo %srcFile%.cpp has date %date1%', '\n')
+        VBFiles.writeText(fp, 'echo %srcFile% has date %date2%', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'rem if equal then srcfile isn\'t newer', '\n')
+        VBFiles.writeText(fp, 'IF "%DATE1%"=="%DATE2%" goto fastbuild', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'rem now get the newest file', '\n')
+        VBFiles.writeText(fp, 'rem to compare, both file must be in same directory', '\n')
+        VBFiles.writeText(fp, 'copy "%srcFile%" "%aTemp%\\sketch\\" >nul:', '\n')
+        VBFiles.writeText(fp, 'FOR /F %%i IN (\'DIR /B /O:D "%cppFile%" "%aTemp%\\sketch\\%srcFile%"\') DO SET NEWEST=%%i', '\n')
+        VBFiles.writeText(fp, 'del "%aTemp%\\sketch\\%srcFile%" >nul:', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'rem check which file is newer, if source is new we need to run a arduino build to recreate the .ino.cpp file', '\n')
+        VBFiles.writeText(fp, 'if "%NEWEST%"=="%srcFile%" (', '\n')
+        VBFiles.writeText(fp, '   echo New file detected "%NEWEST%", rebuild...', '\n')
+        VBFiles.writeText(fp, '   goto :rebuild', '\n')
+        VBFiles.writeText(fp, '   ) ', '\n')
+        VBFiles.writeText(fp, 'ECHO Newer file is %NEWEST%', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'goto :fastbuild', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':getDirectory <resultVar> <pathVar>', '\n')
+        VBFiles.writeText(fp, '(', '\n')
+        VBFiles.writeText(fp, '    set "%~1=%~d2%~p2"', '\n')
+        VBFiles.writeText(fp, '    goto :eof', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':getShortName <resultVar> <filename>', '\n')
+        VBFiles.writeText(fp, '(', '\n')
+        VBFiles.writeText(fp, '    set %~1=%~s2', '\n')
+        VBFiles.writeText(fp, '    goto :eof', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':fastbuild', '\n')
+        VBFiles.writeText(fp, 'echo Running fastbuild', '\n')
+        VBFiles.writeText(fp, 'call Fastbuild.cmd %8', '\n')
+        VBFiles.writeText(fp, 'if errorlevel 1 (', '\n')
+        VBFiles.writeText(fp, '    rem use argument norebuild to avoid rebuild in this case', '\n')
+        VBFiles.writeText(fp, '    if not "%8"==norebuild" (', '\n')                            #in case the librarys have been changed
+        VBFiles.writeText(fp, '        rem in case that FastBuild.cmd returned errolevel 9 also a rebuild won\'t help', '\n')
+        VBFiles.writeText(fp, '        if not errorlevel 9 (', '\n')
+        VBFiles.writeText(fp, '            echo Fastbuild failed, trying a rebuild...', '\n')
+        VBFiles.writeText(fp, '            goto rebuild', '\n')
+        VBFiles.writeText(fp, '        )', '\n')
+        VBFiles.writeText(fp, '    )', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'goto download', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':rebuild', '\n')
+        VBFiles.writeText(fp, 'echo.', '\n')
+        VBFiles.writeText(fp, 'echo Running rebuild... Be patient, this will take up to 3 minutes ;-(((', '\n')
+        VBFiles.writeText(fp, 'echo.', '\n')
+        VBFiles.writeText(fp, 'if exist "%aTemp%" del "%aTemp%" /s/q >nul:', '\n')
+        VBFiles.writeText(fp, 'if exist "%aTemp%\\link.cmd" del "%aTemp%\\link.cmd"', '\n')
+        VBFiles.writeText(fp, 'echo %date% > "%aTemp%\\rebuildFailed.txt"', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'REM *** Call the arduino builder ***', '\n')
+        VBFiles.writeText(fp, 'call :write "%aHome%\\arduino-builder" -compile -logger=human ^', '\n')
+        VBFiles.writeText(fp, '     -hardware "%packages%" ^', '\n')
+        VBFiles.writeText(fp, '     -tools "%aHome%\\tools-builder" ^', '\n')
+        VBFiles.writeText(fp, '     -tools "%aHome%\\hardware\\tools\\avr" ^', '\n')
+        VBFiles.writeText(fp, '     -built-in-libraries "%aHome%\\libraries" -libraries "%LIB%" ^', '\n')
+        VBFiles.writeText(fp, '     -fqbn=%fqbn% -build-path "%aTemp%" ^', '\n')
+        VBFiles.writeText(fp, '     -warnings=default ^', '\n')
+        VBFiles.writeText(fp, '     -build-cache "%aCache%" ^', '\n')
+        VBFiles.writeText(fp, '     -prefs=build.warn_data_percentage=75 ^', '\n')
+        VBFiles.writeText(fp, '     -prefs=runtime.tools.avrdude.path="%aHome%\\hardware\\tools\\avr" ^', '\n')
+        VBFiles.writeText(fp, '     -prefs=runtime.tools.avr-gcc.path="%aHome%\\hardware\\tools\\avr" >"%aTemp%\\compile.cmd"', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'if exist AdditionalBuildOptions.txt (', '\n')
+        VBFiles.writeText(fp, '  for /F "delims=" %%i in (AdditionalBuildOptions.txt) do call :write %%i >>"%aTemp%\\compile.cmd"', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, 'call :write %srcFile% >>"%aTemp%\\compile.cmd"', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, 'call "%aTemp%\\compile.cmd"', '\n')
+        VBFiles.writeText(fp, 'if not errorlevel 1 (', '\n')
+        VBFiles.writeText(fp, '  if exist "%aTemp%\\rebuildFailed.txt" del "%aTemp%\\rebuildFailed.txt" >nul:', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':download', '\n')
+        VBFiles.writeText(fp, 'if "%8"=="noflash" goto :EOF', '\n')                         #12.02.22: Juergen
+        VBFiles.writeText(fp, 'if not errorlevel 1 (', '\n')
+        VBFiles.writeText(fp, '   set uploadTo=%3', '\n')
+        VBFiles.writeText(fp, '   if not "%target%"=="" set uploadTo=%target%', '\n')
+        VBFiles.writeText(fp, '   echo Uploading to !uploadTo!', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, '   REM *** Flash program ***', '\n')
+        VBFiles.writeText(fp, '   if "!uploadTo:~0,3!"=="COM" (', '\n')
+        # 17.11.20: Added: 0x8000 ...
+        # 11.03.21: Added: 0xE000 and 0x1000
+        VBFiles.writeText(fp, '          "%packages%\\esp32\\tools\\esptool_py\\%ESP32_TOOL_VERSION%/esptool.exe" --chip esp32 --port \\\\.\\!uploadTo! --baud 921600 --before default_reset --after hard_reset write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect ' + ' 0xE000  "%packages%\\esp32\\hardware\\esp32\\%ESP32_BOARD_VERSION%/tools/partitions/boot_app0.bin"' + ' 0x1000  "%packages%\\esp32\\hardware\\esp32\\%ESP32_BOARD_VERSION%/tools/sdk/bin/bootloader_qio_80m.bin"' + ' 0x10000 "%aTemp%\\%srcFile%.bin"' + ' 0x8000  "%aTemp%\\%srcFile%.partitions.bin"', '\n')
+        VBFiles.writeText(fp, '   ) else (', '\n')
+        VBFiles.writeText(fp, '          "%packages%\\esp32\\hardware\\esp32\\%ESP32_BOARD_VERSION%/tools/espota.exe" -i !uploadTo! -p 3232 --auth= -f "%aTemp%\\%srcFile%.bin"', '\n')
+        VBFiles.writeText(fp, '          )', '\n')
+        VBFiles.writeText(fp, '    REM *** caller expects a positive errorlevel in error case, but ESPTOOL returns errorlevel -1', '\n')
+        VBFiles.writeText(fp, '    if not errorlevel 0 exit /b 1', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ')', '\n')
+        VBFiles.writeText(fp, 'Goto :EOF', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':: write a text without newline', '\n')
+        VBFiles.writeText(fp, ':write', '\n')
+        VBFiles.writeText(fp, 'echo | set /p x="%* "', '\n')
+        VBFiles.writeText(fp, 'goto :eof', '\n')
+        VBFiles.writeText(fp, '', '\n')
+        VBFiles.writeText(fp, ':short', '\n')
+        VBFiles.writeText(fp, 'set %1=%~s2', '\n')
+        VBFiles.writeText(fp, 'goto :eof', '\n')
+        VBFiles.writeText(fp, '', '\n')
+    else:
+        Create_PIO_Build(fp, "esp32", ResultName, ComPort, SrcDir)     # 13.02.22: Juergen
     VBFiles.closeFile(fp)
     # VB2PY (UntranslatedCode) On Error GoTo 0
     fn_return_value = 'Call ' + CMD_Name
@@ -810,6 +930,13 @@ def Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, Build
             fn_return_value=True
             return fn_return_value, BuildOptions, DeviceSignature
         
+        
+        """ 21.01.2021 Optionally get IP Address from cell left to com port"""
+        if M02.Get_BoardTyp() == 'ESP32' and P01.Cells(M02.SH_VARS_ROW, ComPortColumn + 1) != '':
+            BuildOptions = P01.Cells(M02.SH_VARS_ROW, BuildOptColumn)
+            fn_return_value = True
+            return fn_return_value, BuildOptions, DeviceSignature        
+        
         Retry = False
         fn_return_value = False
         if M07.Check_USB_Port_with_Dialog(ComPortColumn) == False:
@@ -826,6 +953,8 @@ def Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, Build
             else:
                 Start_Baudrate = 115200
         ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
+        if ComPort > 255:                                                       # 03.03.22: Juergen avoid overrun error
+            ComPort = 0
         CheckCOMPort_Txt = M07.Check_If_Port_is_Available_And_Get_Name(ComPort)
         FirmwareVer = ""
         if CheckCOMPort_Txt != '':
@@ -925,15 +1054,22 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         ArduName = 'LED'
     else:
         ArduName =  M25.Page_ID
+        
     #P01.Unload(UserForm_Options) # already done
     F00.StatusMsg_UserForm.ShowDialog(Replace(M09.Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + vbCr + M30.FileNameExt(InoName), '...')
-    Update_Compile_Time(True)
+    
     
     Fn_result, BuildOptions, DeviceSignature = Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, BuildOptColumn, BuildOptions, DeviceSignature,CreateFilesOnly=CreateFilesOnly)
     if Fn_result == False:
         Stop_Compile_Time_Display()
         return fn_return_value
     ComPort = 'COM' + P01.Cells(M02.SH_VARS_ROW, ComPortColumn)
+    Update_Compile_Time(True)
+    
+    # 21.01.2021 Optionally get IP Address from cell left to com port
+    if M02.Get_BoardTyp() == "ESP32" and P01.Cells(M02.SH_VARS_ROW, ComPortColumn + 1) != "":
+        ComPort = P01.Cells(M02.SH_VARS_ROW, ComPortColumn + 1)
+    
     ResFile = 'Start_Arduino_Result.txt'
     if ComPortColumn == M25.COMPort_COL:
         if M25.Page_ID == 'CAN':
@@ -973,48 +1109,64 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         P01.MsgBox(M09.Get_Language_Str('Fehler das Programm ') + InoName + M09.Get_Language_Str(' ist nicht vorhanden in: ') + vbCr + '  \'' + SrcDir + '\'', vbCritical, M09.Get_Language_Str('Fehler Ino-Programm nicht vorhanden'))
         M30.EndProg()
     
-    P01.ChDrive(SrcDir)
-    ChDir(SrcDir)
-    if Use_Excel_Console():
-        # 27.11.20 Juergen: use modal ShellExecute user form
-        #*HL needs to be reworked
-        pass
-        Stop_Compile_Time_Display()
-        F00.notimplemented("Excel Console")
-        #Res = UserForm_RunProgram.ShellExecute(CommandStr, 0, Replace(Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + ' - ' + FileNameExt(InoName), PromptUser, 0x800000, TextColor, Get_Language_Str('Senden zum Arduino abbrechen?'))
-    else:
-        PG.global_controller.arduino.close()
-        #Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
-        PG.dialog_parent.start_ARDUINO_program_cmd(CommandStr)
-        Res = M40.Success
-        Stop_Compile_Time_Display()
-    # Bring Excel to the top                                                ' 19.05.20:
-    # Is not working if an other application has be moved above Excel with Alt+Tab
-    # But this is a feature of Windows.
-    #   See: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow
-    # But it brings up excel again after the upload to the Arduino
-    # Without this funchion an other program was activated after the upload for some reasons
-    #Bring_to_front(hwnd)
-    if (Res == M40.Success) or (Res == M40.Timeout) or (Res == M40.UserBreak):
-        pass
-    else:
-        P01.Unload(F00.StatusMsg_UserForm)
-        P01.MsgBox(M09.Get_Language_Str('Fehler ') + Res + M09.Get_Language_Str(' beim Starten des Arduino Programms \'') + CommandStr + '\'', vbCritical, M09.Get_Language_Str('Fehler beim Starten des Arduino programms'))
-    if Dir(ResFile) != '':
+    Failed = not M39.UpdateSimulatorIfNeeded(False, (M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) == 2))
+     
+    if not Failed:
+    
+        P01.ChDrive(SrcDir)
+        ChDir(SrcDir)
+        if Use_Excel_Console():
+            # 27.11.20 Juergen: use modal ShellExecute user form
+            #*HL needs to be reworked
+            pass
+            Stop_Compile_Time_Display()
+            F00.notimplemented("Excel Console")
+            #Res = UserForm_RunProgram.ShellExecute(CommandStr, 0, Replace(Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + ' - ' + FileNameExt(InoName), PromptUser, 0x800000, TextColor, Get_Language_Str('Senden zum Arduino abbrechen?'))
+        else:
+            #PG.global_controller.arduino.close()
+            #Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
+            PG.dialog_parent.start_ARDUINO_program_cmd(CommandStr)
+            Res = M40.Success
+            Stop_Compile_Time_Display()
+        # Bring Excel to the top                                                ' 19.05.20:
+        # Is not working if an other application has be moved above Excel with Alt+Tab
+        # But this is a feature of Windows.
+        #   See: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow
+        # But it brings up excel again after the upload to the Arduino
+        # Without this funchion an other program was activated after the upload for some reasons
+        #Bring_to_front(hwnd)
+        if (Res == M40.Success) or (Res == M40.Timeout) or (Res == M40.UserBreak):
+            pass
+        else:
+            P01.Unload(F00.StatusMsg_UserForm)
+            P01.MsgBox(M09.Get_Language_Str('Fehler ') + Res + M09.Get_Language_Str(' beim Starten des Arduino Programms \'') + CommandStr + '\'', vbCritical, M09.Get_Language_Str('Fehler beim Starten des Arduino programms'))
+        
+        if Dir(ResFile) != '':
+            Failed = True
+    
+    if Failed:
         P01.MsgBox(M09.Get_Language_Str('Es ist ein Fehler aufgetreten ;-(' + vbCr + vbCr + 'Zur Fehlersuche kann man die letzten Änderungen wieder rückgängig machen und es noch mal versuchen. ' + vbCr + vbCr + 'Kommunikationsprobleme erkennt man an dieser Meldung: ' + vbCr + '   avrdude: ser_open(): can\'t open device "\\\\.\\COM') + P01.Cells(M02.SH_VARS_ROW, ComPortColumn) + '":' + vbCr + M09.Get_Language_Str('   Das System kann die angegebene Datei nicht finden.' + vbCr + 'In diesem Fall müssen die Verbindungen überprüft und der Arduino durch einen neuen ersetzt werden.' + vbCr + vbCr + 'Der Fehler kann auch auftreten wenn der DCC/Selextrix Arduino noch nicht programmiert wurde.' + vbCr + 'Am besten man steckt den rechten Arduino erst dann ein wenn er benötigt wird.' + vbCr + vbCr + 'Wenn der Fehler nicht zu finden ist und immer wieder auftritt, dann kann ein Screenshot des ' + 'vorangegangenen Bildschirms (Nach oben scrollen so dass die erste Meldung nach dem Arduino Bild zu sehen ist) ' + 'zusammen mit dem Excel Programm und einer ausführlichen Beschreibung an ' + vbCr + '  MobaLedLib@gmx.de' + vbCr + 'geschickt werden.'), vbInformation, M09.Get_Language_Str('Fehler beim Hochladen des Programms'))
         M30.EndProg()
     else:
         Stop_Compile_Time_Display()
         Debug.Print('Compile and upload duration: ' + P01.Format(P01.Time() - Start, 'hh:mm:ss'))
         M30.Show_Status_for_a_while(M09.Get_Language_Str('Programm erfolgreich hochgeladen. Kompilieren und Hochladen dauerte ') + P01.Format(P01.Time() - Start, 'hh:mm:ss'), '00:02:00')
+       
         fn_return_value = True
     return fn_return_value
 
 def Compile_and_Upload_LED_Prog_to_Arduino(CreateFilesOnly=False):
     #------------------------------------------------------------------
-    if True: #*HL Upload_the_Right_Arduino_Prog_if_needed():
+    fn_return_value = False
+    Doit = Boolean()
+    #------------------------------------------------------------------
+    Doit = CreateFilesOnly
+    if CreateFilesOnly == False:
+        Doit = Upload_the_Right_Arduino_Prog_if_needed()
+    if Doit:
         fn_return_value = Compile_and_Upload_Prog_to_Arduino(M02.InoName_LED, M25.COMPort_COL, M25.BUILDOP_COL, P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED, CreateFilesOnly=CreateFilesOnly)
     return fn_return_value
+
 
 def Create_Config_Header_File(Name):
     fp = Integer()
@@ -1076,6 +1228,7 @@ def Ask_To_Upload_the_Right_Arduino_Prog(Focus_Button):
     #--------------------------------------------------------------------------------------
     # If the cell COMPrtR_COL is "COM?" the user is asked if the program for the
     # right arduino is already uploaded.
+    fn_return_value = False
     if not M30.Get_Current_Platform_Bool('NeedLedArduino'):
         fn_return_value = False
         return fn_return_value

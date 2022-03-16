@@ -160,17 +160,17 @@ Private Function Find_Line_with(ByVal c As String, StartLine As Long, Optional M
   Dim LineNr As Long
   With ListBox
     For LineNr = StartLine To .ListCount - 1
-       Dim line As String
-       line = .List(LineNr)
-       If line <> "" Then
+       Dim Line As String
+       Line = .List(LineNr)
+       If Line <> "" Then
           Select Case Mode
             Case 1: ' First character
-                    If UCase(Left(line, 1)) = c Then
+                    If UCase(left(Line, 1)) = c Then
                        Find_Line_with = LineNr
                        Exit Function
                     End If
             Case -1: ' Find anywhere in the line
-                    If InStr(line, c) > 0 Then
+                    If InStr(Line, c) > 0 Then
                        Find_Line_with = LineNr
                        Exit Function
                     End If
@@ -289,10 +289,10 @@ Private Sub ListBox_Change()
   Description = ""
   Detail = ""
   If Enable_Listbox_Changed Then
-     Dim Nr As Long, Cnt As Long
+     Dim Nr As Long, cnt As Long
      For Nr = 0 To ListBox.ListCount - 1
          If ListBox.Selected(Nr) Then
-            Cnt = Cnt + 1
+            cnt = cnt + 1
             Dim Row As Long
             Row = ListBox.List(Nr, 2)
             Dim Txt As String, ActLanguage As Integer
@@ -305,7 +305,7 @@ Private Sub ListBox_Change()
             Detail = Detail & Replace_Multi_Space(SrcSh.Cells(Row, SM_Macro_COL)) & vbCr ' Show one or more selected details
          End If
      Next
-     SelectedCnt_Label = "Selected: " & Cnt
+     SelectedCnt_Label = "Selected: " & cnt
   End If
   
 End Sub
@@ -409,8 +409,8 @@ Private Sub UserForm_Initialize()
   
   With Me
         .StartUpPosition = 0
-        .Left = Application.Left ' Left side to avoid selecting the wrong entry because the mouse lands in the listbox
-        .Top = Application.Top '  + (Application.Height - .Height) / 2
+        .left = Application.left ' Left side to avoid selecting the wrong entry because the mouse lands in the listbox
+        .top = Application.top '  + (Application.Height - .Height) / 2
   End With
   
 End Sub

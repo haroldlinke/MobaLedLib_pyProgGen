@@ -157,7 +157,7 @@ Private Sub Get_General_Excel_Column_Filters(s As Worksheet, af As AutoFilter, B
     For Col = 1 To LastUsedColumnIn(s)
        List = List & s.Columns(Col).ColumnWidth & Separator
     Next Col
-    List = Left(List, Len(List) - Len(Separator))
+    List = left(List, Len(List) - Len(Separator))
     .ColWidthList = List
   End With
 End Sub
@@ -252,7 +252,7 @@ End Function
 '-------------------------------------------------------------------------------------
 Private Function Get_HiddenCols(s As Worksheet, ByRef FB As FilterButton_T) As Boolean
 '-------------------------------------------------------------------------------------
-  Dim Col As Long, Cnt As Long
+  Dim Col As Long, cnt As Long
   With FB
     Erase .HiddenCols
     Dim Row As Long
@@ -260,19 +260,19 @@ Private Function Get_HiddenCols(s As Worksheet, ByRef FB As FilterButton_T) As B
     If Row = 0 Then Row = 1
     For Col = 1 To LastUsedColumnIn(s)
         If s.Columns(Col).Hidden Then
-           ReDim Preserve .HiddenCols(Cnt)
-           With .HiddenCols(Cnt)
+           ReDim Preserve .HiddenCols(cnt)
+           With .HiddenCols(cnt)
              .Enabled = True
              .Column = Col
              .Name = s.Cells(Row, Col)
              If .Name = "" Then .Name = "Column " & Col
            End With
-           Cnt = Cnt + 1
+           cnt = cnt + 1
         End If
     Next Col
   End With
   
-  FB.EnableColumnHiding = Cnt > 0
+  FB.EnableColumnHiding = cnt > 0
   Get_HiddenCols = FB.EnableColumnHiding
 End Function
 

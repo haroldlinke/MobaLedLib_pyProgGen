@@ -66,7 +66,7 @@ Private Function Add_Logic_InpVars(LogicExp As String, r As Long) As Boolean
 End Function
 
 '----------------------------------------------------------------------------------------------
-Private Function Check_if_all_Variables_in_sequece_of_N_exists(r As Long, N As Long) As Boolean
+Private Function Check_if_all_Variables_in_sequece_of_N_exists(r As Long, n As Long) As Boolean
 '----------------------------------------------------------------------------------------------
   Dim Adr_or_Name As String
   Adr_or_Name = Trim(Cells(r, Get_Address_Col()))
@@ -80,8 +80,8 @@ Private Function Check_if_all_Variables_in_sequece_of_N_exists(r As Long, N As L
      Dim Nr As Long, TxtLen As Long, Name As String, i As Long
      Nr = Get_Nr_From_Var(Adr_or_Name, TxtLen)
      If Nr >= 0 Then
-        Name = Left(Adr_or_Name, TxtLen)
-        For i = Nr To Nr + N - 1
+        Name = left(Adr_or_Name, TxtLen)
+        For i = Nr To Nr + n - 1
             If Valid_Var_Name(Name & i, r) = False Then Exit Function ' At the moment Valid_Var_Name always returns true
         Next i
      End If
@@ -122,16 +122,16 @@ Private Function Check_if_all_Variables_in_sequece_exist(r As Long, Ctr_Name As 
 ' In the last two cases it has to be checked if all required variables exist.
 ' Example: InCh_to_TmpVar(SwitchA3, 3)
 ' => SwitchA3, SwitchA4, SwitchA5 must be defined
-  Dim N As Long
+  Dim n As Long
   If Ctr_Name = "BinStates" Then
-        N = Get_Bin_Inputs(val(N_Str))
-        If N <= 0 Then
+        n = Get_Bin_Inputs(val(N_Str))
+        If n <= 0 Then
             MsgBox Get_Language_Str("Fehler: Anzahl der binären Zustände ungültig. Die Anzahl muss zwischen 1 und 63 liegen"), vbCritical, Get_Language_Str("Anzahl der binären Zustände ungültig")
             Exit Function
         End If
-  Else: N = val(N_Str)
+  Else: n = val(N_Str)
   End If
-  Check_if_all_Variables_in_sequece_exist = Check_if_all_Variables_in_sequece_of_N_exists(r, N)
+  Check_if_all_Variables_in_sequece_exist = Check_if_all_Variables_in_sequece_of_N_exists(r, n)
 End Function
 
 '------------------------------------------------------------------------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ Private Function Add_InpVars(ByVal MacroName As String, Org_Macro As String, Fil
                                   If Check_if_all_Variables_in_sequece_of_N_exists(r, val(InCntStr)) = False Then Exit Function
                                End If
                             End If
-                            If IsNumeric(Left(InCntStr, Len(InCntStr) - 1)) And Right(InCntStr, 1) = "?" Then      ' 07.05.20:
+                            If IsNumeric(left(InCntStr, Len(InCntStr) - 1)) And right(InCntStr, 1) = "?" Then      ' 07.05.20:
                                'ToDo Zusätzliche Überprüfung auf "#InCh+2" wenn 3? in Lib_Macros hinzugefügt wird
                                If Fil_List(2) = "#InCh+1" Then              ' 07.06.20:
                                   ' It's a function which may use two inputs like: "RS_FlipFlop(Test, #InCh, #InCh+1)"
@@ -221,7 +221,7 @@ Private Function Is_Switch_Var_then_Add_to_Ctr(Var_Name As String) As Long
   Dim Nr As Long
   Select Case Is_in_Nr_String(Var_Name, "Switch?", 1, 250, Nr)
      Case 1:  ' Valid number range
-              Select Case Left(Var_Name, Len("Switch?"))
+              Select Case left(Var_Name, Len("Switch?"))
                   Case "SwitchA":
                                   If Nr > SwitchA_InpCnt Then SwitchA_InpCnt = Nr
                   Case "SwitchB":
@@ -267,34 +267,34 @@ Private Function First_Scan_of_Data_Rows() As Boolean                       ' 04
           Exit Function
        End If
        
-       Dim Config_Entry As String, line As Variant
+       Dim Config_Entry As String, Line As Variant
        Config_Entry = Cells(r, Config__Col)
        If Trim(Config_Entry) <> "" Then
-          For Each line In Split(Config_Entry, vbLf)
-              line = Trim(line)
-              If Set_PinNrLst_if_Matching(line, "// Set_SwitchA_InpLst(", SwitchA_InpLst, "A", 5) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_SwitchB_InpLst(", SwitchB_InpLst, "I", 12) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_SwitchC_InpLst(", SwitchC_InpLst, "I", 12) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_SwitchD_InpLst(", SwitchD_InpLst, "Pu", 12) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_CLK_Pin_Number(", CLK_Pin_Number, "O", 1) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_RST_Pin_Number(", RST_Pin_Number, "O", 1) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_LDR_Pin_Number(", LDR_Pin_Number, "A", 1) = False Then Exit Function
-              If Set_PinNrLst_if_Matching(line, "// Set_LED_OutpPinLst(", LED_PINNr_List, "O", LED_CHANNELS) = False Then Exit Function
+          For Each Line In Split(Config_Entry, vbLf)
+              Line = Trim(Line)
+              If Set_PinNrLst_if_Matching(Line, "// Set_SwitchA_InpLst(", SwitchA_InpLst, "A", 5) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_SwitchB_InpLst(", SwitchB_InpLst, "I", 12) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_SwitchC_InpLst(", SwitchC_InpLst, "I", 12) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_SwitchD_InpLst(", SwitchD_InpLst, "Pu", 12) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_CLK_Pin_Number(", CLK_Pin_Number, "O", 1) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_RST_Pin_Number(", RST_Pin_Number, "O", 1) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_LDR_Pin_Number(", LDR_Pin_Number, "A", 1) = False Then Exit Function
+              If Set_PinNrLst_if_Matching(Line, "// Set_LED_OutpPinLst(", LED_PINNr_List, "OV", LED_CHANNELS) = False Then Exit Function   ' 18.02.22 Juergen Virtual Channel
               
-              If line = "// Use_DMX512()" Then                              ' 19.01.21 Juergen
+              If Line = "// Use_DMX512()" Then                              ' 19.01.21 Juergen
                 DMX_LedChan = val(Cells(r, LED_Cha_Col))
               End If
               
-              If line = "#define READ_LDR" Then Read_LDR = True
-              If Left(line, Len("#define SWITCH_DAMPING_FACT")) = "#define SWITCH_DAMPING_FACT" Then ' 04.11.21:
-                    Switch_Damping_Fact = line
+              If Line = "#define READ_LDR" Then Read_LDR = True
+              If left(Line, Len("#define SWITCH_DAMPING_FACT")) = "#define SWITCH_DAMPING_FACT" Then ' 04.11.21:
+                    Switch_Damping_Fact = Line
               End If
-              If line = "#define USE_WS2811" Then Use_WS2811 = True                        ' 19.01.21 Juergen
-              If line = "#define ENABLE_STORE_STATUS" Then Store_Status_Enabled = True     '    "
+              If Line = "#define USE_WS2811" Then Use_WS2811 = True                        ' 19.01.21 Juergen
+              If Line = "#define ENABLE_STORE_STATUS" Then Store_Status_Enabled = True     '    "
               
-              If Add_Inp_and_DstVars(line, r) = False Then Exit Function ' Add the destination variable to DstVar_List
+              If Add_Inp_and_DstVars(Line, r) = False Then Exit Function ' Add the destination variable to DstVar_List
               
-          Next line
+          Next Line
        End If
      End If
   Next r
@@ -344,7 +344,7 @@ End Function
 
 
 '--------------------------------------------------------------------------------------------------------------------------------------------------
-Public Function Set_PinNrLst_if_Matching(line As Variant, Name As String, ByRef Dest_InpLst As String, PinTyp As String, MaxCnt As Long) As Boolean
+Public Function Set_PinNrLst_if_Matching(Line As Variant, Name As String, ByRef Dest_InpLst As String, PinTyp As String, MaxCnt As Long) As Boolean
 '--------------------------------------------------------------------------------------------------------------------------------------------------
 ' ToDo:
 ' - Noch mal prüfen ob alle Pins möglich sind
@@ -358,17 +358,17 @@ Public Function Set_PinNrLst_if_Matching(line As Variant, Name As String, ByRef 
   ' beim AM328 sind die SPI Pins nur frei, wenn kein CAN Modul angeschlossen ist
   SPI_Pins = ""
   If Page_ID <> "CAN" Then
-    If PinTyp = "I" Or PinTyp = "O" Or PinTyp = "Pu" Then
+    If PinTyp = "I" Or PinTyp = "O" Or PinTyp = "OV" Or PinTyp = "Pu" Then     ' 18.02.22: Juergen add virtual Channel
         SPI_Pins = Get_Current_Platform_String("SPI_Pins")                     ' ~08.10.21: Juergen: New function to handle the valid pins. Prior this was handled here
     End If
   End If
   ValidPins = Get_Current_Platform_String(PinTyp + "_Pins", True)              ' ~08.10.21: Juergen:    "
   ValidPins = SPI_Pins + ValidPins
-  If Left(line, Len(Name)) = Name Then
+  If left(Line, Len(Name)) = Name Then
      Dim p As Long, NrStr As String
-     p = InStr(line, ")")
+     p = InStr(Line, ")")
      If p = 0 Then GoTo PrintError
-     NrStr = Mid(line, 1 + Len(Name), p - 1 - Len(Name))
+     NrStr = Mid(Line, 1 + Len(Name), p - 1 - Len(Name))
      NrStr = Trim(Replace(NrStr, ",", " "))
      NrStr = Replace(NrStr, "  ", " ")
      If NrStr = "" Then GoTo PrintError
@@ -381,17 +381,20 @@ Public Function Set_PinNrLst_if_Matching(line As Variant, Name As String, ByRef 
      For Each OnePin In NrArr
         If InStr(ValidPins, " " & AliasToPin(OnePin) & " ") = 0 Then                   ' 14.10.21: Juergen
            MsgBox Replace(Replace(Get_Language_Str("Fehler: Der Pin '#1#' ist nicht gültig im" & vbCr & _
-           "  '#2#' Befehl"), "#1#", OnePin), "#2#", Replace(line, "// ", "")), _
+           "  '#2#' Befehl"), "#1#", OnePin), "#2#", Replace(Line, "// ", "")), _
            vbCritical, Get_Language_Str("Ungültige Arduino Pin Nummer")
            Exit Function
         End If
-        ' Check Duplicate Pins
-        p = InStr(" " & line & " ", " " & AliasToPin(OnePin) & " ")                     ' 14.10.21: Juergen, 16.05.20: Added space around OnePin (Problem: 2 ... 12)
-        If InStr(p + 1, " " & line & " ", " " & OnePin & " ") > 0 Then      '     "        "
-           MsgBox Replace(Replace(Get_Language_Str("Fehler: Der Pin '#1#' wird mehrfach verwendet im" & vbCr & _
-           "  '#2#' Befehl"), "#1#", OnePin), "#2#", Replace(line, "// ", "")), _
-           vbCritical, Get_Language_Str("Mehrfach verwendeter Arduino Pin")
-           Exit Function
+        ' Check duplicate pins, not for virtual PIN 'V' - virtual pin may be used multiple times
+        If OnePin <> Virtual_Channel_T Then
+           'p = InStr(" " & line & " ", " " & AliasToPin(OnePin) & " ")                     ' 14.10.21: Juergen, 16.05.20: Added space around OnePin (Problem: 2 ... 12)
+           p = InStr(" " & Replace(Replace(Line, "(", " "), ")", " ") & " ", " " & OnePin & " ")                 ' 17.02.22: Juergen, fix a bug
+           If InStr(p + 1, " " & Line & " ", " " & OnePin & " ") > 0 Then      '     "        "
+              MsgBox Replace(Replace(Get_Language_Str("Fehler: Der Pin '#1#' wird mehrfach verwendet im" & vbCr & _
+              "  '#2#' Befehl"), "#1#", OnePin), "#2#", Replace(Line, "// ", "")), _
+              vbCritical, Get_Language_Str("Mehrfach verwendeter Arduino Pin")
+              Exit Function
+           End If
         End If
         If NrStr <> "" Then NrStr = NrStr + " "                                         ' 14.10.21: Juergen
         NrStr = NrStr + AliasToPin(OnePin)                                              ' build a new list with logical names mapped to physical pins
@@ -405,24 +408,24 @@ Public Function Set_PinNrLst_if_Matching(line As Variant, Name As String, ByRef 
   
 PrintError:
   MsgBox Replace(Get_Language_Str("Fehler beim Lesen der Pin Nummern in Zeile:" & vbCr & _
-                                  "  '#1#'"), "#1#", line), vbCritical, Get_Language_Str("Fehler beim Lesen der Pin Nummern")
+                                  "  '#1#'"), "#1#", Line), vbCritical, Get_Language_Str("Fehler beim Lesen der Pin Nummern")
 End Function
 
 '---------------------------------------------------------
-Private Function Get_Arguments(line As String) As String()
+Private Function Get_Arguments(Line As String) As String()
 '---------------------------------------------------------
   Dim Arguments As String, Parts() As String, i As Long, p As Long
-  If InStr(line, "(") = 0 Then
-    MsgBox "Error: Opening bracket not found in '" & line & "'", vbCritical, "Internal Error"
+  If InStr(Line, "(") = 0 Then
+    MsgBox "Error: Opening bracket not found in '" & Line & "'", vbCritical, "Internal Error"
     Exit Function
   End If
-  Arguments = Split(line, "(")(1)
+  Arguments = Split(Line, "(")(1)
   p = InStrRev(Arguments, ")")
   If p = 0 Then
-    MsgBox "Error: Closing bracket not found in '" & line & "'", vbCritical, "Internal Error"
+    MsgBox "Error: Closing bracket not found in '" & Line & "'", vbCritical, "Internal Error"
     Exit Function
   End If
-  Arguments = Left(Arguments, p - 1)
+  Arguments = left(Arguments, p - 1)
   Parts = Split(Arguments, ",")
   For i = 0 To UBound(Parts)
     Parts(i) = Trim(Parts(i))
@@ -438,13 +441,13 @@ Private Sub Test_Get_Arguments()
 End Sub
 
 '------------------------------------------------------------------------------------------------------
-Private Function Get_Matching_Arg(Org_Macro As String, line As String, DestVarName As String) As String
+Private Function Get_Matching_Arg(Org_Macro As String, Line As String, DestVarName As String) As String
 '------------------------------------------------------------------------------------------------------
 ' Return the argument in "Line" which matches DestVarName in Org_Macro
    Dim Org_Args() As String, Act_Args() As String
    Org_Args = Get_Arguments(Org_Macro)
    If isInitialised(Org_Args) Then
-      Act_Args = Get_Arguments(line)
+      Act_Args = Get_Arguments(Line)
       If isInitialised(Act_Args) Then
          If UBound(Act_Args) >= UBound(Org_Args) Then ' Org_Args may contain ... => the number of Act_Args may be greater
             Dim i As Long
@@ -465,7 +468,7 @@ Private Function Get_Matching_Arg(Org_Macro As String, line As String, DestVarNa
          End If
       End If
    End If
-   MsgBox Replace(Get_Language_Str("Fehler bei der Erkennung der Zielvariable in Makro '#1#'"), "#1#", line), vbCritical, Get_Language_Str("Fehler: Zielvariable wurde nicht gefunden")
+   MsgBox Replace(Get_Language_Str("Fehler bei der Erkennung der Zielvariable in Makro '#1#'"), "#1#", Line), vbCritical, Get_Language_Str("Fehler: Zielvariable wurde nicht gefunden")
 End Function
 
 
@@ -492,7 +495,7 @@ Public Function Add_Variable_to_DstVar_List(ByVal VarName As String) As Boolean
 End Function
 
 '------------------------------------------------------------------------------------------------------------------
-Private Function Add_Matching_Arg_to_DstVars(Org_Macro As String, line As String, DestVarName As String) As Boolean
+Private Function Add_Matching_Arg_to_DstVars(Org_Macro As String, Line As String, DestVarName As String) As Boolean
 '------------------------------------------------------------------------------------------------------------------
 ' Locate DestVarName in Org_Macro and add the corrosponding
 ' argument to the global string DstVar_List
@@ -500,7 +503,7 @@ Private Function Add_Matching_Arg_to_DstVars(Org_Macro As String, line As String
 '   MonoFlop(DstVar, InCh, Duration)
 '   RS_FlipFlop2(DstVar1, DstVar2, InCh, R_InCh)             Called 2 times
   Dim Arg As String
-  Arg = Get_Matching_Arg(Org_Macro, line, DestVarName)
+  Arg = Get_Matching_Arg(Org_Macro, Line, DestVarName)
   If Arg <> "" Then
      If Arg = "#LocInCh" Then                                               ' 20.06.20: Prevent problems with the random goto activation: Random(#LocInCh, #InCh, RM_NORMAL, 5 Sek,  10 Sek, 1 ms, 1 ms)
            Add_Matching_Arg_to_DstVars = True
@@ -568,22 +571,22 @@ Private Function Get_Nr_From_Var(Name As String, ByRef TxtLen As Long) As Long
 End Function
 #End If
 '-------------------------------------------------------------------------------------
-Private Function Add_N2_Arg_to_DstVars(Org_Macro As String, line As String) As Boolean
+Private Function Add_N2_Arg_to_DstVars(Org_Macro As String, Line As String) As Boolean
 '-------------------------------------------------------------------------------------
 ' Example: RandMux(DstVar1, DstVarN, InCh, RandMode, MinTime, MaxTime)
   Dim Arg1 As String, ArgN As String, TxtLen1 As Long, TxtLenN As Long
-  Arg1 = Get_Matching_Arg(Org_Macro, line, "DstVar1")
+  Arg1 = Get_Matching_Arg(Org_Macro, Line, "DstVar1")
   If Arg1 <> "" Then
-     ArgN = Get_Matching_Arg(Org_Macro, line, "DstVarN")
+     ArgN = Get_Matching_Arg(Org_Macro, Line, "DstVarN")
      If ArgN <> "" Then
         Dim StartNr As Long, EndNr As Long, i As Long
         StartNr = Get_Nr_From_Var(Arg1, TxtLen1)
         If StartNr < 0 Then Exit Function
         EndNr = Get_Nr_From_Var(ArgN, TxtLenN)
         If EndNr < 0 Then Exit Function
-        If TxtLen1 <> TxtLenN Or Left(Arg1, TxtLen1) <> Left(ArgN, TxtLenN) Then Exit Function
+        If TxtLen1 <> TxtLenN Or left(Arg1, TxtLen1) <> left(ArgN, TxtLenN) Then Exit Function
         For i = StartNr To EndNr
-            If Add_Variable_to_DstVar_List(Left(Arg1, TxtLen1) & i) = False Then Exit Function
+            If Add_Variable_to_DstVar_List(left(Arg1, TxtLen1) & i) = False Then Exit Function
         Next i
         Add_N2_Arg_to_DstVars = True
      End If
@@ -591,20 +594,20 @@ Private Function Add_N2_Arg_to_DstVars(Org_Macro As String, line As String) As B
 End Function
 
 '----------------------------------------------------------------------------------------
-Private Function Add_VarArgCnt_to_DstVars(Org_Macro As String, line As String) As Boolean
+Private Function Add_VarArgCnt_to_DstVars(Org_Macro As String, Line As String) As Boolean
 '----------------------------------------------------------------------------------------
 ' Example: Counter(CtrMode, InCh, Enable, TimeOut, ...)
   Dim Arg As String
   
   ' 20.06.20:
-  If Left(Org_Macro, Len("Counter(")) = "Counter(" Then ' If the LED output is disabled the first DestVar contains the destination
-     If InStr(line, "CF_ONLY_LOCALVAR") > 0 Then        ' count (Counter => 0 .. n-1)
+  If left(Org_Macro, Len("Counter(")) = "Counter(" Then ' If the LED output is disabled the first DestVar contains the destination
+     If InStr(Line, "CF_ONLY_LOCALVAR") > 0 Then        ' count (Counter => 0 .. n-1)
         Add_VarArgCnt_to_DstVars = True                 ' => There are no Dest vars ==> We don't have to add them
         Exit Function
      End If
   End If
   
-  Arg = Get_Matching_Arg(Org_Macro, line, "OutList")   ' Old: "...")
+  Arg = Get_Matching_Arg(Org_Macro, Line, "OutList")   ' Old: "...")
   If Arg <> "" Then
      Dim Name As Variant
      For Each Name In Split(Arg, ",")
@@ -615,11 +618,11 @@ Private Function Add_VarArgCnt_to_DstVars(Org_Macro As String, line As String) A
 End Function
 
 '---------------------------------------------------------------------------------------------------------
-Private Function Add_Cx_to_DstVars(Org_Macro As String, line As String, Cnt As Long, r As Long) As Boolean
+Private Function Add_Cx_to_DstVars(Org_Macro As String, Line As String, cnt As Long, r As Long) As Boolean
 '---------------------------------------------------------------------------------------------------------
 ' Example: PushButton_w_LED_0_2(B_LED, B_LED_Cx, InCh, DstVar1, Rotate, Timeout)
   Dim Arg1 As String, TxtLen As Long
-  Arg1 = Get_Matching_Arg(Org_Macro, line, "DstVar1")
+  Arg1 = Get_Matching_Arg(Org_Macro, Line, "DstVar1")
   If Arg1 <> "" Then
      Dim StartNr As Long, EndNr As Long, i As Long
      StartNr = Get_Nr_From_Var(Arg1, TxtLen)
@@ -630,16 +633,16 @@ Private Function Add_Cx_to_DstVars(Org_Macro As String, line As String, Cnt As L
                        "#1#", Arg1), "#2#", r), "#3#", Arg1 & "0"), vbCritical, Get_Language_Str("Fehler: Zielvariable ungültig für Sequenz")
         Exit Function
      End If
-     EndNr = StartNr + Cnt - 1
+     EndNr = StartNr + cnt - 1
      For i = StartNr To EndNr
-         If Add_Variable_to_DstVar_List(Left(Arg1, TxtLen) & i) = False Then Exit Function
+         If Add_Variable_to_DstVar_List(left(Arg1, TxtLen) & i) = False Then Exit Function
      Next i
      Add_Cx_to_DstVars = True
   End If
 End Function
 
 '------------------------------------------------------------------------------
-Public Function Add_Inp_and_DstVars(ByVal line As String, r As Long) As Boolean
+Public Function Add_Inp_and_DstVars(ByVal Line As String, r As Long) As Boolean
 '------------------------------------------------------------------------------
 ' Following types of macros are defined which generate DstVar's (One example per typ)
 '
@@ -649,10 +652,10 @@ Public Function Add_Inp_and_DstVars(ByVal line As String, r As Long) As Boolean
 '  n2  RandMux(DstVar1, DstVarN, InCh, RandMode, MinTime, MaxTime)           o.k.
 '
   Add_Inp_and_DstVars = True
-  If InStr(line, "(") = 0 Then Exit Function
+  If InStr(Line, "(") = 0 Then Exit Function
   
   Dim Parts() As String, p As Long, Org_Macro_Row As Long, Arguments As String, Res As Boolean
-  Parts = Split(line, "(")
+  Parts = Split(Line, "(")
   Arguments = Parts(1)
   p = InStrRev(Arguments, ")")
   If p = 0 Then Exit Function
@@ -664,7 +667,7 @@ Public Function Add_Inp_and_DstVars(ByVal line As String, r As Long) As Boolean
   End If
   Org_Macro_Row = Find_Macro_in_Lib_Macros_Sheet(SearchMacro & "(")
   If Org_Macro_Row = 0 Then
-     Debug.Print "Attention: Macro '" & line & " not found in '" & LIBMACROS_SH & "'" ' In case the user has defined own macros some where
+     Debug.Print "Attention: Macro '" & Line & " not found in '" & LIBMACROS_SH & "'" ' In case the user has defined own macros some where
      ' ToDo: Wie können Zielvariablen in diesen Makros erkannt werden?
   Else
      Dim OutCntStr As String, Org_Macro As String, Org_Arguments As String
@@ -672,22 +675,22 @@ Public Function Add_Inp_and_DstVars(ByVal line As String, r As Long) As Boolean
         OutCntStr = .Cells(Org_Macro_Row, SM_OutCntCOL)
         Org_Macro = .Cells(Org_Macro_Row, SM_Macro_COL)
      End With
-     If Add_InpVars(Parts(0), Org_Macro, line, r, Org_Macro_Row) = False Then
+     If Add_InpVars(Parts(0), Org_Macro, Line, r, Org_Macro_Row) = False Then
         Add_Inp_and_DstVars = False
         Exit Function
      End If
      Select Case OutCntStr
         Case "", "0": Add_Inp_and_DstVars = True
                       Exit Function
-        Case "1":     Res = Add_Matching_Arg_to_DstVars(Org_Macro, line, "DstVar")               ' Ex.: MonoFlop(DstVar, InCh, Duration)
-        Case "2":     Res = Add_Matching_Arg_to_DstVars(Org_Macro, line, "DstVar1")              ' Ex.: RS_FlipFlop2(DstVar1, DstVar2, InCh, R_InCh)
-                      If Res Then Res = Add_Matching_Arg_to_DstVars(Org_Macro, line, "DstVar2")
-        Case "n..":   Res = Add_VarArgCnt_to_DstVars(Org_Macro, line)                            ' Ex.: Counter(CtrMode, InCh, Enable, TimeOut, ...)
-        Case "n2":    Res = Add_N2_Arg_to_DstVars(Org_Macro, line)                               ' Ex.: RandMux(DstVar1, DstVarN, InCh, RandMode, MinTime, MaxTime)
+        Case "1":     Res = Add_Matching_Arg_to_DstVars(Org_Macro, Line, "DstVar")               ' Ex.: MonoFlop(DstVar, InCh, Duration)
+        Case "2":     Res = Add_Matching_Arg_to_DstVars(Org_Macro, Line, "DstVar1")              ' Ex.: RS_FlipFlop2(DstVar1, DstVar2, InCh, R_InCh)
+                      If Res Then Res = Add_Matching_Arg_to_DstVars(Org_Macro, Line, "DstVar2")
+        Case "n..":   Res = Add_VarArgCnt_to_DstVars(Org_Macro, Line)                            ' Ex.: Counter(CtrMode, InCh, Enable, TimeOut, ...)
+        Case "n2":    Res = Add_N2_Arg_to_DstVars(Org_Macro, Line)                               ' Ex.: RandMux(DstVar1, DstVarN, InCh, RandMode, MinTime, MaxTime)
         Case Else:    ' Other Output Count entries
-                      If Left(OutCntStr, 1) = "C" Then ' C1, C2, .. Cn                             Ex.: PushButton_w_LED_0_2(B_LED, B_LED_Cx, InCh, DstVar1, Rotate, Timeout)
+                      If left(OutCntStr, 1) = "C" Then ' C1, C2, .. Cn                             Ex.: PushButton_w_LED_0_2(B_LED, B_LED_Cx, InCh, DstVar1, Rotate, Timeout)
                          If IsNumeric(Mid(OutCntStr, 2)) Then
-                            Res = Add_Cx_to_DstVars(Org_Macro, line, val(Mid(OutCntStr, 2)), r)
+                            Res = Add_Cx_to_DstVars(Org_Macro, Line, val(Mid(OutCntStr, 2)), r)
                          End If
                       Else
                            MsgBox "Internal Error: Undefined OutCnt entry '" & OutCntStr & "' in row " & Org_Macro_Row & " in sheet '" & LIBMACROS_SH & "'", vbCritical, "Internal Error"
@@ -696,7 +699,7 @@ Public Function Add_Inp_and_DstVars(ByVal line As String, r As Long) As Boolean
      End Select
      If Res = False Then
         Cells(r, Config__Col).Select
-        MsgBox Replace(Replace(Get_Language_Str("Fehler in der Definition der Zielvariable(n): '#1#' in Zeile #2#"), "#1#", line), "#2#", r), vbCritical, Get_Language_Str("Fehler in Makro Definition")
+        MsgBox Replace(Replace(Get_Language_Str("Fehler in der Definition der Zielvariable(n): '#1#' in Zeile #2#"), "#1#", Line), "#2#", r), vbCritical, Get_Language_Str("Fehler in Makro Definition")
         Add_Inp_and_DstVars = False
      End If
   End If
@@ -719,15 +722,15 @@ Public Function Is_in_Nr_String(ByVal Name As String, ByVal ExpectedName As Stri
 '------------------------------------------------------------------------------------------------------------------------------------------
 ' Check if "Name" starts with "ExpectedName" and has a tailing number in the range form MinNr to MaxNr
   Dim SkipCnt As Long
-  While Right(ExpectedName, 1) = "?"
+  While right(ExpectedName, 1) = "?"
      SkipCnt = SkipCnt + 1
      ExpectedName = DelLast(ExpectedName)
   Wend
-  If Left(Name, Len(ExpectedName)) = ExpectedName Then
+  If left(Name, Len(ExpectedName)) = ExpectedName Then
      Dim NrStr As String, i As Long, WrongChar As String
      NrStr = Mid(Name, 1 + Len(ExpectedName) + SkipCnt)
      If IsNumeric(NrStr) Then
-        If Left(NrStr, 1) = "0" Then Exit Function ' Leading 0 are not allowed because they generate the same number
+        If left(NrStr, 1) = "0" Then Exit Function ' Leading 0 are not allowed because they generate the same number
         WrongChar = "-+.,eE"
         For i = 1 To Len(WrongChar)
             If InStr(NrStr, Mid(WrongChar, i, 1)) > 0 Then Exit Function
@@ -868,7 +871,7 @@ Dim InpCnt As Long, ResCnt As Long
   Debug.Print "i Ok  Err"
   For InpCnt = 0 To 24
       ResCnt = (8 - (InpCnt Mod 8)) Mod 8
-      Debug.Print Left(InpCnt & "   ", 3) & Left(ResCnt & "   ", 3) & (8 - InpCnt) Mod 8
+      Debug.Print left(InpCnt & "   ", 3) & left(ResCnt & "   ", 3) & (8 - InpCnt) Mod 8
   Next InpCnt
 End Sub
 
@@ -1009,34 +1012,36 @@ Public Function Write_Switches_Header_File_Part_A(fp As Integer, ByRef Channel A
   Dim dmxDefines As String                                                  ' 19.01.21 Juergen
   If True Then
     ' FastLED initialisation                                                ' 26.04.20:
-    Dim LEDCh As Long, LED_PINNr_Arr() As String, Cnt As Long, ExpOutPins As Long, DMX_Pin_Number As String
+    Dim LEDCh As Long, LED_PINNr_Arr() As String, cnt As Long, ExpOutPins As Long, DMX_Pin_Number As String
     LED_PINNr_Arr = Split(LED_PINNr_List, " ")
     Print #fp, "/*********************/"
     Print #fp, "#define SETUP_FASTLED()                                                      \"
     Print #fp, "/*********************/                                                      \"
     For LEDCh = 0 To LED_CHANNELS - 1
-        If LEDs_per_Channel(LEDCh) > 0 Then
-           ExpOutPins = LEDCh
-           If LEDCh <= UBound(LED_PINNr_Arr) Then
-             If LEDCh <> DMX_LedChan Then                                   ' 19.01.21 Juergen
-              ' Generate: CLEDController& controller0 = FastLED.addLeds<NEOPIXEL,  6 >(leds+   0, 200); \"
-                If Use_WS2811 Then                                          ' 19.01.21 Juergen
-                  Print #fp, "  CLEDController& controller" & LEDCh & " = FastLED.addLeds<WS2811, " & AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) & ", RGB>(leds+" & AddSpaceToLenLeft(Cnt, 3) & "," & AddSpaceToLenLeft(LEDs_per_Channel(LEDCh), 3) & "); \" ' 19.01.21 Juergen
-                Else
-                  Print #fp, "  CLEDController& controller" & LEDCh & " = FastLED.addLeds<NEOPIXEL, " & AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) & ">(leds+" & AddSpaceToLenLeft(Cnt, 3) & "," & AddSpaceToLenLeft(LEDs_per_Channel(LEDCh), 3) & "); \"
-                End If
-            Else                                                            ' 19.01.21 Juergen
-                dmxDefines = "#define DMX_LED_OFFSET " & Cnt & vbCrLf$ & _
-                             "#define DMX_CHANNEL_COUNT " & LEDs_per_Channel(LEDCh) * 3
-                DMX_Pin_Number = LED_PINNr_Arr(LEDCh)
-                If (LEDs_per_Channel(LEDCh) > 100) Then
-                    MsgBox Get_Language_Str("Fehler: Das DMX Senden ist auf 100 Leds (300 DMX Kanäle) limitiert."), vbCritical, Application.ActiveSheet.Name
-                    Exit Function
-                End If
-            End If
+      If LEDs_per_Channel(LEDCh) > 0 Then
+        ExpOutPins = LEDCh
+        If LEDCh <= UBound(LED_PINNr_Arr) Then
+          If LEDCh <> DMX_LedChan Then
+           If LED_PINNr_Arr(LEDCh) <> Virtual_Channel_T Then    ' 18.02.22 Juergen Virtual Channel
+             ' Generate: CLEDController& controller0 = FastLED.addLeds<NEOPIXEL,  6 >(leds+   0, 200); \"
+             If Use_WS2811 Then                                          ' 19.01.21 Juergen
+               Print #fp, "  CLEDController& controller" & LEDCh & " = FastLED.addLeds<WS2811, " & AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) & ", RGB>(leds+" & AddSpaceToLenLeft(cnt, 3) & "," & AddSpaceToLenLeft(LEDs_per_Channel(LEDCh), 3) & "); \" ' 19.01.21 Juergen
+             Else
+               Print #fp, "  CLEDController& controller" & LEDCh & " = FastLED.addLeds<NEOPIXEL, " & AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) & ">(leds+" & AddSpaceToLenLeft(cnt, 3) & "," & AddSpaceToLenLeft(LEDs_per_Channel(LEDCh), 3) & "); \"
+             End If
            End If
+         Else                                                            ' 19.01.21 Juergen
+           dmxDefines = "#define DMX_LED_OFFSET " & cnt & vbCrLf$ & _
+                        "#define DMX_CHANNEL_COUNT " & LEDs_per_Channel(LEDCh) * 3
+           DMX_Pin_Number = LED_PINNr_Arr(LEDCh)
+           If (LEDs_per_Channel(LEDCh) > 100) Then
+             MsgBox Get_Language_Str("Fehler: Das DMX Senden ist auf 100 Leds (300 DMX Kanäle) limitiert."), vbCritical, Application.ActiveSheet.Name
+               Exit Function
+           End If
+         End If
         End If
-        Cnt = Cnt + LEDs_per_Channel(LEDCh)
+      End If
+      cnt = cnt + LEDs_per_Channel(LEDCh)
     Next
     If ExpOutPins > UBound(LED_PINNr_Arr) Then
        MsgBox Replace(Get_Language_Str("Fehler: Es sind nicht genügend Ausgangs Pins zur Ansteuerung der LEDs vorhanden. " & _
@@ -1047,9 +1052,11 @@ Public Function Write_Switches_Header_File_Part_A(fp As Integer, ByRef Channel A
     End If
     Print #fp, "                                                                             \"
     For LEDCh = 0 To LED_CHANNELS - 1
-        If LEDs_per_Channel(LEDCh) > 0 And LEDCh <= UBound(LED_PINNr_Arr) And (LEDCh <> DMX_LedChan) Then  ' 19.01.21 Juergen
+      If LEDs_per_Channel(LEDCh) > 0 And LEDCh <= UBound(LED_PINNr_Arr) And (LEDCh <> DMX_LedChan) Then  ' 19.01.21 Juergen
+        If LED_PINNr_Arr(LEDCh) <> Virtual_Channel_T Then                                                ' 18.02.22 Virtual Channel
            Print #fp, "  controller" & LEDCh & ".clearLeds(256);                                                \"
         End If
+      End If
     Next
     Print #fp, "  FastLED.setDither(DISABLE_DITHER);       // avoid sending slightly modified brightness values"   ' 05.03.21: Juergen
     Print #fp, "/*End*/"

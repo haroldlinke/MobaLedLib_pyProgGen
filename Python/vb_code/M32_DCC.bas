@@ -42,6 +42,7 @@ Private Sub DCCSend()
             End If
         Next
     End If
+    SendToSimulator Addr, Direction
 End Sub
 
 '-------------------------------------------------------------------------------------------------
@@ -56,6 +57,13 @@ Public Function SendDCCAccessoryCommand(ByVal Addr As Integer, ByVal Direction A
     UseHardwareHandshake = False
     
     Make_sure_that_Col_Variables_match
+    
+    ' 04.03.22 Juergen: if using simulator only don't connect to Com Port
+    If IsSimulatorActive And val(ComPortPage().Cells(SH_VARS_ROW, COMPort_COL)) <= 0 Then
+        SendDCCAccessoryCommand = True
+        Exit Function
+    End If
+     
     If Check_USB_Port_with_Dialog(COMPort_COL) = False Then Exit Function   ' 04.05.20: Added exit (Prior Check_USB_Port_with_Dialog ends the program in case of an error)
     
     If (Addr < 1 Or Addr > 9999) Then
@@ -64,7 +72,7 @@ Public Function SendDCCAccessoryCommand(ByVal Addr As Integer, ByVal Direction A
     End If
     
     ComPort = Cells(SH_VARS_ROW, COMPort_COL)
-    Output_Buffer = "@" & Left(Addr & "   ", 4) & " " & Left(Direction & " ", 2) & " 01" + Chr$(10) ' 29.04.20: Incremented length to be able to use 4 digits 1000-9999
+    Output_Buffer = "@" & left(Addr & "   ", 4) & " " & left(Direction & " ", 2) & " 01" + Chr$(10) ' 29.04.20: Incremented length to be able to use 4 digits 1000-9999
     SendDCCAccessoryCommand = SendMLLCommand(ComPort, Output_Buffer, UseHardwareHandshake, DEBUG_DCCSEND)
 End Function
 

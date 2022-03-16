@@ -28,22 +28,22 @@ End Sub
 '----------------------------
 Private Sub OK_Button_Click()
 '----------------------------
-  Dim message As String
+  Dim Message As String
   If ActiveWorkbook.Name <> ThisWorkbook.Name Then
-       message = Get_Language_Str("Fehler: Die Zeile muss im Prog_Generator Excel Programm ausgewählt werden")
+       Message = Get_Language_Str("Fehler: Die Zeile muss im Prog_Generator Excel Programm ausgewählt werden")
   Else
        If Is_Data_Sheet(ActiveSheet) = False Then
-          message = Get_Language_Str("Fehler: Das Ausgewählte Excel Blatt ist keine gültige Prog_Generator Konfigurationsseite")
+          Message = Get_Language_Str("Fehler: Das Ausgewählte Excel Blatt ist keine gültige Prog_Generator Konfigurationsseite")
        End If
   End If
   
-  If message = "" Then
+  If Message = "" Then
      If Not Selected_Row_Valid() Then _
-        message = Get_Language_Str("Fehler: Die Ausgewählte Zeile ist nicht innerhalb des gültigen Bereichs")
+        Message = Get_Language_Str("Fehler: Die Ausgewählte Zeile ist nicht innerhalb des gültigen Bereichs")
   End If
   
-  If message <> "" Then
-       Select Case MsgBox(message, vbCritical + vbRetryCancel, "Fehler bei der Auswahl der Zielzeile")
+  If Message <> "" Then
+       Select Case MsgBox(Message, vbCritical + vbRetryCancel, "Fehler bei der Auswahl der Zielzeile")
           Case vbCancel: Me.Hide
           Case vbRetry:  ' Retry
                          If ActiveWorkbook.Name <> ThisWorkbook.Name Then ThisWorkbook.Activate

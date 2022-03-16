@@ -661,7 +661,13 @@ Attribute VB_Name = "M00_RevisionHistory_ToDo"
 '             mark those makros to disable status storage (Goto 0)
 '           - add handling of multiline makros in makro storage type detection
 ' 21.12.21: - code changes to allow programmatic header file creation
-'
+' 16.01.21: - fix bug in AnalogPattern
+' 21.01.22: - add experimental integration of PlatformIO build
+'           - add experimental integration of OTA update
+' 12.02.22: - add MobaLedLib Extensions support
+'           - add WebApi helpers
+' 13.03.22: - experimental platform.io build support
+' 04.03.22: - add experimental LED simulator support
 '
 
 ' ToDo:

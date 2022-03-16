@@ -160,7 +160,7 @@ Private Sub Release_or_Debug_Version(Release As Boolean)
   End If
   
   If Release Then Write_Default_CheckColors_Parameter_File                  ' 01.12.19:
-  
+  RemoveExistingExtensions                                                  ' 18.02.22: Juergen
 End Sub
 
 
@@ -186,4 +186,13 @@ Private Sub Set_Config_Default_Values_for_Release()
   Set_String_Config_Var "Show_Icon_Column", "1"              ' 25.10.21:
   Set_String_Config_Var "Show_Simple_Names", "1"
   Set_String_Config_Var "Show_Macros_Column", "1"
+  Set_String_Config_Var "Use_PlatformIO", "0"                ' 21.01.22: Juergen - new option
+  Set_String_Config_Var "SimPosX", "800"                     ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimPosY", "200"                     ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimLedsX", "8"                      ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimLedsY", "8"                      ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimLedSize", "24"                   ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimAutostart", "0"                  ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimOffset", "0"                     ' 04.03.22: Juergen - new option
+  Set_String_Config_Var "SimOnTop", "1"                      ' 04.03.22: Juergen - new option
 End Sub

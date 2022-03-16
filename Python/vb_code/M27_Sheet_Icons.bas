@@ -41,8 +41,8 @@ Attribute Add_Icon.VB_ProcData.VB_Invoke_Func = " \n14"
                 .Width = Icon_Size
           Else: .Height = Icon_Size
           End If
-          .Left = Sh.Cells(Row, MacIcon_Col).Left + Icon_Left + (Icon_Size - .Width) / 2
-          .Top = Sh.Cells(Row, MacIcon_Col).Top + Icon_Top
+          .left = Sh.Cells(Row, MacIcon_Col).left + Icon_Left + (Icon_Size - .Width) / 2
+          .top = Sh.Cells(Row, MacIcon_Col).top + Icon_Top
         End With
         .OnAction = "SelectMacros_from_Icon"
     End With
@@ -66,12 +66,12 @@ Public Sub Del_Icons(r As Range)
   Dim Pic As Variant, MinTop As Double, MaxTop As Double, MinLeft As Double, MaxLeft As Double, Sh As Worksheet
   Set Sh = r.Parent
   With Sh
-    MinTop = r.Top
+    MinTop = r.top
     MaxTop = MinTop + r.Height
-    MinLeft = r.Left
+    MinLeft = r.left
     MaxLeft = MinLeft + r.Width
     For Each Pic In .Shapes
-        If Pic.Top > MinTop And Pic.Top < MaxTop And Pic.Left >= MinLeft And Pic.Left <= MaxLeft Then
+        If Pic.top > MinTop And Pic.top < MaxTop And Pic.left >= MinLeft And Pic.left <= MaxLeft Then
            Pic.Delete
         End If
     Next Pic
@@ -278,13 +278,13 @@ End Sub
 '----------------------------------
 Public Sub SelectMacros_from_Icon()
 '----------------------------------
-    Dim Button As Object, Row As Long, Top As Double
+    Dim Button As Object, Row As Long, top As Double
     Make_sure_that_Col_Variables_match
     On Error GoTo NotFound
     Set Button = ActiveSheet.Shapes(Application.caller)
-    Top = Button.Top
+    top = Button.top
     For Row = LastUsedRow To FirstDat_Row Step -1
-         If Cells(Row, 1).Top < Top Then
+         If Cells(Row, 1).top < top Then
             Cells(Row, MacIcon_Col).Select
             SelectMacros
             Exit Sub

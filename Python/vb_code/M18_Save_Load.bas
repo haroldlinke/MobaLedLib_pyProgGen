@@ -87,7 +87,7 @@ Private Function Save_Sheet_to_pgf(fp As Integer, ByVal Sh As Worksheet) As Bool
          End If
          Print #fp, Line_ID & vbTab & Enabled;
          For Col = Enable_Col + 1 To LastColumnDatSheet()                   ' 27.11.21: Old: LastUsedColumn
-             Dim line As String
+             Dim Line As String
              If Col = MacIcon_Col Then Col = Col + 1 ' Skip the Icon column (MacIcon_Col is -1 if the column doesn't exist)      ' 20.10.21
              If Col = LanName_Col Then Col = Col + 1 ' Use two lines to be able to enable both new columns separately                             '
              Print #fp, vbTab & Replace(Cells(r.Row, Col), vbLf, "{NewLine}");
@@ -293,10 +293,10 @@ Private Sub Adapt_Adress_and_Typ_to_Selectrix(ByRef prLst As Variant)
 End Sub
 
 '----------------------------------------------------
-Private Function Read_Line(line As String) As Boolean
+Private Function Read_Line(Line As String) As Boolean
 '----------------------------------------------------
   Dim Parts() As String
-  Parts = Split(line, vbTab)
+  Parts = Split(Line, vbTab)
   If Page_ID <> Import_Page_ID Then
      ' Problem "Selectrix" has an additional column "Bitposition"
      If Import_Page_ID = "Selectrix" Then
@@ -341,7 +341,7 @@ Private Function Read_Line(line As String) As Boolean
         If Col = LanName_Col Then Col = Col + 1 ' Use two lines to be able to enable both new columns separately                             '
         Dim s As String
         s = Replace(Parts(i), "{NewLine}", vbLf)
-        If Left(s, 2) = "==" Then s = "'" & s
+        If left(s, 2) = "==" Then s = "'" & s
         If Parts(i) <> "" Then Cells(Row, Col) = s
         
         If Col = Config__Col And s <> "" Then                               ' 22.10.21:
@@ -370,10 +370,10 @@ End Function
 '---------------------------------------------------------------------
 Private Function PGF_has_Multiple_Sheets(lines() As String) As Boolean
 '---------------------------------------------------------------------
-  Dim line As Variant, SheetCnt As Long
-  For Each line In lines
-      line = Replace(line, vbLf, "")
-      If Left(line, Len(SheetID)) = SheetID Then
+  Dim Line As Variant, SheetCnt As Long
+  For Each Line In lines
+      Line = Replace(Line, vbLf, "")
+      If left(Line, Len(SheetID)) = SheetID Then
          SheetCnt = SheetCnt + 1
          If SheetCnt > 1 Then
             PGF_has_Multiple_Sheets = True

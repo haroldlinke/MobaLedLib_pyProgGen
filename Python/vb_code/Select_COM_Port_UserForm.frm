@@ -174,13 +174,13 @@ Public Function ShowDialog(Caption As String, Title As String, Text As String, _
   Show_Unknown_CheckBox.Visible = Show_ComPort
   Hint_Label.Visible = Show_ComPort
   If Show_ComPort Then ' Set the height of the main text box
-        Text_Label.Height = Error_Label.Top - Text_Label.Top   ' 78
-  Else: Text_Label.Height = Hint_Label.Top + Hint_Label.Height - Text_Label.Top
+        Text_Label.Height = Error_Label.top - Text_Label.top   ' 78
+  Else: Text_Label.Height = Hint_Label.top + Hint_Label.Height - Text_Label.top
   End If
   
   Dim c As Variant, Found As Boolean
   For Each c In Me.Controls
-     If Right(c.Name, Len("Image")) = "Image" Then
+     If right(c.Name, Len("Image")) = "Image" Then
         If Picture = c.Name Then
               c.Visible = True: Found = True
         Else: c.Visible = False

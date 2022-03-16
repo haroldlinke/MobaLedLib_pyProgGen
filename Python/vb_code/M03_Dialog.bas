@@ -119,7 +119,7 @@ Public Sub Input_Address()
                    Page_ID & " " & Addr_Channel & ": ", Page_ID & Txt, Default:=Inp)
     
     'Debug.Print "Res='" & Inp & "'" ' Debug
-    If InStr(Inp, "-") > 1 Then Inp = Left(Inp, InStr(Inp, "-"))
+    If InStr(Inp, "-") > 1 Then Inp = left(Inp, InStr(Inp, "-"))
     If IsNumeric(Inp) Then Valid = val(Inp) >= MinVal And val(Inp) <= MaxVal And Int(Inp) = Inp
     If Inp <> "" And Not Valid Then
        BeepThis2 "Windows Balloon.wav"

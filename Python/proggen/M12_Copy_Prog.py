@@ -82,8 +82,25 @@ from vb2py.vbdebug import *
 """
 
 
+def Remove_File_If_Exists(FileName):
+
+    #---------------------------------------------------------------------------------------------------------------
+    fn_return_value = True
+    if Dir(FileName) == '':
+        return fn_return_value
+    # VB2PY (UntranslatedCode) On Error GoTo Remove_Error
+    try:
+        Kill(( FileName ))
+        # VB2PY (UntranslatedCode) On Error GoTo 0
+        return fn_return_value
+    except:
+        P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Die Datei #1# konnte nicht gelöscht werden\''), '#1#', FileName), vbCritical, M09.Get_Language_Str('Fehler beim Löschen')))
+        fn_return_value = False
+        return fn_return_value
+
+
 def FileCopy_with_Check(DestDir, Name, SourceName=VBMissingArgument):
-    fn_return_value = None
+    fn_return_value = False
     CopyDir = Boolean()
 
     SrcPath = String()
@@ -122,7 +139,7 @@ def FileCopy_with_Check(DestDir, Name, SourceName=VBMissingArgument):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DidCopy - ByRef 
 def __Copy_File_With_new_Name_If_Exists(Name, DidCopy):
-    fn_return_value = None
+    fn_return_value = False
     ProgName = String()
 
     FullDestDir = String()
@@ -145,14 +162,14 @@ def __Copy_File_With_new_Name_If_Exists(Name, DidCopy):
     return fn_return_value
 
 def Copy_Prog_If_in_LibDir():
-    fn_return_value = None
+    fn_return_value = False
     Result = Boolean()
     fn_return_value = Copy_Prog_If_in_LibDir_WithResult(Result)
     return fn_return_value
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DidCopy - ByRef 
 def Copy_Prog_If_in_LibDir_WithResult(DidCopy):
-    fn_return_value = None
+    fn_return_value = False
     FullDestDir = String()
 
     Parts = Variant()
@@ -191,12 +208,38 @@ def Copy_Prog_If_in_LibDir_WithResult(DidCopy):
         return fn_return_value
     if not FileCopy_with_Check(FullDestDir, 'LEDs_AutoProg'):
         return fn_return_value
+    
+    if not FileCopy_with_Check(FullDestDir, 'Configuration'):
+        return fn_return_value
+        # 04.03.22 Juergen Simulator
+    # 24.01.22: remove some files which have been moved to MobaLedLib\src dir
+    # in case of BETA update function these files would not be deleted and lead to a build error
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\Helpers.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\Helpers.h')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\CommInterface.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\CommInterface.h')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\InMemoryStream.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\InMemoryStream.h')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\DCCInterface.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\DCCInterface.h')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\DMXInterface.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\DMXInterface.h')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\SXInterface.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\SXInterface.h')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\SX20.cpp')
+    Remove_File_If_Exists(FullDestDir + 'LEDs_AutoProg\\SX20.h')
+    
     if not FileCopy_with_Check(FullDestDir, 'Prog_Generator_Examples'):
         return fn_return_value
         # 05.10.20:
     if not FileCopy_with_Check(FullDestDir, 'Icons'):
         return fn_return_value
         # Is used in both programms
+        
+    if not FileCopy_with_Check(FullDestDir, 'Boards'):
+        return fn_return_value
+        # 15.02.22: Juergen - for platformio build
+        
     if not __Copy_File_With_new_Name_If_Exists(FullDestDir + M02.SECOND_PROG + '.xlsm', DidCopy):
         return fn_return_value
         # 14.06.20: Copy also the second program

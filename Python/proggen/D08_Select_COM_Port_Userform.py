@@ -91,6 +91,7 @@ class CSelect_COM_Port_UserForm:
 
         self.controller = PG.get_global_controller()
         self.IsActive = False
+        self.isInitialised = False
         self.res = False
         self.UserForm_Res = ""
         self.__UserForm_Initialize()
@@ -98,6 +99,7 @@ class CSelect_COM_Port_UserForm:
  
     def ok(self, event=None):
         self.IsActive = False
+        self.isInitialised = False
         self.OK_Button_Click()
         
         #self.Userform_res = value
@@ -108,6 +110,7 @@ class CSelect_COM_Port_UserForm:
     def cancel(self, event=None):
         self.UserForm_Res = '<Abort>'
         self.IsActive = False
+        self.isInitialised = False
         P01.ActiveSheet.Redraw_table()
         self.top.destroy()
         self.res = False
@@ -125,6 +128,8 @@ class CSelect_COM_Port_UserForm:
         # Left Button
         Pressed_Button = 1
         #P01.ActiveSheet.Redraw_table()
+        self.isInitialised = False
+        self.IsActive=False
         self.top.destroy()
         CheckCOMPort = 0
         
@@ -135,6 +140,8 @@ class CSelect_COM_Port_UserForm:
         global Pressed_Button,CheckCOMPort
         Pressed_Button = 2
         #P01.ActiveSheet.Redraw_table()
+        self.isInitialised = False
+        self.IsActive=False        
         self.top.destroy()
         CheckCOMPort = 0
         
@@ -145,6 +152,8 @@ class CSelect_COM_Port_UserForm:
         global Pressed_Button,CheckCOMPort
         Pressed_Button = 3
         #P01.ActiveSheet.Redraw_table()
+        self.isInitialised = False
+        self.IsActive=False        
         self.top.destroy()
         CheckCOMPort = 0
         
@@ -178,6 +187,9 @@ class CSelect_COM_Port_UserForm:
         global COM_Port_Label,PortNames,LocalPrintDebug,LocalComPorts,__OldSpinButton,OldL_ComPorts
         #------------------------------------------------------
         # Is also called by the OnTime proc which checks the available ports
+        
+        if self.isInitialised == False:
+            return
         try:
             Show_Unknown_CheckBox_flag = self.Show_Unknown_CheckBox_var.get() #*HL
         except:
@@ -245,6 +257,8 @@ class CSelect_COM_Port_UserForm:
     def Show_Status(self,ErrBox, Msg):
         global Error_Label,Status_Label
         #-------------------------------------------------------
+        if self.isInitialised == False:
+            return
         if self.Status_Label.winfo_exists():
             if ErrBox:
                 #if Error_Label != Msg:
@@ -348,7 +362,6 @@ class CSelect_COM_Port_UserForm:
         self.Red_Hint_Label = ttk.Label(self.top, text=Red_Hint,font=("Tahoma", 11),foreground="#FF0000",width=20,wraplength=125,relief=tk.FLAT, borderwidth=1)
         self.Red_Hint_Label.grid(row=0,column=2,columnspan=1,rowspan=2,sticky="ne",padx=10,pady=10)
          
-
         self.Com_Port_Label = ttk.Combobox(self.top, width=30,font=("Tahoma", 11))
         self.Com_Port_Label.grid(row=3,column=0,sticky="nesw",padx=10,pady=10)
         
@@ -382,7 +395,8 @@ class CSelect_COM_Port_UserForm:
         self.top.bind("<Return>", self.Default_Button_Click)
         self.top.bind("<Escape>", self.Abort_Button_Click)                   
         
-                
+        self.isInitialised = True
+                        
         #Me.Caption = Caption
         #Title_Label = Title
         #Text_Label = Text

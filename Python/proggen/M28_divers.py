@@ -110,15 +110,12 @@ def __Clear_COM_Port_Check(r, ReleaseMode):
         _with0.Value = 'COM?'
 
 def Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(ReleaseMode):
-    Sh = P01.CWorksheet("Dummy")
-
-    #OldSh = Worksheet()
-
+    
     Skip_Scroll_Down = Boolean()
     #-----------------------------------------------------------------------------------
     OldSh = P01.ActiveSheet
     if P01.ActiveSheet is None:
-        Debug.Print('P01.ActiveSheet Is Nothing in Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets')
+        Debug.Print('ActiveSheet Is Nothing in Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets')
         Debug.Print('Tritt beim ersten Start nach dem Download vom Internet auf (\'Geschützte Ansicht\')')
         Skip_Scroll_Down = True
     for Sh in P01.ThisWorkbook.sheets:
@@ -141,9 +138,9 @@ def Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(ReleaseMode):
                 #   LRow = LRow + 1
                 #Wend
                 # VB2PY (UntranslatedCode) On Error GoTo 0
-            for rngCell in Sh.UsedRange:
-                for i in vbForRange(1, 7):
-                    pass #*HL rngCell.Errors.Item[i].Ignore = True
+            #*HL for rngCell in Sh.UsedRange:
+            #*HL     for i in vbForRange(1, 7):
+            #*HL        pass #*HL rngCell.Errors.Item[i].Ignore = True
     if not OldSh is None:
         OldSh.Select()
 
@@ -156,11 +153,11 @@ def Get_Bool_Config_Var(Name):
     #-------------------------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
     
-    #_with2 = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
-    #_select0 = UCase(Left(Trim(_with2.Value), 1))
+    _with2 = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
+    conf_value = UCase(Left(Trim(_with2.Value), 1))
     
-    confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
-    conf_value = confsheet.find_in_col_ret_col_val(Name,4,3,cache=True)
+    #confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
+    #conf_value = confsheet.find_in_col_ret_col_val(Name,4,3,cache=True)
     if conf_value:
         if (conf_value == '') or (conf_value == 'N') or (conf_value == 'G') or (conf_value == 'A') or (conf_value == '0'):
             _ret = False
@@ -177,10 +174,10 @@ def Get_Num_Config_Var(Name):
     Str = String()
     #------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
-    #Str = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
+    Str = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
     
-    confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
-    Str = confsheet.find_in_col_ret_col_val(Name,4,3,cache=True)    
+    #confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
+    #Str = confsheet.find_in_col_ret_col_val(Name,4,3,cache=True)    
     if Str:
         if IsNumeric(Str):
             _ret = P01.val(Str)
@@ -191,6 +188,34 @@ def Get_Num_Config_Var(Name):
         P01.MsgBox('Interner Fehler: Die Konfigurationsvariable \'' + Name + '\' wurde nicht im Sheet \'' + M02.ConfigSheet + '\' gefunden', vbCritical, 'Interner Fehler in Get_Num_Config_Var')
         M30.EndProg()
         return _ret
+    
+"""------------------------------------------   04.03.22 Juergen"""
+
+
+def Get_Num_Config_Var_Range(Name, Min, Max, Default=0):
+    fn_return_value = None
+    Str = String()
+    #------------------------------------------
+    # VB2PY (UntranslatedCode) On Error GoTo NotFound
+    try:
+        
+        Str = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
+        if IsNumeric(Str):
+            fn_return_value = P01.val(Str)
+        else:
+            fn_return_value = Default
+        if fn_return_value < Min:
+            fn_return_value = Min
+        if fn_return_value> Max:
+            fn_return_value = Max
+        return fn_return_value
+    except:
+        
+        P01.MsgBox('Interner Fehler: Die Konfigurationsvariable \'' + Name + '\' wurde nicht im Sheet \'' + M02.ConfigSheet + '\' gefunden', vbCritical, 'Interner Fehler in Get_Num_Config_Var')
+        M30.EndProg()
+        return fn_return_value
+
+
 
 def __TestGet_Bool_Config_Var():
     #UT----------------------------------
@@ -199,21 +224,22 @@ def __TestGet_Bool_Config_Var():
 def Set_Bool_Config_Var(Name, val):
     #-------------------------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
-    #_with3 = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
-    if val:
-        val_str = M09.Get_Language_Str('Ja')
-    else:
-        val_str = M09.Get_Language_Str('Nein')    
-    confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
-    if confsheet.find_in_col_set_col_val(Name,4,3,val_str,cache=True):
-        return True
-    else:
-        
+    _with3 = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
     #if val:
-    #    _with3.Value = M09.Get_Language_Str('Ja')
+    #    val_str = M09.Get_Language_Str('Ja')
     #else:
-    #    _with3.Value = M09.Get_Language_Str('Nein')
-    #return
+    #    val_str = M09.Get_Language_Str('Nein')    
+    #confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
+    #if confsheet.find_in_col_set_col_val(Name,4,3,val_str,cache=True):
+    #    return True
+    #else:
+    if _with3:    
+        if val:
+            _with3.Value = M09.Get_Language_Str('Ja')
+        else:
+            _with3.Value = M09.Get_Language_Str('Nein')
+        return
+    else:
         P01.MsgBox('Interner Fehler: Die Konfigurationsvariable \'' + Name + '\' wurde nicht im Sheet \'' + M02.ConfigSheet + '\' gefunden', vbCritical, 'Interner Fehler in Set_Bool_Config_Var')
         M30.EndProg()
     return
@@ -223,11 +249,13 @@ def Get_String_Config_Var(Name):
     print("Get_String_Config_Var:",Name)
     #--------------------------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
-    #*HL _ret = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
-    confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
-    conf_value = confsheet.find_in_col_ret_col_val(Name,4,3,cache=True)    
-    if conf_value!=None:
-        return conf_value
+    _ret = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
+    if _ret!=None:
+        return _ret
+    #confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
+    #conf_value = confsheet.find_in_col_ret_col_val(Name,4,3,cache=True)    
+    #if conf_value!=None:
+    #    return conf_value
     else:
         P01.MsgBox('Interner Fehler: Die Konfigurationsvariable \'' + Name + '\' wurde nicht im Sheet \'' + M02.ConfigSheet + '\' gefunden', vbCritical, 'Interner Fehler in Get_String_Config_Var')
         M30.EndProg()
@@ -236,11 +264,12 @@ def Get_String_Config_Var(Name):
 def Set_String_Config_Var(Name, val):
     #--------------------------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
-    #P01.ThisWorkbook.Sheets[M02.ConfigSheet].Range[Name] = val
-    confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
-    if confsheet.find_in_col_set_col_val(Name,4,3,val,cache=True):
-        return True
-    else:    
+    try:
+        P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range_set(Name,val)
+    #confsheet = P01.ThisWorkbook.Sheets(M02.ConfigSheet)
+    #if confsheet.find_in_col_set_col_val(Name,4,3,val,cache=True):
+    #    return True
+    except:  
         P01.MsgBox('Interner Fehler: Die Konfigurationsvariable \'' + Name + '\' wurde nicht im Sheet \'' + M02.ConfigSheet + '\' gefunden', vbCritical, 'Interner Fehler in Set_String_Config_Var')
         M30.EndProg()
 

@@ -109,7 +109,7 @@ Private Sub Nano_Full_R_Click():   Change_Board False, BOARD_NANO_FULL: End Sub 
 Private Sub Uno_R_Click():         Change_Board False, BOARD_UNO_NORM:  End Sub
 Private Sub Board_IDE_R_Click():   Change_Board False, "":              End Sub
 
-Private Sub Autodetect_Typ_L_CheckBox_Click(): Change_Autodetect True:  End Sub
+Private Sub Autodetect_Typ_L_CheckBox_Click(): Change_Autodetect True:  Check_Board (Autodetect_Typ_L_CheckBox): End Sub
 Private Sub Autodetect_Typ_R_CheckBox_Click(): Change_Autodetect False: End Sub
 
 '----------------------------------------------------------------
@@ -118,6 +118,18 @@ Public Sub Change_Board(LeftArduino As Boolean, NewBrd As String)
   If Disable_Set_Arduino_Typ Then Exit Sub
   Change_Board_Typ LeftArduino, NewBrd
 End Sub
+
+'----------------------------------------------------
+Private Sub Check_Board(AutodetectChecked As Boolean)
+'----------------------------------------------------
+    If AutodetectChecked Then
+        If ESP32_L Or Pico_L Or Uno_L Or Board_IDE_L Then
+            ' change back to Nano
+            Nano_New_L = True
+        End If
+    End If
+End Sub
+
 
 '----------------------------------------------------
 Private Sub Change_Autodetect(LeftArduino As Boolean)

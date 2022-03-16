@@ -2,9 +2,9 @@
 #
 #         Write header
 #
-# * Version: 4.02
+# * Version: 4.15
 # * Author: Harold Linke
-# * Date: January 7, 2021
+# * Date: March 13, 2022
 # * Copyright: Harold Linke 2021
 # *
 # *
@@ -69,6 +69,9 @@ import proggen.D07_Userform_Other as D07
 import ExcelAPI.P01_Workbook as P01
 
 from ExcelAPI.X01_Excel_Consts import *
+
+
+
 
 def __Gen_Release_Version():
     #--------------------------------
@@ -245,5 +248,14 @@ def __Set_Config_Default_Values_for_Release():
     M28.Set_String_Config_Var('Show_Icon_Column', '1')
     M28.Set_String_Config_Var('Show_Simple_Names', '1')
     M28.Set_String_Config_Var('Show_Macros_Column', '1')
+    M28.Set_String_Config_Var('Use_PlatformIO', '0')
+    M28.Set_String_Config_Var('SimPosX', '800')
+    M28.Set_String_Config_Var('SimPosY', '200')
+    M28.Set_String_Config_Var('SimLedsX', '8')
+    M28.Set_String_Config_Var('SimLedsY', '8')
+    M28.Set_String_Config_Var('SimLedSize', '24')
+    M28.Set_String_Config_Var('SimAutostart', '0')
+    M28.Set_String_Config_Var('SimOffset', '0')
+    M28.Set_String_Config_Var('SimOnTop', '1')    
 
 # VB2PY (UntranslatedCode) Option Explicit

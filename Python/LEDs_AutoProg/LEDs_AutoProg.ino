@@ -548,6 +548,9 @@ InMemoryStream stream(256);
 CommInterface* commInterface;
 #endif
 
+#if defined(MLL_EXTENSIONS_COUNT)
+ExtensionProcessor extensions(mllExtensions,MLL_EXTENSIONS_COUNT);
+#endif
 bool Send_Disable_Pin_Active = 1;                                                                             // 13.05.20:
 
 
@@ -753,7 +756,7 @@ void Receive_LED_Color_per_RS232()                                              
                              }
                        }
                   }
-             // Addr dosn't match => Check the next possible address / InTyp for this entry
+             // Addr doesn't match => Check the next possible address / InTyp for this entry
              //Serial.print("Don't match In="); Serial.println(In); // Debug
              Channel++;
              In++;
@@ -1700,6 +1703,9 @@ void setup(){
   dmxInterface.setup(USE_DMX_PIN,&(leds[DMX_LED_OFFSET].r), DMX_CHANNEL_COUNT);
 #endif
 
+#if defined(MLL_EXTENSIONS_COUNT)
+  extensions.setup(MobaLedLib);
+#endif  
   //Eigene_setup();
 }
 
@@ -2086,6 +2092,9 @@ void loop(){
 #ifdef Additional_Loop_Proc2						// 08.10.21: Juergen: add low prority loop, on multicore platforms running on seperate core 
   Additional_Loop_Proc2();                                                                                        // 26.09.21: Juergen
 #endif
+#if defined(MLL_EXTENSIONS_COUNT)
+  extensions.loop(MobaLedLib);
+#endif  
 }
 
 #ifdef ESP32
@@ -2094,8 +2103,14 @@ void MLLTask( void * parameter ) {
 //--------------------------------
   while(1) {
     MLLMainLoop();
+#ifdef USE_ESP32_EXTENSIONS
+  loopESP32Extensions2();
+#endif
     yield();
     delay (1);
+#if defined(MLL_EXTENSIONS_COUNT)
+    extensions.loop2(MobaLedLib);
+#endif  
   }
 }
 #endif

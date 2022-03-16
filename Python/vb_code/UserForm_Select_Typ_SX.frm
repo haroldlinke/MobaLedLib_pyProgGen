@@ -46,9 +46,9 @@ Public Sub setFocus(Target As Excel.Range)
 '-----------------------------------------
   Set_Tast_Txt_Var  ' Set the global variables Red_T, Green_T, ...          06.03.20:
   
-  Select Case Left(Target, 1)
-    Case UCase(Left(OnOff_T, 1)): Button_OnOff = True ' "AnAus"
-    Case UCase(Left(Tast_T, 1)):  Button_Tast = True  ' "Tast"
+  Select Case left(Target, 1)
+    Case UCase(left(OnOff_T, 1)): Button_OnOff = True ' "AnAus"
+    Case UCase(left(Tast_T, 1)):  Button_Tast = True  ' "Tast"
     ' In any other cases the last state is used
   End Select
   

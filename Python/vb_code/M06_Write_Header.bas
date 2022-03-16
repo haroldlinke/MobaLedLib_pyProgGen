@@ -61,6 +61,8 @@ Private Function Init_HeaderFile_Generation() As Boolean
   
   If Init_HeaderFile_Generation_Sound() = False Then Exit Function          ' 08.10.21: Juergen
   
+  If Init_HeaderFile_Generation_Extension() = False Then Exit Function      ' 31.01.22: Juergen
+
   ' Fill the array Start_LED_Channel()
   Dim ReserveLeds As Long, NumLeds As Long, Nr As Long
   For Nr = 0 To LED_CHANNELS - 1
@@ -113,7 +115,7 @@ Private Function AddressExists(Addr As Long) As Boolean
 End Function
 
 '-------------------------------------------------------------------------------------
-Private Function AddressRangeExists(Addr As Long, Cnt As Long, ByVal InpTyp As String)
+Private Function AddressRangeExists(Addr As Long, cnt As Long, ByVal InpTyp As String)
 '-------------------------------------------------------------------------------------
 ' If the InpTyp is a button (Red / Green) two virtual adresses are used.
 ' One for each button.
@@ -132,7 +134,7 @@ Private Function AddressRangeExists(Addr As Long, Cnt As Long, ByVal InpTyp As S
                EndProg
   End Select
   Ad = Addr
-  For i = 1 To Cnt
+  For i = 1 To cnt
       If InpTypMod And 1 Then
          If AddressExists(Ad * 2) Then
             AddressRangeExists = True
@@ -245,7 +247,7 @@ End Function
 '-------------------------------------------------------------------------------------
 Private Function Proc_Special_Functions(ByRef Cmd As String, LEDNr As Long, Channel As String) As Boolean  ' 01.10.20:
 '-------------------------------------------------------------------------------------
-  If Left(Cmd, Len("Mainboard_LED(")) = "Mainboard_LED(" Then
+  If left(Cmd, Len("Mainboard_LED(")) = "Mainboard_LED(" Then
      Dim PinOrNr As String, Replace_Sym_Pin_Name As Boolean
      PinOrNr = Split(Replace(Cmd, "Mainboard_LED(", ""), ",")(0)
      If InStr(" " & MB_LED_NR_STR & " ", " " & PinOrNr & " ") > 0 Then Replace_Sym_Pin_Name = True
@@ -263,7 +265,7 @@ Private Function Proc_Special_Functions(ByRef Cmd As String, LEDNr As Long, Chan
         
      Cmd = Replace(Replace(Replace(Cmd, "Mainboard_LED(", "#define Mainboard_LED"), ",", " "), ")", "")
   End If
-  If Left(Cmd, Len("DayAndNightTimer(")) = "DayAndNightTimer(" Then
+  If left(Cmd, Len("DayAndNightTimer(")) = "DayAndNightTimer(" Then
      If Not Activate_DayAndNightTimer(Cmd) Then Exit Function
      Cmd = "// " & Cmd
   End If
@@ -285,24 +287,24 @@ Private Function Generate_Config_Line(LEDNr As Long, ByVal Channel_or_define As 
 ' ToDo: Add checks like
 ' - open/closing braket test
 ' - characters after #LED, #InCh
-  Dim Txt As String, lines As Variant, line As Variant, Res As String, AddDescription As Boolean, Description As String, Inc_LocInChNr As Boolean
+  Dim Txt As String, lines As Variant, Line As Variant, Res As String, AddDescription As Boolean, Description As String, Inc_LocInChNr As Boolean
   Txt = Cells(r, Config_Col)
   If Trim(Txt) = "" Then Exit Function
   lines = Split(Txt, vbLf)
   Description = Get_Description(r)
   AddDescription = Description <> ""
-  For Each line In lines ' Multiple lines in one cell are possible
+  For Each Line In lines ' Multiple lines in one cell are possible
       Dim CommentStart As Long, Cmd As String, Comment As String
       Comment = ""
       Cmd = ""
-      CommentStart = InStr(line, "//")
+      CommentStart = InStr(Line, "//")
       If CommentStart = 0 Then
-         Cmd = line
+         Cmd = Line
       ElseIf CommentStart = 1 Then
-         Comment = line
+         Comment = Line
       Else
-         Cmd = Left(line, CommentStart)
-         Comment = Mid(line, CommentStart + 1, 1000)
+         Cmd = left(Line, CommentStart)
+         Comment = Mid(Line, CommentStart + 1, 1000)
       End If
       
       If LEDNr < 0 Then                                                     ' 16.11.20:
@@ -335,6 +337,14 @@ Private Function Generate_Config_Line(LEDNr As Long, ByVal Channel_or_define As 
          Exit Function
       End If
      
+      If IsExtensionKey(Cmd) Then                                                      ' 31.01.22: Juergen
+         If Not Add_Extension_Entry(Cmd) Then
+            Generate_Config_Line = "#ERROR#"
+            Cells(r, Config__Col).Select
+         End If
+         Exit Function
+      End If
+      
       If Cells(r, LEDs____Col) = SerialChannelPrefix Then                             ' 08.10.20: 08.10.21: Juergen
         If Not CheckSoundChannelDefined(LEDNr) Then
             Generate_Config_Line = "#ERROR#"
@@ -343,10 +353,10 @@ Private Function Generate_Config_Line(LEDNr As Long, ByVal Channel_or_define As 
         End If
       End If
       Dim Add_Backslash_to_End As Boolean
-      If Right(RTrim(Cmd), 1) = "\" Then ' Macro line which is continued in the folowing line => Add "\" to the end  ' 25.11.19
+      If right(RTrim(Cmd), 1) = "\" Then ' Macro line which is continued in the folowing line => Add "\" to the end  ' 25.11.19
             Add_Backslash_to_End = True
             Cmd = RTrim(Cmd)
-            Cmd = Left(Cmd, Len(Cmd) - 1)
+            Cmd = left(Cmd, Len(Cmd) - 1)
       Else: Add_Backslash_to_End = False ' Don't add a '\' to all following lines ' 02.03.20:
       End If
       Cmd = "  " & Cmd & Comment
@@ -360,11 +370,11 @@ Private Function Generate_Config_Line(LEDNr As Long, ByVal Channel_or_define As 
       
       AddDescription = False
       Res = Res & Cmd & vbCr
-  Next line
+  Next Line
 
     ' Added by Misha 29-03-2020                                             ' 14.06.20: Added from Mishas version
     ' Changed by Misha 20-04-2020
-    If InStr(Left(Res, InStr(Res, ")")), "Multiplexer") > 0 Then
+    If InStr(left(Res, InStr(Res, ")")), "Multiplexer") > 0 Then
         Res = vbCrLf & Get_Multiplexer_Group(Res, Description, r) & vbCrLf
     End If
     ' End Changes by Misha
@@ -635,7 +645,7 @@ Public Function Get_Store_Status(r As Long, Addr As Long, Inp_TypR As Range, Cha
    Get_Store_Status = SST_NONE
    With Cells(r, Start_V_Col)
     
-    Dim message As String
+    Dim Message As String
     Dim storeType  As Byte
     
     storeType = GetMacroStoreType(r)
@@ -708,10 +718,10 @@ Public Function GetMultilineMacroStoreType(lines) As Byte             ' 17.12.21
     ' find the first macro have a defined store type
     ' otherwise 0 = undefined
     GetMultilineMacroStoreType = MST_None
-    Dim line
-    For Each line In lines
+    Dim Line
+    For Each Line In lines
         Dim s As String
-        s = line
+        s = Line
         GetMultilineMacroStoreType = GetMacroStoreTypeLine(s)
         If GetMultilineMacroStoreType <> MST_None Then
             Exit Function
@@ -765,6 +775,11 @@ Public Function Create_HeaderFile(Optional CreateFilesOnly As Boolean = False) A
   
   If Not Init_HeaderFile_Generation() Then Exit Function
   
+  ' 04.03.22 Juergen: If shift key is pressed to configuration is sent to the simulator only
+  If GetAsyncKeyState(VK_SHIFT) <> 0 And CreateFilesOnly = False And Get_BoardTyp() = "AM328" Then
+    Create_HeaderFile = UploadToSimulator
+    Exit Function
+  End If
   
   Dim r As Long, sx As Boolean, SX_Ch As Long
   sx = Page_ID = "Selectrix"
@@ -825,8 +840,8 @@ End Function
 '----------------------------------------------------
 Private Sub DelTailingEmptyLines(ByRef Txt As String)
 '----------------------------------------------------
-  While Right(Txt, 2) = vbCr & vbCr
-    Txt = Left(Txt, Len(Txt) - 1)
+  While right(Txt, 2) = vbCr & vbCr
+    Txt = left(Txt, Len(Txt) - 1)
   Wend
 End Sub
 
@@ -898,6 +913,7 @@ Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnl
   Print #fp, "#ifndef __LEDS_AUTOPROG_H__"
   Print #fp, "#define __LEDS_AUTOPROG_H__"
   Print #fp, ""
+  Print #fp, "#ifndef CONFIG_ONLY"          ' 04.03.22 Juergen: add Simulator feature
   Print #fp, "#ifndef ARDUINO_RASPBERRY_PI_PICO"
   Print #fp, "#define FASTLED_INTERNAL       // Disable version number message in FastLED library (looks like an error)"                ' 11.01.20: Added Block
   Print #fp, "#include <FastLED.h>           // The FastLED library must be installed in addition if you got the error message ""..fatal error: FastLED.h: No such file or directory"""
@@ -907,6 +923,7 @@ Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnl
   Print #fp, "#else"
   Print #fp, "#include <PicoFastLED.h>       // Juergens minimum version or FastLED for Raspberry Pico"
   Print #fp, "#endif"
+  Print #fp, "#endif // CONFIG_ONLY"
   Print #fp, ""
   Print #fp, "#include <MobaLedLib.h>"
   Print #fp, ""
@@ -956,7 +973,7 @@ Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnl
   Print #fp, ""
   
   Dim Color_Test_Mode As String: Color_Test_Mode = Get_String_Config_Var("Color_Test_Mode")
-  Select Case Left(UCase(Color_Test_Mode), 1)
+  Select Case left(UCase(Color_Test_Mode), 1)
       Case "J", "Y", "1": Print #fp, "#define RECEIVE_LED_COLOR_PER_RS232" & vbCr
   End Select
   
@@ -1017,9 +1034,13 @@ Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnl
     Print #fp, "    uint8_t  InCnt;"
     Print #fp, "    } __attribute__ ((packed)) Ext_Addr_T;"                 ' 05.11.20: Added: __attribute__ ((packed)) to be able to use it on oa 32 Bit platform
     Print #fp, ""
-    Print #fp, "// Definition of external adresses" & vbCr & _
-               "const PROGMEM Ext_Addr_T Ext_Addr[] =" & vbCr & _
-               "         { // Addr & Typ    InCnt"
+    Print #fp, "// Definition of external adresses"
+    Print #fp, "#ifdef CONFIG_ONLY"                                         ' 04.03.22 Juergen: add Simulator feature
+    Print #fp, "const Ext_Addr_T Ext_Addr[] __attribute__ ((section ("".MLLAddressConfig""))) ="
+    Print #fp, "#else"
+    Print #fp, "const PROGMEM Ext_Addr_T Ext_Addr[] ="
+    Print #fp, "#endif"
+    Print #fp, "         { // Addr & Typ    InCnt"
     Print #fp, Ext_AddrTxt;
     Print #fp, "         };"
     Print #fp, ""
@@ -1047,6 +1068,11 @@ Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnl
   
    ' 15.10.21: Juergen split creation of sound extensions to ensure that preprocessor defines are corretly compiled
   If Write_Header_File_Sound_Before_Config(fp) = False Then
+     Close #fp
+     Exit Function
+  End If
+  ' 31.01.22: Juergen add extension support
+  If Write_Header_File_Extension_Before_Config(fp) = False Then
      Close #fp
      Exit Function
   End If
@@ -1108,13 +1134,20 @@ Private Function Write_Header_File_and_Upload_to_Arduino(Optional CreateFilesOnl
  End If ' Store_ValuesTxt_Used
  'end change 19.04.20 Jürgen
   
+  Print #fp, "#ifndef CONFIG_ONLY"          ' 04.03.22 Juergen: add Simulator feature
+  
  ' 15.10.21: Juergen move creation of onboard sound code after the configuration struture to ensue that #defines from ProgGenerator are effective
   If Write_Header_File_Sound_After_Config(fp) = False Then
      Close #fp
      Exit Function
   End If
+ ' 31.01.22: Juergen add extension support
+  If Write_Header_File_Extension_After_Config(fp) = False Then
+     Close #fp
+     Exit Function
+  End If
 
-
+  Print #fp, "#endif // CONFIG_ONLY"          ' 04.03.22 Juergen: add Simulator feature
   Print #fp, ""
   Print #fp, ""
   Print #fp, ""

@@ -3,6 +3,21 @@ Option Explicit
 
 ' Copy the program to %USERPROFILE%\Documents\Arduino\MobaLedLib_<Version>\
 
+'---------------------------------------------------------------------------------------------------------------
+Public Function Remove_File_If_Exists(FileName As String) As Boolean
+'---------------------------------------------------------------------------------------------------------------
+  Remove_File_If_Exists = True
+  If Dir(FileName) = "" Then Exit Function
+  On Error GoTo Remove_Error
+  Kill (FileName)
+  On Error GoTo 0
+  Exit Function
+
+Remove_Error:
+  MsgBox Replace(Replace(Get_Language_Str("Die Datei #1# konnte nicht gelöscht werden'"), "#1#", FileName), vbCritical, Get_Language_Str("Fehler beim Löschen"))
+  Remove_File_If_Exists = False
+
+End Function
 
 '---------------------------------------------------------------------------------------------------------------
 Public Function FileCopy_with_Check(DestDir As String, Name As String, Optional SourceName As String) As Boolean
@@ -122,9 +137,30 @@ Public Function Copy_Prog_If_in_LibDir_WithResult(ByRef DidCopy As Boolean) As B
   ' 14.06.20: Copy both programms
   If Not FileCopy_with_Check(FullDestDir, "Pattern_Config_Examples") Then Exit Function
   If Not FileCopy_with_Check(FullDestDir, "LEDs_AutoProg") Then Exit Function
+  If Not FileCopy_with_Check(FullDestDir, "Configuration") Then Exit Function                ' 04.03.22 Juergen Simulator
+  
+  ' 24.01.22: remove some files which have been moved to MobaLedLib\src dir
+  ' in case of BETA update function these files would not be deleted and lead to a build error
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\Helpers.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\Helpers.h"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\CommInterface.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\CommInterface.h"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\InMemoryStream.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\InMemoryStream.h"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\DCCInterface.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\DCCInterface.h"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\DMXInterface.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\DMXInterface.h"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\SXInterface.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\SXInterface.h"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\SX20.cpp"
+  Remove_File_If_Exists FullDestDir & "LEDs_AutoProg\SX20.h"
+  
   If Not FileCopy_with_Check(FullDestDir, "Prog_Generator_Examples") Then Exit Function   ' 05.10.20:
   
   If Not FileCopy_with_Check(FullDestDir, "Icons") Then Exit Function ' Is used in both programms
+  
+  If Not FileCopy_with_Check(FullDestDir, "Boards") Then Exit Function                    ' 15.02.22: Juergen - for platformio build
   
   If Not Copy_File_With_new_Name_If_Exists(FullDestDir & SECOND_PROG & ".xlsm", DidCopy) Then Exit Function   ' 14.06.20: Copy also the second program
   If Not FileCopy_with_Check(FullDestDir, SECOND_PROG & ".xlsm") Then Exit Function

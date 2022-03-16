@@ -110,45 +110,67 @@ Private Function Create_Start_Sub(BoardName As String, ResultName As String, Com
      Print #fp, "CHCP 65001 >NUL" ' change the code page to show the correct german umlauts (ä,ö,ü, ...)
   End If
   Print #fp, ""
-  FindStr = " 2>&1 | find /v ""Set log4j store directory"" | find /v "" StatusLogger "" | find /v ""serial.SerialDiscovery""" ' Used "find /v" to hide unwanted debug messages ' 23.07.20:
-    
-  '*** 14.07.20: Faster way to compile from Jürgen (10 sec instead of 22 sec) ***
-  ' Create_PrivateBuild_cmd_if_missing SrcDir                           ' 28.10.20: Jürgen: Disabled
-  If True = Get_Bool_Config_Var("Fast_Build_and_Upload") Then
-    Dim BuildOptOnly As String, BaudRate As String, OptParts() As String, AddFastMethod As Boolean
-    OptParts = Split(BuildOptions, " ")
-    If UBound(OptParts) >= 1 Then
-       If OptParts(0) = "--board" Then
-          BuildOptOnly = OptParts(1)
+  
+  If Get_Bool_Config_Var("Use_PlatformIO") = False Then
+  
+    FindStr = " 2>&1 | find /v ""Set log4j store directory"" | find /v "" StatusLogger "" | find /v ""serial.SerialDiscovery""" ' Used "find /v" to hide unwanted debug messages ' 23.07.20:
       
-          If InStr(BuildOptions, BOARD_NANO_OLD) Or InStr(BuildOptions, BOARD_UNO_NORM) > 0 Then
-                BaudRate = "57600"
-          Else: BaudRate = "115200"
-          End If
-          Dim CommandStr As String
-          CommandStr = """" & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & GetShortPath(DelLast(Get_Ardu_LibDir())) & """ " & CPUType ' 23.07.20: Jürgen: Added: "GetShortPath()" 28.10.20 Jürgen added cpuType
-          CommandStr = CommandStr + " %*"                                                                                                                                                                     ' 19.12.21: Jürgen: Added noflash option
-          Print #fp, "if not exist MyPrivateBuildScript.cmd ("
-          Print #fp, "  REM embedded Fast Build and Upload"
-          Print #fp, "  call :build " + CommandStr
-          Print #fp, ") else ("
-          Print #fp, "  REM user defined Build and Upload"
-          Print #fp, "  call MyPrivateBuildScript.cmd " + CommandStr
-          Print #fp, ")"
-          'CommandStr = "call privateBuild.cmd """ & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & DelLast(Get_Ardu_LibDir()) & """"
-          FindStr = ""
-       End If
+    '*** 14.07.20: Faster way to compile from Jürgen (10 sec instead of 22 sec) ***
+    ' Create_PrivateBuild_cmd_if_missing SrcDir                           ' 28.10.20: Jürgen: Disabled
+    If True = Get_Bool_Config_Var("Fast_Build_and_Upload") Then
+      Dim BuildOptOnly As String, BaudRate As String, OptParts() As String, AddFastMethod As Boolean
+      OptParts = Split(BuildOptions, " ")
+      If UBound(OptParts) >= 1 Then
+         If OptParts(0) = "--board" Then
+            BuildOptOnly = OptParts(1)
+        
+            If InStr(BuildOptions, BOARD_NANO_OLD) Or InStr(BuildOptions, BOARD_UNO_NORM) > 0 Then
+                  BaudRate = "57600"
+            Else: BaudRate = "115200"
+            End If
+            Dim CommandStr As String
+            CommandStr = """" & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & GetShortPath(DelLast(Get_Ardu_LibDir())) & """ " & CPUType ' 23.07.20: Jürgen: Added: "GetShortPath()" 28.10.20 Jürgen added cpuType
+            CommandStr = CommandStr + " %*"                                                                                                                                                                     ' 19.12.21: Jürgen: Added noflash option
+            Print #fp, "if not exist MyPrivateBuildScript.cmd ("
+            Print #fp, "  REM embedded Fast Build and Upload"
+            Print #fp, "  call :build " + CommandStr
+            Print #fp, ") else ("
+            Print #fp, "  REM user defined Build and Upload"
+            Print #fp, "  call MyPrivateBuildScript.cmd " + CommandStr
+            Print #fp, ")"
+            'CommandStr = "call privateBuild.cmd """ & FilePath(Find_ArduinoExe) & """ """ & InoName & """ " & ComPort & " """ & BuildOptOnly & """ " & BaudRate & "  """ & DelLast(Get_Ardu_LibDir()) & """"
+            FindStr = ""
+         End If
+      End If
     End If
+      
+    Print #fp, "IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > """ & ResultName & """"
+    Print #fp, "goto :eof"                                                ' 28.10.20: Jürgen
+    Dim i As Long
+    For i = 1 To 100 ' generate empty lines to hide the following to courious people (Jürgen)
+        Print #fp, ""
+    Next
+    Print #fp, ":build"
+    Create_Build BoardName, fp
+  Else
+      Dim Environment As String
+      Environment = "nano_new"
+      OptParts = Split(BuildOptions, " ")
+      If UBound(OptParts) >= 1 Then
+         If OptParts(0) = "--board" Then
+            BuildOptOnly = OptParts(1)
+          
+            If InStr(BuildOptions, BOARD_NANO_OLD) Then
+                Environment = "nano_old"
+            ElseIf InStr(BuildOptions, BOARD_NANO_FULL) Then
+                Environment = "nano_full"
+            End If
+        End If
+      End If
+      Create_PIO_Build fp, Environment, ResultName, ComPort, SrcDir          ' 13.02.22: Juergen
   End If
-    
-  Print #fp, "IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > """ & ResultName & """"
-  Print #fp, "goto :eof"                                                ' 28.10.20: Jürgen
-  Dim i As Long
-  For i = 1 To 100 ' generate empty lines to hide the following to courious people (Jürgen)
-      Print #fp, ""
-  Next
-  Print #fp, ":build"
-  Create_Build BoardName, fp
+
+
   Close #fp
   On Error GoTo 0
   Create_Start_Sub = "Call " & CMD_Name & " " & FindStr
@@ -160,6 +182,112 @@ WriteError:
   MsgBox Get_Language_Str("Fehler beim schreiben der Datei '") & Name & "'", vbCritical, Get_Language_Str("Fehler beim erzeugen der Arduino Start Datei")
 End Function
 
+'-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Private Function Create_PIO_Build(fp As Integer, Environment As String, ResultName As String, ComPort As String, SrcDir As String) As Boolean ' 13.02.22:
+'-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Print #fp, ""
+      Print #fp, "set path=%path%;" & GetShortPath(Environ(Env_USERPROFILE)) & "\.platformio\penv\Scripts"
+      Print #fp, "set " & Env_USERPROFILE & "=" & GetShortPath(Environ(Env_USERPROFILE))
+      Print #fp, "cd .."
+      Print #fp, "if ""%1""==""rebuild"" pio run -t clean -e " & Environment
+      Print #fp, "set flash=-t upload"
+      Print #fp, "if ""%1""==""noflash"" set flash="
+      Print #fp, "pio run %flash% -e " & Environment & " --upload-port " & ComPort
+      Print #fp, "IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > ""%~p0" & ResultName & """"
+      Print #fp, "cd ""%~p0"""
+      Print #fp, ""
+      
+      Dim fp2 As Integer
+      fp2 = FreeFile
+      Open SrcDir & "..\platformio.ini" For Output As #fp2
+      'Open Replace(SrcDir, "\LEDs_AutoProg\", "\platformio.inx") For Output As #fp2
+      Print #fp2, "[platformio]"
+      Print #fp2, "src_dir = LEDs_AutoProg"
+      Print #fp2, "    "
+      Print #fp2, "[env]"
+      Print #fp2, "framework = arduino"
+      Print #fp2, "src_build_flags ="
+      Print #fp2, "lib_deps ="
+      Print #fp2, "    FastLED"
+      Print #fp2, "    NmraDcc"
+      Print #fp2, "    MobaLedLib=file://../../libraries/MobaLedLib"
+      Print #fp2, ""
+      Print #fp2, "[env:esp32]"
+      Print #fp2, "Platform = espressif32"
+      Print #fp2, "Board = esp32dev"
+      Print #fp2, "src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>"
+      Print #fp2, "lib_deps = ${env.lib_deps}"
+      Print #fp2, "    WiFiManager=https://github.com/tzapu/WiFiManager.git"
+      Print #fp2, "    EspSoftwareSerial"
+      If Not Write_PIO_Extension(fp2) Then
+        Close #fp2
+        Exit Function
+      End If
+      Print #fp2, "build_unflags = -Wall"
+      Print #fp2, ""
+      
+      Print #fp2, "[env:nano_new]"
+      Print #fp2, "Platform = atmelavr"
+      Print #fp2, "Board = nanoatmega328new"
+      Print #fp2, "src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>"
+      Print #fp2, "lib_deps = ${env.lib_deps}"
+      Print #fp2, "    EEProm"
+      Print #fp2, "    SPI"
+      Print #fp2, "    AnalogScanner=https://github.com/merose/AnalogScanner/archive/master.zip"
+      If Not Write_PIO_Extension(fp2) Then
+        Close #fp2
+        Exit Function
+      End If
+      Print #fp2, ""
+      Print #fp2, "build_unflags = -Wall"
+      Print #fp2, ""
+      Print #fp2, "upload_flags ="
+      Print #fp2, "    -u"
+      Print #fp2, "    -V"
+      
+      Print #fp2, "[env:nano_old]"
+      Print #fp2, "Platform = atmelavr"
+      Print #fp2, "Board = nanoatmega328"
+      Print #fp2, "src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>"
+      Print #fp2, "lib_deps = ${env.lib_deps}"
+      Print #fp2, "    EEProm"
+      Print #fp2, "    SPI"
+      Print #fp2, "    AnalogScanner=https://github.com/merose/AnalogScanner/archive/master.zip"
+      If Not Write_PIO_Extension(fp2) Then
+        Close #fp2
+        Exit Function
+      End If
+      Print #fp2, ""
+      Print #fp2, "build_unflags = -Wall"
+      Print #fp2, ""
+      Print #fp2, "upload_flags ="
+      Print #fp2, "    -u"
+      Print #fp2, "    -V"
+      
+' 15.02.22: Hardi
+      Print #fp2, "[env:nano_full]"
+      Print #fp2, "Platform = atmelavr"
+      Print #fp2, "Board = nanoatmega328full"
+      Print #fp2, "src_filter = ${env.src_filter} -<pyProg_Generator_MobaLedLib/>"
+      Print #fp2, "lib_deps = ${env.lib_deps}"
+      Print #fp2, "    EEProm"
+      Print #fp2, "    SPI"
+      Print #fp2, "    AnalogScanner=https://github.com/merose/AnalogScanner/archive/master.zip"
+      If Not Write_PIO_Extension(fp2) Then
+        Close #fp2
+        Exit Function
+      End If
+      Print #fp2, ""
+      Print #fp2, "build_unflags = -Wall"
+      Print #fp2, ""
+      Print #fp2, "upload_flags ="
+      Print #fp2, "    -u"
+      Print #fp2, "    -V"
+     
+      Close #fp2
+      
+      Create_PIO_Build = True
+End Function
 
 '-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Private Function Create_Start_ESP32_Sub(ResultName As String, ComPort As String, BuildOptions As String, InoName As String, SrcDir As String, CPUType As String) As String ' 13.11.20:
@@ -248,244 +376,249 @@ Private Function Create_Start_ESP32_Sub(ResultName As String, ComPort As String,
   If Win10_or_newer() Then                                              ' 20.06.20: The find command dosn't work with this code page at Win7 for some reasons. It waits endless ?!?
      Print #fp, "CHCP 65001 >NUL" ' change the code page to show the correct german umlauts (ä,ö,ü, ...)
   End If
-  Print #fp, ""
-  Print #fp, "set ArduinoLib=" & GetShortPath(DelLast(Get_Ardu_LibDir()))  ' 02.12.21: Juergen see forum post #7085
-  Print #fp, "if not exist MyPrivateBuildScript.cmd ("
-  Print #fp, "       REM embedded Fast Build and Upload" ' esp32:esp32:esp32:PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none -vid-pid=10C4_EA60
-  Print #fp, "       call :build """ & FilePath(Find_ArduinoExe) & """ ""LEDs_AutoProg.ino"" " & ComPort & " """ & BuildOptOnly & """ 115200  ""%ArduinoLib%"" esp32 %*"
-  Print #fp, ") else ("
-  Print #fp, "       REM user defined Build and Upload"
-  Print #fp, "       call MyPrivateBuildScript.cmd """ & FilePath(Find_ArduinoExe) & """ ""LEDs_AutoProg.ino"" " & ComPort & " """ & BuildOptions & """ 115200  ""%ArduinoLib%"" esp32 %*"
-  Print #fp, "       )"
-  Print #fp, "IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > ""Start_Arduino_Result.txt"""
-  Print #fp, "goto :eof"
-  Print #fp, ""
-  Print #fp, ""
-  Print #fp, ""
-  Print #fp, ":build"
-  Print #fp, "REM                                                                           **** ToDo: Aktualisieren ***"
-  Print #fp, "REM Compile and flash time for ESP 14 sec on Hardis laptop"
-  Print #fp, "REM"
-  Print #fp, "REM"
-  Print #fp, "REM This file could be modified by the user to support special compiler switches"
-  Print #fp, "REM It is called if the switch the ""Schnelles Build und Upload verwenden:"" in the 'Config' sheet is enabled"
-  Print #fp, "REM"
-  Print #fp, "REM Parameter:               Example"
-  Print #fp, "REM  1: Arduino EXE Path:    """ & FilePath(Find_ArduinoExe) & """"
-  Print #fp, "REM  2: Ino Name:            ""LEDs_AutoProg.ino"""
-  Print #fp, "REM  3: Com port:            ""COM3"""
-  Print #fp, "REM  4: Build options:       ""arduino:avr:nano:cpu=atmega328"""
-  Print #fp, "REM  5: Baudrate:            ""57600"" or ""115200"""
-  Print #fp, "REM  6: Arduino Library path ""%USERPROFILE%\Documents\Arduino\libraries"""
-  Print #fp, "REM  7: CPU type:            ""atmega328p, atmega4809, esp32"""
-  Print #fp, "REM  8: options:             ""noflash|norebuild"""                                     ' 19.12.21: Jürgen: Added noflash option
-  Print #fp, "REM  additional argument from caller"
-  Print #fp, "REM"
-  Print #fp, "REM The program uses the captured and adapted command line from the Arduino IDE"
-  Print #fp, "REM"
-  Print #fp, ""
-  Print #fp, "SET aHome=%~1"
-  Print #fp, "SET fqbn=%~4"
-  Print #fp, "SET lib=%~6"
-  Print #fp, "SET ESP32_BOARD_VERSION=" & Board_Version
-  Print #fp, "SET ESP32_TOOL_VERSION=" & Tool_Version
-  Print #fp, ""
-  Print #fp, "call :short aTemp ""%USERPROFILE%\AppData\Local\Temp\MobaLedLib_build\ESP32"""
-  Print #fp, "SET aCache=%aTemp%\cache"
-  Print #fp, "call :short packages ""%USERPROFILE%" + AppLoc_Ardu + "packages"""
-  Print #fp, "if not exist ""%aTemp%\Sketch""  md ""%aTemp%\Sketch"""
-  Print #fp, "if not exist ""%aCache%"" md ""%aCache%"""
-  Print #fp, ""
-  Print #fp, "SetLocal EnableDelayedExpansion"
-  Print #fp, ""
-  Print #fp, "copy ""..\LEDs_AutoProg\LEDs_AutoProg.h"" ""%aTemp%\Sketch"" >nul:"
-  Print #fp, "if errorlevel 1 ("
-  Print #fp, "   echo can't copy ..\LEDs_AutoProg\LEDs_AutoProg.h to build folder"
-  Print #fp, "   exit /b 1"
-  Print #fp, "   )"
-  Print #fp, ""
-  Print #fp, "call ::getDirectory headerDir ..\LEDs_AutoProg\LEDs_AutoProg.h"
-  Print #fp, "call ::getDirectory sketchDir %2"
-  Print #fp, ""
-  Print #fp, "if not ""%headerDir%""==""%sketchDir%"" ("
-  Print #fp, "   REM Necessary for rebuild         11.11.20:"
-  Print #fp, "   copy ""..\LEDs_AutoProg\LEDs_AutoProg.h"" . >nul:"
-  Print #fp, "   if errorlevel 1 ("
-  Print #fp, "      echo can't copy ..\LEDs_AutoProg\LEDs_AutoProg.h to actual dir"
-  Print #fp, "      exit /b 1"
-  Print #fp, "      )"
-  Print #fp, ")"
-  Print #fp, "REM !! developer option copy additional files !!"
-  Print #fp, "if exist AdditionalBuildFiles.txt ("
-  Print #fp, "   echo updating extra files"
-  Print #fp, "   for /F %%f in (AdditionalBuildFiles.txt) do ("
-  Print #fp, "      if exist ""%%f"" ("
-  Print #fp, "             echo update file %%f"
-  Print #fp, "             copy ""%%f"" ""%aTemp%\Sketch"" >nul:"
-  Print #fp, "             if errorlevel 1 ("
-  Print #fp, "                echo can't copy %%file to build folder"
-  Print #fp, "                exit /b 1"
-  Print #fp, "             )"
-  Print #fp, "      ) else ("
-  Print #fp, "             echo Additional build file '%%f' not found"
-  Print #fp, "             pause"
-  Print #fp, "             )"
-  Print #fp, "      )"
-  Print #fp, ")"
-  Print #fp, ""
-  Print #fp, "rem check if prebuild targets exist and the current ino isn't newer"
-  Print #fp, "set srcFile=%~2"
-  Print #fp, "set cppFile=%aTemp%\sketch\%srcFile%.cpp"
-  Print #fp, ""
-#If 1 Then                                               ' 01.12.20: Copy the file therefore all functions must have a forward definition
-  Print #fp, "copy ""%srcFile%"" ""%cppFile%"" /Y >nul:" '           Advantage: Changes in the ino file don't require a rebuild
-#Else
-  Print #fp, "if not exist ""%srcFile%""  ("
-  Print #fp, "   echo File %cppFile% does not exist, rebuild ..."
-  Print #fp, "   goto :rebuild"
-  Print #fp, "   )"
-#End If
-  Print #fp, ""
-  Print #fp, "if exist ""%aTemp%\rebuildFailed.txt"" ("
-  Print #fp, "   echo Last rebuild failed ;-("
-  Print #fp, "   echo Press ENTER to rebuild everything"  ' If the error is located in the .ino file Ctrl+C could be pressed here
-  Print #fp, "   if ""%8""=="""" pause"
-  Print #fp, "   goto :rebuild"
-  Print #fp, "   )"
-  Print #fp, ""
-  Print #fp, "rem if the pre-build files are not there we need to do a complete new build"
-  Print #fp, "if not exist ""%cppFile%"" ("
-  Print #fp, "   echo CPP File ""%cppFile%"" does'n exist, rebuild ..."
-  Print #fp, "   goto :rebuild"
-  Print #fp, "   )"
-  Print #fp, ""
-  Print #fp, "if ""%8""==""rebuild"" ("
-  Print #fp, "   echo Rebuild called from the command line"
-  Print #fp, "   goto :rebuild"
-  Print #fp, "   )"
-  Print #fp, ""
-  Print #fp, "if ""%8""==""flash"" ("
-  Print #fp, "   goto :download"
-  Print #fp, "   )"
-  Print #fp, ""
-  Print #fp, "rem now get date/time of both files to see if time is equal"
-  Print #fp, "FOR /F ""tokens=* USEBACKQ"" %%F IN (`forfiles /p ""%atemp%\sketch"" /m ""%srcFile%.cpp"" /C ""cmd /c echo @fdate @ftime""`) DO SET DATE1=%%F"
-  Print #fp, "FOR /F ""tokens=* USEBACKQ"" %%F IN (`forfiles /m ""%srcFile%"" /C ""cmd /c echo @fdate @ftime""`) DO SET DATE2=%%F"
-  Print #fp, ""
-  Print #fp, "echo %srcFile%.cpp has date %date1%"
-  Print #fp, "echo %srcFile% has date %date2%"
-  Print #fp, ""
-  Print #fp, "rem if equal then srcfile isn't newer"
-  Print #fp, "IF ""%DATE1%""==""%DATE2%"" goto fastbuild"
-  Print #fp, ""
-  Print #fp, "rem now get the newest file"
-  Print #fp, "rem to compare, both file must be in same directory"
-  Print #fp, "copy ""%srcFile%"" ""%aTemp%\sketch\"" >nul:"
-  Print #fp, "FOR /F %%i IN ('DIR /B /O:D ""%cppFile%"" ""%aTemp%\sketch\%srcFile%""') DO SET NEWEST=%%i"
-  Print #fp, "del ""%aTemp%\sketch\%srcFile%"" >nul:"
-  Print #fp, ""
-  Print #fp, "rem check which file is newer, if source is new we need to run a arduino build to recreate the .ino.cpp file"
-  Print #fp, "if ""%NEWEST%""==""%srcFile%"" ("
-  Print #fp, "   echo New file detected ""%NEWEST%"", rebuild..."
-  Print #fp, "   goto :rebuild"
-  Print #fp, "   ) "
-  Print #fp, "ECHO Newer file is %NEWEST%"
-  Print #fp, ""
-  Print #fp, "goto :fastbuild"
-  Print #fp, ""
-  Print #fp, ":getDirectory <resultVar> <pathVar>"
-  Print #fp, "("
-  Print #fp, "    set ""%~1=%~d2%~p2"""
-  Print #fp, "    goto :eof"
-  Print #fp, ")"
-  Print #fp, ""
-  Print #fp, ":getShortName <resultVar> <filename>"
-  Print #fp, "("
-  Print #fp, "    set %~1=%~s2"
-  Print #fp, "    goto :eof"
-  Print #fp, ")"
-  Print #fp, ""
-  Print #fp, ":fastbuild"
-  Print #fp, "echo Running fastbuild"
-  Print #fp, "call Fastbuild.cmd %8"
-  Print #fp, "if errorlevel 1 ("                                            ' 28.11.20: Additional check from Jürgen
-  Print #fp, "    rem use argument norebuild to avoid rebuild in this case"
-  Print #fp, "    if ""%8""=="""" ("                                        '           in case the librarys have been changed
-  Print #fp, "        rem in case that FastBuild.cmd returned errolevel 9 also a rebuild won't help"
-  Print #fp, "        if not errorlevel 9 ("
-  Print #fp, "            echo Fastbuild failed, trying a rebuild..."
-  Print #fp, "            goto rebuild"
-  Print #fp, "        )"
-  Print #fp, "    )"
-  Print #fp, ")"
-  Print #fp, ""
-  Print #fp, "goto download"
-  Print #fp, ""
-  Print #fp, ":rebuild"
-  Print #fp, "echo."
-  Print #fp, "echo Running rebuild... Be patient, this will take up to 3 minutes ;-((("
-  Print #fp, "echo."
-  Print #fp, "if exist ""%aTemp%"" del ""%aTemp%"" /s/q >nul:"
-  Print #fp, "if exist ""%aTemp%\link.cmd"" del ""%aTemp%\link.cmd"""
-  Print #fp, "echo %date% > ""%aTemp%\rebuildFailed.txt"""
-  Print #fp, ""
-  Print #fp, "REM *** Call the arduino builder ***"
-  Print #fp, "call :write ""%aHome%\arduino-builder"" -compile -logger=human ^"
-  Print #fp, "     -hardware ""%packages%"" ^"
-  Print #fp, "     -tools ""%aHome%\tools-builder"" ^"
-  Print #fp, "     -tools ""%aHome%\hardware\tools\avr"" ^"
-  Print #fp, "     -built-in-libraries ""%aHome%\libraries"" -libraries ""%LIB%"" ^"
-  Print #fp, "     -fqbn=%fqbn% -build-path ""%aTemp%"" ^"
-  Print #fp, "     -warnings=default ^"
-  Print #fp, "     -build-cache ""%aCache%"" ^"
-  Print #fp, "     -prefs=build.warn_data_percentage=75 ^"
-  Print #fp, "     -prefs=runtime.tools.avrdude.path=""%aHome%\hardware\tools\avr"" ^"
-  Print #fp, "     -prefs=runtime.tools.avr-gcc.path=""%aHome%\hardware\tools\avr"" >""%aTemp%\compile.cmd"""
-  Print #fp, ""
-  Print #fp, "if exist AdditionalBuildOptions.txt ("
-  Print #fp, "  for /F ""delims="" %%i in (AdditionalBuildOptions.txt) do call :write %%i >>""%aTemp%\compile.cmd"""
-  Print #fp, ")"
-  Print #fp, "call :write %srcFile% >>""%aTemp%\compile.cmd"""
-  Print #fp, ""
-  Print #fp, "call ""%aTemp%\compile.cmd"""
-  Print #fp, "if not errorlevel 1 ("
-  Print #fp, "  if exist ""%aTemp%\rebuildFailed.txt"" del ""%aTemp%\rebuildFailed.txt"" >nul:"
-  Print #fp, ")"
-  Print #fp, ""
-  Print #fp, ":download"
-  Print #fp, "if not errorlevel 1 ("
-  Print #fp, "   set uploadTo=%3"
-  Print #fp, "   if not ""%target%""=="""" set uploadTo=%target%"
-  Print #fp, "   echo Uploading to !uploadTo!"
-  Print #fp, ""
-  Print #fp, "   REM *** Flash program ***"
-  Print #fp, "   if ""!uploadTo:~0,3!""==""COM"" ("
-  ' 17.11.20: Added: 0x8000 ...
-  ' 11.03.21: Added: 0xE000 and 0x1000
-  Print #fp, "          ""%packages%\esp32\tools\esptool_py\%ESP32_TOOL_VERSION%/esptool.exe"" --chip esp32 --port \\.\!uploadTo! --baud 921600 --before default_reset --after hard_reset write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect " & _
-                 " 0xE000  ""%packages%\esp32\hardware\esp32\%ESP32_BOARD_VERSION%/tools/partitions/boot_app0.bin""" & _
-                 " 0x1000  ""%packages%\esp32\hardware\esp32\%ESP32_BOARD_VERSION%/tools/sdk/bin/bootloader_qio_80m.bin""" & _
-                 " 0x10000 ""%aTemp%\%srcFile%.bin""" & _
-                 " 0x8000  ""%aTemp%\%srcFile%.partitions.bin"""
-  Print #fp, "   ) else ("
-  Print #fp, "          ""%packages%\esp32\hardware\esp32\%ESP32_BOARD_VERSION%/tools/espota.exe"" -i !uploadTo! -p 3232 --auth= -f ""%aTemp%\%srcFile%.bin"""
-  Print #fp, "          )"
-  Print #fp, "    REM *** caller expects a positive errorlevel in error case, but ESPTOOL returns errorlevel -1"   '02.03.21 Juergen
-  Print #fp, "    if not errorlevel 0 exit /b 1"                                                                   '02.03.21 Juergen
-  Print #fp, ""
-  Print #fp, ")"
-  Print #fp, "Goto :EOF"
-  Print #fp, ""
-  Print #fp, ":: write a text without newline"
-  Print #fp, ":write"
-  Print #fp, "echo | set /p x=""%* """
-  Print #fp, "goto :eof"
-  Print #fp, ""
-  Print #fp, ":short"
-  Print #fp, "set %1=%~s2"
-  Print #fp, "goto :eof"
-  Print #fp, ""
-
+  
+  If Get_Bool_Config_Var("Use_PlatformIO") = False Then
+      Print #fp, ""
+      Print #fp, "set ArduinoLib=" & GetShortPath(DelLast(Get_Ardu_LibDir()))  ' 02.12.21: Juergen see forum post #7085
+      Print #fp, "if not exist MyPrivateBuildScript.cmd ("
+      Print #fp, "       REM embedded Fast Build and Upload" ' esp32:esp32:esp32:PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none -vid-pid=10C4_EA60
+      Print #fp, "       call :build """ & FilePath(Find_ArduinoExe) & """ ""LEDs_AutoProg.ino"" " & ComPort & " """ & BuildOptOnly & """ 115200  ""%ArduinoLib%"" esp32 %*"
+      Print #fp, ") else ("
+      Print #fp, "       REM user defined Build and Upload"
+      Print #fp, "       call MyPrivateBuildScript.cmd """ & FilePath(Find_ArduinoExe) & """ ""LEDs_AutoProg.ino"" " & ComPort & " """ & BuildOptions & """ 115200  ""%ArduinoLib%"" esp32 %*"
+      Print #fp, "       )"
+      Print #fp, "IF ERRORLEVEL 1 ECHO Start_Arduino_Result: %ERRORLEVEL% > ""Start_Arduino_Result.txt"""
+      Print #fp, "goto :eof"
+      Print #fp, ""
+      Print #fp, ""
+      Print #fp, ""
+      Print #fp, ":build"
+      Print #fp, "REM                                                                           **** ToDo: Aktualisieren ***"
+      Print #fp, "REM Compile and flash time for ESP 14 sec on Hardis laptop"
+      Print #fp, "REM"
+      Print #fp, "REM"
+      Print #fp, "REM This file could be modified by the user to support special compiler switches"
+      Print #fp, "REM It is called if the switch the ""Schnelles Build und Upload verwenden:"" in the 'Config' sheet is enabled"
+      Print #fp, "REM"
+      Print #fp, "REM Parameter:               Example"
+      Print #fp, "REM  1: Arduino EXE Path:    """ & FilePath(Find_ArduinoExe) & """"
+      Print #fp, "REM  2: Ino Name:            ""LEDs_AutoProg.ino"""
+      Print #fp, "REM  3: Com port:            ""COM3"""
+      Print #fp, "REM  4: Build options:       ""arduino:avr:nano:cpu=atmega328"""
+      Print #fp, "REM  5: Baudrate:            ""57600"" or ""115200"""
+      Print #fp, "REM  6: Arduino Library path ""%USERPROFILE%\Documents\Arduino\libraries"""
+      Print #fp, "REM  7: CPU type:            ""atmega328p, atmega4809, esp32"""
+      Print #fp, "REM  8: options:             ""noflash|norebuild"""                                     ' 19.12.21: Jürgen: Added noflash option
+      Print #fp, "REM  additional argument from caller"
+      Print #fp, "REM"
+      Print #fp, "REM The program uses the captured and adapted command line from the Arduino IDE"
+      Print #fp, "REM"
+      Print #fp, ""
+      Print #fp, "SET aHome=%~1"
+      Print #fp, "SET fqbn=%~4"
+      Print #fp, "SET lib=%~6"
+      Print #fp, "SET ESP32_BOARD_VERSION=" & Board_Version
+      Print #fp, "SET ESP32_TOOL_VERSION=" & Tool_Version
+      Print #fp, ""
+      Print #fp, "call :short aTemp ""%USERPROFILE%\AppData\Local\Temp\MobaLedLib_build\ESP32"""
+      Print #fp, "SET aCache=%aTemp%\cache"
+      Print #fp, "call :short packages ""%USERPROFILE%" + AppLoc_Ardu + "packages"""
+      Print #fp, "if not exist ""%aTemp%\Sketch""  md ""%aTemp%\Sketch"""
+      Print #fp, "if not exist ""%aCache%"" md ""%aCache%"""
+      Print #fp, ""
+      Print #fp, "SetLocal EnableDelayedExpansion"
+      Print #fp, ""
+      Print #fp, "copy ""..\LEDs_AutoProg\LEDs_AutoProg.h"" ""%aTemp%\Sketch"" >nul:"
+      Print #fp, "if errorlevel 1 ("
+      Print #fp, "   echo can't copy ..\LEDs_AutoProg\LEDs_AutoProg.h to build folder"
+      Print #fp, "   exit /b 1"
+      Print #fp, "   )"
+      Print #fp, ""
+      Print #fp, "call ::getDirectory headerDir ..\LEDs_AutoProg\LEDs_AutoProg.h"
+      Print #fp, "call ::getDirectory sketchDir %2"
+      Print #fp, ""
+      Print #fp, "if not ""%headerDir%""==""%sketchDir%"" ("
+      Print #fp, "   REM Necessary for rebuild         11.11.20:"
+      Print #fp, "   copy ""..\LEDs_AutoProg\LEDs_AutoProg.h"" . >nul:"
+      Print #fp, "   if errorlevel 1 ("
+      Print #fp, "      echo can't copy ..\LEDs_AutoProg\LEDs_AutoProg.h to actual dir"
+      Print #fp, "      exit /b 1"
+      Print #fp, "      )"
+      Print #fp, ")"
+      Print #fp, "REM !! developer option copy additional files !!"
+      Print #fp, "if exist AdditionalBuildFiles.txt ("
+      Print #fp, "   echo updating extra files"
+      Print #fp, "   for /F %%f in (AdditionalBuildFiles.txt) do ("
+      Print #fp, "      if exist ""%%f"" ("
+      Print #fp, "             echo update file %%f"
+      Print #fp, "             copy ""%%f"" ""%aTemp%\Sketch"" >nul:"
+      Print #fp, "             if errorlevel 1 ("
+      Print #fp, "                echo can't copy %%file to build folder"
+      Print #fp, "                exit /b 1"
+      Print #fp, "             )"
+      Print #fp, "      ) else ("
+      Print #fp, "             echo Additional build file '%%f' not found"
+      Print #fp, "             pause"
+      Print #fp, "             )"
+      Print #fp, "      )"
+      Print #fp, ")"
+      Print #fp, ""
+      Print #fp, "rem check if prebuild targets exist and the current ino isn't newer"
+      Print #fp, "set srcFile=%~2"
+      Print #fp, "set cppFile=%aTemp%\sketch\%srcFile%.cpp"
+      Print #fp, ""
+    #If 1 Then                                               ' 01.12.20: Copy the file therefore all functions must have a forward definition
+      Print #fp, "copy ""%srcFile%"" ""%cppFile%"" /Y >nul:" '           Advantage: Changes in the ino file don't require a rebuild
+    #Else
+      Print #fp, "if not exist ""%srcFile%""  ("
+      Print #fp, "   echo File %cppFile% does not exist, rebuild ..."
+      Print #fp, "   goto :rebuild"
+      Print #fp, "   )"
+    #End If
+      Print #fp, ""
+      Print #fp, "if exist ""%aTemp%\rebuildFailed.txt"" ("
+      Print #fp, "   echo Last rebuild failed ;-("
+      Print #fp, "   echo Press ENTER to rebuild everything"  ' If the error is located in the .ino file Ctrl+C could be pressed here
+      Print #fp, "   if ""%8""=="""" pause"
+      Print #fp, "   goto :rebuild"
+      Print #fp, "   )"
+      Print #fp, ""
+      Print #fp, "rem if the pre-build files are not there we need to do a complete new build"
+      Print #fp, "if not exist ""%cppFile%"" ("
+      Print #fp, "   echo CPP File ""%cppFile%"" does'n exist, rebuild ..."
+      Print #fp, "   goto :rebuild"
+      Print #fp, "   )"
+      Print #fp, ""
+      Print #fp, "if ""%8""==""rebuild"" ("
+      Print #fp, "   echo Rebuild called from the command line"
+      Print #fp, "   goto :rebuild"
+      Print #fp, "   )"
+      Print #fp, ""
+      Print #fp, "if ""%8""==""flash"" ("
+      Print #fp, "   goto :download"
+      Print #fp, "   )"
+      Print #fp, ""
+      Print #fp, "rem now get date/time of both files to see if time is equal"
+      Print #fp, "FOR /F ""tokens=* USEBACKQ"" %%F IN (`forfiles /p ""%atemp%\sketch"" /m ""%srcFile%.cpp"" /C ""cmd /c echo @fdate @ftime""`) DO SET DATE1=%%F"
+      Print #fp, "FOR /F ""tokens=* USEBACKQ"" %%F IN (`forfiles /m ""%srcFile%"" /C ""cmd /c echo @fdate @ftime""`) DO SET DATE2=%%F"
+      Print #fp, ""
+      Print #fp, "echo %srcFile%.cpp has date %date1%"
+      Print #fp, "echo %srcFile% has date %date2%"
+      Print #fp, ""
+      Print #fp, "rem if equal then srcfile isn't newer"
+      Print #fp, "IF ""%DATE1%""==""%DATE2%"" goto fastbuild"
+      Print #fp, ""
+      Print #fp, "rem now get the newest file"
+      Print #fp, "rem to compare, both file must be in same directory"
+      Print #fp, "copy ""%srcFile%"" ""%aTemp%\sketch\"" >nul:"
+      Print #fp, "FOR /F %%i IN ('DIR /B /O:D ""%cppFile%"" ""%aTemp%\sketch\%srcFile%""') DO SET NEWEST=%%i"
+      Print #fp, "del ""%aTemp%\sketch\%srcFile%"" >nul:"
+      Print #fp, ""
+      Print #fp, "rem check which file is newer, if source is new we need to run a arduino build to recreate the .ino.cpp file"
+      Print #fp, "if ""%NEWEST%""==""%srcFile%"" ("
+      Print #fp, "   echo New file detected ""%NEWEST%"", rebuild..."
+      Print #fp, "   goto :rebuild"
+      Print #fp, "   ) "
+      Print #fp, "ECHO Newer file is %NEWEST%"
+      Print #fp, ""
+      Print #fp, "goto :fastbuild"
+      Print #fp, ""
+      Print #fp, ":getDirectory <resultVar> <pathVar>"
+      Print #fp, "("
+      Print #fp, "    set ""%~1=%~d2%~p2"""
+      Print #fp, "    goto :eof"
+      Print #fp, ")"
+      Print #fp, ""
+      Print #fp, ":getShortName <resultVar> <filename>"
+      Print #fp, "("
+      Print #fp, "    set %~1=%~s2"
+      Print #fp, "    goto :eof"
+      Print #fp, ")"
+      Print #fp, ""
+      Print #fp, ":fastbuild"
+      Print #fp, "echo Running fastbuild"
+      Print #fp, "call Fastbuild.cmd %8"
+      Print #fp, "if errorlevel 1 ("                                            ' 28.11.20: Additional check from Jürgen
+      Print #fp, "    rem use argument norebuild to avoid rebuild in this case"
+      Print #fp, "    if not ""%8""==""norebuild"" ("                                        '           in case the librarys have been changed
+      Print #fp, "        rem in case that FastBuild.cmd returned errolevel 9 also a rebuild won't help"
+      Print #fp, "        if not errorlevel 9 ("
+      Print #fp, "            echo Fastbuild failed, trying a rebuild..."
+      Print #fp, "            goto rebuild"
+      Print #fp, "        )"
+      Print #fp, "    )"
+      Print #fp, ")"
+      Print #fp, ""
+      Print #fp, "goto download"
+      Print #fp, ""
+      Print #fp, ":rebuild"
+      Print #fp, "echo."
+      Print #fp, "echo Running rebuild... Be patient, this will take up to 3 minutes ;-((("
+      Print #fp, "echo."
+      Print #fp, "if exist ""%aTemp%"" del ""%aTemp%"" /s/q >nul:"
+      Print #fp, "if exist ""%aTemp%\link.cmd"" del ""%aTemp%\link.cmd"""
+      Print #fp, "echo %date% > ""%aTemp%\rebuildFailed.txt"""
+      Print #fp, ""
+      Print #fp, "REM *** Call the arduino builder ***"
+      Print #fp, "call :write ""%aHome%\arduino-builder"" -compile -logger=human ^"
+      Print #fp, "     -hardware ""%packages%"" ^"
+      Print #fp, "     -tools ""%aHome%\tools-builder"" ^"
+      Print #fp, "     -tools ""%aHome%\hardware\tools\avr"" ^"
+      Print #fp, "     -built-in-libraries ""%aHome%\libraries"" -libraries ""%LIB%"" ^"
+      Print #fp, "     -fqbn=%fqbn% -build-path ""%aTemp%"" ^"
+      Print #fp, "     -warnings=default ^"
+      Print #fp, "     -build-cache ""%aCache%"" ^"
+      Print #fp, "     -prefs=build.warn_data_percentage=75 ^"
+      Print #fp, "     -prefs=runtime.tools.avrdude.path=""%aHome%\hardware\tools\avr"" ^"
+      Print #fp, "     -prefs=runtime.tools.avr-gcc.path=""%aHome%\hardware\tools\avr"" >""%aTemp%\compile.cmd"""
+      Print #fp, ""
+      Print #fp, "if exist AdditionalBuildOptions.txt ("
+      Print #fp, "  for /F ""delims="" %%i in (AdditionalBuildOptions.txt) do call :write %%i >>""%aTemp%\compile.cmd"""
+      Print #fp, ")"
+      Print #fp, "call :write %srcFile% >>""%aTemp%\compile.cmd"""
+      Print #fp, ""
+      Print #fp, "call ""%aTemp%\compile.cmd"""
+      Print #fp, "if not errorlevel 1 ("
+      Print #fp, "  if exist ""%aTemp%\rebuildFailed.txt"" del ""%aTemp%\rebuildFailed.txt"" >nul:"
+      Print #fp, ")"
+      Print #fp, ""
+      Print #fp, ":download"
+      Print #fp, "if ""%8""==""noflash"" goto :EOF"                                 ' 12.02.22: Juergen
+      Print #fp, "if not errorlevel 1 ("
+      Print #fp, "   set uploadTo=%3"
+      Print #fp, "   if not ""%target%""=="""" set uploadTo=%target%"
+      Print #fp, "   echo Uploading to !uploadTo!"
+      Print #fp, ""
+      Print #fp, "   REM *** Flash program ***"
+      Print #fp, "   if ""!uploadTo:~0,3!""==""COM"" ("
+      ' 17.11.20: Added: 0x8000 ...
+      ' 11.03.21: Added: 0xE000 and 0x1000
+      Print #fp, "          ""%packages%\esp32\tools\esptool_py\%ESP32_TOOL_VERSION%/esptool.exe"" --chip esp32 --port \\.\!uploadTo! --baud 921600 --before default_reset --after hard_reset write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect " & _
+                     " 0xE000  ""%packages%\esp32\hardware\esp32\%ESP32_BOARD_VERSION%/tools/partitions/boot_app0.bin""" & _
+                     " 0x1000  ""%packages%\esp32\hardware\esp32\%ESP32_BOARD_VERSION%/tools/sdk/bin/bootloader_qio_80m.bin""" & _
+                     " 0x10000 ""%aTemp%\%srcFile%.bin""" & _
+                     " 0x8000  ""%aTemp%\%srcFile%.partitions.bin"""
+      Print #fp, "   ) else ("
+      Print #fp, "          ""%packages%\esp32\hardware\esp32\%ESP32_BOARD_VERSION%/tools/espota.exe"" -i !uploadTo! -p 3232 --auth= -f ""%aTemp%\%srcFile%.bin"""
+      Print #fp, "          )"
+      Print #fp, "    REM *** caller expects a positive errorlevel in error case, but ESPTOOL returns errorlevel -1"   '02.03.21 Juergen
+      Print #fp, "    if not errorlevel 0 exit /b 1"                                                                   '02.03.21 Juergen
+      Print #fp, ""
+      Print #fp, ")"
+      Print #fp, "Goto :EOF"
+      Print #fp, ""
+      Print #fp, ":: write a text without newline"
+      Print #fp, ":write"
+      Print #fp, "echo | set /p x=""%* """
+      Print #fp, "goto :eof"
+      Print #fp, ""
+      Print #fp, ":short"
+      Print #fp, "set %1=%~s2"
+      Print #fp, "goto :eof"
+      Print #fp, ""
+  Else
+      Create_PIO_Build fp, "esp32", ResultName, ComPort, SrcDir          ' 13.02.22: Juergen
+  End If
   Close #fp
   On Error GoTo 0
   Create_Start_ESP32_Sub = "Call " & CMD_Name
@@ -769,11 +902,20 @@ Public Function Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortC
         Exit Function
     End If
     
+    ' 21.01.2021 Optionally get IP Address from cell left to com port
+    If Get_BoardTyp() = "ESP32" And Cells(SH_VARS_ROW, ComPortColumn + 1) <> "" Then
+        BuildOptions = Cells(SH_VARS_ROW, BuildOptColumn)
+        Check_If_Arduino_could_be_programmed_and_set_Board_type = True
+        Exit Function
+    End If
+    
+    
     Retry = False
     If Check_USB_Port_with_Dialog(ComPortColumn) = False Then Exit Function ' Display Dialog if the COM Port is negativ and ask the user to correct it
     
     ' Now we are sure that the com port is positiv. Check if it could be accesed and get the Baud rate
     BuildOptions = Cells(SH_VARS_ROW, BuildOptColumn)
+
     AutoDetect = InStr(BuildOptions, AUTODETECT_STR) > 0
     If AutoDetect Then
        BuildOptions = Trim(Replace(BuildOptions, AUTODETECT_STR, ""))
@@ -783,6 +925,7 @@ Public Function Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortC
        End If
     End If
     ComPort = val(Cells(SH_VARS_ROW, ComPortColumn))
+    If ComPort > 255 Then ComPort = 0                                                 ' 03.03.22: Juergen avoid overrun error
     CheckCOMPort_Txt = Check_If_Port_is_Available_And_Get_Name(ComPort) ' 13.11.20: Old: Check_If_Port_is_Available (ComPort)        ' to set CheckCOMPort_Txt   ' 28.10.20: Jürgen
     
     Dim FirmwareVer As String
@@ -870,9 +1013,9 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
   Dim ComPort As String, BuildOptions As String, CommandStr As String, ResFile As String, Mode As String, DeviceSignature As Long, CPUType As String
   
   #If VBA7 Then                                                             ' 05.06.20:
-    Dim hwnd As LongPtr: hwnd = Application.hwnd
+    Dim hWnd As LongPtr: hWnd = Application.hWnd
   #Else
-    Dim hwnd As Long:    hwnd = Application.hwnd
+    Dim hWnd As Long:    hWnd = Application.hWnd
   #End If
   
   #If OLD_LIB_CHECK Then
@@ -892,8 +1035,12 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
      Stop_Compile_Time_Display
      Exit Function
   End If
-
   ComPort = "COM" & Cells(SH_VARS_ROW, ComPortColumn) ' 14.07.20: moved "--port" into "Create_Cmd_file" ' 28.10.20: Jürgen: Removed "\\..\"
+  
+  ' 21.01.2021 Optionally get IP Address from cell left to com port
+  If Get_BoardTyp() = "ESP32" And Cells(SH_VARS_ROW, ComPortColumn + 1) <> "" Then
+    ComPort = Cells(SH_VARS_ROW, ComPortColumn + 1)
+  End If
   
   ResFile = "Start_Arduino_Result.txt"
 
@@ -943,7 +1090,7 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
       Compile_and_Upload_Prog_to_Arduino = True
       Exit Function
   End If
-  
+
   Dim Res As ShellAndWaitResult
   Dim Start As Variant: Start = Time
   
@@ -974,7 +1121,7 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
   '   See: https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow
   ' But it brings up excel again after the upload to the Arduino
   ' Without this funchion an other program was activated after the upload for some reasons
-  Bring_to_front hwnd
+  Bring_to_front hWnd
   
   Select Case Res
     Case Success, _
@@ -1009,6 +1156,7 @@ Public Function Compile_and_Upload_Prog_to_Arduino(InoName As String, ComPortCol
     Stop_Compile_Time_Display
     Debug.Print "Compile and upload duration: " & Format(Time - Start, "hh:mm:ss")
     Show_Status_for_a_while Get_Language_Str("Programm erfolgreich hochgeladen. Kompilieren und Hochladen dauerte ") & Format(Time - Start, "hh:mm:ss"), "00:02:00"  ' 05.05.20: Old 30 Sek
+    UpdateSimulatorIfNeeded
     Compile_and_Upload_Prog_to_Arduino = True
   End If
 End Function
@@ -1017,7 +1165,10 @@ End Function
 '------------------------------------------------------------------
 Public Function Compile_and_Upload_LED_Prog_to_Arduino(Optional CreateFilesOnly As Boolean = False) As Boolean
 '------------------------------------------------------------------
-  If Upload_the_Right_Arduino_Prog_if_needed() Then
+  Dim Doit As Boolean
+  Doit = CreateFilesOnly
+  If CreateFilesOnly = False Then Doit = Upload_the_Right_Arduino_Prog_if_needed()
+  If Doit Then
      Compile_and_Upload_LED_Prog_to_Arduino = Compile_and_Upload_Prog_to_Arduino(InoName_LED, COMPort_COL, BUILDOP_COL, ThisWorkbook.Path & "\" & Ino_Dir_LED, CreateFilesOnly)
   End If
 End Function

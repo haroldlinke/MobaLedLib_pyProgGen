@@ -54,7 +54,7 @@ Private Sub Debug_Print_LED_Channels()
   
   For Each o In Me.Controls
     Dim Txt As String
-    If Left(o.Name, Len("CommandButton")) = "CommandButton" Then
+    If left(o.Name, Len("CommandButton")) = "CommandButton" Then
        Txt = " " & o.Caption & ":"
        If o.Tag <> "" Then
              Txt = Txt & o.Tag
@@ -62,7 +62,7 @@ Private Sub Debug_Print_LED_Channels()
        End If
        Txt = Txt & "                "
     End If
-    All = All & Left(Txt, 22)
+    All = All & left(Txt, 22)
     If Len(All) > 80 Then
        Debug.Print All & """ & _"
        All = """"
@@ -77,7 +77,7 @@ Private Sub Set_Color_in_y_Range(StartY As Long, EndY As Long, ForeColor As Long
 '--------------------------------------------------------------------------------
   Dim c As Variant
   For Each c In Controls
-     If c.Top >= StartY And c.Top < EndY Then
+     If c.top >= StartY And c.top < EndY Then
         c.ForeColor = ForeColor  ' &H80000012&
      End If
   Next c
@@ -88,7 +88,7 @@ Private Sub Set_Bold_in_y_Range(StartY As Double, EndY As Double, Bold As Boolea
 '---------------------------------------------------------------------------------
   Dim c As Variant
   For Each c In Controls
-     If c.Top >= StartY And c.Top < EndY Then
+     If c.top >= StartY And c.top < EndY Then
         c.Font.Bold = Bold
      End If
   Next c
@@ -207,15 +207,15 @@ End Sub
 '----------------------------
 Private Sub OK_Button_Click()
 '----------------------------
-  Dim Cnt As Long
-  Cnt = Count_Used_RGB_Channels()
-  If Cnt = 0 Then
+  Dim cnt As Long
+  cnt = Count_Used_RGB_Channels()
+  If cnt = 0 Then
      MsgBox Get_Language_Str("Das Haus enthält noch keine Räume" & vbCr & _
             "Bitte wählen die mindestens einen Raumtyp aus"), vbInformation, Get_Language_Str("Kein Raum ausgewählt")
      Exit Sub
   End If
   
-  Userform_Res = Cnt & "$"                                                  ' 07.05.20: Old: "|"
+  Userform_Res = cnt & "$"                                                  ' 07.05.20: Old: "|"
   If Mode = "House" Then
     If IndividualTimes_CheckBox Then
           Userform_Res = Userform_Res & "HouseT"
@@ -250,31 +250,31 @@ Private Function Count_Used_RGB_Channels()
 ' assending order.
 ' 1 2 3 = one RGB LED
 ' 1 1 1 = three RGB LEDs
-  Dim Cnt As Long, X As Variant, SingleLED As Integer
+  Dim cnt As Long, X As Variant, SingleLED As Integer
   For Each X In Split(LED_CntList, " ")    ' LED_CntList = "RGB RGB 1 2 3 1 " for example
       If X = "RGB" Then
               If SingleLED = 0 Then
-                    Cnt = Cnt + 1
-              Else: Cnt = Cnt + 2
+                    cnt = cnt + 1
+              Else: cnt = cnt + 2
                     SingleLED = 0
               End If
       ElseIf X <> "" Then
-              If val(X) <= SingleLED Then Cnt = Cnt + 1
+              If val(X) <= SingleLED Then cnt = cnt + 1
               SingleLED = val(X)
       End If
   Next X
-  If SingleLED > 0 Then Cnt = Cnt + 1
-  Count_Used_RGB_Channels = Cnt
+  If SingleLED > 0 Then cnt = cnt + 1
+  Count_Used_RGB_Channels = cnt
 End Function
 
 '-----------------------------
 Private Function Count_Rooms()
 '-----------------------------
-  Dim Cnt As Long
+  Dim cnt As Long
   If SelectedRooms_TextBox <> "" Then
-     Cnt = UBound(Split(SelectedRooms_TextBox, ",")) + 1
+     cnt = UBound(Split(SelectedRooms_TextBox, ",")) + 1
   End If
-  Count_Rooms = Cnt
+  Count_Rooms = cnt
 End Function
 
 '-------------------------------------------------------
@@ -284,11 +284,11 @@ Private Sub Set_Fokus_To_Selected_Rooms_to_Show_Cursor()
 End Sub
 
 '-------------------------------------
-Private Sub Set_RoomCount(Cnt As Long)
+Private Sub Set_RoomCount(cnt As Long)
 '-------------------------------------
-  RoomCnt_Label = Get_Language_Str("Anzahl: ") & Cnt
+  RoomCnt_Label = Get_Language_Str("Anzahl: ") & cnt
   Used_RGB_LEDs_Label = Get_Language_Str("RGB LED Kanäle: ") & Count_Used_RGB_Channels()
-  Set_MinMaxCnt Cnt
+  Set_MinMaxCnt cnt
   
   Set_Fokus_To_Selected_Rooms_to_Show_Cursor ' To show the cursor in the SelectedRooms_TextBox
 End Sub
@@ -596,16 +596,16 @@ Private Sub DelRoom_Button_Click()
     p = p - 1
     If p <= 0 Then Exit Do
   Loop
-  Txt = Trim(Left(Txt, p) & Mid(Txt, e + 1))
-  If Right(Txt, 1) = "," Then Txt = DelLast(Txt)
+  Txt = Trim(left(Txt, p) & Mid(Txt, e + 1))
+  If right(Txt, 1) = "," Then Txt = DelLast(Txt)
   SelectedRooms_TextBox = Txt
   SelectedRooms_TextBox.SelStart = p
 
   ' Delete the last element in LED_CntList
   Txt = LED_CntList ' LED_CntList = "RGB RGB 1 2 3 1 " for example
-  If Right(Txt, 1) = " " Then Txt = Left(Txt, Len(Txt) - 1)
-  While Right(Txt, 1) <> " " And Len(Txt) > 0
-    Txt = Left(Txt, Len(Txt) - 1)
+  If right(Txt, 1) = " " Then Txt = left(Txt, Len(Txt) - 1)
+  While right(Txt, 1) <> " " And Len(Txt) > 0
+    Txt = left(Txt, Len(Txt) - 1)
   Wend
   LED_CntList = Txt
   
@@ -630,9 +630,9 @@ End Function
 '--------------------------------------
 Private Sub Add_Room(Caption As String)
 '--------------------------------------
-  Dim Cnt As Long
-  Cnt = Count_Rooms()
-  If Cnt >= 250 Then
+  Dim cnt As Long
+  cnt = Count_Rooms()
+  If cnt >= 250 Then
      MsgBox Get_Language_Str("Es können keine weiteren Räume hinzugefügt werden"), vbInformation, Get_Language_Str("Maximale Raumanzahl erreicht")
      Set_Fokus_To_Selected_Rooms_to_Show_Cursor ' To show the cursor in the SelectedRooms_TextBox
      Exit Sub
@@ -654,7 +654,7 @@ Private Sub Add_Room(Caption As String)
             If p > 0 Then
                If Mid(SelectedRooms_TextBox, p, 1) = "," Then p = p + 1
             End If
-            SelectedRooms_TextBox = Left(SelectedRooms_TextBox, p) & Caption & ", " & Mid(SelectedRooms_TextBox, p + 1)
+            SelectedRooms_TextBox = left(SelectedRooms_TextBox, p) & Caption & ", " & Mid(SelectedRooms_TextBox, p + 1)
         End If
         SelectedRooms_TextBox.SelStart = p + Len(Caption) + 1
   End If
@@ -670,7 +670,7 @@ Private Sub Change_Height(factor As Double)
   Me.Height = (Me.Height + 5) * factor
   Dim obj As Control
   For Each obj In Controls
-    obj.Top = obj.Top * factor
+    obj.top = obj.top * factor
     obj.Height = obj.Height * factor
   Next
   Description_Label.Font.Size = Description_Label.Font.Size * factor
@@ -711,10 +711,10 @@ Private Sub SetMode(MacroName As String)
   Mode = MacroName
   Select Case MacroName
     Case "House":     'Set_Color_in_y_Range CommandButton27.Top, CommandButton54.Top, &H80000011   ' 11.10.20: Disabled
-                      Set_Bold_in_y_Range CommandButton1.Top, CommandButton27.Top, True            ' 11.10.20:
+                      Set_Bold_in_y_Range CommandButton1.top, CommandButton27.top, True            ' 11.10.20:
                       
     Case "GasLights": 'Set_Color_in_y_Range CommandButton35.Top, CommandButton27.Top, &H80000011   ' 11.10.20: Disabled
-                      Set_Bold_in_y_Range CommandButton27.Top, CommandButton54.Top, True           ' 11.10.20:
+                      Set_Bold_in_y_Range CommandButton27.top, CommandButton54.top, True           ' 11.10.20:
                       Hide_and_Move_up Me, "CommandButton1", "CommandButton35"
                       Hide_and_Move_up Me, "MinCnt_TextBox", "Abort_Button"
                       Label_NotchangableCol.Visible = False
@@ -734,13 +734,13 @@ Public Sub Show_With_Existing_Data(MacroName As String, ConfigLine As String, LE
   Dim Txt As String
   LED_Channel_TextBox = Def_Channel                                         ' 27.04.20:
   If Len(ConfigLine) > Len(MacroName) Then
-     If Left(ConfigLine, Len(MacroName)) = MacroName Then
+     If left(ConfigLine, Len(MacroName)) = MacroName Then
         Dim Parts() As String, Nr As Long, i As Long
         Parts = Split(Replace(Split(ConfigLine, "(")(1), ")", ""), ",")
         If MacroName = "House" Then
               MinCnt_TextBox = val(Parts(2))
               MaxCnt_TextBox = val(Parts(3))
-              If Left(ConfigLine, Len("HouseT")) = "HouseT" Then
+              If left(ConfigLine, Len("HouseT")) = "HouseT" Then
                     MinTime_TextBox = val(Parts(4))
                     MaxTime_TextBox = val(Parts(5))
                     IndividualTimes_CheckBox = True
@@ -749,7 +749,7 @@ Public Sub Show_With_Existing_Data(MacroName As String, ConfigLine As String, LE
               End If
         Else: Nr = 2
         End If
-        InpInversBox = (Right(Split(ConfigLine, "(")(0), Len("_Inv")) = "_Inv")   ' 13.01.20:
+        InpInversBox = (right(Split(ConfigLine, "(")(0), Len("_Inv")) = "_Inv")   ' 13.01.20:
         For i = Nr To UBound(Parts)
            Txt = Txt & Trim(Parts(i))
            If i < UBound(Parts) Then Txt = Txt & ", "

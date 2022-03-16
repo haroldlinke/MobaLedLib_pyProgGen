@@ -52,9 +52,9 @@ Function Get_Multiplexer_Group(Res As String, Description As String, Row As Long
    
     Dim LStr As String, RStr As String, Str As String, Parts() As String, LedsInGroup As Integer, Groups As Integer, Cmd As String, i As Integer, LEDCnt As Integer, Options As Integer
     
-    LStr = Left(Res, InStr(Res, ")"))
+    LStr = left(Res, InStr(Res, ")"))
     RStr = Mid(Res, InStr(Res, ")") + 1)
-    Cmd = Left(Res, InStr(Res, "("))
+    Cmd = left(Res, InStr(Res, "("))
     Parts = Split(Mid(LStr, Len(Cmd) + 1, Len(Res) - Len(RStr) - 1), ",")
     LEDCnt = val(Parts(0))
     Groups = val(Parts(4))
@@ -99,11 +99,11 @@ Private Function Create_Multiplexer(Res As String, LEDCnt As Integer, Descriptio
       Exit Function
     End If
   
-    LStr = Left(Res, InStr(Res, ")"))
+    LStr = left(Res, InStr(Res, ")"))
     RStr = Mid(Res, InStr(Res, ")") + 1)
-    Cmd = Left(Res, InStr(Res, "(") - 1)
+    Cmd = left(Res, InStr(Res, "(") - 1)
     
-    Parts = Split(Mid(Left(LStr, InStr(Res, ")") - 1), Len(Cmd) + 1, Len(Res) - Len(RStr) - 1), ",")
+    Parts = Split(Mid(left(LStr, InStr(Res, ")") - 1), Len(Cmd) + 1, Len(Res) - Len(RStr) - 1), ",")
     ' Multiplexer_<Value>(#LED, #InCh, #LocInCh, Brightness, Groups, Options, RndMinTime, RndMaxTime, CtrMode, ControlNr, NumOfLEDs)
     '                Param: 0      1      2         3           4       5          6           7         8         9        10
     
@@ -170,7 +170,7 @@ Private Function Create_Multiplexer(Res As String, LEDCnt As Integer, Descriptio
     OptionName = "0_Pattern_to_stop_Multiplexer (pc)"
     OptionPattern = "XPatternT1(#LED,4,LOC_INCH0+0,12,0,128,0,PM_NORMAL,1 sec,0,0,0)"
 
-    RdCmd = Left(OptionPattern, InStr(OptionPattern, "("))
+    RdCmd = left(OptionPattern, InStr(OptionPattern, "("))
     Parts = Split(Mid(OptionPattern, InStr(OptionPattern, "(") + 1, Len(OptionPattern)), ",")
 
     PartsCount = UBound(Parts())
@@ -196,7 +196,7 @@ Private Function Create_Multiplexer(Res As String, LEDCnt As Integer, Descriptio
         OptionName = ReadIniFileString("Multiplexer_" & Cells(Row, Descrip_Col).Value, "Option " & Nr & " Name")
         OptionPattern = ReadIniFileString("Multiplexer_" & Cells(Row, Descrip_Col).Value, "Option " & Nr & " Pattern")
         
-        RdCmd = Left(OptionPattern, InStr(OptionPattern, "("))
+        RdCmd = left(OptionPattern, InStr(OptionPattern, "("))
         Parts = Split(Mid(OptionPattern, InStr(OptionPattern, "(") + 1, Len(OptionPattern)), ",")
         
         PartsCount = UBound(Parts())
@@ -207,7 +207,7 @@ Private Function Create_Multiplexer(Res As String, LEDCnt As Integer, Descriptio
         Next PartNr
         
         binOptions = DecToBin(MltplxrOptions)
-        If Right(binOptions, 1) = 1 Then    ' LSB = 1
+        If right(binOptions, 1) = 1 Then    ' LSB = 1
             ReadStr = ReadStr & Add_Description("  /* Option " & Nr & " - " & OptionName & " */ ", Description, False)
             
             ReadStr = ReadStr & Add_Description(("  " & RdCmd _
@@ -251,7 +251,7 @@ Function Count_Ones(Waarde As Integer) As Integer
     For t = 1 To 8
         binOptions = DecToBin(Waarde)
 '        Debug.Print Waarde, " / ", binOptions
-        If Right(binOptions, 1) = 1 Then
+        If right(binOptions, 1) = 1 Then
             ' LSB = 1
             Count = Count + 1
         End If
@@ -324,7 +324,7 @@ Function Special_Multiplexer_Ext(ByVal Res As String, ByRef LEDs As String) As S
     Parts = Split(Replace(Res, ")", ""), "(")
     Param = Split(Parts(1), ",")
 '    Param = Split(Parts(1), " ")                                           ' 10.02.21: Misha
-    Cmd = Left(Res, InStr(Res, "("))
+    Cmd = left(Res, InStr(Res, "("))
     Ret = Cmd & Trim(Param(0)) & ", " & _
                                  Trim(Param(1)) & ", " & _
                                  Trim(Param(2)) & ", " & _
@@ -448,7 +448,7 @@ Dim StrSize As Long
     Worked = GetPrivateProfileString(Section, KeyName, "", RetStr, StrSize, IniFileName())
     If Worked Then
       iNoOfCharInIni = Worked
-      sIniString = Left$(RetStr, Worked)
+      sIniString = left$(RetStr, Worked)
     End If
   End If
   ReadIniFileString = sIniString

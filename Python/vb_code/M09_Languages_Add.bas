@@ -55,7 +55,7 @@ Private Function Get_LineNumber(Str As String, ByVal Pos As Long) As Long
     Dim Start As Long
     Start = InStrRev(Str, vbCr, Pos)
     If Start > 0 Then
-         Dim line As String
+         Dim Line As String
          LineCnt = LineCnt + 1
          Pos = Start - 1
          If Pos = 0 Then Exit Do
@@ -70,7 +70,7 @@ End Function
 Private Sub Set_Internal_Lines(Str As String, ByVal Name As String)
 '------------------------------------------------------------------
   Dim Pos As Long
-  If LCase(Right(Name, 4)) = ".cls" Or LCase(Right(Name, 4)) = ".frm" Then
+  If LCase(right(Name, 4)) = ".cls" Or LCase(right(Name, 4)) = ".frm" Then
         Pos = InStrRev(Str, "Attribute VB_Exposed")
         Internal_Lines = Get_LineNumber(Str, Pos) ' Stimmt nicht immer ganz genau => Egal
   Else: Internal_Lines = 0
@@ -272,7 +272,7 @@ Private Sub Add_All_VBA_Strings_to_the_Languages_Sheet()
          "  '" & SrcDir & "'", vbInformation
   
   AddedCnt = 0
-  Dim Res As String, Skipped As String, Cnt As Long, Ext As Variant
+  Dim Res As String, Skipped As String, cnt As Long, Ext As Variant
   Const Extentions = "*.bas *.cls *.frm"
 
   For Each Ext In Split(Extentions, " ")
@@ -284,7 +284,7 @@ Private Sub Add_All_VBA_Strings_to_the_Languages_Sheet()
         Else
           Debug.Print "File: " & Res
           Process_File ThisWorkbook.Path & SrcDir & Res
-          Cnt = Cnt + 1
+          cnt = cnt + 1
         End If
         Res = Dir() ' Mit Excel für Mac 2016 wird der ursprüngliche Dir-Funktionsaufruf erfolgreich ausgeführt. Nachfolgende Aufrufe zum Durchlaufen des angegebenen Verzeichnisses führen jedoch zu einem Fehler. Dies ist leider ein bekanntes Problem.
       Else
@@ -292,7 +292,7 @@ Private Sub Add_All_VBA_Strings_to_the_Languages_Sheet()
       End If
     Loop While True
   Next Ext
-  If Cnt = 0 Then
+  If cnt = 0 Then
        MsgBox "Error: Directory doesn't exist or it dosn't contain files:" & vbCr & _
               "  '" & SrcDir & "'" & vbCr & _
               vbCr & _
@@ -300,7 +300,7 @@ Private Sub Add_All_VBA_Strings_to_the_Languages_Sheet()
               "to the directory.", vbCritical, "No source files found"
   Else
        MsgBox AddedCnt & " strings added to the 'languages' sheet" & vbCr & _
-              Cnt & " modules processed" & vbCr & _
+              cnt & " modules processed" & vbCr & _
               vbCr & _
               "Following modules have been skipped:" & vbCr & _
               Skipped & _

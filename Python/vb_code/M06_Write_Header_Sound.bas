@@ -78,10 +78,10 @@ Public Function Write_Header_File_Sound_Before_Config(fp As Integer) As Boolean
      Print #fp, "// ----- Serial Onboard Sound Makros -----"
      Print #fp, "  #include ""SoundChannelMacros.h"""
      Print #fp, ""
-     Dim Index As Byte, key
+     Dim Index As Byte, Key
      Index = 0
-     For Each key In SoundLines.Keys
-        Print #fp, "  #define SOUND_CHANNEL_" & key & " " & Index
+     For Each Key In SoundLines.Keys
+        Print #fp, "  #define SOUND_CHANNEL_" & Key & " " & Index
         Index = Index + 1
      Next
      Print #fp, ""
@@ -142,13 +142,13 @@ Public Function Write_Header_File_Sound_After_Config(fp As Integer) As Boolean
      Dim module As String, playersArray As String
      Dim ChannelToModuleIndex As Scripting.Dictionary
      Set ChannelToModuleIndex = New Scripting.Dictionary
-     Dim Index As Byte, key
+     Dim Index As Byte, Key
      Index = 0
       
-     For Each key In SoundLines.Keys
-        module = "SoundProcessor::CreateSoftwareSerial(" + SoundLines(key)(0) + ", 9600)"
+     For Each Key In SoundLines.Keys
+        module = "SoundProcessor::CreateSoftwareSerial(" + SoundLines(Key)(0) + ", 9600)"
         If playersArray <> "" Then playersArray = playersArray + ", "
-        playersArray = playersArray + "new " & SoundLines(key)(1) & "(" & Str(Index) & ", " & module & ")"
+        playersArray = playersArray + "new " & SoundLines(Key)(1) & "(" & Str(Index) & ", " & module & ")"
         Index = Index + 1
      Next
      
