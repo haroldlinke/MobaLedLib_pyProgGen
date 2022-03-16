@@ -47,13 +47,13 @@ Const DEFAULT_PAR_WIDTH = 48
 
 #If VBA7 Then
   Private Declare PtrSafe Function SetLastError Lib "kernel32.dll" (ByVal dwErrCode As Long) As Long
-  Private Declare PtrSafe Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As LongPtr, ByVal nIndex As Long) As Long
-  Private Declare PtrSafe Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hwnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+  Private Declare PtrSafe Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
+  Private Declare PtrSafe Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
   Private Declare PtrSafe Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
 #Else
   Private Declare Function SetLastError Lib "kernel32.dll" (ByVal dwErrCode As Long) As Long
-  Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
-  Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+  Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+  Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
   Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 #End If
 
@@ -193,8 +193,8 @@ Private Function Check_Par_with_ErrMsg(ParNr As Long, ByRef val As Variant) As B
       Case "Var":     ' Check the variable name
                       ShowErr = (.Value = "")
                       If Not ShowErr Then
-                         If Left(.Value, Len("#InCh")) <> "#InCh" Then _
-                            ShowErr = Not Left(.Value, 1) Like "[_a-zA-Z]"
+                         If left(.Value, Len("#InCh")) <> "#InCh" Then _
+                            ShowErr = Not left(.Value, 1) Like "[_a-zA-Z]"
                       End If
                       If ShowErr Then
                          MsgBox Replace(Get_Language_Str("Fehler: Der Parameter '#1#' muss einen gültigen Variablennamen enthalten"), _
@@ -411,12 +411,12 @@ Private Sub UserForm_Resize()
          c.Width = c.Width + DiffWidth
       ElseIf c.Name = ScrollBar1.Name Then
          c.Height = c.Height + DiffHeight
-         c.Left = c.Left + DiffWidth
+         c.left = c.left + DiffWidth
       ElseIf c.Name = OK_Button.Name Or c.Name = Abort_Button.Name Then
-         c.Top = c.Top + DiffHeight
-         c.Left = c.Left + DiffWidth
+         c.top = c.top + DiffHeight
+         c.left = c.left + DiffWidth
       ElseIf c.Parent.Name <> LED_Kanal_Frame.Name Then  ' Don't move the elements in LED_Kanal_Frame ' 10.11.21: Hardi
-          c.Top = c.Top + DiffHeight
+          c.top = c.top + DiffHeight
       End If
     Next
     CurWidth = Me.Width
@@ -431,7 +431,7 @@ Private Sub Resize_Description(heightCorr As Integer)
     For Each c In Me.Controls
       If c.Name <> Description_TextBox.Name And c.Name <> ScrollBar1.Name Then
          If c.Parent.Name <> LED_Kanal_Frame.Name Then  ' Don't move the elements in LED_Kanal_Frame ' 10.11.21: Hardi
-            c.Top = c.Top + heightCorr
+            c.top = c.top + heightCorr
          End If
       End If
     Next
@@ -455,31 +455,31 @@ Private Sub MakeFormResizable(oForm As Object)
   Dim RetVal
   
 #If VBA7 Then
-   Dim hwnd  As LongPtr
+   Dim hWnd  As LongPtr
 #Else
-   Dim hwnd As Long
+   Dim hWnd As Long
 #End If
 
-  hwnd = FindWindow("ThunderDFrame", oForm.Caption)
+  hWnd = FindWindow("ThunderDFrame", oForm.Caption)
   
   Const WS_THICKFRAME = &H40000
   Const GWL_STYLE As Long = (-16)
   
   'Get the basic window style
-  lStyle = GetWindowLong(hwnd, GWL_STYLE) Or WS_THICKFRAME
+  lStyle = GetWindowLong(hWnd, GWL_STYLE) Or WS_THICKFRAME
  
   'Set the basic window styles
-  RetVal = SetWindowLong(hwnd, GWL_STYLE, lStyle)
+  RetVal = SetWindowLong(hWnd, GWL_STYLE, lStyle)
     
   'Clear any previous API error codes
   SetLastError 0
 End Sub
 
 '-----------------------------------------------------------------------------------------------------------
-Private Function Get_RGB_from_OldParams(OldParams() As String, ByVal StartNr As Long, Cnt As Long) As String
+Private Function Get_RGB_from_OldParams(OldParams() As String, ByVal StartNr As Long, cnt As Long) As String
 '-----------------------------------------------------------------------------------------------------------
   Dim Nr As Long, Res As String
-  For Nr = StartNr To StartNr + Cnt - 1
+  For Nr = StartNr To StartNr + cnt - 1
       Res = Res & Trim(OldParams(Nr)) & " "
   Next Nr
   Get_RGB_from_OldParams = Res
@@ -487,7 +487,7 @@ End Function
 
 
 '-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Description As String, LedChannels As Long, Show_Channel As Byte, LED_Channel As Long, Def_Channel As Long)  ' 27.04.20: Added: LED_Channel and Def_Channel
+Public Sub Show_UserForm_Other(ByVal par As String, ByVal Name As String, Description As String, LedChannels As Long, Show_Channel As Byte, LED_Channel As Long, Def_Channel As Long)  ' 27.04.20: Added: LED_Channel and Def_Channel
 '-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   FuncName = Name
   Show_Channel_Type = Show_Channel
@@ -510,7 +510,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
   'Debug.Print Name & " (" & Par & ")" ' Debug
 
   '*** Hide all entrys in the dialog which are not needed ***
-  ParList = Split(Par, ",")
+  ParList = Split(par, ",")
 
   ' Hide CX selection if it's not used
   If Not Is_Contained_in_Array("Cx", ParList) And Not Is_Contained_in_Array("B_LED_Cx", ParList) Then
@@ -538,7 +538,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
   
   Dim OldCmdLine As String, UseOldParams As Boolean, OldParams() As String
   OldCmdLine = Cells(ActiveCell.Row, Config__Col)
-  If Len(OldCmdLine) > Len(Name) And Left(OldCmdLine, Len(Name) + 1) = Name & "(" Then   ' 18.04.20: Added +1 and "(" to prevent mix-up of MonoFlop2 <-> MonoFlop
+  If Len(OldCmdLine) > Len(Name) And left(OldCmdLine, Len(Name) + 1) = Name & "(" Then   ' 18.04.20: Added +1 and "(" to prevent mix-up of MonoFlop2 <-> MonoFlop
      UseOldParams = True
      OldParams = Split(Trim(Replace(Mid(OldCmdLine, Len(Name) + 2), ")", "")), ",")
   End If
@@ -563,7 +563,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
   OK_Button.setFocus                                                        ' 07.10.21: Focus on the OK Button (Prior sometimes the Abort button was selected)
   For Each p In ParList
     p = Trim(p)
-    If Left(p, 1) <> "#" And InStr(" Cx B_LED_Cx ", " " & p & " ") = 0 Then
+    If left(p, 1) <> "#" And InStr(" Cx B_LED_Cx ", " " & p & " ") = 0 Then
         If UsedParNr >= MAX_PAR_CNT Then
             MsgBox "Internal error: The number of parameters is to large in Show_UserForm_Other()"
             EndProg
@@ -596,7 +596,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
             Dim OptionValue As Variant                                      ' 23.04.21
             For Each OptionValue In Split(Opt, ";")
                 OptionValue = Trim(OptionValue)
-                If (LCase(Left$(OptionValue, 7)) = "values:") Then ' Value list for parameter found
+                If (LCase(left$(OptionValue, 7)) = "values:") Then ' Value list for parameter found
                     SelectValues = Split(Trim(Mid$(OptionValue, 8)), ",") ' Values delimited by comma
                 Else
                     Opt = OptionValue
@@ -607,7 +607,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
                             Case "w":   w = val(Parts(1))
                                         Me.Controls("Par" & UsedParNr).Width = w
                                         With Me.Controls("LabelPar" & UsedParNr)
-                                            .Left = .Left + w - DEFAULT_PAR_WIDTH
+                                            .left = .left + w - DEFAULT_PAR_WIDTH
                                         End With
                             Case "Inv": ' Invert input                      ' 30.04.20: Added to invert the Skip0 parameter in the PushButton function
                                         Invers(UsedParNr - 1) = True        '           because its difficult to understand the negative logic of Skip0
@@ -653,11 +653,11 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
             Next SelectValue
             Me.Controls("Par" & UsedParNr & "Select").Visible = True
             Me.Controls("Par" & UsedParNr).Width = w
-            Me.Controls("Par" & UsedParNr).Left = 12
-            Me.Controls("Par" & UsedParNr & "Select").Left = 12 + w + 4
+            Me.Controls("Par" & UsedParNr).left = 12
+            Me.Controls("Par" & UsedParNr & "Select").left = 12 + w + 4
             Me.Controls("Par" & UsedParNr & "Select").Width = w
             With Me.Controls("LabelPar" & UsedParNr)
-                .Left = 12 + 2 * w + 8
+                .left = 12 + 2 * w + 8
                 .Width = 410 - (12 + 2 * w + 8)
             End With
         Else
@@ -702,7 +702,7 @@ Public Sub Show_UserForm_Other(ByVal Par As String, ByVal Name As String, Descri
   On Error Resume Next
   minIndex = 9999
   For Each c1 In Me.Controls
-      If c1.Visible And c1.TabIndex > 0 And Not Left(c1.Name, 13) = "OptionButton_" Then
+      If c1.Visible And c1.TabIndex > 0 And Not left(c1.Name, 13) = "OptionButton_" Then
         Dim isTabStop As Boolean
         isTabStop = False
         isTabStop = c1.TabStop
@@ -782,7 +782,7 @@ Private Function Create_Result(ByRef Res As String) As Boolean
       Dim val As Variant
       val = "Not Found"
       p = Trim(p)
-      If Left(p, 1) = "#" Then
+      If left(p, 1) = "#" Then
            val = p
       Else
            If p = "Cx" Or p = "B_LED_Cx" Then

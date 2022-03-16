@@ -7,10 +7,10 @@ Private Const Width_Define = 76
 '-------------------------------------------------------------------------------------------------------------------------------
 Private Sub Write_one_Block(fp As Integer, MName As String, Params1 As String, MTyp As String, Ram As String, Params2 As String)
 '-------------------------------------------------------------------------------------------------------------------------------
-  Dim line As String, i As Long, TNr As Long, Define As String
+  Dim Line As String, i As Long, TNr As Long, Define As String
   MName = RTrim(MName)
   Define = "#define "
-  If Left(MName, Len("XPatternT")) = "XPatternT" Then
+  If left(MName, Len("XPatternT")) = "XPatternT" Then
     If MName = "XPatternT" Then Print #fp, "#define USE_XFADE // 220 Bytes Flash"
     Print #fp, "#ifdef USE_XFADE"
     Print #fp, "// Drittes Makro bei dem fuer jede LED ein Byte RAM Reserviert wird. Das wird benoetigt wenn das flag _PF_XFADE gesetzt ist."
@@ -24,20 +24,20 @@ Private Sub Write_one_Block(fp As Integer, MName As String, Params1 As String, M
   End If
   
   For TNr = 1 To TimeCnt
-    line = AddSpaceToLen(Define & MName & TNr & "(", 22) & Params1
+    Line = AddSpaceToLen(Define & MName & TNr & "(", 22) & Params1
     For i = 1 To TNr
-        line = line & "T" & i & ","
+        Line = Line & "T" & i & ","
     Next i
-    line = AddSpaceToLen(line & "...)", Width_Define + TimeCnt * 4) & AddSpaceToLen(MTyp & TNr & "_T,", 15) & "_CHKL(LED)+" & Ram & Params2
+    Line = AddSpaceToLen(Line & "...)", Width_Define + TimeCnt * 4) & AddSpaceToLen(MTyp & TNr & "_T,", 15) & "_CHKL(LED)+" & Ram & Params2
     
     For i = 1 To TNr
-        line = line & "_T2B(T" & i & "),"
+        Line = Line & "_T2B(T" & i & "),"
     Next i
-    line = line & "_W2B(COUNT_VARARGS(__VA_ARGS__)), __VA_ARGS__,"
-    Print #fp, line
+    Line = Line & "_W2B(COUNT_VARARGS(__VA_ARGS__)), __VA_ARGS__,"
+    Print #fp, Line
   Next TNr
   
-  If Left(MName, Len("XPatternT")) = "XPatternT" Then
+  If left(MName, Len("XPatternT")) = "XPatternT" Then
     Print #fp, "#endif"
   End If
   

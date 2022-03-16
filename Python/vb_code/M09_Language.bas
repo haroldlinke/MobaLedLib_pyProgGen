@@ -115,6 +115,7 @@ Public Green_T As String   ' "Grün"
 Public OnOff_T As String   ' "AnAus"
 Public Tast_T As String    ' "Tast"
 
+Public Const Virtual_Channel_T As String = "V"         ' 18.02.22 Juergen
 
 '--------------------------------------------------------------------------------------------------------------
 Private Function Update_Language_in_Sheet(ByVal Sh As Worksheet, DestLang As Integer) As Boolean  ' Old Name: Update_Language_in_Pattern_Config_Sheet
@@ -298,15 +299,15 @@ Private Sub Activate_Language_in_Example_Sheet(ByVal Sh As Worksheet)       ' 11
   For Each o In Sh.Shapes
     Select Case o.Type
       Case msoTextBox:         ' 17: TextBox
-                               If Left(o.Name, Len("Goto_Graph")) <> "Goto_Graph" And o.Name <> "InternalTextBox" Then  ' "InternalTextBox" = "by Hardi"
-                                  If Left(o.AlternativeText, Len("Language: ")) = "Language: " Then '  11.02.20:
+                               If left(o.Name, Len("Goto_Graph")) <> "Goto_Graph" And o.Name <> "InternalTextBox" Then  ' "InternalTextBox" = "by Hardi"
+                                  If left(o.AlternativeText, Len("Language: ")) = "Language: " Then '  11.02.20:
                                      LanguageNr = val(Mid(o.AlternativeText, Len("Language: ") + 1))
                                      o.Visible = (LanguageNr = ActLanguage)
                                   End If
                                End If
       Case msoFormControl:     ' 8: Button                                  ' 19.10.19:
                                If o.AlternativeText <> "_Internal_Button_" And o.AlternativeText <> "Add_Del_Button" Then
-                                  If Left(o.AlternativeText, Len("Language: ")) = "Language: " Then
+                                  If left(o.AlternativeText, Len("Language: ")) = "Language: " Then
                                      LanguageNr = val(Mid(o.AlternativeText, Len("Language: ") + 1))
                                      o.Visible = (LanguageNr = ActLanguage)
                                   End If
@@ -581,7 +582,7 @@ Public Function Find_Language_Str_Row(ByVal Desc As String, Optional ByVal Look_
        If Len(Desc) > 90 Then ' For some reasons exel can't find longer strings !?! Maybe it's a problem with strings that contain two vblf? One vblf is no problem
           Look_At = xlPart    ' 27.03.20: After changeing SearchFormat to true it seames to work ? (Sometimes !?!)
        End If
-       Set Res = LSh.Cells.Find(What:=Left(Desc, 90), after:=Start, LookIn:=xlFormulas, LookAt:=Look_At, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True, SearchFormat:=True) ' 22.01.20: Check only the first 100 characters
+       Set Res = LSh.Cells.Find(What:=left(Desc, 90), after:=Start, LookIn:=xlFormulas, LookAt:=Look_At, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True, SearchFormat:=True) ' 22.01.20: Check only the first 100 characters
        If Look_At = xlPart And Not IsEmpty(Res) Then
           Retry = (RTrim(Res.Value) <> RTrim(Desc))  ' Use RTrim() to ignore tailing space characters
           'Debug_Find_Diff Res.Value, Desc ' Debug
@@ -717,7 +718,7 @@ Function Get_Language_Str(ByVal Desc As String, Optional GenError As Boolean = T
        If Len(Desc) > 255 Then
           Look_At = xlPart
        End If
-       Set Res = LSh.Cells.Find(What:=Left(Desc, 255), after:=Start, LookIn:=xlFormulas, LookAt:=Look_At, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True, SearchFormat:=False) ' 22.01.20: Check only the first 255 characters
+       Set Res = LSh.Cells.Find(What:=left(Desc, 255), after:=Start, LookIn:=xlFormulas, LookAt:=Look_At, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True, SearchFormat:=False) ' 22.01.20: Check only the first 255 characters
        If Look_At = xlPart And Not IsEmpty(Res) Then
           Retry = (RTrim(Res.Value) <> Desc)  ' Use RTrim() to ignore tailing space characters
           If Retry Then
@@ -787,11 +788,11 @@ Dim o As Variant
       '   Debug.Print "Debug"
       'End If
       On Error Resume Next  ' Problem: if o.Caption doesn't exist "<Objekt unterstützt diese Eigenschaft oder Methode nicht>"
-        If Left(o.Name, Len("MultiPage")) = "MultiPage" Then
+        If left(o.Name, Len("MultiPage")) = "MultiPage" Then
            Change_Lang_in_MultiPage o
-        ElseIf Left(o.Name, Len("ListBox")) = "ListBox" Then
+        ElseIf left(o.Name, Len("ListBox")) = "ListBox" Then
            ' There is no constant text in the ListBox dialog. It is loaded dymanicaly
-        ElseIf o.Caption <> "by Hardi" And Left(o.Caption, 4) <> "http" And o.Caption <> "*" And o.Caption <> "J" Then   ' "J" = Smilly in "Wait_CheckColors_Form"
+        ElseIf o.Caption <> "by Hardi" And left(o.Caption, 4) <> "http" And o.Caption <> "*" And o.Caption <> "J" Then   ' "J" = Smilly in "Wait_CheckColors_Form"
           'o.Caption = Replace(Get_Language_Str(Replace(o.Caption, vbCr, "|"), False, xlWhole), "|", vbCr)   ' 30.01.20: Old:
            o.Caption = Get_Language_Str(o.Caption, False, xlWhole)
         End If

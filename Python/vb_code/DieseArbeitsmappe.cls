@@ -19,8 +19,8 @@ Private Sub Remove_Special_Events()                                         ' 11
 '----------------------------------
 ' Events which generate a link to Prog_Generator_MobaLedLib.xlsm
 ' They get active if hidden lines are unhiden
-    Application.CommandBars("row").FindControl(ID:=883).OnAction = ""  ' "myHideRows_Event"
-    Application.CommandBars("row").FindControl(ID:=884).OnAction = ""  ' "myUnhideRows_Event"
+    Application.CommandBars("row").FindControl(Id:=883).OnAction = ""  ' "myHideRows_Event"
+    Application.CommandBars("row").FindControl(Id:=884).OnAction = ""  ' "myUnhideRows_Event"
 End Sub
 
 
@@ -29,8 +29,8 @@ End Sub
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
 '--------------------------------------------------
   If ENABLE_CRITICAL_EVENTS_WB Then
-    Application.CommandBars("row").FindControl(ID:=883).OnAction = ""
-    Application.CommandBars("row").FindControl(ID:=884).OnAction = ""
+    Application.CommandBars("row").FindControl(Id:=883).OnAction = ""
+    Application.CommandBars("row").FindControl(Id:=884).OnAction = ""
   End If
 End Sub
 
@@ -63,24 +63,29 @@ Public Sub Workbook_Open()
   
   Install_Missing_Libraries_and_Board                                       ' 28.05.20:
   
+  Load_Extensions                                                           ' 26.01.22 Juergen add Extension feature
+  
   Application.ScreenUpdating = True
   
-If ENABLE_CRITICAL_EVENTS_WB Then
-  ' Generate events for special actions
-  On Error GoTo ErrorDetectEvents
-  Application.CommandBars("row").FindControl(ID:=883).OnAction = "myHideRows_Event"
-  Application.CommandBars("row").FindControl(ID:=884).OnAction = "myUnhideRows_Event"
-  On Error GoTo 0
-Else
-  Remove_Special_Events                                                     ' 13.10.20:
-End If
+  If ENABLE_CRITICAL_EVENTS_WB Then
+    ' Generate events for special actions
+    On Error GoTo ErrorDetectEvents
+    Application.CommandBars("row").FindControl(Id:=883).OnAction = "myHideRows_Event"
+    Application.CommandBars("row").FindControl(Id:=884).OnAction = "myUnhideRows_Event"
+    On Error GoTo 0
+  Else
+    Remove_Special_Events                                                     ' 13.10.20:
+  End If
 
-Dim DidCopy As Boolean                                                      ' 12.11.21: Juergen ImportOld version also in case of Beta Update
-DidCopy = False
-If Copy_Prog_If_in_LibDir_WithResult(DidCopy) Then
-   Import_from_Old_Version_If_exists (Not DidCopy)
+  Dim DidCopy As Boolean                                                      ' 12.11.21: Juergen ImportOld version also in case of Beta Update
+  DidCopy = False
+  If Copy_Prog_If_in_LibDir_WithResult(DidCopy) Then
+    Import_from_Old_Version_If_exists (Not DidCopy)
   End If
   
+  If Get_Num_Config_Var_Range("SimAutostart", 0, 1, 0) = 1 Then               ' 04.04.22: Juergen Simulator
+    OpenSimulator
+  End If
   
   Application.EnableEvents = True ' 28.10.19.
   Exit Sub

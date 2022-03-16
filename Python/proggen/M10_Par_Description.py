@@ -67,13 +67,13 @@ from vb2py.vbconstants import *
 from ExcelAPI.X01_Excel_Consts import *
 import ExcelAPI.P01_Workbook as P01
 
-__ParName_COL = 1
-__Par_Cnt_COL = 2
-__ParType_COL = 3
-__Par_Min_COL = 4
-__Par_Max_COL = 5
-__Par_Def_COL = 6
-__Par_Opt_COL = 7
+ParName_COL = 1
+Par_Cnt_COL = 2
+ParType_COL = 3
+Par_Min_COL = 4
+Par_Max_COL = 5
+Par_Def_COL = 6
+Par_Opt_COL = 7
 ParInTx_COL = 8
 ParHint_COL = 9
 CHAN_TYPE_NONE = 1
@@ -82,14 +82,14 @@ CHAN_TYPE_SERIAL = 3
 __FirstDatRow = 2
 
 def __Get_ParDesc_Row(Sh, Name):
-    global __ParName_COL
+    global ParName_COL
     fn_return_value = None
     #r = Range()
 
     #f = Variant()
     #------------------------------------------------------------------------
     with_0 = Sh
-    r = with_0.Range(with_0.Cells(1, __ParName_COL), with_0.Cells(M30.LastUsedRowIn(Sh), __ParName_COL))
+    r = with_0.Range(with_0.Cells(1, ParName_COL), with_0.Cells(M30.LastUsedRowIn(Sh), ParName_COL))
     #f = r.Find(What= Name, after= r.Cells(__FirstDatRow, 1), LookIn= xlFormulas, LookAt= xlWhole, SearchOrder= xlByRows, SearchDirection= xlNext, MatchCase= True, SearchFormat= False)
     f_row=r.Cells.index(Name)+1 #*HL
     if f_row is None:
@@ -125,17 +125,33 @@ def Get_Par_Data(ParName):
     Sh = P01.Sheets(M02.PAR_DESCR_SH)
     Row = __Get_ParDesc_Row(Sh, ParName)
     with_1 = Sh
-    Typ = with_1.Cells(Row, __ParType_COL)
-    Min = with_1.Cells(Row, __Par_Min_COL)
-    Max = with_1.Cells(Row, __Par_Max_COL)
-    Def = with_1.Cells(Row, __Par_Def_COL)
-    Opt = with_1.Cells(Row, __Par_Opt_COL)
+    Typ = with_1.Cells(Row, ParType_COL)
+    Min = with_1.Cells(Row, Par_Min_COL)
+    Max = with_1.Cells(Row, Par_Max_COL)
+    Def = with_1.Cells(Row, Par_Def_COL)
+    Opt = with_1.Cells(Row, Par_Opt_COL)
     InpTxt = with_1.Cells(Row, ParInTx_COL + ActLanguage * DeltaCol + Offs)
     if InpTxt == '':
         InpTxt = ParName
     Hint = with_1.Cells(Row, ParHint_COL + ActLanguage * DeltaCol + Offs)
     
     return Typ, Min, Max, Def, Opt, InpTxt, Hint
+
+
+def __Get_Type_Only(TypeStr):
+    fn_return_value = ""
+    
+    #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # type has the option to be seperated by "." - e.g. Domain.Class.Type Extension.Extension.List
+    # the last part must always be either empty of a well known type e.g. List, Mode, Time
+    if TypeStr == '':
+        fn_return_value = ''
+    else:
+        Splits = Split(TypeStr, '.')
+        #return the last part
+        fn_return_value = Splits(UBound(Splits))
+    return fn_return_value
+
 
 def __Test_Get_Par_Data():
 

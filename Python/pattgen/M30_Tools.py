@@ -507,9 +507,9 @@ def Hide_and_Move_up(dlg, StartHide_Name, StartMove_Name):
     MoveDelta = StartMove_y - StartHide_y
     #Debug.Print "Hide_and_Move_up from '" & StartHide_Name & "' to '" & StartMove_Name & "' " & MoveDelta ' Debug
     for c in dlg.Controls:
-        if c.Top >= StartMove_y:
+        if c.Top >= StartMove_y-1:   # 15.03.22: Buttons are placed 1 pixel above input field/label
             c.Top = c.Top - MoveDelta
-        elif c.Top >= StartHide_y:
+        elif c.Top >= StartHide_y-1: # 15.03.22: Buttons are placed 1 pixel above input field/label
             c.Visible = False
     dlg.Height = dlg.Height - MoveDelta
 

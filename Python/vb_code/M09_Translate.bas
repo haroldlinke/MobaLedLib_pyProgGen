@@ -48,7 +48,7 @@ Private Function Clean(val As String)
     val = Replace(val, "VBLF", vbLf)      '    "
     val = Replace(val, "_PERCENT", "%")   ' 27.11.21:
     
-    If Left(val, 1) = "=" Then val = "'" & val
+    If left(val, 1) = "=" Then val = "'" & val
     Clean = val
 End Function
 
@@ -56,12 +56,12 @@ End Function
 Private Function RegexExecute(Str As String, reg As String, Optional matchIndex As Long, Optional subMatchIndex As Long) As String
 '---------------------------------------------------------------------------------------------------------------------------------
     On Error GoTo ErrHandl
-    Dim regex As Object, matches As Object
+    Dim regex As Object, Matches As Object
     Set regex = CreateObject("VBScript.RegExp"): regex.Pattern = reg
     regex.Global = Not (matchIndex = 0 And subMatchIndex = 0) 'For efficiency
     If regex.Test(Str) Then
-        Set matches = regex.Execute(Str)
-        RegexExecute = matches(matchIndex).SubMatches(subMatchIndex)
+        Set Matches = regex.Execute(Str)
+        RegexExecute = Matches(matchIndex).submatches(subMatchIndex)
         Exit Function
     End If
 ErrHandl:
@@ -112,13 +112,13 @@ Private Sub TranslateOneCell(src As Range, Optional DeltaCol As Long = 1, _
   DestCol = src.Column + DeltaCol + StartOffs
   For Each DestLang In Split(DstLng, " ")
     If Cells(Row, DestCol) = "" Then
-       If Left(src.Formula, 2) = "=$" Then ' Special translation if the the source starts with is a formula like =$H$8 (Used in the Group names)
+       If left(src.Formula, 2) = "=$" Then ' Special translation if the the source starts with is a formula like =$H$8 (Used in the Group names)
           Dim Addr As String, NewAddr As String, DstRow As Long, TailingTxt As String
           Addr = Split(Mid(src.Formula, 2), " ")(0)                         ' 07.10.21: Added "Splitt..." to be able to process lines with mixed content (Link and text)
           DstRow = Range(Addr).Row
           NewAddr = Cells(DstRow, DestCol).Address
           TailingTxt = Trim(Mid(src.Formula, Len(Addr) + 2))
-          If Left(TailingTxt, 2) = "& " Then
+          If left(TailingTxt, 2) = "& " Then
              TailingTxt = Replace(Mid(TailingTxt, 3), """", "")
              TailingTxt = " & "" " & Translate_Text(TailingTxt, SrcLng, DestLang) & """"
           End If
@@ -127,7 +127,7 @@ Private Sub TranslateOneCell(src As Range, Optional DeltaCol As Long = 1, _
               .ThemeColor = xlThemeColorDark1
               .TintAndShade = -0.499984740745262
           End With
-       ElseIf Left(src.Formula, 2) = "=C" Then ' Don't translate it if the source  points to column C like =C
+       ElseIf left(src.Formula, 2) = "=C" Then ' Don't translate it if the source  points to column C like =C
           Res = src.Formula                    ' Used in the 'Languages' sheet
           With Cells(Row, DestCol).Font
               .ThemeColor = xlThemeColorDark1
@@ -136,7 +136,7 @@ Private Sub TranslateOneCell(src As Range, Optional DeltaCol As Long = 1, _
        Else
           Res = Translate_Text(Txt, SrcLng, DestLang)  ' Translat the cell
        End If
-       If FirstCharUppercase Then Res = Left(UCase(Res), 1) & Mid(Res, 2) ' 26.10.21:
+       If FirstCharUppercase Then Res = left(UCase(Res), 1) & Mid(Res, 2) ' 26.10.21:
        Cells(Row, DestCol) = Res
     End If
     DestCol = DestCol + DeltaCol

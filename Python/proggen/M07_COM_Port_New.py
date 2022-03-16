@@ -263,6 +263,8 @@ def __Show_USB_Port_Dialog(ComPortColumn, ComPort):
     ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
     if ComPort < 0:
         ComPort = - ComPort
+    if ComPort > 255:                       # 03.03.22: Juergen avoid overrun error
+        ComPort = 0
     if (ComPortColumn == M25.COMPort_COL):
         Picture = 'LED_Image'
         ArduName = 'LED'

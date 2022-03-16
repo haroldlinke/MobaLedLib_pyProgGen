@@ -80,7 +80,7 @@ Private Function Proc_General_With_Other_Par(ByVal Macro As String, Description 
   Param = Split(Parts(1), ",")
   
   ' IF statement added by Misha 18-4-2020                                   ' 14.06.20: Added from Mishas version
-  If Left(Macro, Len("Multiplexer")) = "Multiplexer" Then   ' Select which UserForm to show
+  If left(Macro, Len("Multiplexer")) = "Multiplexer" Then   ' Select which UserForm to show
       UserForm_Create_Multiplexer.Show_UserForm_Other Parts(1), Parts(0), Description, LedChannels
   Else
       UserForm_Other.Show_UserForm_Other Parts(1), Parts(0), Description, LedChannels, Show_Channel, LED_Channel, Def_Channel ' 27.04.20: Added: Show_LED_Channel, LED_Channel and Def_Channel
@@ -163,7 +163,7 @@ Private Function Proc_General(LEDs As String, ByVal Macro As String, Description
           If Res = "" Then Exit Function
           
           If Parts(0) = "ConstrWarnLight" Then Res = Special_ConstrWarnLight(Res, LEDs) ' 18.09.19
-          If Left(Parts(0), Len("Multiplexer")) = "Multiplexer" Then Res = Special_Multiplexer_Ext(Res, LEDs)          ' Added by Misha 2020-03-26 ' 14.06.20: Added from Mishas version
+          If left(Parts(0), Len("Multiplexer")) = "Multiplexer" Then Res = Special_Multiplexer_Ext(Res, LEDs)          ' Added by Misha 2020-03-26 ' 14.06.20: Added from Mishas version
     End If
     
     Dim Res_LED_Channel As String                                           ' 27.04.20:
@@ -173,16 +173,16 @@ Private Function Proc_General(LEDs As String, ByVal Macro As String, Description
     End If
     
     
-    If Left(LEDs, Len("LedCnt")) = "LedCnt" Then ' Special treatement if "LEDs" starts with "LedCnt" (Used in "Reserve LEDs" and "Next_LED")
+    If left(LEDs, Len("LedCnt")) = "LedCnt" Then ' Special treatement if "LEDs" starts with "LedCnt" (Used in "Reserve LEDs" and "Next_LED")
        LEDs = Get_NamedPar(LEDs, Macro, Res)
     End If
     
     Select Case LEDs
        Case "Cx": ' Fill then the LEDs Column
-                  Dim Par As String
-                  Par = Get_NamedPar("Cx", Macro, Res)
-                  If Par = "" Then Par = Get_NamedPar("B_LED_Cx", Macro, Res) ' Used in PushButton_w_LED_BL_0..     ' 13.04.20:
-                  LEDs = Cx_to_LED_Channel(Par, LedChannels)
+                  Dim par As String
+                  par = Get_NamedPar("Cx", Macro, Res)
+                  If par = "" Then par = Get_NamedPar("B_LED_Cx", Macro, Res) ' Used in PushButton_w_LED_BL_0..     ' 13.04.20:
+                  LEDs = Cx_to_LED_Channel(par, LedChannels)
     End Select
   End If
   
@@ -208,13 +208,13 @@ End Function
 '-----------------------------------------------------------------------------------------------------------
 Private Function Get_From_Input_Var(Macro As String, ByVal FilledMacro As String, ParName As String) As Long
 '-----------------------------------------------------------------------------------------------------------
-  Dim Par As String
-  Par = Get_NamedPar(ParName, Macro, FilledMacro)
-  If Par = "" Then
+  Dim par As String
+  par = Get_NamedPar(ParName, Macro, FilledMacro)
+  If par = "" Then
      MsgBox "Interner Fehler in Get_From_Input_Var()", vbCritical, "Interner Fehler"
      EndProg
   End If
-  Get_From_Input_Var = Par
+  Get_From_Input_Var = par
 End Function
 
 
@@ -253,7 +253,7 @@ Private Function Get_Number_of_used_InCh_in_Par(ByVal Statement As String, Mode 
 ' If Mode = "Comma" the staremet is a list of parameters separated by ","
 '
   Statement = Trim(Statement)
-  If Right(Statement, 1) = ")" Then Statement = Trim(DelLast(Statement))
+  If right(Statement, 1) = ")" Then Statement = Trim(DelLast(Statement))
   Dim Arglist() As String, Arg As Variant, Nr As Long, MaxNr As Long
   Select Case Mode
      Case "Logic": Arglist = SplitEx(Statement, True, "OR", "AND", "NOT")
@@ -404,7 +404,8 @@ Private Function SelectMacros_Sub() As Boolean
                        'Calculate
                        Open_MobaLedCheckColors_and_Insert_Set_ColTab_Macro
                        Exit Function
-        Case "":       Res = Proc_General(LEDs, Macro, Description, LedChannels, Act_Channel, Def_Channel) ' Empty typ
+        Case "EX.Constructor", "EX.Macro", "":                                                      ' 31.01.22: Juergen add extensions
+                       Res = Proc_General(LEDs, Macro, Description, LedChannels, Act_Channel, Def_Channel) ' Empty typ
         Case Else:     MsgBox "Unknown Dialog Typ '" & DlgTyp & "'", vbCritical, "Program Error: SelectMacros_Sub"
       End Select
       
@@ -493,7 +494,7 @@ Private Function SelectMacros_Sub() As Boolean
          
          ' Changed by Misha 18-4-2020                                       ' 14.06.20: Added from Mishas version
          Parts = Split(Res, ",")
-         If Left(MacroName, Len("Multiplexer")) = "Multiplexer" Then
+         If left(MacroName, Len("Multiplexer")) = "Multiplexer" Then
              Cells(DstRow, LocInCh_Col) = Count_Ones(val(Parts(5))) + 1 ' Get the number of selected Patterns in the Multiplexer function. It gives the number of LocInCh variables.
                                                                         ' 10.02.21: 20210206 Misha, Added + 1 because there is an zero pattern added.
              
@@ -588,7 +589,7 @@ End Sub
         Dim c As Variant
         With Sh
             For Each c In .Range(.Cells(HeadRow + 1, Col), .Cells(LastUsedRowIn(Sh), Col))
-                If c.Formula <> "" & Left(c.Formula, 1) = "=" Then
+                If c.Formula <> "" & left(c.Formula, 1) = "=" Then
                      c.Formula = Application.ConvertFormula(c.Formula, xlA1, xlA1, xlAbsolute)
                 End If
             Next c
@@ -626,7 +627,7 @@ Private Sub Sort_by_Column(Col As Long, SortFlag As String)                 ' 07
     Set Sh = ActiveWorkbook.Worksheets(LIBMACROS_SH)
     With Sh
       .Sort.SortFields.Clear ' 20.10.21: Replaced ".Add2" by ".Add" in the following line. This solves Ulrichs problem. (See: https://www.mrexcel.com/board/threads/vba-difference-in-sort-with-add2-and-add-sortfields-add2-vs-sortfields-add.1072594/)
-      .Sort.SortFields.Add key:=.Range(.Cells(HeadRow, Col), .Cells(LastUsedRowIn(Sh), Col)), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+      .Sort.SortFields.Add Key:=.Range(.Cells(HeadRow, Col), .Cells(LastUsedRowIn(Sh), Col)), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
       .Sort.SetRange .Range(.Cells(HeadRow + 1, 1), .Cells(LastUsedRowIn(Sh), LastUsedColumnIn(Sh)))
       With .Sort
         .Header = xlNo

@@ -80,6 +80,98 @@ import proggen.M30_Tools as M30
 #import proggen.M80_Create_Mulitplexer as M80
 
 
+""" Attention: One of the following preprcessor constants have to be defined in
+ "Extras / Eigenschafteb VBA Projekt"'
+   PATTERN_CONFIG_PROG
+   PROG_GENERATOR_PROG
+
+ Other languages could be added in the hidden sheet LANGUAGES_SH = "Languages"
+ In addition Get_ExcelLanguage() must be adapted
+ Current languages:
+  0 = German
+  1 = English
+  2 = Dutch
+  3 = French
+  4 = Italian  (Prog_Generator only)
+  5 = Spain        "
+  6 = Danish       "
+ Strings which have not been translated could be found with
+ The seach expression '[!r]("'  and ' "'   (Without ')
+ and enabled "Mit Mustervergleich"
+   See also: https://docs.microsoft.com/de-de/office/vba/language/reference/user-interface-help/wildcard-characters-used-in-string-comparisons
+ They could be translated by inserting 'Get_Language_Str'
+
+
+ There are a lot of different locations where text messages are used:
+ - In the sheets
+ - Error messages in the sheets which are shown on certain condition
+ - Hints in the sheets
+ - Dialog boxes
+   - Some of them are changed from the program code
+   - Some messages are located in separate sheets: Special_Mode_Dlg, Par_Description
+ - In the program code
+ - Buttons
+ - The Hotkeys have also to be adapted in the dialogs and single buttons
+ - In the configuration files *.MLL_pcf
+   - Variable names
+   - Text messages
+ - ...
+
+ Some messages in the program are only called in case of an error.
+ => They are not added automatically to the 'Languages' sheet
+ ==> This is done by calling Add_All_VBA_Strings_to_the_Languages_Sheet()
+
+ Location for the translations
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ - The most translations are stored in the hidden "Languages"
+ - Some translations are stored in different locations
+   - The start page contains one text box for each language.
+     This is used because here several colors and fonts are used.
+     Normaly only the box which contains the current language
+     is visible. The language number is stored in the field
+     "Alternativtext" which could be changed using the right mouse
+     and the menu "Größe und Eigneschaften".
+     The "Alternativtext" mut contain the keyword "Language:"
+     Example: "Language: 0"
+     If a new language is created one text box has to be copied
+     and translated and the "Alternativtext" has to be changed to
+     the new number.
+   - The text messages in the example sheets in the Pattern_Configurator
+     have an own text box for each language. Here only the text box
+     for the actual language is visible. This method is used to be
+     independand from the Excel program. The number after the
+     keyword "msoTextBox" defines the language number. Old *.MLL_pcf
+     don't have a tailing number they are always shown.
+   - The buttons in the "Morsecode" sheet use a button for each
+     language fo the same reason as the text boxes.
+     (See Activate_Language_in_Example_Sheet(ByVal sh As Worksheet)
+     The Language number is stored in the "AlternativeText".
+   - Dialog functions which select their data form an Excel sheet
+     like the "SelectMacros_Form" or the "UserForm_Other" use
+     separate columns in the sheets "Lib_Macros" and "Par_Description
+
+
+
+ Language specific messages in the example sheets                          ' 11.02.20:
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Different languages could be used in the "msoTextBox" lines in the example sheets.
+ The language number is added to the token:
+  "msoTextBox0" = German
+  "msoTextBox1" = Englisch
+  "msoTextBox2" = Dutch
+  "msoTextBox3" = French
+ All Lines starting with "msoTextBox" are loaded to the sheet, but only the
+ text box with the current language is visible. The Language is stored in
+ ShapeRange.AlternativeText = "Language: 0"
+ If the line line starts with "msoTextBox" it's an old file without different languages.
+ This textbox is always shown.
+ If the token has a tailing number it's assumed that there are matching lines for all languages.
+ If the current language is missing nothing is displayed ;-( => It's importand to update
+ the examples if a new language is added
+
+
+"""
+
 FirstLangRow = 3
 LangType_Col = 1
 LangParamCol = 2
@@ -91,6 +183,9 @@ Red_T = String()
 Green_T = String()
 OnOff_T = String()
 Tast_T = String()
+
+Virtual_Channel_T = "V"         # 18.02.22 Juergen
+
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Sh - ByVal 
 def __Update_Language_in_Sheet(Sh, DestLang):
@@ -363,6 +458,7 @@ def Get_ExcelLanguage():
     #
     # Is working if the office language is changed or the Window language
     ## VB2PY (CheckDirective) VB directive took path 1 on PATTERN_CONFIG_PROG
+    
     if __Simulate_Language >= 0:
         _ret = __Simulate_Language
         return _ret

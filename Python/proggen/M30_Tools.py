@@ -389,9 +389,9 @@ def Hide_and_Move_up(dlg, StartHide_Name, StartMove_Name):
     MoveDelta = StartMove_y - StartHide_y
     #Debug.Print "Hide_and_Move_up from '" & StartHide_Name & "' to '" & StartMove_Name & "' " & MoveDelta ' Debug
     for c in dlg.Controls:
-        if c.Top >= StartMove_y:
+        if c.Top >= StartMove_y -1:         # 15.03.22: Buttons are placed 1 pixel above input field/label
             c.Top = c.Top - MoveDelta
-        elif c.Top >= StartHide_y:
+        elif c.Top >= StartHide_y -1:       # 15.03.22: Buttons are placed 1 pixel above input field/label
             c.Visible = False
     dlg.Height = dlg.Height - MoveDelta
 
@@ -1041,7 +1041,11 @@ def Button_Setup(Button, Text):
         Button.Caption = Mid(Text, 3, 255)
         Button.Accelerator = Left(Text, 1)
 
+#----------------------------------------
+def Bring_Application_to_front():
+    Bring_to_front (P01.Application.hWnd)                                          # 06.03.22: Juergen add helper function
 
+#----------------------------------------
         
 
 def Bring_to_front(hwnd):
@@ -1490,5 +1494,22 @@ def CreateAllHeaderFiles():
     for Sh in P01.ActiveWorkbook.Sheets:
         if __IsValidPageId(Sh.Cells(M02.SH_VARS_ROW, M02.PAGE_ID_COL)):
             CreateHeaderFile('PICO', Sh.Name)
+
+""" 31.01.22: Juergen
+---------------------------------------------------------------------------------------------------------------------------------
+"""
+def Matches(Str, reg, matchIndex=VBMissingArgument, subMatchIndex=VBMissingArgument):
+    #---------------------------------------------------------------------------------------------------------------------------------
+    # VB2PY (UntranslatedCode) On Error GoTo ErrHandl
+    fn_return_value = False
+    regex = CreateObject('VBScript.RegExp')
+    regex.Pattern = reg
+    regex.Global = not ( matchIndex == 0 and subMatchIndex == 0 ) 
+    if regex.Test(Str):
+        Match = regex.Execute(Str)
+        fn_return_value = Match.Count == 1
+        return fn_return_value
+    fn_return_value = False
+    return fn_return_value
 
 

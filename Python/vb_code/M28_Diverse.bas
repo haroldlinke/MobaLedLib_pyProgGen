@@ -108,7 +108,7 @@ Public Function Get_Bool_Config_Var(Name As String) As Boolean
 '-------------------------------------------------------------
   On Error GoTo NotFound
   With ThisWorkbook.Sheets(ConfigSheet).Range(Name)
-    Select Case UCase(Left(Trim(.Value), 1))                     ' Languages (DE,  EN, NL,  FR,   IT, ES)
+    Select Case UCase(left(Trim(.Value), 1))                     ' Languages (DE,  EN, NL,  FR,   IT, ES)
        Case "", "N", "G", "A", "0":  Get_Bool_Config_Var = False '            Nein No  geen aucun no  no          ' 14.05.20: Added "0"
        Case Else:     Get_Bool_Config_Var = True                 '            Ja   Yes ja   oui   sì sì
     End Select
@@ -138,6 +138,24 @@ NotFound:
   EndProg
 End Function
 
+'------------------------------------------   04.03.22 Juergen
+Public Function Get_Num_Config_Var_Range(Name As String, Min As Long, Max As Long, Optional Default As Long = 0) As Long
+'------------------------------------------
+  On Error GoTo NotFound
+  Dim Str As String
+  Str = ThisWorkbook.Sheets(ConfigSheet).Range(Name)
+  If IsNumeric(Str) Then
+        Get_Num_Config_Var_Range = val(Str)
+  Else: Get_Num_Config_Var_Range = Default
+  End If
+  If Get_Num_Config_Var_Range < Min Then Get_Num_Config_Var_Range = Min
+  If Get_Num_Config_Var_Range > Max Then Get_Num_Config_Var_Range = Max
+  Exit Function
+NotFound:
+  MsgBox "Interner Fehler: Die Konfigurationsvariable '" & Name & "' wurde nicht im Sheet '" & ConfigSheet & "' gefunden", _
+         vbCritical, "Interner Fehler in Get_Num_Config_Var"
+  EndProg
+End Function
 
 'UT----------------------------------
 Private Sub TestGet_Bool_Config_Var()

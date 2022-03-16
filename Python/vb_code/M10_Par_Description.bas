@@ -1,14 +1,14 @@
 Attribute VB_Name = "M10_Par_Description"
 Option Explicit
 
-
-Private Const ParName_COL = 1
-Private Const Par_Cnt_COL = 2
-Private Const ParType_COL = 3
-Private Const Par_Min_COL = 4
-Private Const Par_Max_COL = 5
-Private Const Par_Def_COL = 6
-Private Const Par_Opt_COL = 7
+' 31.01.22: juergen make par consts public
+Public Const ParName_COL = 1
+Public Const Par_Cnt_COL = 2
+Public Const ParType_COL = 3
+Public Const Par_Min_COL = 4
+Public Const Par_Max_COL = 5
+Public Const Par_Def_COL = 6
+Public Const Par_Opt_COL = 7
 Public Const ParInTx_COL = 8
 Public Const ParHint_COL = 9
 
@@ -60,6 +60,20 @@ Public Sub Get_Par_Data(ByVal ParName As String, ByRef Typ As String, ByRef Min 
   End With
 End Sub
 
+'------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Private Function Get_Type_Only(TypeStr As String) As String
+'------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    ' type has the option to be seperated by "." - e.g. Domain.Class.Type Extension.Extension.List
+    ' the last part must always be either empty of a well known type e.g. List, Mode, Time
+    Dim Splits() As String
+    If TypeStr = "" Then
+        Get_Type_Only = ""
+    Else
+        Splits = Split(TypeStr, ".")
+        'return the last part
+        Get_Type_Only = Splits(UBound(Splits))
+    End If
+End Function
 
 'UT----------------------------
 Private Sub Test_Get_Par_Data()

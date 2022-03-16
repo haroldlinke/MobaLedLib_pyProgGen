@@ -496,10 +496,17 @@ def __SelectMacros_Sub():
             #Calculate
             M60.Open_MobaLedCheckColors_and_Insert_Set_ColTab_Macro()
             return _ret
+        elif (_select4 in ("EX.Constructor", "EX.Macro")):   # 31.01.22: Juergen add extensions
+            Res = __Proc_General(LEDs, Macro, Description, LedChannels, Act_Channel, Def_Channel) # Empty typ
+            return _ret        
+        
+        
         elif (_select4 == ''):
             Res = __Proc_General(LEDs, Macro, Description, LedChannels, Act_Channel, Def_Channel)
         else:
             P01.MsgBox('Unknown Dialog Typ \'' + DlgTyp + '\'', vbCritical, 'Program Error: SelectMacros_Sub')
+            
+            
         if Res != '':
             # If Left(Res, Len("$#define")) = "$#define" Then Res = Replace(Replace(Res, "(", "   "), ")", "") ' Remove the brackets     ' 14.01.20: ' 04.11.21: Commented because the bracets are necessary to parse the argument if the macro should be changed
             Parts = Split(Res, '$')

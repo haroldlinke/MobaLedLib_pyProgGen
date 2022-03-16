@@ -486,6 +486,11 @@ class _VBFiles:
         f = self.getFile(channelid)
         return f.tell() == vbfunctions.FileLen(f.name)
     # -- end -- << VBFiles methods >>
+    
+    def LOF(self, channelid):
+        f = self.getFile(channelid)
+        
+        
 
 
 VBFiles = _VBFiles()

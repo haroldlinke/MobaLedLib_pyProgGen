@@ -19,19 +19,19 @@ Private Global_Rect_List() As String                                        ' 25
 Private PriorCell As Range
 
 '---------------------------------------------------------------------------------
-Private Function Get_Parameter_from_Leds_Line(ByVal line As String, ParNr As Long)
+Private Function Get_Parameter_from_Leds_Line(ByVal Line As String, ParNr As Long)
 '---------------------------------------------------------------------------------
-  If Left(line, 1) = "^" Then
-     line = Trim(Mid(line, 2, 200))
+  If left(Line, 1) = "^" Then
+     Line = Trim(Mid(Line, 2, 200))
   End If
   
-  If Left(line, 1) <> "C" Then
+  If left(Line, 1) <> "C" Then
      MsgBox Get_Language_Str("Fehler: LEDs Eintrag muss mit 'C' beginnen"), vbCritical, Get_Language_Str("Fehler in LEDs Eintrag")
      EndProg
   End If
   
   Dim Parts As Variant, Error As Boolean
-  Parts = Split(Mid(line, 2, 200), "-")
+  Parts = Split(Mid(Line, 2, 200), "-")
   If UBound(Parts) <> 1 Then
      Error = 1
   ElseIf Not IsNumeric(Parts(0)) Or Not IsNumeric(Parts(1)) Then
@@ -46,11 +46,11 @@ Private Function Get_Parameter_from_Leds_Line(ByVal line As String, ParNr As Lon
 End Function
 
 '---------------------------------------------------------------------------------------------
-Private Sub Update_LastUsedChannel_in_Row(ByVal line As String, ByRef LastusedChannel As Long)
+Private Sub Update_LastUsedChannel_in_Row(ByVal Line As String, ByRef LastusedChannel As Long)
 '---------------------------------------------------------------------------------------------
-  line = Trim(line)
+  Line = Trim(Line)
   Dim val As Long
-  val = Get_Parameter_from_Leds_Line(line, 1)
+  val = Get_Parameter_from_Leds_Line(Line, 1)
   If val > LastusedChannel Then LastusedChannel = val
 End Sub
 
@@ -58,10 +58,10 @@ End Sub
 Public Sub Update_LastUsedChannel(LEDs As String, ByRef LastusedChannel As Long)
 '--------------------------------------------------------------------------------
   If InStr(LEDs, vbLf) Then
-        Dim line As Variant
-        For Each line In Split(LEDs, vbLf)
-           Update_LastUsedChannel_in_Row line, LastusedChannel
-        Next line
+        Dim Line As Variant
+        For Each Line In Split(LEDs, vbLf)
+           Update_LastUsedChannel_in_Row Line, LastusedChannel
+        Next Line
   Else: Update_LastUsedChannel_in_Row LEDs, LastusedChannel
   End If
 End Sub
@@ -70,13 +70,13 @@ End Sub
 Public Function Get_FirstUsedChannel(LEDs As String)
 '---------------------------------------------------
   If InStr(LEDs, vbLf) Then
-        Dim line As Variant
+        Dim Line As Variant
         Get_FirstUsedChannel = 99
-        For Each line In Split(LEDs, vbLf)
+        For Each Line In Split(LEDs, vbLf)
            Dim val As Long
-           val = Get_Parameter_from_Leds_Line(line, 0)
+           val = Get_Parameter_from_Leds_Line(Line, 0)
            If val < Get_FirstUsedChannel Then Get_FirstUsedChannel = val
-        Next line
+        Next Line
   Else: Get_FirstUsedChannel = Get_Parameter_from_Leds_Line(LEDs, 0)
   End If
 End Function
@@ -177,7 +177,7 @@ Public Sub Update_Start_LedNr()
            ' Check if the privious lines adress single channels
            If LastusedChannel(LEDs_Channel) > 0 Then
               If IsSingleChannelCmd Then
-                 If Left(LEDs, 1) = "^" Then LastusedChannel(LEDs_Channel) = 0
+                 If left(LEDs, 1) = "^" Then LastusedChannel(LEDs_Channel) = 0
                  If Get_FirstUsedChannel(LEDs) <= LastusedChannel(LEDs_Channel) Then
                     LEDNr(LEDs_Channel) = LEDNr(LEDs_Channel) + UsedModules(LastusedChannel(LEDs_Channel))
                     LastusedChannel(LEDs_Channel) = 0
@@ -248,13 +248,13 @@ Public Function Get_LED_Nr(DefaultLedNr As Long, Row As Long, LED_Channel As Lon
      Dim Pos As Long
      Pos = InStr(LEDNr, "-")
      If (Pos < 1) Then
-        If Left(LEDNr, 1) = SerialChannelPrefix Then            ' 08.10.21: Juergen
+        If left(LEDNr, 1) = SerialChannelPrefix Then            ' 08.10.21: Juergen
             Get_LED_Nr = val(Mid(LEDNr, 2))
             Exit Function
         End If
         Get_LED_Nr = LEDNr + Start_LED_Channel(LED_Channel)
      Else
-        If Left(LEDNr, Pos - 1) = LED_Channel Then
+        If left(LEDNr, Pos - 1) = LED_Channel Then
             Get_LED_Nr = val(Mid(LEDNr, Pos + 1)) + Start_LED_Channel(LED_Channel)
         Else
             ' todo
@@ -312,7 +312,7 @@ Public Sub Update_Start_LedNr()
                ' Check if the privios lines adress single channels
                If LastusedChannel > 0 Then
                   If IsSingleChannelCmd Then
-                     If Left(LEDs, 1) = "^" Then LastusedChannel = 0
+                     If left(LEDs, 1) = "^" Then LastusedChannel = 0
                      If Get_FirstUsedChannel(LEDs) <= LastusedChannel Then
                         LEDNr = LEDNr + UsedModules(LastusedChannel)
                         LastusedChannel = 0
@@ -480,12 +480,12 @@ Public Sub Complete_Typ(Target As Excel.Range, Optional DialogIfEmpty As Boolean
   End If
   Dim Txt As String
   If Page_ID = "Selectrix" Then
-     If UCase(Left(Target, 1)) = UCase(Left(Tast_T, 1)) Then Txt = Tast_T ' ToDo: Language
+     If UCase(left(Target, 1)) = UCase(left(Tast_T, 1)) Then Txt = Tast_T ' ToDo: Language
   Else ' "DCC", "CAN"
-     If UCase(Left(Target, 1)) = UCase(Left(Red_T, 1)) Then Txt = Red_T
-     If UCase(Left(Target, 1)) = UCase(Left(Green_T, 1)) Then Txt = Green_T
+     If UCase(left(Target, 1)) = UCase(left(Red_T, 1)) Then Txt = Red_T
+     If UCase(left(Target, 1)) = UCase(left(Green_T, 1)) Then Txt = Green_T
   End If
-  If UCase(Left(Target, 1)) = UCase(Left(OnOff_T, 1)) Then Txt = OnOff_T
+  If UCase(left(Target, 1)) = UCase(left(OnOff_T, 1)) Then Txt = OnOff_T
   
   If Txt <> "" Then
         If Target <> Txt Then Target = Txt                                  ' 23.06.20: Speed up (took 45 seconds at a larger configuration with 130 LEDs and a lot od DCC (Harald))
@@ -624,7 +624,7 @@ Public Sub ClearSheet()
      Rows("33:" & LastUsedRow()).Delete Shift:=xlUp
      
      Cells(FirstDat_Row, 1).Activate                                        ' 22.10.21: First column, prior the sheet was shifted to the description col. Old: Descrip_Col
-     Application.Goto ActiveCell, True
+     Application.GoTo ActiveCell, True
      ResetTestButtons False                                                 ' 21.03.21 Juergen: clear buttons
      Del_Icons_in_IconCol
      
@@ -790,8 +790,8 @@ Public Sub Global_Worksheet_SelectionChange(ByVal Target As Excel.Range)
            If Not .Comment Is Nothing Then
                With .Comment
                    With .Shape
-                       .Top = ActiveWindow.VisibleRange.Top
-                       .Left = ActiveCell.Left
+                       .top = ActiveWindow.VisibleRange.top
+                       .left = ActiveCell.left
                    End With
                    '.Visible = True
                End With
@@ -1154,8 +1154,8 @@ Public Sub Update_TestButtons(ByVal Row As Long, Optional ByVal onValue As Integ
         With objButton
             .Name = ButtonPrefix & Format(Addr, "0000") & "-" & Format(Direction, "00") & "-" & Format(ColorOffset, "00") & "-" & TextOffset
             If NewCreated Then
-               .Left = Cells(Row, TargetColumn).Left + PixelOffset + (i - 1) * Height
-               .Top = Cells(Row, TargetColumn).Top + 1
+               .left = Cells(Row, TargetColumn).left + PixelOffset + (i - 1) * Height
+               .top = Cells(Row, TargetColumn).top + 1
                .Height = Height - 2
                .Width = Height - 2
             End If
@@ -1340,8 +1340,8 @@ Public Sub Update_TestButtons(ByVal Row As Long, Optional ByVal onValue As Integ
         End If
         
         With objButton
-            .Left = Cells(Row, TargetColumn).Left + PixelOffset + (i - 1) * Height
-            .Top = Cells(Row, TargetColumn).Top + 1
+            .left = Cells(Row, TargetColumn).left + PixelOffset + (i - 1) * Height
+            .top = Cells(Row, TargetColumn).top + 1
             .Name = ButtonPrefix & Format(Addr, "0000") & "-" & Format(Direction, "00") & "-" & Format(ColorOffset, "00") & "-" & TextOffset
             .Height = Height - 2
             .Width = Height - 2

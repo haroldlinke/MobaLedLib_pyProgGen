@@ -54,7 +54,7 @@ Public Function BeepThis2(Optional ByVal ThisSound As String = "Beep" _
         sPath = Environ("SystemRoot") & sMedia & sPath & ".wav"
         flags = SND_FILENAME
     Case Else
-        If LCase(Right(ThisSound, 4)) <> ".wav" Then ThisSound = ThisSound & ".wav"
+        If LCase(right(ThisSound, 4)) <> ".wav" Then ThisSound = ThisSound & ".wav"
         sPath = ThisSound
         If Dir(sPath) = "" Then     ' file is not in working directory
             sPath = ActiveWorkbook.Path & "\" & ThisSound

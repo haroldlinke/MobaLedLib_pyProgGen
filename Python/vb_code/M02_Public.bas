@@ -2,7 +2,7 @@ Attribute VB_Name = "M02_Public"
 Option Explicit
 
 Public Const Lib_Version_Nr = "3.1.0"                             ' If changed check also "Exp_Prog_Gen_Version" in Pattern_Configurator
-Private Const Test_Sufix = "A"                                    ' The Excel programs use the same version number than the library to avoid confusion
+Private Const Test_Sufix = "D"                                    ' The Excel programs use the same version number than the library to avoid confusion
 Public Const Prog_Version = "Ver. " & Lib_Version_Nr & Test_Sufix ' A sufix could be used for beta version
 Public Const Prog_Version_Nr = Lib_Version_Nr & Test_Sufix        ' Call Gen_Release_Version() to update all sheets
                                            
@@ -15,6 +15,9 @@ Public Const InoName__SX = "23_A.Selectrix_Interface.ino"
 
 Public Const Ino_Dir_LED = "LEDs_AutoProg\"
 Public Const InoName_LED = "LEDs_AutoProg.ino"
+Public Const Cfg_Dir_LED = "Configuration\"
+Public Const CfgName_LED = "Configuration.cpp"
+Public Const CfgBuild_Script = "build.cmd"
 
 #Const USE_SKETCHBOOK_DIR = True                                      ' 30.05.20:
 #If USE_SKETCHBOOK_DIR Then
@@ -54,7 +57,7 @@ Public Const Env_USERPROFILE = "USERPROFILE"
 Public Const Include_FileName = "LEDs_AutoProg.h"
 
 
-Public Const LED_CHANNELS = 9    ' Number of LED Channels                  ' 26.04.20:
+Public Const LED_CHANNELS = 10   ' Number of LED Channels                  ' 18.02.22: increase to 10 (8 Led, 1 DMX, 1 virtuell)
 Public Const SERIAL_CHANNELS = 8 ' Number of Serial Channels               ' 07.10.21: Juergen Sound extensions
 Public Const SerialChannelPrefix = "S"
 Public Const INTERNAL_COL_CNT = 1 + 4            ' 03.04.21: Juergen Internal used columns in case of compact LedNr display, which should not be modified
@@ -196,7 +199,7 @@ Public Function Read_Sketchbook_Path_from_preferences_txt() As Boolean
         MsgBox Replace(Get_Language_Str("Fehler: beim lesen des 'sketchbook.path' in '#1#'"), "#1#", Name), vbCritical, Get_Language_Str("Fehler beim Lesen der Datei:") & " 'preferences.txt'"
         Exit Function
      End If
-     If Left(Sketchbook_Path, 2) = "\\" Then
+     If left(Sketchbook_Path, 2) = "\\" Then
         MsgBox Get_Language_Str("Fehler: Der Arduino 'sketchbook.path' darf kein Netzlaufwerk sein:") & vbCr & _
                                 "  '" & Sketchbook_Path & "'", vbCritical, Get_Language_Str("Ungültiger Arduino 'sketchbook.path'")
         Exit Function

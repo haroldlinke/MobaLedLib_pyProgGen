@@ -41,20 +41,6 @@ from vb2py.vbconstants import *
 
 from ExcelAPI.X01_Excel_Consts import *
 
-#from proggen.M02_Public import *
-#from proggen.M06_Write_Header import *
-#from proggen.M06_Write_Header_LED2Var import *
-#from proggen.M06_Write_Header_Sound import *
-#from proggen.M08_ARDUINO import *
-#from proggen.M09_Language import *
-#from proggen.M09_Select_Macro import *
-#from proggen.M20_PageEvents_a_Functions import *
-#from proggen.M25_Columns import *
-#from proggen.M28_divers import *
-#from proggen.M30_Tools import *
-#from proggen.M70_Exp_Libraries import *
-#from proggen.M80_Create_Mulitplexer import *
-
 import proggen.M02_Public as M02
 import proggen.M03_Dialog as M03
 import proggen.M06_Write_Header_LED2Var as M06LED
@@ -79,13 +65,6 @@ import proggen.M80_Create_Mulitplexer as M80
 import ExcelAPI.P01_Worksheetfunction as WorksheetFunction
 
 import ExcelAPI.P01_Workbook as P01
-
-
-
-
-""" Header file generation for switches and variables
-
-"""
 
 __DstVar_List = String()
 __MultiSet_DstVar_List = String()
@@ -364,7 +343,7 @@ def __First_Scan_of_Data_Rows():
                     fret, LDR_Pin_Number = Set_PinNrLst_if_Matching(Line, '// Set_LDR_Pin_Number(', LDR_Pin_Number, 'A', 1)
                     if fret == False:
                         return _ret
-                    fret, LED_PINNr_List = Set_PinNrLst_if_Matching(Line, '// Set_LED_OutpPinLst(', LED_PINNr_List, 'O', M02.LED_CHANNELS)
+                    fret, LED_PINNr_List = Set_PinNrLst_if_Matching(Line, '// Set_LED_OutpPinLst(', LED_PINNr_List, 'OV', M02.LED_CHANNELS)  # 18.02.22 Juergen Virtual Channel
                     if fret == False:
                         return _ret
                     if Line == '// Use_DMX512()':
@@ -439,7 +418,7 @@ def Set_PinNrLst_if_Matching(Line, Name, Dest_InpLst, PinTyp, MaxCnt):
     # beim AM328 sind die SPI Pins nur frei, wenn kein CAN Modul angeschlossen ist
     SPI_Pins = ''
     if M25.Page_ID != 'CAN':
-        if PinTyp == 'I' or PinTyp == 'O' or PinTyp == 'Pu':
+        if PinTyp == 'I' or PinTyp == 'OV' or PinTyp == 'Pu':           # 18.02.22: Juergen add virtual Channel
             SPI_Pins = M30.Get_Current_Platform_String('SPI_Pins')
     ValidPins = M30.Get_Current_Platform_String(PinTyp + '_Pins', True)
     ValidPins = SPI_Pins + ValidPins
@@ -470,13 +449,15 @@ def Set_PinNrLst_if_Matching(Line, Name, Dest_InpLst, PinTyp, MaxCnt):
             if InStr(ValidPins, ' ' + M30.AliasToPin(OnePin) + ' ') == 0:
                 P01.MsgBox(M09.Replace(Replace(M09.Get_Language_Str('Fehler: Der Pin \'#1#\' ist nicht gültig im' + vbCr + '  \'#2#\' Befehl'), "#1#", OnePin), '#2#', Replace(Line, '// ', '')), vbCritical, M09.Get_Language_Str('Ungültige Arduino Pin Nummer'))
                 return _ret, Dest_InpLst
-            # Check Duplicate Pins
-            p = InStr(' ' + Line + ' ', ' ' + M30.AliasToPin(OnePin) + ' ')
-            if InStr(p + 1, ' ' + Line + ' ', ' ' + OnePin + ' ') > 0:
-                P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler: Der Pin \'#1#\' wird mehrfach verwendet im' + vbCr + '  \'#2#\' Befehl'), "#1#", OnePin), '#2#', Replace(Line, '// ', '')), vbCritical, M09.Get_Language_Str('Mehrfach verwendeter Arduino Pin'))
-                return _ret, Dest_InpLst
-            if NrStr != '':
-                NrStr = NrStr + ' '
+            # Check Duplicate Pins , not for virtual PIN 'V' - virtual pin may be used multiple times
+            if OnePin != M09.Virtual_Channel_T:
+                #p = InStr(" " & line & " ", " " & AliasToPin(OnePin) & " ")                     ' 14.10.21: Juergen, 16.05.20: Added space around OnePin (Problem: 2 ... 12)
+                p = InStr(' ' + Replace(Replace(Line, '(', ' '), ')', ' ') + ' ', ' ' + OnePin + ' ')  # 17.02.22: Juergen, fix a bug
+                if InStr(p + 1, ' ' + Line + ' ', ' ' + OnePin + ' ') > 0:
+                    P01.MsgBox(Replace(Replace(M09.Get_Language_Str('Fehler: Der Pin \'#1#\' wird mehrfach verwendet im' + vbCr + '  \'#2#\' Befehl'), "#1#", OnePin), '#2#', Replace(Line, '// ', '')), vbCritical, M09.Get_Language_Str('Mehrfach verwendeter Arduino Pin'))
+                    return _ret, Dest_InpLst
+                if NrStr != '':
+                    NrStr = NrStr + ' '
                 # 14.10.21: Juergen
             NrStr = NrStr + M30.AliasToPin(OnePin)
         Dest_InpLst = NrStr
@@ -1044,11 +1025,12 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
                 ExpOutPins = LEDCh
                 if LEDCh <= UBound(LED_PINNr_Arr):
                     if LEDCh != DMX_LedChan:
-                        # Generate: CLEDController& controller0 = FastLED.addLeds<NEOPIXEL,  6 >(leds+   0, 200); \"
-                        if __Use_WS2811:
-                            VBFiles.writeText(fp, '  CLEDController& controller' + str(LEDCh) + ' = FastLED.addLeds<WS2811, ' + M30.AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) + ', RGB>(leds+' + M30.AddSpaceToLenLeft(str(Cnt), 3) + ',' + M30.AddSpaceToLenLeft(str(M06.LEDs_per_Channel(LEDCh)), 3) + '); \\', '\n')
-                        else:
-                            VBFiles.writeText(fp, '  CLEDController& controller' + str(LEDCh) + ' = FastLED.addLeds<NEOPIXEL, ' + M30.AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) + '>(leds+' + M30.AddSpaceToLenLeft(str(Cnt), 3) + ',' + M30.AddSpaceToLenLeft(str(M06.LEDs_per_Channel(LEDCh)), 3) + '); \\', '\n')
+                        if LED_PINNr_Arr(LEDCh) != M09.Virtual_Channel_T:   #   18.02.22 Juergen Virtual Channel
+                            # Generate: CLEDController& controller0 = FastLED.addLeds<NEOPIXEL,  6 >(leds+   0, 200); \"
+                            if __Use_WS2811:
+                                VBFiles.writeText(fp, '  CLEDController& controller' + str(LEDCh) + ' = FastLED.addLeds<WS2811, ' + M30.AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) + ', RGB>(leds+' + M30.AddSpaceToLenLeft(str(Cnt), 3) + ',' + M30.AddSpaceToLenLeft(str(M06.LEDs_per_Channel(LEDCh)), 3) + '); \\', '\n')
+                            else:
+                                VBFiles.writeText(fp, '  CLEDController& controller' + str(LEDCh) + ' = FastLED.addLeds<NEOPIXEL, ' + M30.AddSpaceToLenLeft(LED_PINNr_Arr(LEDCh), 2) + '>(leds+' + M30.AddSpaceToLenLeft(str(Cnt), 3) + ',' + M30.AddSpaceToLenLeft(str(M06.LEDs_per_Channel(LEDCh)), 3) + '); \\', '\n')
                     else:
                         dmxDefines = '#define DMX_LED_OFFSET ' + str(Cnt) + vbCrLf + '#define DMX_CHANNEL_COUNT ' + str(M06.LEDs_per_Channel(LEDCh) * 3)
                         DMX_Pin_Number = LED_PINNr_Arr(LEDCh)
@@ -1062,7 +1044,8 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         VBFiles.writeText(fp, '                                                                             \\', '\n')
         for LEDCh in vbForRange(0, M02.LED_CHANNELS - 1):
             if M06.LEDs_per_Channel(LEDCh) > 0 and LEDCh <= UBound(LED_PINNr_Arr) and  ( LEDCh != DMX_LedChan ) :
-                VBFiles.writeText(fp, '  controller' + str(LEDCh) + '.clearLeds(256);                                                \\', '\n')
+                if LED_PINNr_Arr(LEDCh) != M09.Virtual_Channel_T:   #  ' 18.02.22 Juergen Virtual Channel
+                    VBFiles.writeText(fp, '  controller' + str(LEDCh) + '.clearLeds(256);                                                \\', '\n')
         VBFiles.writeText(fp, '  FastLED.setDither(DISABLE_DITHER);       // avoid sending slightly modified brightness values', '\n')
         VBFiles.writeText(fp, '/*End*/', '\n')
         VBFiles.writeText(fp, '', '\n')

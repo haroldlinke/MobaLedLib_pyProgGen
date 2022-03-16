@@ -66,7 +66,7 @@ Public gbCellsChanged As Boolean
     ' https://www.pcreview.co.uk/threads/copy-shape-image-into-image-control.982606/
     
     ' 21.10.21: Test ToDo Adapt oo 64 Bit
-    Private Declare Function OpenClipboard& Lib "user32" (ByVal hwnd&)
+    Private Declare Function OpenClipboard& Lib "user32" (ByVal hWnd&)
     Private Declare Function EmptyClipboard& Lib "user32" ()
     Private Declare Function GetClipboardData& Lib "user32" (ByVal wFormat%)
     Private Declare Function SetClipboardData& Lib "user32" (ByVal wFormat&, ByVal hMem&)
@@ -174,16 +174,16 @@ Private Sub Helper_Replace_Empty_Lines_in_Front_of_Cells() ' 27.11.21:
 '---------------------------------------------------------
 ' Some entries start with an additional empty line. I don't want to change them manualy...
   Sheets(LIBMACROS_SH).Select
-  Dim c As Variant, Cnt As Long
+  Dim c As Variant, cnt As Long
   For Each c In Range(Cells(4, 1), Cells(LastUsedRow, LastUsedColumn()))
       If c <> "" Then
-         While Len(c) > 1 And Left(LTrim(c), 1) = vbLf
+         While Len(c) > 1 And left(LTrim(c), 1) = vbLf
             c.Value = Mid(LTrim(c), 2)
-            Cnt = Cnt + 1
+            cnt = cnt + 1
          Wend
       End If
   Next c
-  Debug.Print "Replaced " & Cnt & " entries"
+  Debug.Print "Replaced " & cnt & " entries"
 End Sub
 
 '----------------------------------------------------------------

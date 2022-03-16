@@ -66,8 +66,8 @@ Public Sub AddImagesToTreeForm(ByRef sPath As String, Optional Silent As Boolean
 
 
     
-    If Left(sPath, 2) = ".\" Then sPath = Application.ActiveWorkbook.Path & Mid(sPath, 2)       ' 19.11.21 Juergen: allow relative path
-    If Right(sPath, 1) <> "\" Then sPath = sPath & "\"
+    If left(sPath, 2) = ".\" Then sPath = Application.ActiveWorkbook.Path & Mid(sPath, 2)       ' 19.11.21 Juergen: allow relative path
+    If right(sPath, 1) <> "\" Then sPath = sPath & "\"
     
     arrIcons = FileNames(sPath)     ' get the file names
 
@@ -97,13 +97,13 @@ Public Sub AddImagesToTreeForm(ByRef sPath As String, Optional Silent As Boolean
 
         With img
             .BackStyle = fmBackStyleTransparent    ' needed to see through transparent if transparent gifs are used
-            .Left = lf                                                      ' Hardi
-            .Top = tp
+            .left = lf                                                      ' Hardi
+            .top = tp
             .Width = 12
             .Height = 12
             .Picture = LoadPicture(sFile)
             .BackStyle = fmBackStyleTransparent
-            .Name = Left$(arrIcons(i), Len(arrIcons(i)) - 4)
+            .Name = left$(arrIcons(i), Len(arrIcons(i)) - 4)
         End With
         tp = tp + 15
         If tp + 15 > fm.Height Then                                         ' Hardi
@@ -128,7 +128,7 @@ Private Function FileNames(ByVal Path As String)
   Dim Files As String, Name As String                                       ' Hardi
   Name = Dir$(Path & "*.*")
   Do While Name <> ""
-    If InStr(".bmp .gif .jpg", LCase(Right(Name, 4))) > 0 Then
+    If InStr(".bmp .gif .jpg", LCase(right(Name, 4))) > 0 Then
        Files = Files & Name & vbCr
     End If
     Name = Dir$

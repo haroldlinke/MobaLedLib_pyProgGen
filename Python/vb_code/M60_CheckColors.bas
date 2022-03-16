@@ -116,7 +116,7 @@ Private Function Check_Phyton(ExpVerStr As String, ByRef ExistingVer As String) 
   Res = F_shellExec("cmd /c Python -V")
     
   If Res <> "" Then
-     If Left(Res, Len(PythonStr)) = PythonStr Then
+     If left(Res, Len(PythonStr)) = PythonStr Then
         ExistingVer = Trim(Replace(Replace(Mid(Res, Len(PythonStr)), vbLf, ""), vbCr, ""))
         ActVer = VerStr_to_long(ExistingVer)
         If ActVer >= ExpVer Then
@@ -278,7 +278,7 @@ End Sub
 '--------------------------------------------------
 Private Function Dec_2_Hex2(d As Integer) As String
 '--------------------------------------------------
-  Dec_2_Hex2 = Right("00" & Hex(d), 2)
+  Dec_2_Hex2 = right("00" & Hex(d), 2)
 End Function
 
 '--------------------------------------------------
@@ -379,7 +379,7 @@ Private Function Insert_ColTab_to_ConfigFile(ColTab() As RGB_T) As Boolean
   fp = FreeFile
   On Error GoTo WriteError
   Open FileName For Output As #fp
-  Print #fp, Left(Txt, Sp - 1);
+  Print #fp, left(Txt, Sp - 1);
   
   Write_ColTab fp, ColTab
   
@@ -413,7 +413,7 @@ Private Function Insert_Default_ColTab_to_ConfigFile() As Boolean
   fp = FreeFile
   On Error GoTo WriteError
   Open FileName For Output As #fp
-  Print #fp, Left(Txt, Sp - 1);
+  Print #fp, left(Txt, Sp - 1);
   
   Dim ColTab(COLTAB_SIZE) As RGB_T
   Set_Default_ColTab ColTab
@@ -451,7 +451,7 @@ Private Function Replace_in_String_from_To(ByRef Txt As String, ByVal FromTxt As
      Exit Function
   End If
   
-  Txt = Left(Txt, Sp + Len(FromTxt) - 1) & ReplaceTxt & Mid(Txt, Ep)
+  Txt = left(Txt, Sp + Len(FromTxt) - 1) & ReplaceTxt & Mid(Txt, Ep)
   
   Replace_in_String_from_To = True
 End Function
@@ -495,19 +495,19 @@ Private Function Read_ColTab_from_Config_File(ByRef ColTab() As RGB_T) As Boolea
   Dim FileName As String, Txt As String, Sp As Long, Ep As Long, Nr As Integer
   If Not Open_Cfg_File_and_Get_Sp_and_Ep(Txt, Sp, Ep, FileName) Then Exit Function
   
-  Dim ColTabList() As String, line As Variant
+  Dim ColTabList() As String, Line As Variant
   Sp = Sp + Len(START_PALETTETXT) + 1
   ColTabList = Split(Mid(Txt, Sp, Ep - Sp), vbCr)
-  For Each line In ColTabList
+  For Each Line In ColTabList
      Dim ColStr As String
      If Nr < COLTAB_SIZE Then
-        ColStr = Replace(Replace(Trim(Split(line, ":")(1)), """", ""), ",", "")
+        ColStr = Replace(Replace(Trim(Split(Line, ":")(1)), """", ""), ",", "")
         ColTab(Nr).r = "&H" & Mid(ColStr, 2, 2)
         ColTab(Nr).g = "&H" & Mid(ColStr, 4, 2)
         ColTab(Nr).b = "&H" & Mid(ColStr, 6, 2)
         Nr = Nr + 1
      End If
-  Next line
+  Next Line
 End Function
 
 'UT--------------------------------------------
@@ -549,9 +549,9 @@ Private Function ColTab_to_C_String(ByRef ColTab() As RGB_T) As String
   Res = "// Set_ColTab(Red Green Blue)      " & vbLf & _
         "Set_ColTab("                ' ^ Space are added to show a gap between the two lines if line break is isabled.
   For Nr = 0 To COLTAB_SIZE - 1
-      Res = Res & Right("   " & ColTab(Nr).r, 3) & ", "
-      Res = Res & Right("   " & ColTab(Nr).g, 3) & ", "
-      Res = Res & Right("   " & ColTab(Nr).b, 3)
+      Res = Res & right("   " & ColTab(Nr).r, 3) & ", "
+      Res = Res & right("   " & ColTab(Nr).g, 3) & ", "
+      Res = Res & right("   " & ColTab(Nr).b, 3)
       
       If DefColTab(Nr).r <> ColTab(Nr).r Or _
          DefColTab(Nr).g <> ColTab(Nr).g Or _
@@ -581,11 +581,11 @@ End Sub
 '----------------------------------------------------------------------------
 Private Function C_String_to_ColTab(C_Str As String, ByRef ColTab() As RGB_T)
 '----------------------------------------------------------------------------
-  Dim line As Variant, Nr As Long
-  For Each line In Split(C_Str, vbLf)
-     If Left(Trim(line), 2) <> "//" Then
+  Dim Line As Variant, Nr As Long
+  For Each Line In Split(C_Str, vbLf)
+     If left(Trim(Line), 2) <> "//" Then
         Dim Parts() As String
-        Parts = Split(Trim(Replace(line, "Set_ColTab(", "")), ",")
+        Parts = Split(Trim(Replace(Line, "Set_ColTab(", "")), ",")
         If Nr < COLTAB_SIZE Then
            With ColTab(Nr)
              .r = val(Trim(Parts(0)))
@@ -595,7 +595,7 @@ Private Function C_String_to_ColTab(C_Str As String, ByRef ColTab() As RGB_T)
         End If
         Nr = Nr + 1
      End If
-  Next line
+  Next Line
 End Function
 
 'UT----------------------------------

@@ -15,11 +15,11 @@ Private PlatformParams As Scripting.Dictionary
 
 #If VBA7 Then 'For 64 Bit Systems
     Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr)
-    Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+    Public Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 '    Public Declare PtrSafe Function GetKeyState Lib "user32" (ByVal vKey As Long) As Integer
 #Else 'For 32 Bit Systems
     Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-    Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+    Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 '    Public Declare Function GetKeyState Lib "user32" (ByVal vKey As Integer) As Integer
 #End If
 
@@ -46,12 +46,12 @@ Private PlatformParams As Scripting.Dictionary
 
 
 #If Win64 Then                                                              ' 20.05.20:
-    Private Declare PtrSafe Function SetForegroundWindow Lib "user32" (ByVal hwnd As LongPtr) As LongPtr
+    Private Declare PtrSafe Function SetForegroundWindow Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
 #Else
-    Private Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
+    Private Declare Function SetForegroundWindow Lib "user32" (ByVal hWnd As Long) As Long
 #End If
 
-#If Mac Then                                                                ' 07.10.21:
+#If mac Then                                                                ' 07.10.21:
  ' don't compile the APIs in Mac
 #ElseIf VBA7 Then
     Private Declare PtrSafe Function GetCursorPos Lib "user32.dll" ( _
@@ -133,8 +133,8 @@ Public Const SW_NORMAL = 1
 
 Public Type WinPos_T
   Valid As Boolean
-  Left As Double
-  Top As Double
+  left As Double
+  top As Double
 End Type
 
 
@@ -311,10 +311,10 @@ End Sub
 
 
 '----------------------------------------------------------------------
-Function DelLast(ByVal s As String, Optional Cnt As Long = 1) As String
+Function DelLast(ByVal s As String, Optional cnt As Long = 1) As String
 '----------------------------------------------------------------------
   If Len(s) > 0 Then
-     DelLast = Left(s, Len(s) - Cnt)
+     DelLast = left(s, Len(s) - cnt)
   End If
 End Function
 
@@ -323,8 +323,8 @@ End Function
 '----------------------------------------------------------------
 Function DelAllLast(ByVal s As String, Chars As String) As String
 '----------------------------------------------------------------
-  While InStr(Chars, Right(s, 1)) > 0
-    s = Left(s, Len(s) - 1)
+  While InStr(Chars, right(s, 1)) > 0
+    s = left(s, Len(s) - 1)
   Wend
   DelAllLast = s
 End Function
@@ -334,10 +334,10 @@ Sub Center_Form(f As Object)
 '---------------------------
   With f
         .StartUpPosition = 0
-        .Left = Application.Left + (Application.Width - .Width) / 2
-        .Top = Application.Top + (Application.Height - .Height) / 2
-        If .Top < Application.Top Then .Top = Application.Top               ' 02.03.20
-        If .Left < Application.Left Then .Left = Application.Left
+        .left = Application.left + (Application.Width - .Width) / 2
+        .top = Application.top + (Application.Height - .Height) / 2
+        If .top < Application.top Then .top = Application.top               ' 02.03.20
+        If .left < Application.left Then .left = Application.left
   End With
 End Sub
 
@@ -346,8 +346,8 @@ Sub Restore_Pos_or_Center_Form(f As Object, OldPos As WinPos_T)
 '--------------------------------------------------------------
   If OldPos.Valid Then
         f.StartUpPosition = 0
-        f.Left = OldPos.Left
-        f.Top = OldPos.Top
+        f.left = OldPos.left
+        f.top = OldPos.top
   Else: Center_Form f
   End If
 End Sub
@@ -356,8 +356,8 @@ End Sub
 Sub Store_Pos(f As Object, ByRef PosVar As WinPos_T)
 '---------------------------------------------------
      PosVar.Valid = True
-     PosVar.Left = f.Left
-     PosVar.Top = f.Top
+     PosVar.left = f.left
+     PosVar.top = f.top
 End Sub
 
 
@@ -384,10 +384,10 @@ End Function
 Function CellLinesSum(ByVal c As String) As Variant
 '--------------------------------------------------
   If InStr(c, vbLf) Then
-        Dim line As Variant
-        For Each line In Split(c, vbLf)
-           CellLinesSum = CellLinesSum + val(line)
-        Next line
+        Dim Line As Variant
+        For Each Line In Split(c, vbLf)
+           CellLinesSum = CellLinesSum + val(Line)
+        Next Line
   Else: CellLinesSum = val(c)
   End If
 End Function
@@ -462,17 +462,17 @@ Sub Hide_and_Move_up(dlg As Object, ByVal StartHide_Name As String, ByVal StartM
 ' Move the controls up where controls.Top >= StartMove_y
 
   Dim MoveDelta As Long, StartHide_y As Single, StartMove_y As Single ' 06.12.20: Changed to single to fix problems with hight reduced dialog (Proc: Change_Height)
-  StartHide_y = dlg.Controls(StartHide_Name).Top
-  StartMove_y = dlg.Controls(StartMove_Name).Top
+  StartHide_y = dlg.Controls(StartHide_Name).top
+  StartMove_y = dlg.Controls(StartMove_Name).top
   MoveDelta = StartMove_y - StartHide_y
   
   'Debug.Print "Hide_and_Move_up from '" & StartHide_Name & "' to '" & StartMove_Name & "' " & MoveDelta ' Debug
   
   Dim c As Variant
   For Each c In dlg.Controls
-      If c.Top >= StartMove_y Then
-         c.Top = c.Top - MoveDelta
-      ElseIf c.Top >= StartHide_y Then
+      If c.top >= StartMove_y Then
+         c.top = c.top - MoveDelta
+      ElseIf c.top >= StartHide_y Then
          c.Visible = False
       End If
   Next c
@@ -524,14 +524,14 @@ End Sub
 
 '--------------------------------------------------------------------------------------------------------
 Function InputBoxMov(prompt As String, Optional Title As Variant, Optional Default As Variant, _
-                     Optional Left As Variant, Optional Top As Variant, Optional helpfile As Variant, _
+                     Optional left As Variant, Optional top As Variant, Optional helpfile As Variant, _
                      Optional HelpContextID As Variant) As Variant
 '--------------------------------------------------------------------------------------------------------
 ' InputBox which could be moved with correct screen update even if screenupdating is disabled
   Dim OldUpdate As Boolean
   OldUpdate = Application.ScreenUpdating
   Application.ScreenUpdating = True
-  InputBoxMov = InputBox(prompt, Title, Default, Left, Top, helpfile, HelpContextID)
+  InputBoxMov = InputBox(prompt, Title, Default, left, top, helpfile, HelpContextID)
   Sleep 50 ' Time to update the display
   Application.ScreenUpdating = OldUpdate
 End Function
@@ -581,7 +581,7 @@ Sub ShowHourGlassCursor(bApply As Boolean)                                  ' 07
         Application.Cursor = IIf(bApply, xlWait, xlDefault)
     #End If
 
-    #If Mac = False Then
+    #If mac = False Then
         Dim pt As POINTAPI
         If Not bApply Then
             ' in some systems the cursor may fail to reset to default, this forces it
@@ -696,7 +696,7 @@ End Function
 '------------------------------------------------
 Function FilePath(ByVal Name As String) As String
 '------------------------------------------------
-  FilePath = Left(Name, Len(Name) - Len(FileNameExt(Name)))
+  FilePath = left(Name, Len(Name) - Len(FileNameExt(Name)))
 End Function
 
 '---------------------------------------------
@@ -706,7 +706,7 @@ Function NoExt(ByVal Name As String) As String
 Dim Pos As Long
   Pos = InStrRev(Name, ".")
   If Pos > 0 Then
-        NoExt = Left(Name, Pos - 1)
+        NoExt = left(Name, Pos - 1)
   Else: NoExt = Name
   End If
 End Function
@@ -956,7 +956,7 @@ End Sub
 '------------------------------------------------------
 Private Function GetPathOnly(sPath As String) As String
 '------------------------------------------------------
- GetPathOnly = Left(sPath, InStrRev(sPath, "\", Len(sPath)) - 1)
+ GetPathOnly = left(sPath, InStrRev(sPath, "\", Len(sPath)) - 1)
 End Function
 
 
@@ -1034,8 +1034,8 @@ Function SplitMultiDelims(ByVal Text As String, DelimChars As String) As String(
 ' - generate an array starting wit 0 like the split function
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Dim Pos1 As Long
-Dim N As Long
-Dim M As Long
+Dim n As Long
+Dim m As Long
 Dim Arr() As String
 Dim i As Long
 Dim TextLen As Long
@@ -1063,24 +1063,24 @@ End If
 ReDim Arr(0 To Len(Text) - 1)
 
 i = 0
-N = 1
+n = 1
 
-While N <= TextLen And InStr(DelimChars, Mid(Text, N, 1)) > 0 ' Skip leading delimiters
-   N = N + 1
+While n <= TextLen And InStr(DelimChars, Mid(Text, n, 1)) > 0 ' Skip leading delimiters
+   n = n + 1
 Wend
-Pos1 = N
+Pos1 = n
 
-N = N + 1
-While N <= TextLen
-  If InStr(DelimChars, Mid(Text, N, 1)) > 0 Then
-     Arr(i) = Mid(Text, Pos1, N - Pos1)
+n = n + 1
+While n <= TextLen
+  If InStr(DelimChars, Mid(Text, n, 1)) > 0 Then
+     Arr(i) = Mid(Text, Pos1, n - Pos1)
      i = i + 1
-     While N <= TextLen And InStr(DelimChars, Mid(Text, N, 1)) > 0 ' Skip leading delimiters
-       N = N + 1
+     While n <= TextLen And InStr(DelimChars, Mid(Text, n, 1)) > 0 ' Skip leading delimiters
+       n = n + 1
      Wend
-     Pos1 = N
+     Pos1 = n
   End If
-  N = N + 1
+  n = n + 1
 Wend
 
 If Pos1 <= Len(Text) Then
@@ -1121,7 +1121,7 @@ Function SplitEx(ByVal InString As String, IgnoreDoubleDelmiters As Boolean, Par
 ' http://www.cpearson.com/excel/splitondelimiters.aspx
     Dim Arr() As String
     Dim Ndx As Long
-    Dim N As Long
+    Dim n As Long
     
     If Len(InString) = 0 Then
         SplitEx = Arr
@@ -1129,10 +1129,10 @@ Function SplitEx(ByVal InString As String, IgnoreDoubleDelmiters As Boolean, Par
     End If
     If IgnoreDoubleDelmiters = True Then
         For Ndx = LBound(Delims) To UBound(Delims)
-            N = InStr(1, InString, Delims(Ndx) & Delims(Ndx), vbTextCompare)
-            Do Until N = 0
+            n = InStr(1, InString, Delims(Ndx) & Delims(Ndx), vbTextCompare)
+            Do Until n = 0
                 InString = Replace(InString, Delims(Ndx) & Delims(Ndx), Delims(Ndx))
-                N = InStr(1, InString, Delims(Ndx) & Delims(Ndx), vbTextCompare)
+                n = InStr(1, InString, Delims(Ndx) & Delims(Ndx), vbTextCompare)
             Loop
         Next Ndx
     End If
@@ -1152,14 +1152,14 @@ Private Sub Test_SplitEx()
 ' Attention: The result contains space characters
     Dim s As String
     Dim t() As String
-    Dim N As Long
+    Dim n As Long
     'S = "A AND #InCh OR A AND NOT #InCh + 1 OR D"
     'S = "#InCh"
     t = SplitEx(s, True, "OR", "AND", "NOT")
     If isInitialised(t) Then
-       For N = LBound(t) To UBound(t)
-           Debug.Print N, t(N)
-       Next N
+       For n = LBound(t) To UBound(t)
+           Debug.Print n, t(n)
+       Next n
     Else: Debug.Print "Empty"
     End If
 End Sub
@@ -1190,11 +1190,11 @@ Sub ResetComments()
         With objComment
             ' Top-Wert des Kommentars auf Top-Wert
             ' der verknüpften Zelle setzen
-            .Shape.Top = .Parent.Top + .Parent.Height - .Shape.Height
+            .Shape.top = .Parent.top + .Parent.Height - .Shape.Height
             ' Left-Wert des Kommentars auf Left-Wert
             ' der verknüpften Zelle plus Zellbreite
             ' mal zwei setzen
-            .Shape.Left = .Parent.Left + (.Parent.Width * 2)
+            .Shape.left = .Parent.left + (.Parent.Width * 2)
         End With
     Next
 End Sub
@@ -1241,17 +1241,17 @@ Public Sub Button_Setup(Button As CommandButton, ByVal Text As String)
         EndProg
      End If
      Button.Caption = Mid(Text, 3, 255)
-     Button.Accelerator = Left(Text, 1)
+     Button.Accelerator = left(Text, 1)
   End If
 End Sub
 
 
 #If VBA7 Then
 '----------------------------------------
-Public Sub Bring_to_front(hwnd As LongPtr)                                   ' 05.06.20: Added hWnd => Now it's working (Thanks to Jürgen)
+Public Sub Bring_to_front(hWnd As LongPtr)                                   ' 05.06.20: Added hWnd => Now it's working (Thanks to Jürgen)
 '----------------------------------------
 #Else
-Public Sub Bring_to_front(hwnd As Long)
+Public Sub Bring_to_front(hWnd As Long)
 #End If
 ' Is not working if an other application has be moved above Excel with Alt+Tab
 ' But this is a feature od Windows.
@@ -1259,7 +1259,7 @@ Public Sub Bring_to_front(hwnd As Long)
 ' But it brings up excel again after the upload to the Arduino
 ' Without this funchion an other program was activated after the upload for some reasons
     ThisWorkbook.Activate
-    SetForegroundWindow hwnd
+    SetForegroundWindow hWnd
 End Sub
 
 '--------------------------------------------------------------------
@@ -1358,7 +1358,7 @@ Public Function Dir_is_Empty(DirName As String) As Boolean                  ' 27
   Dim Res As String
   Res = Dir(DirName & "\*.*", vbDirectory)
   While Res <> ""
-     If Res <> "" And Left(Res, 1) <> "." Then
+     If Res <> "" And left(Res, 1) <> "." Then
         Exit Function ' It's not empty => return false
      End If
      Res = Dir() ' Mit Excel für Mac 2016 wird der ursprüngliche Dir-Funktionsaufruf erfolgreich ausgeführt. Nachfolgende Aufrufe zum Durchlaufen des angegebenen Verzeichnisses führen jedoch zu einem Fehler. Dies ist leider ein bekanntes Problem.
@@ -1366,7 +1366,7 @@ Public Function Dir_is_Empty(DirName As String) As Boolean                  ' 27
   
   Res = Dir(DirName & "\*.*")
   While Res <> ""
-     If Res <> "" And Left(Res, 1) <> "." Then
+     If Res <> "" And left(Res, 1) <> "." Then
         Exit Function ' It's not empty => return false
      End If
      Res = Dir() ' Mit Excel für Mac 2016 wird der ursprüngliche Dir-Funktionsaufruf erfolgreich ausgeführt. Nachfolgende Aufrufe zum Durchlaufen des angegebenen Verzeichnisses führen jedoch zu einem Fehler. Dies ist leider ein bekanntes Problem.
@@ -1381,7 +1381,7 @@ Public Function Get_First_SubDir(DirName As String) As String               ' 27
   Dim Res As String
   Res = Dir(DirName & "\*.*", vbDirectory)
   While Res <> ""
-     If Res <> "" And Left(Res, 1) <> "." Then
+     If Res <> "" And left(Res, 1) <> "." Then
         Get_First_SubDir = Res
         Exit Function
      End If
@@ -1497,14 +1497,14 @@ End Function
 '------------------------------------------
 Public Function Check_Version() As Boolean
   If Not Valid_Excel Then
-      Dim message
-      message = Replace(Get_Language_Str("Diese Excel Version wird nicht unterstützt." & _
+      Dim Message
+      Message = Replace(Get_Language_Str("Diese Excel Version wird nicht unterstützt." & _
       "Bitte besuchen sie die Webseite #1# für weitergehende Informationen." & _
       "Das Programm wird weiter ausgeführt, es kann jedoch zu unerwarteten Fehlfunktionen" & _
       ", Fehlermeldung und Abstürzen kommen."), "#1#", _
       vbCrLf & vbCrLf & "https://wiki.mobaledlib.de/anleitungen/programmgenerator" & vbCrLf & vbCrLf)
       
-      MsgBox message, vbCritical, Get_Language_Str("Versionsprüfung")
+      MsgBox Message, vbCritical, Get_Language_Str("Versionsprüfung")
   End If
 End Function
                                                    
@@ -1617,7 +1617,7 @@ Public Function Get_Platform_String(ByVal PlatformKey As String, ByVal ParName A
   Get_Platform_String = Sh.Cells(f.Row, Platform_COL)
   
   ' values starting with "=" indicate an indirection, get the referenced value
-  If Left(Get_Platform_String, 1) = "=" Then
+  If left(Get_Platform_String, 1) = "=" Then
      Get_Platform_String = Get_Platform_String(PlatformKey, Mid(Get_Platform_String, 2), EmptyCheck, Silent)
   End If
   PlatformParams.Add PlatformKey + "|" + ParName, Get_Platform_String
@@ -1723,7 +1723,7 @@ Public Sub HourGlassCursor(bApply As Boolean)
         Application.Cursor = IIf(bApply, xlWait, xlDefault)
     #End If
 
-    #If Mac = False Then
+    #If mac = False Then
         Dim pt As POINTAPI
         If Not bApply Then
             ' in some systems the cursor may fail to reset to default, this forces it
@@ -1771,11 +1771,11 @@ Public Sub CreateHeaderFile(Platform As String, SheetName As String)            
     Cells(SH_VARS_ROW, BUILDOP_COL) = OriginalPlatform
 End Sub
 
-Function IsValidPageId(ID As String)
+Function IsValidPageId(Id As String)
     IsValidPageId = True
-    If ID = "DCC" Then Exit Function
-    If ID = "Selectrix" Then Exit Function
-    If ID = "CAN" Then Exit Function
+    If Id = "DCC" Then Exit Function
+    If Id = "Selectrix" Then Exit Function
+    If Id = "CAN" Then Exit Function
     IsValidPageId = False
 End Function
 
@@ -1792,4 +1792,21 @@ Public Sub CreateAllHeaderFiles()
         If IsValidPageId(Sh.Cells(SH_VARS_ROW, PAGE_ID_COL)) Then CreateHeaderFile "PICO", Sh.Name
     Next
 End Sub
+
+' 31.01.22: Juergen
+'---------------------------------------------------------------------------------------------------------------------------------
+Public Function Matches(Str As String, reg As String, Optional matchIndex As Long, Optional subMatchIndex As Long) As Boolean
+'---------------------------------------------------------------------------------------------------------------------------------
+    On Error GoTo ErrHandl
+    Dim regex As Object, Match As Object
+    Set regex = CreateObject("VBScript.RegExp"): regex.Pattern = reg
+    regex.Global = Not (matchIndex = 0 And subMatchIndex = 0) 'For efficiency
+    If regex.Test(Str) Then
+        Set Match = regex.Execute(Str)
+        Matches = Match.Count = 1
+        Exit Function
+    End If
+ErrHandl:
+    Matches = False
+End Function
 

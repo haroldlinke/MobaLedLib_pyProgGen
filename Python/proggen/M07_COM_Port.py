@@ -906,15 +906,15 @@ def SendMLLCommand(ComPort, message, UseHardwareHandshake, ShowResult):
     if UseHardwareHandshake:
         InitComPort(ComPort, 'BAUD=115200 PARITY=N DATA=8 STOP=1 dtr=off octs=on')
     else:
-        if Get_BoardTyp() != 'PICO':
+        if M02.Get_BoardTyp() != 'PICO':
             InitComPort(ComPort, 'BAUD=115200 PARITY=N DATA=8 STOP=1 dtr=off octs=off')
         else:
             InitComPort(ComPort, 'BAUD=115200 PARITY=N DATA=8 STOP=1 dtr=on octs=off')
-    UseHardwareHandshake = Get_Current_Platform_Bool('UseHardwareHandshake')
+    UseHardwareHandshake = M30.Get_Current_Platform_Bool('UseHardwareHandshake')
     handle = CreateFile('\\\\.\\COM' + ComPort, __GENERIC_READ or __GENERIC_WRITE, 0, 0, __OPEN_EXISTING, __FILE_ATTRIBUTE_NORMAL, 0)
     if handle < 0:
         Err.Raise(1, VBGetMissingArgument(Err.Raise, 1), '')
-    if Get_BoardTyp() == 'PICO':
+    if M02.Get_BoardTyp() == 'PICO':
         EscapeCommFunction(handle, __COM_SETDTR)
     if UseHardwareHandshake:
         Repeat = 1

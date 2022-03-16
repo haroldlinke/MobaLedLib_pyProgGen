@@ -57,7 +57,7 @@ Private ActLanguage As Integer ' 27.11.21:
 #Const DELAYED_FILTER_FUNCTION = False ' Delayed filter function: The filter is updated after one second (Not sure it it's better)
 
 
-#If Mac Then
+#If mac Then
     Const mcPtPixel As Long = 1
 #Else
     Const mcPtPixel As Single = 0.75
@@ -78,11 +78,11 @@ Private Sub UserForm_Initialize()
     ' Hide the Image container
     Me.frmImageBox.Visible = False
     Me.frmImageBox.Enabled = False
-    Me.Width = Me.frmImageBox.Left
+    Me.Width = Me.frmImageBox.left
     
     Please_Wait.Visible = False
-    Please_Wait.Top = frTreeControl.Top + (frTreeControl.Height - Please_Wait.Height) / 2
-    Please_Wait.Left = frTreeControl.Left + (frTreeControl.Width - Please_Wait.Width) / 2
+    Please_Wait.top = frTreeControl.top + (frTreeControl.Height - Please_Wait.Height) / 2
+    Please_Wait.left = frTreeControl.left + (frTreeControl.Width - Please_Wait.Width) / 2
     
     If Me.frTreeControl.Font.Size < 4 Then
          Me.frTreeControl.Font.Size = 4
@@ -92,7 +92,7 @@ Private Sub UserForm_Initialize()
         gFormInit = gFormInit + 1
     #End If
     
-    #If Mac Then ' Mac is not supported by the Prog_Generator at the moment, but we keep this line in case it will be supported sometimes
+    #If mac Then ' Mac is not supported by the Prog_Generator at the moment, but we keep this line in case it will be supported sometimes
         Dim objCtl As MSForms.Control
         
         With Me
@@ -104,8 +104,8 @@ Private Sub UserForm_Initialize()
 
         For Each objCtl In Me.Controls
             With objCtl
-                .Left = Int(.Left * 4 / 3)
-                .Top = Int(.Top * 4 / 3)
+                .left = Int(.left * 4 / 3)
+                .top = Int(.top * 4 / 3)
                 .Width = Int(.Width * 4 / 3)
                 .Height = Int(.Height * 4 / 3)
                 Select Case TypeName(objCtl)
@@ -196,16 +196,16 @@ End Sub
 '----------------------------------------------------------
 Private Function Find_Root(ByVal Name As String) As clsNode
 '----------------------------------------------------------
-  Dim N As Variant, RNodes As Collection
+  Dim n As Variant, RNodes As Collection
   On Error GoTo ErrProc
   Set RNodes = mcTree.RootNodes
   On Error GoTo 0
-  For Each N In RNodes
-     If N.Caption = Name Then
-        Set Find_Root = N
+  For Each n In RNodes
+     If n.Caption = Name Then
+        Set Find_Root = n
         Exit Function
      End If
-  Next N
+  Next n
 ErrProc:
 End Function
 
@@ -226,7 +226,7 @@ End Function
 '-------------------------------
 Private Sub Add_Node(c As Range)
 '-------------------------------
-  Dim Row As Long, Name As String, GroupNames As String, Description As String, DescForNode As String, Sh As Worksheet
+  Dim Row As Long, Name As String, GroupNames As String, PicNames As String, Description As String, Sh As Worksheet
   Set Sh = c.Parent
   Row = c.Row
 #If USE_LNAME Then
@@ -239,55 +239,62 @@ Private Sub Add_Node(c As Range)
     GroupNames = Get_Language_Text(Row, SM_Group_COL, ActLanguage)  '  .Cells(Row, SM_Group_COL).Value
     Description = Get_Language_Text(Row, SM_ShrtD_COL, ActLanguage) '  .Cells(Row, SM_ShrtD_COL + ActLanguage * DeltaCol_Lib_Macro_Lang).Value
     If GroupNames = "" Then GroupNames = "Not grouped"
-    Dim GroupNArr() As String, g As Variant, IsRoot As Boolean, Level As Integer
+    PicNames = .Cells(Row, SM_Pic_N_COL).Value
+  End With
+  Add_Or_Create_Node CStr(Row), Name, Description, GroupNames, PicNames
+End Sub
+
+Private Function Add_Or_Create_Node(Key As String, Name As String, Description As String, GroupNames As String, PicNames As String) As clsNode
+'-------------------------------
+    Dim IsRoot As Boolean, Level As Integer, DescForNode As String
+    Dim GroupNArr() As String, g As Variant
     GroupNArr = Split(GroupNames, "|")
     Dim PicNamesArrInp() As String, PicNamesArr() As String, i As Integer
-    PicNamesArrInp = Split(.Cells(Row, SM_Pic_N_COL).Value, "|")
-  End With
-  ReDim PicNamesArr(UBound(GroupNArr) + 1)
-  For i = 0 To UBound(PicNamesArrInp)
-      If i > UBound(GroupNArr) + 1 Then Exit For
-      PicNamesArr(i) = NoExt(Trim(PicNamesArrInp(i)))
-  Next i
-  IsRoot = True
-  With mcTree
-    Dim cNode As clsNode
-    For Each g In GroupNArr
-        g = Trim(g)
-        If Level = UBound(GroupNArr) And Name = "" Then
-           DescForNode = Description ' Last node without child => Use the description for the node
-        End If
-        If IsRoot Then
-           Set cNode = Find_Root(g)
-           If cNode Is Nothing Then
-              If PicNamesArr(Level) <> "" Then ' No Picture given
-                    Set cNode = .AddRoot(Row & " Root", g, PicNamesArr(Level), vCaption2:=DescForNode)
-              Else: Set cNode = .AddRoot(Row & " Root", g, "FolderClosed", "FolderOpen", vCaption2:=DescForNode)
-              End If
-           End If
-        Else
-           Dim cChild As clsNode
-           Set cChild = Find_Child(cNode, g)
-           If cChild Is Nothing Then
-              Set cNode = cNode.AddChild(Row & " " & Level, g, PicNamesArr(Level), vCaption2:=DescForNode)
-           Else
-              Set cNode = cChild
-           End If
-        End If
-        Level = Level + 1
-        cNode.Bold = True
-        'cNode.BackColor = rgb(255, 255, 220) ' pale yellow
-        If IsRoot Then
-              cNode.ForeColor = rgb(0, 128, 0)      ' green
-        Else: cNode.ForeColor = rgb(0, 0, 255)      ' blue
-        End If
-        IsRoot = False
-    Next g
-    If Name <> "" Then
-       cNode.AddChild CStr(Row), Name, PicNamesArr(Level), vCaption2:=Description
-    End If
-  End With
-End Sub
+    PicNamesArrInp = Split(PicNames, "|")
+    ReDim PicNamesArr(UBound(GroupNArr) + 1)
+    For i = 0 To UBound(PicNamesArrInp)
+        If i > UBound(GroupNArr) + 1 Then Exit For
+        PicNamesArr(i) = NoExt(Trim(PicNamesArrInp(i)))
+    Next i
+    IsRoot = True
+    With mcTree
+      Dim cNode As clsNode
+      For Each g In GroupNArr
+          g = Trim(g)
+          If Level = UBound(GroupNArr) And Name = "" Then
+             DescForNode = Description ' Last node without child => Use the description for the node
+          End If
+          If IsRoot Then
+             Set cNode = Find_Root(g)
+             If cNode Is Nothing Then
+                If PicNamesArr(Level) <> "" Then ' No Picture given
+                      Set cNode = .AddRoot(Key & " Root", g, PicNamesArr(Level), vCaption2:=DescForNode)
+                Else: Set cNode = .AddRoot(Key & " Root", g, "FolderClosed", "FolderOpen", vCaption2:=DescForNode)
+                End If
+             End If
+          Else
+             Dim cChild As clsNode
+             Set cChild = Find_Child(cNode, g)
+             If cChild Is Nothing Then
+                Set cNode = cNode.AddChild(Key & " " & Level, g, PicNamesArr(Level), vCaption2:=DescForNode)
+             Else
+                Set cNode = cChild
+             End If
+          End If
+          Level = Level + 1
+          cNode.Bold = True
+          'cNode.BackColor = rgb(255, 255, 220) ' pale yellow
+          If IsRoot Then
+                cNode.ForeColor = rgb(0, 128, 0)      ' green
+          Else: cNode.ForeColor = rgb(0, 0, 255)      ' blue
+          End If
+          IsRoot = False
+      Next g
+      If Name <> "" Then
+         cNode.AddChild Key, Name, PicNamesArr(Level), vCaption2:=Description
+      End If
+    End With
+End Function
 
 
 '-----------------------------------------------------------------------------
@@ -308,7 +315,7 @@ Private Function InitializeTreeFrom_Lib_Macros_Sheet(Filter As String) As Long
     End If
     
     
-    Dim r As Range, c As Range, ListDataSh As Worksheet, Cnt As Long, Found, Debug_Language As Integer
+    Dim r As Range, c As Range, ListDataSh As Worksheet, cnt As Long, Found, Debug_Language As Integer
     Set ListDataSh = ThisWorkbook.Sheets(LIBMACROS_SH)
     Debug_Language = ListDataSh.Range("Test_Language")
     If Debug_Language = -1 Then
@@ -342,12 +349,12 @@ Private Function InitializeTreeFrom_Lib_Macros_Sheet(Filter As String) As Long
                  End If
                  If Found Then
                     Add_Node c
-                    Cnt = Cnt + 1
+                    cnt = cnt + 1
                  End If
               End If
             Next c
     End With
-    If Cnt > 0 Then
+    If cnt > 0 Then
         mcTree.Refresh
         If Trim(TextBoxFilter.Text) = "" Then ' No Filter activ
             mcTree.ExpandToLevel 0                ' close nodes
@@ -507,7 +514,6 @@ Private Sub Set_Description(Txt As String)                                  ' 04
   If Not ActFocus Is Nothing Then ActFocus.setFocus
 End Sub
 
-
 '------------------------------------
 Private Sub Display_Navigation_Keys()
 '------------------------------------
@@ -528,22 +534,35 @@ Private Sub mcTree_Click(cNode As clsNode)
     'Debug.Print "mcTree_Click " & cNode.Key
     
     With cNode
-       Dim Sh As Worksheet, Desc As String, Row As Long
-       Set Sh = ThisWorkbook.Sheets(LIBMACROS_SH)
-       ActKey = .key
-       Row = val(Split(.key, " ")(0))
-       Desc = Replace(Sh.Cells(Row, SM_DetailCOL + ActLanguage * DeltaCol_Lib_Macro_Lang), "|", vbLf)
-       If IsNumeric(.key) Then ' Entry without childs have a numeric key. All others have some additional texts
-             If Desc = "" Then Desc = Replace(Sh.Cells(Row, SM_ShrtD_COL + ActLanguage * DeltaCol_Lib_Macro_Lang), "|", vbLf)
-             Set_Description Desc
-             Me.Detail = Replace_Multi_Space(Sh.Cells(Row, SM_Macro_COL))
-       Else:
-             If Desc <> "" Then
-                   Set_Description Desc
-             Else: Display_Navigation_Keys
-             End If
-             Me.Detail = Replace(Sh.Cells(Row, SM_Group_COL).Value, "|", " > ")
-       End If
+      Dim Sh As Worksheet, Desc As String, Row As Long
+      ActKey = .Key
+      ' handle extensions
+      If InStr(ActKey, "EX.Constructor.") = 1 Then
+        Dim Constructor
+        Set Constructor = GetConstructor(ActKey)
+        If Not Constructor Is Nothing Then
+            Set_Description Constructor.ShortDescription
+            Me.Detail = Replace_Multi_Space(Constructor.DetailedDescription)
+        Else
+            Set_Description ""
+            Me.Detail = ""
+        End If
+      Else
+        Set Sh = ThisWorkbook.Sheets(LIBMACROS_SH)
+        Row = val(Split(.Key, " ")(0))
+        Desc = Replace(Sh.Cells(Row, SM_DetailCOL + ActLanguage * DeltaCol_Lib_Macro_Lang), "|", vbLf)
+        If IsNumeric(.Key) Then ' Entry without childs have a numeric key. All others have some additional texts
+              If Desc = "" Then Desc = Replace(Sh.Cells(Row, SM_ShrtD_COL + ActLanguage * DeltaCol_Lib_Macro_Lang), "|", vbLf)
+              Set_Description Desc
+              Me.Detail = Replace_Multi_Space(Sh.Cells(Row, SM_Macro_COL))
+        Else:
+              If Desc <> "" Then
+                    Set_Description Desc
+              Else: Display_Navigation_Keys
+              End If
+              Me.Detail = Replace(Sh.Cells(Row, SM_Group_COL).Value, "|", " > ")
+        End If
+      End If
     End With
 End Sub
 
@@ -555,7 +574,9 @@ Private Sub mcTree_MouseAction(cNode As clsNode, Action As Long, Button As Integ
   'Debug.Print "mcTree_DblClick:" & cNode.Key & " Action:" & Action
   
   'If IsNumeric(cNode.key) Then Select_Button_Click
-  If IsNumeric(cNode.key) And InStr(cNode.key, " ") = 0 Then Select_Button_Click           ' 15.1.21 Juergen workaround for Excel 2007 isNumericBug
+  If IsNumeric(cNode.Key) And InStr(cNode.Key, " ") = 0 Then Select_Button_Click           ' 15.1.21 Juergen workaround for Excel 2007 isNumericBug
+  If IsExtensionKey(ActKey) Then Select_Button_Click                                       ' 25.01.22 Juergen add Extension handling
+
 End Sub
 
 '------------------------------------------------------------------------------------------------------------------
@@ -752,13 +773,13 @@ Public Sub MouseWheel(ByVal lngRotation As Long)
 End Sub
 
 '---------------------------------------------------------
-Private Function Find_Node(ByVal key As String) As clsNode
+Private Function Find_Node(ByVal Key As String) As clsNode
 '---------------------------------------------------------
   On Error GoTo ErrProc
-  Set Find_Node = mcTree.Nodes(key)  ' So geht es auch
+  Set Find_Node = mcTree.Nodes(Key)  ' So geht es auch
   Exit Function
 ErrProc:
-  Debug.Print "Not Found " & key & " ;-("
+  Debug.Print "Not Found " & Key & " ;-("
 End Function
 
 

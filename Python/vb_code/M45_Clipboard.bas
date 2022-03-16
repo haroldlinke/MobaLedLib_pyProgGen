@@ -10,7 +10,7 @@ Option Explicit
     Declare PtrSafe Function GlobalLock Lib "kernel32" (ByVal hMem As LongPtr) As LongPtr
     Declare PtrSafe Function GlobalAlloc Lib "kernel32" (ByVal wFlags As LongPtr, ByVal dwBytes As LongPtr) As LongPtr
     Declare PtrSafe Function CloseClipboard Lib "user32" () As Long
-    Declare PtrSafe Function OpenClipboard Lib "user32" (ByVal hwnd As LongPtr) As Long
+    Declare PtrSafe Function OpenClipboard Lib "user32" (ByVal hWnd As LongPtr) As Long
     Declare PtrSafe Function EmptyClipboard Lib "user32" () As Long
     Declare PtrSafe Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As Long
     Declare PtrSafe Function SetClipboardData Lib "user32" (ByVal wFormat As LongPtr, ByVal hMem As LongPtr) As Long
@@ -19,7 +19,7 @@ Option Explicit
     Declare PtrSafe Function GlobalLock Lib "kernel32" (ByVal hMem As LongPtr) As Long
     Declare PtrSafe Function GlobalAlloc Lib "kernel32" (ByVal wFlags As LongPtr, ByVal dwBytes As LongPtr) As Long
     Declare PtrSafe Function CloseClipboard Lib "user32" () As Long
-    Declare PtrSafe Function OpenClipboard Lib "user32" (ByVal hwnd As LongPtr) As Long
+    Declare PtrSafe Function OpenClipboard Lib "user32" (ByVal hWnd As LongPtr) As Long
     Declare PtrSafe Function EmptyClipboard Lib "user32" () As Long
     Declare PtrSafe Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As Long
     Declare PtrSafe Function SetClipboardData Lib "user32" (ByVal wFormat As LongPtr, ByVal hMem As LongPtr) As Long
@@ -29,7 +29,7 @@ Option Explicit
   Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
   Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
   Declare Function CloseClipboard Lib "user32" () As Long
-  Declare Function OpenClipboard Lib "user32" (ByVal hwnd As Long) As Long
+  Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
   Declare Function EmptyClipboard Lib "user32" () As Long
   Declare Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As Long
   Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Long, ByVal hMem As Long) As Long

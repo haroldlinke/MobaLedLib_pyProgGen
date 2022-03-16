@@ -53,12 +53,13 @@ import pickle
 import proggen.Prog_Generator as PG
 import proggen.F00_mainbuttons as F00
 import proggen.M18_Save_Load as M18
-import proggen.M37_Inst_Libraries as M37
+import proggen.M39_Simulator as M39
 
 #import proggen.M01_Gen_Release_Version as M01
 import keyboard
 #import proggen.M25_Columns as M25
 #import proggen.M02_global_variables as M02
+import proggen.M28_divers as M28
 
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
 datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,8),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
@@ -442,6 +443,7 @@ __VK_DOWN = 0x28
 __VK_RETURN = 0xD
 __VK_ESCAPE = 0x1B
 __VK_CONTROL = 0x11
+__VK_SHIFT = 0x10
 
 def GetAsyncKeyState(key):
     if key==__VK_UP:
@@ -454,6 +456,8 @@ def GetAsyncKeyState(key):
         return keyboard.is_pressed("escape")
     if key==__VK_CONTROL:   
         return keyboard.is_pressed("crtl")
+    if key==__VK_SHIFT:   
+        return keyboard.is_pressed("shift")
     return
 
 
@@ -469,7 +473,7 @@ def DoEvents():
 
 class CWorkbook:
     def __init__(self, frame=None,path=None,workbookName=None, workbookFilename=None, sheetdict=sheetdict_PROGGEN):
-        global Workbooks
+        global Workbooks,ThisWorkbook
         # Row and Columns are 0 based and not 1 based as in Excel
 
         if workbookName:
@@ -513,6 +517,14 @@ class CWorkbook:
             self.Path = path
             self.tablemodel= None
             self.sheets = None
+        ThisWorkbook = self
+        self.open()
+            
+    def open(self):
+        if M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) == 1: #               ' 04.04.22: Juergen Simulator
+            M39.OpenSimulator()
+   
+        
             
     def new_sheet(self,sheetname,tabframe):
         sheetname_prop = self.sheetdict.get(sheetname)
@@ -905,7 +917,7 @@ class CWorksheet:
             return named_cell
         else:
             return CRange((cell1.Row,cell1.Column),(cell2.Row,cell2.Column),ws=self)
-    
+        
     def Range_set(self,rangestr,value):
         oldflag = Application.EnableEvents
         Application.EnableEvents=False
@@ -1484,6 +1496,7 @@ class CApplication:
         self.caller=0
         self.canvas_leftclickcmd=None
         self.LanguageSettings = CLanguageSettings()
+        self.hWnd = 0
         
     def set_canvas_leftclickcmd(self,cmd):
         self.canvas_leftclickcmd=cmd

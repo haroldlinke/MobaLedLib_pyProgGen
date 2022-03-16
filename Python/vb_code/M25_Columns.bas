@@ -254,7 +254,7 @@ Public Function Address_starts_with_a_Number(Row As Long) As Boolean        ' 03
   Dim s As String
   s = Get_Address_String(Row)
   If s <> "" Then
-    Address_starts_with_a_Number = IsNumeric(Left(s, 1))
+    Address_starts_with_a_Number = IsNumeric(left(s, 1))
   End If
 End Function
 

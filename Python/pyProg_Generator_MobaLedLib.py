@@ -1139,7 +1139,7 @@ class LEDColorTest(tk.Tk):
         #self.statusmessage.configure(text=status_text,fg=fg)
         pass
 
-    def send_to_ARDUINO(self, message,arduino=None):
+    def send_to_ARDUINO(self, message,arduino=None,comport=None):
         if arduino == None:
             arduino = self.arduino
         if arduino:

@@ -181,7 +181,7 @@ End Sub
 Private Sub Use_Lower_Button_Click()
 '-----------------------------------
 ' Copy the lower text to the upper
-  If Left(r2, 1) = "'" Then
+  If left(r2, 1) = "'" Then
         r1 = "'" & r2
   Else: r1 = r2
   End If
@@ -194,7 +194,7 @@ End Sub
 Private Sub Use_Upper_Button_Click()
 '-----------------------------------
 ' Copy the upper text to the lower
-  If Left(r1, 1) = "'" Then
+  If left(r1, 1) = "'" Then
         r2 = "'" & r1
   Else: r2 = r1
   End If
