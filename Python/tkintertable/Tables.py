@@ -311,6 +311,7 @@ class TableCanvas(Canvas):
         y_start = self.y_start
         y_test = int(y)-y_start
         y_curr = 0
+        row=0
         if ignorehiddenrows:
             row = int((int(y)-y_start)/h)
             if row < 0:

@@ -59,7 +59,7 @@ __Icon_Top = 1
 def __Icon_Path():
     fn_return_value = None
     #-------------------------------------
-    fn_return_value = P01.ThisWorkbook.Path + '\\icons\\'
+    fn_return_value = P01.ThisWorkbook.pyProgPath + '\\icons\\'
     return fn_return_value
 
 def Add_Icon(Name, Row, Sh=None):

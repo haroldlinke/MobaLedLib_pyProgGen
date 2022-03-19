@@ -149,7 +149,7 @@ class TableModel(object):
         """Import table data from a comma separated file."""
 
         if not os.path.isfile(filename) or not os.path.exists(filename):
-            print ('no such file')
+            print ('no such file', filename)
             return None
 
         #takes first row as field names
