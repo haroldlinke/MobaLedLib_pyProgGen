@@ -152,9 +152,12 @@ def loaddll():
     #       return
     
         if x64:
-            MobaLedLibWrapper = ctypes.CDLL(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x64\\MobaLedLibWrapper.dll')
+            dllfilename = P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x64\\MobaLedLibWrapper.dll'
         else:
-            MobaLedLibWrapper = ctypes.CDLL(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x86\\MobaLedLibWrapper.dll')
+            dllfilename = P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x86\\MobaLedLibWrapper.dll'
+        
+        Debug.Print("LoadDll:"+dllfilename)    
+        MobaLedLibWrapper = ctypes.CDLL(dllfilename)
 
     except OSError:
         print("Unable to load MLL_DLL")
@@ -165,16 +168,16 @@ def loaddll():
     #Private Declare PtrSafe Function CreateSampleConfig Lib "MobaLedLibWrapper.dll" () As LongPtr
     CreateSampleConfig = MobaLedLibWrapper.CreateSampleConfig
     CreateSampleConfig.argtypes=[]
-    CreateSampleConfig.restype = ctypes.POINTER(ctypes.c_char)
+    CreateSampleConfig.restype = ctypes.c_char_p
     
     #Private Declare PtrSafe Function CreateSimulator Lib "MobaLedLibWrapper.dll" Alias "Create" ( configData As Any, ByVal configLength As Integer) As LongPtr
     CreateSimulator = MobaLedLibWrapper.Create
-    CreateSimulator.argtypes=[ctypes.POINTER(ctypes.c_char),ctypes.c_int]
-    CreateSimulator.restype = ctypes.POINTER(ctypes.c_char)
+    CreateSimulator.argtypes=[ctypes.c_char_p,ctypes.c_int]
+    CreateSimulator.restype = ctypes.c_char_p
     
     #Private Declare Sub SetInput Lib "MobaLedLibWrapper.dll" (ByVal Channel As Byte, ByVal IsOn As Byte)
     SetInput = MobaLedLibWrapper.SetInput
-    SetInput.argtypes=[ctypes.c_byte,ctypes.c_byte]
+    SetInput.argtypes=[ctypes.c_char,ctypes.c_char]
     SetInput.restype = None
     
     #Private Declare Sub UpdateLeds Lib "MobaLedLibWrapper.dll" Alias "Update" ()
@@ -202,7 +205,7 @@ def loaddll():
     #Private Declare Function IsLEDWindowVisible Lib "MobaLedLibWrapper.dll" () As Byte
     IsLEDWindowVisible = MobaLedLibWrapper.IsLEDWindowVisible
     IsLEDWindowVisible.argtypes=[]
-    IsLEDWindowVisible.restype = ctypes.c_byte
+    IsLEDWindowVisible.restype = ctypes.c_char
     
     #Private Declare Function GetLEDWindowRect Lib "MobaLedLibWrapper.dll" (lpRect As RECT) As Long
     GetLEDWindowRect = MobaLedLibWrapper.GetLEDWindowRect
@@ -212,8 +215,7 @@ def loaddll():
     #Private Declare Function GetWrapperVersion Lib "MobaLedLibWrapper.dll" () As Long    
     GetWrapperVersion = MobaLedLibWrapper.GetWrapperVersion
     GetWrapperVersion.argtypes=[]
-    GetWrapperVersion.restype = ctypes.c_long        
-
+    GetWrapperVersion.restype = ctypes.c_long
 
 
 def IsSimualtorAvailable():
@@ -221,11 +223,17 @@ def IsSimualtorAvailable():
     WrapperVersion = Long()
     x64=False
     if x64:
-        if Dir(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x64\\MobaLedLibWrapper.dll') == '':
+        dllfilename = P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x64\\MobaLedLibWrapper.dll'
+        Debug.Print("IsSimulatorAvailable:"+dllfilename)
+        if Dir(dllfilename) == '':
+            Debug.Print("IsSimulatorAvailable:"+dllfilename + " Not found")
             return fn_return_value
         ChDir(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x64')
     else:
-        if Dir(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x86\\MobaLedLibWrapper.dll') == '':
+        dllfilename = P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x86\\MobaLedLibWrapper.dll'
+        Debug.Print("IsSimulatorAvailable:"+dllfilename)
+        if Dir(dllfilename) == '':
+            Debug.Print("IsSimulatorAvailable:"+dllfilename + " Not found")
             return fn_return_value
         ChDir(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'x86')
     # VB2PY (UntranslatedCode) On Error GoTo SimError
@@ -239,31 +247,42 @@ def IsSimualtorAvailable():
     return fn_return_value
 
 def OpenSimulator():
+    Debug.Print("OpenSimulator")
     loaddll()
     
     if not IsSimualtorAvailable():
         return
     __LoadConfiguration()
     __StorePosition()
-    ShowLEDWindow(M28.Get_Num_Config_Var_Range('SimLedsX', 4, 128, 8), M28.Get_Num_Config_Var_Range('SimLedsY', 4, 32, 8), M28.Get_Num_Config_Var_Range('SimLedSize', 4, 64, 24), M28.Get_Num_Config_Var_Range('SimOffset', 0, 255, 1), M28.Get_Num_Config_Var_Range('SimPosX', - 16383, 16383, 800), M28.Get_Num_Config_Var_Range('SimPosY', - 16383, 16383, 400), M28.Get_Num_Config_Var_Range('SimOnTop', 0, 1, 1))
+    
+    SimLedsX=M28.Get_Num_Config_Var_Range('SimLedsX', 4, 128, 8)
+    SimLedsY=M28.Get_Num_Config_Var_Range('SimLedsY', 4, 32, 8)
+    SimLedSize=M28.Get_Num_Config_Var_Range('SimLedSize', 4, 64, 24)
+    SimOffset=M28.Get_Num_Config_Var_Range('SimOffset', 0, 255, 1)
+    SimPosX=M28.Get_Num_Config_Var_Range('SimPosX', - 16383, 16383, 800)
+    SimPosY=M28.Get_Num_Config_Var_Range('SimPosY', - 16383, 16383, 400)
+    SimOnTop=M28.Get_Num_Config_Var_Range('SimOnTop', 0, 1, 1)==1
+    
+    Debug.Print("ShowLEDWindow",SimLedsX,SimLedsY,SimLedSize,SimOffset,SimPosX,SimPosY,SimOnTop)
+    ShowLEDWindow(SimLedsX,SimLedsY,SimLedSize,SimOffset,SimPosX,SimPosY,SimOnTop)
     M30.Bring_Application_to_front()
     
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Buffer - ByRef 
-def __LoadFile(FileName, Buffer):
+def __LoadFile(FileName):
+    Debug.Print("__LoadConfiguration:",FileName)
     #fileInt = Integer()
     fileInt = FreeFile()
     try:
         VBFiles.openFile(fileInt, FileName, 'rb')
         f=VBFiles.getFile(fileInt)
         mybytearray = b"" #bytearray()
+        length = 0
         byte = f.read(1)
-        if byte:
-            while byte:
-                # Do stuff with byte.
-                byte = f.read(1)
-                mybytearray+=byte
-        else:
-            mybytearray+= byte(0) # .append(0)
+        while byte:
+            # Do stuff with byte.
+            mybytearray+=byte
+            length += 1
+            byte = f.read(1)
         
         #VBFiles.openFile(fileInt, FileName, 'rb') # VB2PY (UnknownFileMode) 'Access', 'Read'
         #if LOF(fileInt) == 0:
@@ -273,7 +292,7 @@ def __LoadFile(FileName, Buffer):
         #    Buffer = vbObjectInitialize(((0, LOF(fileInt) - 1),), Variant)
         #    Get(fileInt, None , Buffer)
         VBFiles.closeFile(fileInt)
-        return mybytearray
+        return mybytearray,length
     except IOError:
         VBFiles.closeFile(fileInt)
         print('Error While Opening the file!')
@@ -282,6 +301,7 @@ def __LoadFile(FileName, Buffer):
 def __LoadConfiguration():
     global __AddressMapping
     
+    Debug.Print("__LoadConfiguration")
     Buffer = vbObjectInitialize(objtype=Byte)
 
     Index = Integer()
@@ -292,14 +312,19 @@ def __LoadConfiguration():
 
     if not IsSimualtorAvailable():
         return
-    Buffer = __LoadFile(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'LEDConfig.bin', Buffer)
-    dllBuffer = ctypes.create_string_buffer(b"",len(Buffer)+1)
-    for i in range(len(Buffer)):
-        dllBuffer[i]=Buffer[i]
+    Buffer,buflen = __LoadFile(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'LEDConfig.bin')
+    dllBuffer = ctypes.create_string_buffer(Buffer)
+
+    print(repr(dllBuffer.raw))
+    bufferLen = ctypes.c_int(buflen)
+    print(bufferLen,bufferLen.value)
     
-    res=CreateSimulator(dllBuffer[0], len(Buffer))
-    Buffer=__LoadFile(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'AddressConfig.bin', Buffer)
-    Length = len(Buffer) #UBound(Buffer) - LBound(Buffer) + 1
+    res=CreateSimulator(dllBuffer, bufferLen)
+    print(res)
+    
+    Buffer, buflen=__LoadFile(P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + 'AddressConfig.bin')
+    Debug.Print(Buffer)
+    Length = buflen #len(Buffer) #UBound(Buffer) - LBound(Buffer) + 1
     __AddressMapping = {} #Scripting.Dictionary()
     if Length >= 3:
         for Index in vbForRange(0, ( Length / 3 )  - 1):
@@ -308,11 +333,13 @@ def __LoadConfiguration():
             __AddressMapping[Address] = Buffer[Index * 3 + 2]
 
 def ReloadConfiguration():
+    Debug.Print("ReloadConfiguration")
     if IsSimualtorAvailable():
         if IsLEDWindowVisible:
             __LoadConfiguration()
 
 def UpdateSimulatorIfNeeded(CreateHeaderFile, AlwaysOpenWindow):
+    Debug.Print("UpdateSimulatorIfNeeded")
     fn_return_value = True
     if IsSimualtorAvailable():
         if AlwaysOpenWindow or IsLEDWindowVisible:
@@ -329,9 +356,11 @@ def IsSimulatorActive():
     fn_return_value = None
     if IsSimualtorAvailable():
         fn_return_value = IsLEDWindowVisible
+    Debug.Print("IsSimulatorActive:",fn_return_value)
     return fn_return_value
 
 def ToggleSimulator():
+    Debug.Print("ToggleSimulator")
     if IsSimualtorAvailable():
         if IsLEDWindowVisible:
             CloseSimulator()
@@ -345,6 +374,8 @@ def ToggleSimulator():
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Addr - ByVal 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Direction - ByVal 
 def SendToSimulator(Addr, Direction):
+    global __AddressMapping
+    Debug.Print("SendToSimulator:",Addr,Direction)
     fn_return_value = False
     if not IsSimualtorAvailable():
         return fn_return_value
@@ -390,6 +421,7 @@ def SendToSimulator(Addr, Direction):
     return fn_return_value
 
 def UploadToSimulator(CreateHeaderFiles):
+    Debug.Print("UploadToSimulator")
     fn_return_value = False
     if not IsSimualtorAvailable():
         return fn_return_value
@@ -414,12 +446,14 @@ def UploadToSimulator(CreateHeaderFiles):
     return fn_return_value
 
 def __StorePosition():
+    Debug.Print("StorePosition")
     currentPos = RECT()
     if GetLEDWindowRect(currentPos) == 1:
         M28.Set_String_Config_Var('SimPosX', Str(currentPos.left))
         M28.Set_String_Config_Var('SimPosY', Str(currentPos.top))
 
 def __ConfigurationToFile():
+    Debug.Print("ConfigurationToFile")
     fName = String()
 
     fName2 = String()
@@ -473,11 +507,13 @@ def __ConfigurationToFile():
     ReloadConfiguration()
 
 def __Create_Compile_Script():
+   
     fn_return_value = None
     Name = String()
 
     fp = Integer()
     Name = P01.ThisWorkbook.Path + '\\' + M02.Cfg_Dir_LED + M02.CfgBuild_Script
+    Debug.Print("Create_Compile_Script:"+Name)
     fp = FreeFile()
     # VB2PY (UntranslatedCode) On Error GoTo WriteError
     VBFiles.openFile(fp, Name, 'w') 
@@ -488,7 +524,7 @@ def __Create_Compile_Script():
     VBFiles.writeText(fp, '', '\n')
     VBFiles.writeText(fp, 'color 79', '\n')
     VBFiles.writeText(fp, 'set scriptDir=%~d0%~p0', '\n')
-    VBFiles.writeText(fp, 'set errorfile="%~d0%~p0\result.txt"', '\n')
+    VBFiles.writeText(fp, 'set errorfile="%~d0%~p0\\result.txt"', '\n')
     VBFiles.writeText(fp, '%~d0', '\n')
     VBFiles.writeText(fp, 'cd "%~p0"', '\n')
     VBFiles.writeText(fp, 'set packagePath=%USERPROFILE%\\' + M02.AppLoc_Ardu, '\n')

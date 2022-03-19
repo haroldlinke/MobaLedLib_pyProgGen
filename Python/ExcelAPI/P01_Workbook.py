@@ -61,6 +61,8 @@ import keyboard
 #import proggen.M02_global_variables as M02
 import proggen.M28_divers as M28
 
+pyProgfile_dir = "\\LEDs_AutoProg\\pyProg_Generator_MobaLedLib"
+
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
 datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,8),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
                         "ProtectedCells"  : ((0,0),(1,0),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
@@ -288,9 +290,9 @@ def set_activeworkbook(workbook):
     ActiveSheet = ActiveWorkbook.Sheets("DCC")
     PG.global_controller.activeworkbook = workbook
     
-def create_workbook(frame=None, path=None,workbookName=None,workbookFilename=None,sheetdict=sheetdict_PROGGEN):
+def create_workbook(frame=None, path=None,pyProgPath=None,workbookName=None,workbookFilename=None,sheetdict=sheetdict_PROGGEN):
     global ThisWorkbook,ActiveSheet,ActiveWorkbook
-    workbook = ThisWorkbook = CWorkbook(frame=frame,path=path,workbookName=workbookName,workbookFilename=workbookFilename,sheetdict=sheetdict)
+    workbook = ThisWorkbook = CWorkbook(frame=frame,path=path,pyProgPath=pyProgPath,workbookName=workbookName,workbookFilename=workbookFilename,sheetdict=sheetdict)
     set_activeworkbook(workbook)
     return workbook
     
@@ -456,7 +458,8 @@ def GetAsyncKeyState(key):
         return keyboard.is_pressed("escape")
     if key==__VK_CONTROL:   
         return keyboard.is_pressed("crtl")
-    if key==__VK_SHIFT:   
+    if key==__VK_SHIFT:
+        Debug.Print("Check Shift Key")
         return keyboard.is_pressed("shift")
     return
 
@@ -472,8 +475,8 @@ def DoEvents():
 
 
 class CWorkbook:
-    def __init__(self, frame=None,path=None,workbookName=None, workbookFilename=None, sheetdict=sheetdict_PROGGEN):
-        global Workbooks,ThisWorkbook
+    def __init__(self, frame=None,path=None,pyProgPath=None,workbookName=None, workbookFilename=None, sheetdict=sheetdict_PROGGEN):
+        global Workbooks,ThisWorkbook,pyProgfile_dir
         # Row and Columns are 0 based and not 1 based as in Excel
 
         if workbookName:
@@ -483,6 +486,7 @@ class CWorkbook:
         Workbooks.append(self)
         if frame != None:
             self.Path = path
+            self.pyProgPath = pyProgPath
             self.master = frame
             self.tabframedict = {}
 
@@ -535,7 +539,7 @@ class CWorkbook:
         fieldnames = sheetname_prop.get("Fieldnames",None)
         if type(fieldnames) == str:
             fieldnames = fieldnames.split(";")
-        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=self.Path + sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,Sheettype=sheettype,callback=callback)
+        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=self.pyProgPath+sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,Sheettype=sheettype,callback=callback)
         return worksheet
 
             

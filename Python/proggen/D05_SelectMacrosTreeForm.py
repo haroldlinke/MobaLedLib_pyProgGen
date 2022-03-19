@@ -368,7 +368,7 @@ class SelectMacrosTreeform:
             PicNamesArr[i] = M30.NoExt(Trim(PicNamesArrInp(i)))
         iconimagename = PicNamesArrInp[len(PicNamesArrInp)-1]
         if iconimagename !="":
-            iconfilename = P01.ThisWorkbook.Path + '\\' + "icons\\"+Trim(iconimagename)+".png"
+            iconfilename = P01.ThisWorkbook.pyProgPath + '\\' + "icons\\"+Trim(iconimagename)+".png"
             #pic1 = Image.open(iconfilename)           # Open the image like this first
             self.pic2 = tk.PhotoImage(file=iconfilename)      # Then with PhotoImage. NOTE: self.root_pic2 =     and not     root_pic2 =
         else:

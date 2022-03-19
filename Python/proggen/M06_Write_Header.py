@@ -890,7 +890,11 @@ def Create_HeaderFile(CreateFilesOnly = False): #20.12.21: Jürgen add CreateFil
         return fn_return_value
     
     # 04.03.22 Juergen: If shift key is pressed to configuration is sent to the simulator only, also if Autostart Option 3  = simulatorOnly
-    if (M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0)) == 3 or (P01.GetAsyncKeyState(P01.__VK_SHIFT) != 0 and CreateFilesOnly == False and M02.Get_BoardTyp() == 'AM328'):
+    shift_pressed = P01.GetAsyncKeyState(P01.__VK_SHIFT)
+    print("Shift_pressed:",shift_pressed)
+    
+    if (M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) == 3 or shift_pressed != 0 and CreateFilesOnly == False and M02.Get_BoardTyp() == 'AM328'):
+        Debug.Print(" go to UploadToSimulator")
         fn_return_value = M39.UploadToSimulator(True)
         return fn_return_value
 
@@ -1004,6 +1008,7 @@ def Write_Header_File_and_Upload_to_Arduino(CreateFilesOnly=False): #20.12.21: J
         P01.MsgBox(Err + vbCr + vbCr + M09.Get_Language_Str('Ein neues Header file wurde nicht generiert!'), vbCritical, M09.Get_Language_Str('Es sind Fehler aufgetreten'))
         return fn_return_value
     Name = P01.ThisWorkbook.Path + '/' + M02.Ino_Dir_LED + M02.Include_FileName
+    Debug.Print("Write_Header - Filename:"+Name)
     Ext_AddrTxt=DelTailingEmptyLines(Ext_AddrTxt)
     Store_ValuesTxt=DelTailingEmptyLines(Store_ValuesTxt)
     InChTxt=DelTailingEmptyLines(InChTxt)
@@ -1132,7 +1137,7 @@ def Write_Header_File_and_Upload_to_Arduino(CreateFilesOnly=False): #20.12.21: J
         VBFiles.writeText(fp, '#endif', '\n')
         VBFiles.writeText(fp, '         { // Addr & Typ    InCnt', '\n')
         
-        VBFiles.writeText(fp, '// Definition of external adresses' + vbCr + 'const PROGMEM Ext_Addr_T Ext_Addr[] =' + vbCr + '         { // Addr & Typ    InCnt', '\n')
+        #VBFiles.writeText(fp, '// Definition of external adresses' + vbCr + 'const PROGMEM Ext_Addr_T Ext_Addr[] =' + vbCr + '         { // Addr & Typ    InCnt', '\n')
         VBFiles.writeText(fp, Ext_AddrTxt)
         VBFiles.writeText(fp, '         };', '\n')
         VBFiles.writeText(fp, '', '\n')

@@ -199,9 +199,9 @@ def Get_Num_Config_Var_Range(Name, Min, Max, Default=0):
     # VB2PY (UntranslatedCode) On Error GoTo NotFound
     try:
         
-        Str = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
-        if IsNumeric(Str):
-            fn_return_value = P01.val(Str)
+        value = P01.ThisWorkbook.Sheets(M02.ConfigSheet).Range(Name)
+        if value != None:
+            fn_return_value = P01.val(value)
         else:
             fn_return_value = Default
         if fn_return_value < Min:

@@ -167,13 +167,16 @@ class Prog_GeneratorPage(tk.Frame):
         self.button_frame = ttk.Frame(self.frame, borderwidth=0)
         self.workbook_frame = ttk.Frame(self.frame, relief="ridge", borderwidth=2)
         filedir = os.path.dirname(os.path.realpath(__file__))
-        self.filedir2 = os.path.dirname(filedir)
+        filedir2 = os.path.dirname(filedir)
+        filedir3 = os.path.dirname(filedir2)
+        filedir4 = os.path.dirname(filedir3)
+        self.filedir5 = os.path.dirname(filedir4)
         self.workbook_frame.rowconfigure(0,weight=1)
         self.workbook_frame.columnconfigure(0,weight=1)
         #self.workbook_frame.grid_rowconfigure(0,weight=1)
         #self.workbook_frame.grid_columnconfigure(0,weight=1)        
         
-        self.workbook = create_workbook(frame=self.workbook_frame,path=self.filedir2)
+        self.workbook = create_workbook(frame=self.workbook_frame,path=self.filedir5, pyProgPath=filedir2)
         
         for sheet in self.workbook.sheets:
             sheet.SetChangedCallback(self.wschangedcallback)

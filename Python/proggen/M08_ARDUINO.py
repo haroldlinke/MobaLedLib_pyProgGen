@@ -1103,6 +1103,12 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
     #if CommandStr == '' or CommandStr == '""':
     #    #U01.Unload(StatusMsg_UserForm)
     #    M30.EndProg()
+    
+    if CreateFilesOnly:
+        Stop_Compile_Time_Display()
+        fn_return_value = True
+        return fn_return_value
+    
     Start = P01.Time()
     if Dir(SrcDir + InoName) == '':
         #*HLU01.Unload(StatusMsg_UserForm)
@@ -1123,7 +1129,7 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
             F00.notimplemented("Excel Console")
             #Res = UserForm_RunProgram.ShellExecute(CommandStr, 0, Replace(Get_Language_Str('Programmiere #1# Arduino'), "#1#", ArduName) + ' - ' + FileNameExt(InoName), PromptUser, 0x800000, TextColor, Get_Language_Str('Senden zum Arduino abbrechen?'))
         else:
-            #PG.global_controller.arduino.close()
+            PG.global_controller.disconnect()
             #Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
             PG.dialog_parent.start_ARDUINO_program_cmd(CommandStr)
             Res = M40.Success
