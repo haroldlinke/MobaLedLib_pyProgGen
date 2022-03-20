@@ -48,6 +48,7 @@ from locale import getdefaultlocale
 #from tkintertable import TableCanvas, TableModel
 #from collections import OrderedDict
 from ExcelAPI.P01_Workbook import create_workbook
+import proggen.M02_Public as M02
 
 import ExcelAPI.P01_Workbook as P01
 
@@ -137,7 +138,7 @@ class Prog_GeneratorPage(tk.Frame):
         #self.fonttext = self.controller.get_font("FontText")
         #self.fontbutton = self.controller.get_font("FontLabel")
         #self.fontentry = self.controller.get_font("FontEntry")
-        #self.fonttext = self.controller.get_font("FontText")
+        self.fonttext = self.controller.get_font("FontText")
         #self.fontscale = self.controller.get_font("FontScale")
         self.fonttitle = self.controller.get_font("FontTitle")        
         
@@ -164,6 +165,7 @@ class Prog_GeneratorPage(tk.Frame):
         self.parent = parent
         
         title_frame = ttk.Frame(self.frame, relief="ridge", borderwidth=2)
+        self.info_frame  = ttk.Frame(self.frame, borderwidth=0)
         self.button_frame = ttk.Frame(self.frame, borderwidth=0)
         self.workbook_frame = ttk.Frame(self.frame, relief="ridge", borderwidth=2)
         filedir = os.path.dirname(os.path.realpath(__file__))
@@ -191,9 +193,15 @@ class Prog_GeneratorPage(tk.Frame):
         # create buttonlist
         self.create_button_list()
         
+        self.infotext = M02.Prog_Version
+        
+        infolabel = ttk.Label(self.info_frame, text=self.infotext, font=self.fonttext)
+        infolabel.grid(row=0, column=0, sticky="n",pady=(10, 10), padx=10)
+        
         title_frame.grid(row=0, column=0, sticky="n",pady=(10, 10), padx=10)
         self.button_frame.grid(row=1, column=0, sticky="nw",pady=(10, 10), padx=10)
-        self.workbook_frame.grid(row=2,column=0,sticky="nesw",pady=(10, 10), padx=10)
+        self.info_frame.grid(row=1,column=1,sticky="nw",pady=(10, 10), padx=10)
+        self.workbook_frame.grid(row=2,column=0,columnspan=2,sticky="nesw",pady=(10, 10), padx=10)
     
         #config_frame.grid(row=1, columnspan=2, pady=(20, 30), padx=10)        
         #in_button_frame.grid(row=2, column=0, sticky="n", padx=4, pady=4)
@@ -276,6 +284,7 @@ class Prog_GeneratorPage(tk.Frame):
                          "tooltip"  : "Dialog aufrufen"},
                         {"Icon_name": "Btn_Send_to_ARDUINO.png",
                          "command"  : F00.Arduino_Button_Click,
+                         "shift_command": F00.Arduino_Button_Shift_Click,
                          "text"     : "Z. Arduino\nschicken",
                          "padx"     : 20,
                          "tooltip"  : "ARDUINO aufrufen"},
@@ -340,6 +349,14 @@ class Prog_GeneratorPage(tk.Frame):
         self.icon_dict[button_desc["Icon_name"]] = tk.PhotoImage(file=filepath)
         button_text = M09.Get_Language_Str(button_desc["text"])
         button=tk.Button(self.button_frame, text=button_text, image=self.icon_dict[button_desc["Icon_name"]], command=button_desc["command"]) #,compound="center")
+        shift_command = button_desc.get("shift_command",None)
+        if shift_command:
+            button=tk.Button(self.button_frame, text=button_text, image=self.icon_dict[button_desc["Icon_name"]]) #,compound="center")
+            button.bind("<Button-1>", button_desc["command"])
+            button.bind("<Shift-Button-1>", shift_command)
+        else:
+            button=tk.Button(self.button_frame, text=button_text, image=self.icon_dict[button_desc["Icon_name"]], command=button_desc["command"]) #,compound="center")
+        
         button.pack( side="left",padx=button_desc["padx"])
         self.controller.ToolTip(button, text=button_desc["tooltip"])
     
