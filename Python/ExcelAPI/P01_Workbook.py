@@ -63,6 +63,8 @@ import proggen.M28_divers as M28
 
 pyProgfile_dir = "\\LEDs_AutoProg\\pyProg_Generator_MobaLedLib"
 
+shift_key = False
+
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
 datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,8),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
                         "ProtectedCells"  : ((0,0),(1,0),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
@@ -448,6 +450,7 @@ __VK_CONTROL = 0x11
 __VK_SHIFT = 0x10
 
 def GetAsyncKeyState(key):
+    global shift_key
     if key==__VK_UP:
         return keyboard.is_pressed("up")
     if key==__VK_DOWN:
@@ -460,7 +463,9 @@ def GetAsyncKeyState(key):
         return keyboard.is_pressed("crtl")
     if key==__VK_SHIFT:
         Debug.Print("Check Shift Key")
-        return keyboard.is_pressed("shift")
+        fn_return_value = keyboard.is_pressed("shift") or shift_key
+        shift_key=False
+        return fn_return_value
     return
 
 
