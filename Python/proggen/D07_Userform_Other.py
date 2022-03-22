@@ -655,7 +655,7 @@ class UserForm_Other():
             
             return paramvar
                 
-        elif param_type == "String": # String value param
+        elif param_type == "String" or param_type=="Var": # String value param
             
             label=tk.Label(parent_frame, text=param_title,width=PARAMLABELWIDTH,height=2,wraplength = PARAMLABELWRAPL,anchor=ANCHOR,font=self.fontlabel)
             label.grid(row=row+titlerow, column=column+titlecolumn, sticky=STICKY, padx=2, pady=2)
@@ -1051,6 +1051,8 @@ class UserForm_Other():
                 titlecolumn = 1
                 param_tooltip = Hint
                 combo_value_list = SelectValues
+                if param_type in ("Mode","Var"):
+                    param_type = "String"
                 self.ParamVar[paramkey] = self.create_widget(self.Param_Frame, row, column, paramkey, param_title, param_type, param_min, param_max, param_default, titlerow, titlecolumn, param_tooltip,combo_value_list=combo_value_list)
                 
             if ( p == 'Cx' or p == 'B_LED_Cx' ) :

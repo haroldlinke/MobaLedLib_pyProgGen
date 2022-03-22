@@ -388,7 +388,8 @@ def SendToSimulator(Addr, Direction):
             #Address = __AddressMapping.Keys(Index) and 16383
             Address = key & 16383
             #AddressType = ( ( __AddressMapping.Keys(Index) and 49152 )  / 16385 )
-            AddressType = int((key & 49152) / 16385)
+            
+            AddressType = round((key & 49152) / 16385)
             #InCnt = __AddressMapping.Items(Index)
             InCnt = __AddressMapping[key]
             CurrentType = AddressType
@@ -400,13 +401,13 @@ def SendToSimulator(Addr, Direction):
                         return fn_return_value
                     elif CurrentType == 1 and Direction == 0:
                         SetInput(Channel, 1)
-                        time.sleep(( 400 ))
+                        time.sleep(( 0.400 ))
                         SetInput(Channel, 0)
                         fn_return_value = True
                         return fn_return_value
                     elif CurrentType == 2 and Direction == 1:
                         SetInput(Channel, 1)
-                        time.sleep(( 400 ))
+                        time.sleep(( 0.400 ))
                         SetInput(Channel, 0)
                         fn_return_value = True
                         return fn_return_value

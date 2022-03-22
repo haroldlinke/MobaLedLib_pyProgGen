@@ -53,10 +53,17 @@ import proggen.D09_StatusMsg_Userform as D09
 import proggen.D08_Select_COM_Port_Userform as D08
 import proggen.D10_UserForm_Options as D10
 
-def Arduino_Button_Click():
+def Arduino_Button_Click(event=None):
     #---------------------------------
     __Button_Pressed_Proc()
     M06.Create_HeaderFile()
+    
+def Arduino_Button_Shift_Click(event=None):
+    #---------------------------------
+    __Button_Pressed_Proc()
+    P01.shift_key = True
+    M06.Create_HeaderFile()
+
 
 def ClearSheet_Button_Click():
     #------------------------------------
