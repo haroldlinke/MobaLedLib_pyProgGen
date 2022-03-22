@@ -1,4 +1,4 @@
-# MobaLedLib_pyProgGen
+# MobaLedLib_pyProgGen for LINUX
 Python based Programgenerator for the MobaLedLib
 
 This branch is for development of the LINUX/Mac version of the ProgramGenerator
