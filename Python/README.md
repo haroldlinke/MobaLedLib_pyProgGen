@@ -1,9 +1,10 @@
-# MobaLedLib_pyProgGen Proof of Concept
-Proof of Concept of Python based Programgenerator for the MobaLedLib
+# MobaLedLib_pyProgGen for LINUX and MAC
+Python based Programgenerator for the MobaLedLib for Linux and Mac
 
 
 Requirements:
-MobaledLib 3.1.0 has to be installed
+MobaledLib 3.1.0F has to be installed
+Python >V9.0
 
 
 
@@ -12,38 +13,31 @@ Installation using Python files
 2. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
 3. create a subfolder Python
 4. Clone MobaLedLib_PyProgGen to the folder pyProg_Generator_MobaLedLib/Python - the file pyProg_Generator_MobaLedLib.py must be in this folder
-5. or download the branch as ZIP-file: unpack the ZIP file and copy the contents of the folder MobaLedLib_pyProgGen-4.0 into the folder pyProg_Generator_MobaLedLib/Python
+5. or download the branch as ZIP-file: unpack the ZIP file and copy the contents of the folder Python into the folder pyProg_Generator_MobaLedLib/Python
 6. open the folder pyProg_Generator_MobaLedLib/Python
 7. start the Python file: pyProg_Generator_MobaLedLib.py
-8. continue with first configuration described below
 
-First configuration of PyProgGen:
-1. open the tab "ARDUINO Einstellungen" - pyProgGen tries to find the connected ARDUINOs and determines the typ and COM port. If only one ARDUINO is found the com port is automatically selected. You can change this selection of the ARDUINO and the ARDUINO Type - save the changes - if the com-port is not included in the list it is possible to enter the port string by hand
-2. For other OS than Windows select the Check-box "Individuellen Pfad zur ARDUINO IDE verwenden and select the path to the ARDUINO IDE - the name in Windows is "ARDUINO_DEBUG.exe" for all other OS "arduino"
-3. Do not forget to save the changed parameters with the button "geänderte Einstellungen übernehmen"
-
-Further information can be found in the MobaLedLib Wiki: https://wiki.mobaledlib.de/anleitungen/spezial/pyprogramgenerator
+This manual installation should work for Windows, Linux and Mac.
 
 
-This Version is only a Proof of Concept for a Python based MLL-Programm Generator that simulates the UserInterface of the Excel based Program Generator.
+This Version is a Proof of Concept for a Python based MLL-Programm Generator that simulates the UserInterface of the Excel based Program Generator and can be used on Windows, Linux and Mac.
 
-The VBA code was translated 1 to 1 to Python using the Wedbased VB2PY-converter: http://vb2py.sourceforge.net/online_conversion.html
+The VBA code was translated 1 to 1 to Python using the Wedbased VB2PY-converter: http://vb2py.sourceforge.net/online_conversion.html. Therefore some hidden errors are still possible due to incompatibilities of the translation.
 
-The Tables are based on Tkintertable: https://github.com/dmnfarrell/tkintertable
 
-All Dialog-Buttons except Hide/Unhide and unhide all are implemented.
-The main Dialogs are implemented focusing on the main way to enter data and create the MACRO definition in the table.
+Open Issues:
+- Handling of USB-Ports is not compatible with LINUX and Mac
+  Unfortunately the ProgrammGenerator code is using only the ComPortNumber as Integer and is using a negative number to signal a blocked ComPort by another program. This needs to be adapted to the way the "old"parts of the ColorCheckprogram access the ARDUINO.
+  The paramaters from the "ARDUINO"-Configuration Page are NOT synchronised with the ProgrammGenerator part as both parts of the prohram use a different way of handling USB-Ports.
+  
+- All paths need to be checked and adapted to the LINUX/MAC path rules (replace \ with /)
+- all generated bacth files need to be adapted from Windows cmds to Linux shell commands
 
-It is possible to use the dialog to create House/Gaslights Macros and Macros using the Generic Form UserFormOther. Editing of Macros via Dialog is possible too.
-Sending of Macros to ARDUINO is possible. The headerfile creation is using the original VBA logic. The sending to the ARDUINO is done using the Python based logic of the "old" pyProgramGenerator. Check the ARDUINO Einstellungen - Page if the ARDUINO is recognized correctly.
 
-Limitations:
-Editing individual cells is possible. There is no automatic update of the LEDNr columns yet.
 
-There are a lot of hidden issues with sytactical/logical differences between VBA and Python that may cause crashes or wrong behavior:
-- handling of global variables
-- handling of by_ref parameters
-- construction using automatic type translation: e.g. string = string + integer + string
+
+
+
 
 
 
