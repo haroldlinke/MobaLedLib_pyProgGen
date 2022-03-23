@@ -1,6 +1,3 @@
-# MobaLedLib_pyProgGen for LINUX
-Python based Programgenerator for the MobaLedLib
-
 # MobaLedLib_pyProgGen for LINUX and MAC
 Python based Programgenerator for the MobaLedLib for Linux and Mac
 
