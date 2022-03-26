@@ -952,9 +952,14 @@ def Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, Build
                 Start_Baudrate = 57600
             else:
                 Start_Baudrate = 115200
-        ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
-        if ComPort > 255:                                                       # 03.03.22: Juergen avoid overrun error
-            ComPort = 0
+        ComPortStr = P01.Cells(M02.SH_VARS_ROW, ComPortColumn)
+        if IsNumeric(ComPortStr):
+            ComPort = "COM"+ComPortStr
+        else:
+            Comport = ComPortStr
+        #ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
+        #if ComPort > 255:                                                       # 03.03.22: Juergen avoid overrun error
+        #    ComPort = 0
         CheckCOMPort_Txt = M07.Check_If_Port_is_Available_And_Get_Name(ComPort)
         FirmwareVer = ""
         if CheckCOMPort_Txt != '':
@@ -1063,12 +1068,15 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
     if Fn_result == False:
         Stop_Compile_Time_Display()
         return fn_return_value
-    ComPort = 'COM' + P01.Cells(M02.SH_VARS_ROW, ComPortColumn)
+    #ComPort = 'COM' + P01.Cells(M02.SH_VARS_ROW, ComPortColumn)
+    ComPort = P01.Cells(M02.SH_VARS_ROW, ComPortColumn)
+    ComPort = F00.port_check_format(ComPort)
     Update_Compile_Time(True)
     
     # 21.01.2021 Optionally get IP Address from cell left to com port
     if M02.Get_BoardTyp() == "ESP32" and P01.Cells(M02.SH_VARS_ROW, ComPortColumn + 1) != "":
         ComPort = P01.Cells(M02.SH_VARS_ROW, ComPortColumn + 1)
+        ComPort = F00.port_check_format(ComPort)
     
     ResFile = 'Start_Arduino_Result.txt'
     if ComPortColumn == M25.COMPort_COL:
@@ -1271,9 +1279,12 @@ def Upload_the_Right_Arduino_Prog_if_needed():
                 return fn_return_value
             if Display_Connect_to_Left_Arduino() == False:
                 return fn_return_value
-            if P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value > 0:
-                P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value = - P01.val(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value)
-                # Force to show the COM port dialog for the left Arduino
+            #if P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value > 0:
+            #    P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value = - P01.val(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value)
+            #    # Force to show the COM port dialog for the left Arduino
+            if F00.port_is_available(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value):
+                P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value = "*"+ P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value
+                # Force to show the COM port dialog for the left Arduino            
     else:
         P01.CellDict[M02.SH_VARS_ROW, M25.R_UPLOD_COL] = 'R OK'
     fn_return_value = True

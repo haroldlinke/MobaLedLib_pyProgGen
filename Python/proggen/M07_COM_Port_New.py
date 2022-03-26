@@ -187,17 +187,19 @@ def __Blink_Arduino_LED():
     # A baudrate of 50 is used.
     BaudRate = 50
     
-    if M07.CheckCOMPort > 0:
+    #if M07.CheckCOMPort > 0:
+    if F00.port_is_available(M07.CheckCOMPort):    
         #print("Blink_LED start")
         F00.Select_COM_Port_UserForm.Update_SpinButton(0)
-        if M07.CheckCOMPort != 999:
+        #if M07.CheckCOMPort != 999:
+        if M07.CheckCOMPort != " ":
             __CheckCOMPort_Res, DeviceSignatur = M07.DetectArduino(M07.CheckCOMPort, BaudRate, HWVersion, SWMajorVersion, SWMinorVersion, DeviceSignatur, 1, PrintDebug= __PRINT_DEBUG)
         else:
             __CheckCOMPort_Res = - 9
         #*HLApplication.Cursor = xlNorthwestArrow
         #Debug.Print "CheckCOMPort_Res=" & CheckCOMPort_Res & "  CheckCOMPort=" & CheckCOMPort
         if __CheckCOMPort_Res < 0:
-            if M07.CheckCOMPort == 999:
+            if M07.CheckCOMPort == " ": #999:
                 F00.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Kein COM Port erkannt.' + vbCr + 'Bitte Arduino an einen USB Anschluss des Computers anschließen'))
             else:
                 F00.Select_COM_Port_UserForm.Show_Status(True, M09.Get_Language_Str('Achtung: Der Arduino wird von einem anderen Programm benutzt.' + vbCr + '(Serieller Monitor?)' + vbCr + 'Das Programm muss geschlossen werden! '))
@@ -227,7 +229,7 @@ def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons
     #  1: If the left   Button is pressed  (Install, ...)
     #  2: If the middle Button is pressed  (Abort)
     #  3: If the right  Button is pressed  (OK)
-    M07.CheckCOMPort = 999
+    M07.CheckCOMPort = " " #999
     P01.Application.OnTime(1000, __Blink_Arduino_LED)
     #__Blink_Arduino_LED()
     # Return values of Select_COM_Port_UserForm.ShowDialog:
@@ -235,8 +237,6 @@ def Select_Arduino_w_Blinking_LEDs_Dialog(Caption, Title, Text, Picture, Buttons
     #   0: If No COM Port is available
     #  >0: Selected COM Port
     # The variable "CheckCOMPort_Res" is >= 0 if the Port is available
-    ComPort_IO = 3 #*HL
-    fn_return_value = 3    
     fn_return_value, ComPort_IO = F00.Select_COM_Port_UserForm.ShowDialog(Caption, Title, Text, Picture, Buttons, '', True, M09.Get_Language_Str('Tipp: Der ausgewählte Arduino blinkt schnell'), ComPort_IO, __PRINT_DEBUG)
     if __CheckCOMPort_Res < 0:
         ComPort_IO = - ComPort_IO
@@ -287,9 +287,10 @@ def USB_Port_Dialog(ComPortColumn):
     #----------------------------------------------------------------
     res, ComPort= __Show_USB_Port_Dialog(ComPortColumn, ComPort)
     if res:
-        if IsNumeric(ComPort):
-            if int(ComPort) > 0:
-                fn_return_value = True
+        #if IsNumeric(ComPort):
+        if F00.port_is_available(ComPort):
+            #if int(ComPort) > 0:
+            fn_return_value = True
         M07.ComPortPage().CellDict[M02.SH_VARS_ROW, ComPortColumn] = ComPort
         P01.ActiveSheet.Redraw_table()
     return fn_return_value
@@ -298,7 +299,7 @@ def __Test_USB_Port_Dialog():
     #UT-------------------------------
     ## VB2PY (CheckDirective) VB directive took path 1 on PROG_GENERATOR_PROG
     M25.Make_sure_that_Col_Variables_match()
-    USB_Port_Dialog()(M25.COMPort_COL)
+    USB_Port_Dialog(M25.COMPort_COL)
     #USB_Port_Dialog COMPrtR_COL
     #USB_Port_Dialog COMPrtT_COL  ' Could only be used im the Pattern_COnfigurator
 

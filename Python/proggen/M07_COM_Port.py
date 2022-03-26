@@ -164,7 +164,7 @@ Parm_STK_SW_MAJOR = b'\x81'
 Parm_STK_SW_MINOR = b'\x82'
 
 CheckCOMPort_Txt = ""
-CheckComPort = 0
+CheckCOMPort = " "#0
 
 def __Test_Get_COM():
     Res = String()
@@ -283,11 +283,13 @@ def Get_USB_Port_with_Dialog(Right=False):
     else:
         ComPortColumn = M25.COMPort_COL
     with_0 = ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)
-    if P01.val(with_0.Value) <= 0:
+    if F00.port_is_available(with_0.Value):
+    #*HL if P01.val(with_0.Value) <= 0:
         if M07New.USB_Port_Dialog(ComPortColumn) == False:
             fn_return_value = - 1
             return fn_return_value
-    fn_return_value = P01.val(with_0.Value)
+    #fn_return_value = P01.val(with_0.Value)
+    fn_return_value = with_0.Value
     return fn_return_value
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: Port - ByVal 
@@ -400,7 +402,7 @@ def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
     idx=0
     for comport in temp_comports_list:
         if Show_Unknown or ( ESP_Inst == False and PICO_Inst == False and  (InStr(comport.description, 'CH340') > 0 or InStr(comport.description, 'Arduino') > 0 or InStr(comport.description, 'USB Serial Port') > 0 ) ) or ( ESP_Inst == True and InStr(comport.description, 'Silicon Labs CP210x') > 0 )  or  ( PICO_Inst == True and InStr(comport.description, 'USB\\\\VID_2E8A&PID_000A\\') > 0 ):
-            Ports.append(comport.device.replace("COM",""))
+            Ports.append(comport.device)
             ResNames.append(comport.description)
             idx=idx+1
 

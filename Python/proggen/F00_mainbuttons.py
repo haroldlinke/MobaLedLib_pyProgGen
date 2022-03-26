@@ -247,3 +247,37 @@ StatusMsg_UserForm = None
 UserForm_Select_Typ_DCC = None
 UserForm_Select_Typ_SX = None
 Select_COM_Port_UserForm = None
+
+#**************************
+#'  Port handling functions
+#**************************
+
+def port_is_busy(port):
+    
+    if type(port)==int:
+        return port <0
+    elif type(port)==str:
+        return port.startswith("*")
+    
+def port_is_available(port):
+    if type(port)==int:
+        return port > 0
+    elif type(port)==str:
+        return not port.startswith("*")
+    
+def port_reset(port):
+    if port.startswith("*"):
+        return(port[1:])
+    else:
+        return port
+    
+def port_check_format(port):
+    if IsNumeric(port):
+        return "COM"+port
+    else:
+        return port
+    
+        
+    
+    
+    

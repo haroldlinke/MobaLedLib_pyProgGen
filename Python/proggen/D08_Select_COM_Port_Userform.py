@@ -222,21 +222,21 @@ class CSelect_COM_Port_UserForm:
                 LocalComPorts.append(" ")
             M07.CheckCOMPort_Txt = PortNames[SpinButton]
             tmp_comport = LocalComPorts[SpinButton]
-            if tmp_comport==" ":
-                tmp_comport = "999"
-            if IsNumeric(tmp_comport):
-                M07.CheckCOMPort = int(tmp_comport)
-            else:
-                M07.CheckCOMPort = tmp_comport
+            #if tmp_comport==" ":
+            #    tmp_comport = "999"
+            #if IsNumeric(tmp_comport):
+            #    M07.CheckCOMPort = int(tmp_comport)
+            #else:
+            M07.CheckCOMPort = tmp_comport 
             LocalComPorts_list = LocalComPorts
             
             #for i in range(len(LocalComPorts)):
             #    LocalComPorts_list.append(LocalComPorts(i))
             self.Com_Port_No=SpinButton
             self.Com_Port_Label["value"] = LocalComPorts_list
-            if M07.CheckCOMPort != 999:
+            if M07.CheckCOMPort != " ":
                 self.Com_Port_Label.set(M07.CheckCOMPort)
-                COM_Port_Label = ' COM' + str(M07.CheckCOMPort)
+                COM_Port_Label = M07.CheckCOMPort
             else:
                 self.Com_Port_Label.set(" ")
                 COM_Port_Label = ' COM' + "?"
@@ -250,7 +250,7 @@ class CSelect_COM_Port_UserForm:
             self.AvailPorts_Label.configure(text=M30.DelLast(PortsStr))
             OldL_ComPorts = LocalComPorts
         else:
-            M07.CheckCOMPort = 999
+            M07.CheckCOMPort = " "#999
             self.AvailPorts_Label.configure(text='')
             COM_Port_Label = ' -'
     
