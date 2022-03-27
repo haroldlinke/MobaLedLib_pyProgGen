@@ -205,7 +205,7 @@ def loaddll():
     #Private Declare Function IsLEDWindowVisible Lib "MobaLedLibWrapper.dll" () As Byte
     IsLEDWindowVisible = MobaLedLibWrapper.IsLEDWindowVisible
     IsLEDWindowVisible.argtypes=[]
-    IsLEDWindowVisible.restype = ctypes.c_char
+    IsLEDWindowVisible.restype = ctypes.c_bool
     
     #Private Declare Function GetLEDWindowRect Lib "MobaLedLibWrapper.dll" (lpRect As RECT) As Long
     GetLEDWindowRect = MobaLedLibWrapper.GetLEDWindowRect
@@ -342,7 +342,7 @@ def UpdateSimulatorIfNeeded(CreateHeaderFile, AlwaysOpenWindow):
     Debug.Print("UpdateSimulatorIfNeeded")
     fn_return_value = True
     if IsSimualtorAvailable():
-        if AlwaysOpenWindow or IsLEDWindowVisible:
+        if AlwaysOpenWindow or IsLEDWindowVisible():
             fn_return_value = UploadToSimulator(CreateHeaderFile)
     return fn_return_value
             

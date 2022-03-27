@@ -107,6 +107,7 @@ PromptUser = 2
 #End Enum
 Start_Compile_Time = 0
 
+
 def Use_Excel_Console():
     #---------------------------------------------
     fn_return_value = M28.Get_Bool_Config_Var('Use_Excel_Console')
@@ -906,7 +907,7 @@ def Get_New_Board_Type(FirmwareVer):
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: BuildOptions - ByRef 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DeviceSignature - ByRef 
 def Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, BuildOptColumn, BuildOptions, DeviceSignature,CreateFilesOnly=False): # 20.12.21: Jürgen add CreateFilesOnly for programatically generation of header files
-    global CheckCOMPort_Txt
+    
     Start_Baudrate = int()
 
     BaudRate = int()
@@ -956,11 +957,12 @@ def Check_If_Arduino_could_be_programmed_and_set_Board_type(ComPortColumn, Build
         if IsNumeric(ComPortStr):
             ComPort = "COM"+ComPortStr
         else:
-            Comport = ComPortStr
+            ComPort = ComPortStr
         #ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
         #if ComPort > 255:                                                       # 03.03.22: Juergen avoid overrun error
         #    ComPort = 0
         CheckCOMPort_Txt = M07.Check_If_Port_is_Available_And_Get_Name(ComPort)
+        
         FirmwareVer = ""
         if CheckCOMPort_Txt != '':
             if M02.Get_BoardTyp() == 'ESP32':
@@ -1224,8 +1226,10 @@ def Compile_and_Upload_Prog_to_Right_Arduino():
         P01.Application.StatusBar = 'Programm aus lokalem Verzeichnis wird zum Upload verwendet: ' + SrcDir
     else:
         SrcDir = M02.Get_SrcDirExamp() + M30.FileName(InoName) + '\\'
-    if M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value > 0:
-        M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value = - P01.val(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value)
+    #*HL if M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value > 0:
+    if F00.port_is_available(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value):
+        #M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value = - P01.val(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value)
+        M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value = F00.port_set_busy(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value)
         # Force to show the new COM Port dialog
     if Create_Config_Header_File(SrcDir + Replace(InoName, '.ino', '.h')) == False:
         return fn_return_value
@@ -1248,11 +1252,11 @@ def Ask_To_Upload_the_Right_Arduino_Prog(Focus_Button):
         return fn_return_value
     Other_Prog = Replace(Trim(Replace(M02.Prog_for_Right_Ardu, M25.Page_ID + ' ', '')), ' ', ', ')
     select_variable_ = F00.Select_COM_Port_UserForm.ShowDialog(M09.Get_Language_Str('Ist das Programm für den rechten Arduino installiert?'), M09.Get_Language_Str('Programm für ') + M25.Page_ID + ' Arduino', Replace(Replace(M09.Get_Language_Str('Wurde das Programm des rechten #DCC# Arduinos bereits ' + 'installiert?' + vbCr + vbCr + 'Das Programm muss nur beim ersten mal auf den Arduino hochgeladen werden. ' + 'Danach muss es nicht mehr verändert werden solange es keine neue Version der ' + 'MobaLedLib gibt (oder auf #SELECTRIX# umgestellt wird).' + vbCr + vbCr + 'Ja: Diese Frage wird nicht mehr gestellt.' + vbCr + 'Installieren: Das Programm wird installiert.'), '#DCC#', M25.Page_ID), '#SELECTRIX#', Other_Prog), 'DCC_Image', 'I Installieren; A Abbrechen; J Ja', Focus_Button, False, Replace(M09.Get_Language_Str('#DCC# Programm für aktuelle MobaLedLib Version installiert?'), '#DCC#', M25.Page_ID), ComPortUnused)
-    if (select_variable_ == 1):
+    if (select_variable_[0] == 1):
         fn_return_value = True
-    elif (select_variable_ == 2):
+    elif (select_variable_[0] == 2):
         M30.EndProg()
-    elif (select_variable_ == 3):
+    elif (select_variable_[0] == 3):
         fn_return_value = False
     return fn_return_value
 
@@ -1272,8 +1276,9 @@ def Upload_the_Right_Arduino_Prog_if_needed():
     M25.Make_sure_that_Col_Variables_match()
     if M25.Page_ID != 'CAN' and P01.Cells(M02.SH_VARS_ROW, M25.R_UPLOD_COL) != 'R OK' and M06.Ext_AddrTxt_Used():
         if Ask_To_Upload_the_Right_Arduino_Prog('Default_Button'):
-            if P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value > 0:
-                P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value = - P01.val(P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value)
+            if F00.port_is_available(P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value): # > 0:
+                P01.CellDict[M02.SH_VARS_ROW, M25.COMPrtR_COL] = F00.port_set_busy(P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value)
+                #*HL P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value = - P01.val(P01.Cells(M02.SH_VARS_ROW, M25.COMPrtR_COL).Value)
                 # Force to show the COM port dialog for the right Arduino
             if Compile_and_Upload_Prog_to_Right_Arduino() == False:
                 return fn_return_value
@@ -1283,7 +1288,7 @@ def Upload_the_Right_Arduino_Prog_if_needed():
             #    P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value = - P01.val(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value)
             #    # Force to show the COM port dialog for the left Arduino
             if F00.port_is_available(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value):
-                P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value = "*"+ P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value
+                P01.CellDict[M02.SH_VARS_ROW, M25.COMPort_COL] = F00.port_set_busy(P01.Cells(M02.SH_VARS_ROW, M25.COMPort_COL).Value)
                 # Force to show the COM port dialog for the left Arduino            
     else:
         P01.CellDict[M02.SH_VARS_ROW, M25.R_UPLOD_COL] = 'R OK'

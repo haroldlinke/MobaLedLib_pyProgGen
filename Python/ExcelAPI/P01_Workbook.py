@@ -66,7 +66,7 @@ pyProgfile_dir = "\\LEDs_AutoProg\\pyProg_Generator_MobaLedLib"
 shift_key = False
 
 datasheet_fieldnames = "A;Aktiv;Filter;Adresse oder Name;Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment"
-datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,8),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
+datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,12),(0,13),(0,14),(0,15),(0,16),(1,"*")),
                         "ProtectedCells"  : ((0,0),(1,0),("*",4),("*",12),("*",13),("*",14),("*",15),("*",16)),
                         "left_click_callertype": "cell",
                         "FontColor"       : { "1": {
@@ -622,7 +622,7 @@ class CWorkbook:
     def SaveWorkbook(self,filename,allsheets=False):
         workbookdata = {}
         for sheet in self.sheets:
-            if sheet.Datasheet or allsheets:
+            if sheet.Datasheet or sheet.Configsheet or allsheets:
                 sheetdata = sheet.getData()
                 workbookdata[sheet.Name] = sheetdata
         
@@ -707,6 +707,7 @@ class CWorksheet:
         self.Workbook = workbook
         self.ProtectContents = False
         self.Datasheet = Sheettype == "Datasheet"
+        self.Configsheet = Sheettype == "Config"
         self.csv_filepathname = csv_filepathname
         self.fieldnames = fieldnames
         self.formating_dict = formating_dict

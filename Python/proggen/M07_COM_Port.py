@@ -235,7 +235,8 @@ def Detect_Com_Port_and_Save_Result(Right):
         Pic_ID = 'LED'
         BuildOptColumn = M25.BUILDOP_COL
     Port = M07New.Detect_Com_Port(Right, Pic_ID)
-    if Port > 0:
+    #if Port > 0:
+    if F00.port_is_available(Port):    
         P01.CellDict[M02.SH_VARS_ROW, ComPortColumn] = Port
         F00.StatusMsg_UserForm.Set_Label(M09.Get_Language_Str('Überprüfe den Arduino Typ'))
         F00.StatusMsg_UserForm.Show()
@@ -261,7 +262,8 @@ def ComPortPage():
 def Check_USB_Port_with_Dialog(ComPortColumn):
     fn_return_value = False
     #---------------------------------------------------------------------------
-    if P01.val(ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)) <= 0:
+    #if P01.val(ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)) <= 0:
+    if not F00.port_is_available(ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)):
         fn_return_value = M07New.USB_Port_Dialog(ComPortColumn)
     else:
         fn_return_value = True
@@ -283,7 +285,7 @@ def Get_USB_Port_with_Dialog(Right=False):
     else:
         ComPortColumn = M25.COMPort_COL
     with_0 = ComPortPage().Cells(M02.SH_VARS_ROW, ComPortColumn)
-    if F00.port_is_available(with_0.Value):
+    if not F00.port_is_available(with_0.Value):
     #*HL if P01.val(with_0.Value) <= 0:
         if M07New.USB_Port_Dialog(ComPortColumn) == False:
             fn_return_value = - 1
@@ -610,7 +612,7 @@ def DetectArduino(port,baudrate, HWVersion=255, SWMajorVersion=255, SWMinorVersi
     fn_return_value=0
     
     No_of_trials = Trials
-    logging.debug ("detect_arduino: %s",port)
+    logging.debug ("M07.detect_arduino: %s",port)
     no_port=None
     try: # close the port if it is open and reopen it with DTR = False
         if PG.global_controller.arduino and PG.global_controller.arduino.is_open:
@@ -619,7 +621,7 @@ def DetectArduino(port,baudrate, HWVersion=255, SWMajorVersion=255, SWMinorVersi
         logging.info("connected to: " + repr(PG.global_controller.arduino))
     except BaseException as e:
         logging.debug(e)
-        logging.debug("detect_arduino: Error assigning port")
+        logging.debug("M07.detect_arduino: Error assigning port")
         return -2, None
     if type(port)==int:
         port_str="COM"+str(port)
@@ -631,7 +633,7 @@ def DetectArduino(port,baudrate, HWVersion=255, SWMajorVersion=255, SWMinorVersi
         PG.global_controller.arduino.open()
     except BaseException as e:
         logging.debug(e)            
-        logging.debug("detect_arduino: Error opening  port "+port_str)
+        logging.debug("M07.detect_arduino: Error opening  port "+port_str)
         return -1, None           
     try:
         PG.global_controller.arduino.dtr = True

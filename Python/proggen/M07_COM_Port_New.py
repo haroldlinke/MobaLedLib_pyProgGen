@@ -181,7 +181,7 @@ def __Blink_Arduino_LED():
     #------------------------------
     # Is called by OnTime and flashes the LEDs of the Arduino connected to
     # the port stored in the global variable "CheckCOMPort"
-    # It's aborted if CheckCOMPort = 0
+    # It's aborted if CheckCOMPort = " " - 0
     # Attention: This function doesn't check if the connected device is an Arduino
     # because this would be to slow. In addition the blinking frequence is more visible if
     # A baudrate of 50 is used.
@@ -260,11 +260,14 @@ def __Show_USB_Port_Dialog(ComPortColumn, ComPort):
 
     ArduName = String()
     #---------------------------------------------------------------------------------------------
-    ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
-    if ComPort < 0:
-        ComPort = - ComPort
-    if ComPort > 255:                       # 03.03.22: Juergen avoid overrun error
-        ComPort = 0
+    #ComPort = P01.val(P01.Cells(M02.SH_VARS_ROW, ComPortColumn))
+    ComPort = P01.Cells(M02.SH_VARS_ROW, ComPortColumn)
+    if F00.port_is_busy(ComPort):
+        F00.port_reset(ComPort)
+    #if ComPort < 0:
+    #    ComPort = - ComPort
+    #if ComPort > 255:                       # 03.03.22: Juergen avoid overrun error
+    #    ComPort = 0
     if (ComPortColumn == M25.COMPort_COL):
         Picture = 'LED_Image'
         ArduName = 'LED'
@@ -304,7 +307,7 @@ def __Test_USB_Port_Dialog():
     #USB_Port_Dialog COMPrtT_COL  ' Could only be used im the Pattern_COnfigurator
 
 def Detect_Com_Port(RightSide=False, Pic_ID='DCC'):
-    fn_return_value = None
+    fn_return_value = " "#None
     Res = Boolean()
 
     ComPortColumn = Long()
@@ -315,7 +318,10 @@ def Detect_Com_Port(RightSide=False, Pic_ID='DCC'):
         ComPortColumn = M25.COMPrtR_COL
     else:
         ComPortColumn = M25.COMPort_COL
-    if __Show_USB_Port_Dialog(ComPortColumn, ComPort):
+    
+    #if __Show_USB_Port_Dialog(ComPortColumn, ComPort):
+    res, ComPort= __Show_USB_Port_Dialog(ComPortColumn, ComPort)
+    if res:        
         fn_return_value = ComPort
     return fn_return_value
 

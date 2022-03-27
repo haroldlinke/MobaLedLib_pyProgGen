@@ -89,11 +89,14 @@ class CStatusMsg_UserForm():
         self.UserForm_Res = ""
         self.label1 = None
         self.label2 = None
+        self.text = ""
+        self.label_txt=""
+        
         
     def destroy(self):
         if self.IsActive:
             self.IsActive=False
-            self.top.destroy()
+            #self.top.destroy()
         
     #def ok(self, event=None):
     #    self.IsActive = False

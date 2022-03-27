@@ -570,7 +570,7 @@ class ARDUINOConfigPage(tk.Frame):
         #         -2: can't close and assign port
         #         -3: can't reset arduino
         
-        logging.debug ("detect_arduino: %s",port)
+        logging.debug ("ARDUINO_CONFIG: detect_arduino: %s",port)
         logging.debug ("SleepTime="+str(SleepTime))
         no_port=None
         try: # close the port if it is open and reopen it with DTR = False
@@ -580,7 +580,7 @@ class ARDUINOConfigPage(tk.Frame):
             #logging.info("connected to: " + self.controller.arduino.port)
         except BaseException as e:
             logging.debug(e)
-            logging.debug("detect_arduino: Error assigning port")
+            logging.debug("ARDUINO_CONFIG:detect_arduino: Error assigning port")
             return -2, None
         self.controller.arduino.port = port
         self.controller.arduino.dtr = False
@@ -588,7 +588,7 @@ class ARDUINOConfigPage(tk.Frame):
             self.controller.arduino.open()
         except BaseException as e:
             logging.debug(e)            
-            logging.debug("detect_arduino: Error opening  port")
+            logging.debug("ARDUINO_CONFIG:etect_arduino: Error opening  port")
             return -1, None           
         try:
             self.controller.arduino.dtr = True

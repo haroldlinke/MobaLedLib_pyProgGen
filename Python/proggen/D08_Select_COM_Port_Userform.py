@@ -131,7 +131,7 @@ class CSelect_COM_Port_UserForm:
         self.isInitialised = False
         self.IsActive=False
         self.top.destroy()
-        CheckCOMPort = 0
+        M07.CheckCOMPort = " "
         
     
     def Abort_Button_Click(self,event=None):
@@ -143,7 +143,7 @@ class CSelect_COM_Port_UserForm:
         self.isInitialised = False
         self.IsActive=False        
         self.top.destroy()
-        CheckCOMPort = 0
+        M07.CheckCOMPort = " "
         
     
     def Default_Button_Click(self,event=None):
@@ -155,7 +155,7 @@ class CSelect_COM_Port_UserForm:
         self.isInitialised = False
         self.IsActive=False        
         self.top.destroy()
-        CheckCOMPort = 0
+        M07.CheckCOMPort = " "
         
     
     def __SpinButton_Change(self):
@@ -202,9 +202,9 @@ class CSelect_COM_Port_UserForm:
         LocalComPorts,PortNames = M07.EnumComPorts(Show_Unknown_CheckBox_flag, PortNames, PrintDebug= LocalPrintDebug)
         if M30.isInitialised(LocalComPorts):
             SpinButton_Max = len(LocalComPorts)-1
-            if DefaultPort > 0:
+            if DefaultPort != " ":# > 0:
                 for i in range(len(LocalComPorts)):
-                    if str(DefaultPort) == LocalComPorts[i]:
+                    if DefaultPort == LocalComPorts[i]:
                         SpinButton = i
             else:
                 if M30.isInitialised(OldL_ComPorts):

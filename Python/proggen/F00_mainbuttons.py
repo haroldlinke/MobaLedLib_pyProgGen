@@ -263,7 +263,7 @@ def port_is_available(port):
     if type(port)==int:
         return port > 0
     elif type(port)==str:
-        return not port.startswith("*")
+        return not (port.startswith("*") or port=="COM?" or port==" ")
     
 def port_reset(port):
     if port.startswith("*"):
@@ -277,7 +277,11 @@ def port_check_format(port):
     else:
         return port
     
-        
+def port_set_busy(port):
+    if port.startswith("*"):
+        return(port)
+    else:
+        return "*"+port
     
     
     
