@@ -282,7 +282,7 @@ class Prog_GeneratorPage(tk.Frame):
                          "text"     : "Dialog",
                          "padx"     : 20,
                          "tooltip"  : "Dialog aufrufen"},
-                        {"Icon_name": "Btn_Send_to_ARDUINO.png",
+                        {"Icon_name": "btn_send_to_arduino.png",
                          "command"  : F00.Arduino_Button_Click,
                          "shift_command": F00.Arduino_Button_Shift_Click,
                          "text"     : "Z. Arduino\nschicken",

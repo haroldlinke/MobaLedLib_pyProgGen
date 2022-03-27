@@ -588,7 +588,7 @@ class ARDUINOConfigPage(tk.Frame):
             self.controller.arduino.open()
         except BaseException as e:
             logging.debug(e)            
-            logging.debug("ARDUINO_CONFIG:etect_arduino: Error opening  port")
+            logging.debug("ARDUINO_CONFIG:detect_arduino: Error opening  port")
             return -1, None           
         try:
             self.controller.arduino.dtr = True

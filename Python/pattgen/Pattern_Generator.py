@@ -256,19 +256,19 @@ class Pattern_GeneratorPage(tk.Frame):
     def create_button_list(self):
         
         button_list=(
-                        {"Icon_name": "Btn_PA_Import_from_Prog_Gen.png",
+                        {"Icon_name": "btn_pa_import_from_prog_gen.png",
                          "command"  : PAT09.Import_from_ProgGen_Button_Click,
                          "padx"     : 20,
                          "tooltip"  : "Pattern von Prog Generator importieren"},
-                        {"Icon_name": "Btn_Send_to_ARDUINO.png",
+                        {"Icon_name": "btn_send_to_arduino.png",
                          "command"  : PAT09.Prog_Generator_Button_Click,
                          "padx"     : 20,
                          "tooltip"  : "Pattern an Prog Generator schicken"},
-                        {"Icon_name": "Btn_PA_insert_image.png",
+                        {"Icon_name": "btn_pa_insert_image.png",
                          "command"  : PAT09.InsertPicture_Button_Click,
                          "padx"     : 10,
                          "tooltip"  : "Bild einfügen"},
-                        {"Icon_name": "Btn_Options.png",
+                        {"Icon_name": "btn_Options.png",
                          "command"  : PAT09.Option_Button_Click,
                          "padx"     : 10,
                          "tooltip"  : "Optionen"}

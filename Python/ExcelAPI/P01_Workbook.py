@@ -47,6 +47,8 @@ from vb2py.vbfunctions import *
 import time
 import datetime
 
+from pathlib import Path
+
 #import proggen.M20_PageEvents_a_Functions as M20
 import subprocess
 import pickle
@@ -92,35 +94,35 @@ datasheet_formating = { "HideCells" : ((0,1),(0,2),(0,3),(0,5),(0,7),(0,12),(0,1
                         
 sheetdict_PROGGEN={"DCC":
             {"Name":"DCC",
-             "Filename"  : "\\csv\\dcc.csv",
+             "Filename"  : "csv/DCC.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
              "SheetType" : "Datasheet"
              },
            "Selectrix":
             {"Name":"Selectrix",
-             "Filename"  : "\\csv\\Selectrix.csv",
+             "Filename"  : "csv/Selectrix.csv",
              "Fieldnames": "A;Aktiv;Filter;Channel oder\nName[0..99];Bitposition\n[1..8];Typ;Start-\nwert;Beschreibung;Verteiler-\nNummer;Stecker\nNummer;Icon;Name;Beleuchtung, Sound, oder andere Effekte;Start LedNr;LEDs;InCnt;Loc InCh;LED\nSound\nKanal;Comment",
              "Formating" : datasheet_formating,
              "SheetType" : "Datasheet"
              },
            "CAN":
             {"Name":"CAN",
-             "Filename"  : "\\csv\\CAN.csv",
+             "Filename"  : "csv/CAN.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
              "SheetType" : "Datasheet"
              },
            "Examples":
             {"Name":"Examples",
-             "Filename"  : "\\csv\\Examples.csv",
+             "Filename"  : "csv/Examples.csv",
              "Fieldnames": datasheet_fieldnames,
              "Formating" : datasheet_formating,
              "SheetType" : "Datasheet"
-             },                             
+             },
            "Config":
             {"Name":"Config",
-             "Filename":"\\csv\\Config.csv",
+             "Filename":"csv/Config.csv",
              "Fieldnames": "A;B;C;D",
              "SheetType" : "Config",
              "Formating" : { "HideCells"       : (("*",3),),
@@ -142,17 +144,17 @@ sheetdict_PROGGEN={"DCC":
             },
            "Languages":
             {"Name":"Languages",
-             "Filename":"\\csv\\Languages.csv",
+             "Filename":"csv/Languages.csv",
              "Fieldnames": "A;B;C;D;E;F;G;H;I"
             },
            "Lib_Macros":
             {"Name":"Lib_Macros",
-             "Filename":"\\csv\\Lib_Macros.csv",
+             "Filename":"csv/Lib_Macros.csv",
              "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS"
             },
            "Libraries":
             {"Name":"Libraries",
-             "Filename":"\\csv\\Libraries.csv",
+             "Filename":"csv/Libraries.csv",
              "Fieldnames": "A;B;C;D;E;F;G;H;I;J",
              "Formating" : {"ProtectedCells"  : ((0,"*"),(1,"*"),(2,"*"),(3,"*"),(4,"*"),(5,"*"),(6,"*"),(7,"*")),
                             "FontColor"       : { "1": {
@@ -169,27 +171,27 @@ sheetdict_PROGGEN={"DCC":
                                                        }
                                                 }
                             }
-            },                   
+            },
            "Par_Description":
             {"Name":"Par_Description",
-             "Filename":"\\csv\\Par_Description.csv",
+             "Filename":"csv/Par_Description.csv",
               "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
-            },                  
+            },
            "Platform_Parameters":
             {"Name":"Platform_Parameters",
-             "Filename":"\\csv\\Platform_Parameters.csv",
+             "Filename":"csv/Platform_Parameters.csv",
              "Fieldnames": "A;B;C;D;E"
             },
            "Named_Ranges":
             {"Name":"Named_Ranges",
-             "Filename":"\\csv\\Named_Ranges.csv",
+             "Filename":"csv/Named_Ranges.csv",
              "Fieldnames": "A;B;C;D"
-            }           
+            }
         }
 
 sheetdict_PatternGEN={"Main":
             {"Name":"Main",
-             "Filename"  : "\\csv\\PA_main.csv",
+             "Filename"  : "csv/PA_main.csv",
              "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z;AA;AB;AC;AD;AE;AF;AG;AH;AI;AJ;AK;AL;AM;AN;AO;AP;AQ;AR;AS",
              "Formating" : {"HideCells"       : ((0,0),),
                             "HideRows"        : (12,15,16,17,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46),
@@ -211,37 +213,37 @@ sheetdict_PatternGEN={"Main":
                                                        "Cells"    : (("*","*"),)
                                                        }
                                                 }
-                            },             
+                            },
              "SheetType" : "Datasheet"
              },
            "PA_Languages":
             {"Name":"Languages",
-             "Filename"  : "\\csv\\PA_Languages.csv",
+             "Filename"  : "csv/PA_Languages.csv",
              "Fieldnames": "A;B;C;D;E;F",
              "Formating" : {}
              },
            "PA_Goto_Activation_Entries":
             {"Name":"Goto_Activation_Entries",
-             "Filename"  : "\\csv\\PA_Goto_Activation_Entries.csv",
+             "Filename"  : "csv/PA_Goto_Activation_Entries.csv",
              "Fieldnames": "A;B;C;D;E;F",
              "Formating" : {},
              },
            "PA_Special_Mode_Dlg":
             {"Name":"Special_Mode_Dlg",
-             "Filename"  : "\\csv\\PA_Special_Mode_Dlg.csv",
+             "Filename"  : "csv/PA_Special_Mode_Dlg.csv",
              "Fieldnames": "A;B;C;D;E;F",
              "Formating" : {},
-             },                             
+             },
            "PA_Par_Description":
             {"Name":"Par_Description",
-             "Filename":"\\csv\\PA_Par_Description.csv",
+             "Filename":"csv/PA_Par_Description.csv",
               "Fieldnames": "A;B;C;D;E;F;G;H;I;J;K"
             },
            "Named_Ranges":
             {"Name":"Named_Ranges",
-             "Filename":"\\csv\\Named_Ranges.csv",
+             "Filename":"csv/Named_Ranges.csv",
              "Fieldnames": "A;B;C;D"
-            }                      
+            }
         }
 
 def Dir(filepath,dummy=None):
@@ -544,7 +546,7 @@ class CWorkbook:
         fieldnames = sheetname_prop.get("Fieldnames",None)
         if type(fieldnames) == str:
             fieldnames = fieldnames.split(";")
-        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=self.pyProgPath+sheetname_prop["Filename"],frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,Sheettype=sheettype,callback=callback)
+        worksheet = CWorksheet(sheetname,workbook=self, csv_filepathname=(Path(self.pyProgPath) / sheetname_prop["Filename"]),frame=tabframe,fieldnames=fieldnames,formating_dict=formating_dict,Sheettype=sheettype,callback=callback)
         return worksheet
 
             
