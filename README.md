@@ -6,8 +6,8 @@ This branch is for development of the LINUX/Mac version of the ProgramGenerator
 This Branch is based on V4.16 of the Windows version
 
 Requirements:
-MobaledLib 3.1.0F has to be installed
-Python >V9.0
+MobaledLib 3.1.0F4 has to be installed
+Python >V3.9
 
 
 Installation using Python files
@@ -15,11 +15,12 @@ Installation using Python files
 2. The path may have this look:  xxx/Arduino/MobaLedLib/Ver_3.1.0/LEDs_AutoProg/pyProg_Generator_MobaLedLib/python
    (the directory needs to be verfied in a LINUX installation)
 3. create a subfolder pyProg_Generator_MobaLedLib in the folder LEDs_Autoprog (the name of the subfolder can be any name)
-4. create a subfolder Python
+4. create a subfolder python
 5. Clone MobaLedLib_PyProgGen to the folder pyProg_Generator_MobaLedLib/Python - the file pyProg_Generator_MobaLedLib.py must be in this folder
-6. or download the branch as ZIP-file: unpack the ZIP file and copy the contents of the folder Python into the folder pyProg_Generator_MobaLedLib/Python
-7. open the folder pyProg_Generator_MobaLedLib/Python
-8. start the Python file: pyProg_Generator_MobaLedLib.py 
+6. or download the branch as ZIP-file: unpack the ZIP file and copy the contents of the folder python into the folder pyProg_Generator_MobaLedLib/python
+7. or create a logical link for the download folder to the folder python (ln -s xxx/Arduino/MobaLedLib/python/pyProg_Generator_MobaLedLib.py ./myProg.py")
+8. open the folder pyProg_Generator_MobaLedLib/python
+9. start the Python file: pyProg_Generator_MobaLedLib.py 
 (python xx/Arduino/MobaLedLib/Ver_3.1.0/LEDs_AutoProg/pyProg_Generator_MobaLedLib/python pyProg_Generator_MobaLedLib.py
 
 This manual installation should work for Windows, Linux and Mac.
