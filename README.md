@@ -7,7 +7,7 @@ This Branch is based on V4.16 of the Windows version
 
 Requirements:
 MobaledLib 3.1.0F4 has to be installed
-Python >V3.9
+Python >V3.9.1
 
 
 Installation using Python files
