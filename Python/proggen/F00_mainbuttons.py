@@ -262,8 +262,9 @@ def port_is_busy(port):
 def port_is_available(port):
     if type(port)==int:
         return port > 0
-    elif type(port)==str:
+    elif type(port)==str or type(port)==P01.CCell:
         return not (port.startswith("*") or port=="COM?" or port==" ")
+    return False
     
 def port_reset(port):
     if port.startswith("*"):

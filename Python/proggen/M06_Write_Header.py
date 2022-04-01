@@ -893,7 +893,16 @@ def Create_HeaderFile(CreateFilesOnly = False): #20.12.21: Jürgen add CreateFil
     shift_pressed = P01.GetAsyncKeyState(P01.__VK_SHIFT)
     print("Shift_pressed:",shift_pressed)
     
-    if (M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) == 3 or shift_pressed != 0 and CreateFilesOnly == False and M02.Get_BoardTyp() == 'AM328'):
+    # 17.03.22 Juergen: shift key is reverses simualtor option
+    #SimulatorOnly = Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) = 3 and GetAsyncKeyState(VK_SHIFT) = 0
+    SimulatorOnly = M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) == 3 and shift_pressed
+        
+    if not SimulatorOnly:
+        SimulatorOnly = M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) != 3 and shift_pressed
+      
+    #If SimulatorOnly And CreateFilesOnly = False And Get_BoardTyp() = "AM328" Then    
+    
+    if SimulatorOnly and CreateFilesOnly == False and M02.Get_BoardTyp() == 'AM328':
         Debug.Print(" go to UploadToSimulator")
         fn_return_value = M39.UploadToSimulator(True)
         return fn_return_value

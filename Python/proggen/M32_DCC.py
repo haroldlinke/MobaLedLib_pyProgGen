@@ -69,6 +69,7 @@ import proggen.M39_Simulator as M39
 #import proggen.M60_CheckColors as M60
 #import proggen.M70_Exp_Libraries as M70
 import proggen.M80_Create_Mulitplexer as M80
+import proggen.F00_mainbuttons as F00
 
 import proggen.Prog_Generator as PG
 
@@ -145,7 +146,9 @@ def SendDCCAccessoryCommand(Addr, Direction):
     UseHardwareHandshake = False
     M25.Make_sure_that_Col_Variables_match()
     
-    if M39.IsSimulatorActive and P01.val(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPort_COL)) <= 0:
+    #if M39.IsSimulatorActive and P01.val(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPort_COL)) <= 0:
+    if M39.IsSimulatorActive and F00.port_is_busy(M07.ComPortPage().Cells(M02.SH_VARS_ROW, M25.COMPort_COL)):
+            
         fn_return_value = True
         return fn_return_value
     

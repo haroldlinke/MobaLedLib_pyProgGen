@@ -96,6 +96,7 @@ class CStatusMsg_UserForm():
     def destroy(self):
         if self.IsActive:
             self.IsActive=False
+            self.top.withdraw()
             #self.top.destroy()
         
     #def ok(self, event=None):
@@ -123,8 +124,8 @@ class CStatusMsg_UserForm():
     
         self.top.resizable(False, False)  # This code helps to disable windows from resizing
     
-        window_height = 30
-        window_width = 144
+        window_height = 100
+        window_width = 200
     
         screen_width = self.top.winfo_screenwidth()
         screen_height = self.top.winfo_screenheight()
@@ -162,20 +163,25 @@ class CStatusMsg_UserForm():
     def Show(self):
         
         self.IsActive = True
+        self.top.update()
+        self.top.deiconify()
         #self.controller.wait_window(self.top)        
 
         return self.res
     
     def __UserForm_Initialize(self):
         #--------------------------------
-        #Debug.Print vbCr & me.Name & ":Load_All_Examples Initialize"
+        #ebug.Print vbCr & me.Name & ":Load_All_Examples Initialize"
         #Change_Language_in_Dialog(Me)
         #Center_Form(Me)
+        self.create_form()
         pass
     
     def Set_Label(self, Msg):
         #----------------------------------
-        #self.label1.configure(text=Msg)
+        self.label1.configure(text=Msg)
+        self.top.update()
+        self.top.focus()
         self.label_txt = Msg
         P01.set_statusmessage(self.label_txt +" "+ self.text)
     
@@ -183,16 +189,18 @@ class CStatusMsg_UserForm():
         #-------------------------------------------
         #ActSheet_Label = Txt
         self.text=Txt
-        #self.label2.configure(text=Txt)
+        self.label2.configure(text=Txt)
+        self.top.update()
+        self.top.focus()
         #P01.DoEvents()
         P01.set_statusmessage(self.label_txt +" "+ self.text)
     
     def ShowDialog(self, Label, Txt):
         #----------------------------------------------------
-        #self.create_form()
-        #self.Set_Label(Label)
-        #self.Set_ActSheet_Label(Txt)
-        #self.Show()
+        self.create_form()
+        self.Set_Label(Label)
+        self.Set_ActSheet_Label(Txt)
+        self.Show()
         self.text=Txt
         self.label_txt = Label
         P01.set_statusmessage(Label+" "+Txt)

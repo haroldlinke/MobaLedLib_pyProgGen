@@ -588,7 +588,11 @@ def Create_Start_ESP32_Sub(ResultName, ComPort, BuildOptions, InoName, SrcDir, C
         VBFiles.writeText(fp, 'call Fastbuild.cmd %8', '\n')
         VBFiles.writeText(fp, 'if errorlevel 1 (', '\n')
         VBFiles.writeText(fp, '    rem use argument norebuild to avoid rebuild in this case', '\n')
-        VBFiles.writeText(fp, '    if not "%8"==norebuild" (', '\n')                            #in case the librarys have been changed
+        VBFiles.writeText(fp, '    set rebuild=1') 
+        VBFiles.writeText(fp, '    if ""%8""==""norebuild"" set rebuild=0') 
+        VBFiles.writeText(fp, '    if ""%8""==""additional"" set rebuild=0') 
+        VBFiles.writeText(fp, '') 
+        VBFiles.writeText(fp, '    if "%rebuild%"=="1" (', '\n')                            #in case the librarys have been changed
         VBFiles.writeText(fp, '        rem in case that FastBuild.cmd returned errolevel 9 also a rebuild won\'t help', '\n')
         VBFiles.writeText(fp, '        if not errorlevel 9 (', '\n')
         VBFiles.writeText(fp, '            echo Fastbuild failed, trying a rebuild...', '\n')
@@ -1121,11 +1125,12 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
     
     Start = P01.Time()
     if Dir(SrcDir + InoName) == '':
-        #*HLU01.Unload(StatusMsg_UserForm)
+        P01.Unload(F00.StatusMsg_UserForm)
         P01.MsgBox(M09.Get_Language_Str('Fehler das Programm ') + InoName + M09.Get_Language_Str(' ist nicht vorhanden in: ') + vbCr + '  \'' + SrcDir + '\'', vbCritical, M09.Get_Language_Str('Fehler Ino-Programm nicht vorhanden'))
         M30.EndProg()
+    #*HL Failed = Not UpdateSimulatorIfNeeded(False, Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) = 2 Or Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) = 3)
     
-    Failed = not M39.UpdateSimulatorIfNeeded(False, (M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) == 2))
+    Failed = not M39.UpdateSimulatorIfNeeded(False, (M28.Get_Num_Config_Var_Range("SimAutostart", 0, 3, 0) in (2,3)))
      
     if not Failed:
     
@@ -1143,7 +1148,7 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
             #Res = M40.ShellAndWait(CommandStr, 0, vbNormalFocus, PromptUser)
             PG.dialog_parent.start_ARDUINO_program_cmd(CommandStr)
             Res = M40.Success
-            Stop_Compile_Time_Display()
+            #Stop_Compile_Time_Display()
         # Bring Excel to the top                                                ' 19.05.20:
         # Is not working if an other application has be moved above Excel with Alt+Tab
         # But this is a feature of Windows.
@@ -1151,11 +1156,11 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
         # But it brings up excel again after the upload to the Arduino
         # Without this funchion an other program was activated after the upload for some reasons
         #Bring_to_front(hwnd)
-        if (Res == M40.Success) or (Res == M40.Timeout) or (Res == M40.UserBreak):
-            pass
-        else:
-            P01.Unload(F00.StatusMsg_UserForm)
-            P01.MsgBox(M09.Get_Language_Str('Fehler ') + Res + M09.Get_Language_Str(' beim Starten des Arduino Programms \'') + CommandStr + '\'', vbCritical, M09.Get_Language_Str('Fehler beim Starten des Arduino programms'))
+        #if (Res == M40.Success) or (Res == M40.Timeout) or (Res == M40.UserBreak):
+        #    pass
+        #else:
+        #    P01.Unload(F00.StatusMsg_UserForm)
+        #    P01.MsgBox(M09.Get_Language_Str('Fehler ') + Res + M09.Get_Language_Str(' beim Starten des Arduino Programms \'') + CommandStr + '\'', vbCritical, M09.Get_Language_Str('Fehler beim Starten des Arduino programms'))
         
         if Dir(ResFile) != '':
             Failed = True
@@ -1163,12 +1168,12 @@ def Compile_and_Upload_Prog_to_Arduino(InoName, ComPortColumn, BuildOptColumn, S
     if Failed:
         P01.MsgBox(M09.Get_Language_Str('Es ist ein Fehler aufgetreten ;-(' + vbCr + vbCr + 'Zur Fehlersuche kann man die letzten Änderungen wieder rückgängig machen und es noch mal versuchen. ' + vbCr + vbCr + 'Kommunikationsprobleme erkennt man an dieser Meldung: ' + vbCr + '   avrdude: ser_open(): can\'t open device "\\\\.\\COM') + P01.Cells(M02.SH_VARS_ROW, ComPortColumn) + '":' + vbCr + M09.Get_Language_Str('   Das System kann die angegebene Datei nicht finden.' + vbCr + 'In diesem Fall müssen die Verbindungen überprüft und der Arduino durch einen neuen ersetzt werden.' + vbCr + vbCr + 'Der Fehler kann auch auftreten wenn der DCC/Selextrix Arduino noch nicht programmiert wurde.' + vbCr + 'Am besten man steckt den rechten Arduino erst dann ein wenn er benötigt wird.' + vbCr + vbCr + 'Wenn der Fehler nicht zu finden ist und immer wieder auftritt, dann kann ein Screenshot des ' + 'vorangegangenen Bildschirms (Nach oben scrollen so dass die erste Meldung nach dem Arduino Bild zu sehen ist) ' + 'zusammen mit dem Excel Programm und einer ausführlichen Beschreibung an ' + vbCr + '  MobaLedLib@gmx.de' + vbCr + 'geschickt werden.'), vbInformation, M09.Get_Language_Str('Fehler beim Hochladen des Programms'))
         M30.EndProg()
-    else:
-        Stop_Compile_Time_Display()
-        Debug.Print('Compile and upload duration: ' + P01.Format(P01.Time() - Start, 'hh:mm:ss'))
-        M30.Show_Status_for_a_while(M09.Get_Language_Str('Programm erfolgreich hochgeladen. Kompilieren und Hochladen dauerte ') + P01.Format(P01.Time() - Start, 'hh:mm:ss'), '00:02:00')
+    #else:
+    #    Stop_Compile_Time_Display()
+    #    Debug.Print('Compile and upload duration: ' + P01.Format(P01.Time() - Start, 'hh:mm:ss'))
+    #    M30.Show_Status_for_a_while(M09.Get_Language_Str('Programm erfolgreich hochgeladen. Kompilieren und Hochladen dauerte ') + P01.Format(P01.Time() - Start, 'hh:mm:ss'), '00:02:00')
        
-        fn_return_value = True
+    fn_return_value = True
     return fn_return_value
 
 def Compile_and_Upload_LED_Prog_to_Arduino(CreateFilesOnly=False):

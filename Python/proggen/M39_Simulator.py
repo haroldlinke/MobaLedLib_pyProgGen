@@ -255,8 +255,8 @@ def OpenSimulator():
     __LoadConfiguration()
     __StorePosition()
     
-    SimLedsX=M28.Get_Num_Config_Var_Range('SimLedsX', 4, 128, 8)
-    SimLedsY=M28.Get_Num_Config_Var_Range('SimLedsY', 4, 32, 8)
+    SimLedsX=M28.Get_Num_Config_Var_Range('SimLedsX', 1, 128, 8)
+    SimLedsY=M28.Get_Num_Config_Var_Range('SimLedsY', 4, 64, 8)
     SimLedSize=M28.Get_Num_Config_Var_Range('SimLedSize', 4, 64, 24)
     SimOffset=M28.Get_Num_Config_Var_Range('SimOffset', 0, 255, 1)
     SimPosX=M28.Get_Num_Config_Var_Range('SimPosX', - 16383, 16383, 800)
@@ -387,6 +387,7 @@ def SendToSimulator(Addr, Direction):
         for key in __AddressMapping.keys():
             #Address = __AddressMapping.Keys(Index) and 16383
             Address = key & 16383
+            Address = Address - P01.val(M28.Get_String_Config_Var("DCC_Offset"))                          # 24.03.21: Juergen
             #AddressType = ( ( __AddressMapping.Keys(Index) and 49152 )  / 16385 )
             
             AddressType = round((key & 49152) / 16385)

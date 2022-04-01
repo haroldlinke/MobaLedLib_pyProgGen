@@ -757,7 +757,6 @@ def __Test_Check_All_Selected_Libraries_Result():
 
 def __Update_Status(Start=False):
     global __Update_Time
-    return #*HL
     #---------------------------------------------------
     # Is called by OnTime
     if __Update_Time != 0 or Start:
@@ -1112,12 +1111,12 @@ def Install_Selected():
 
 def Install_Missing_Libraries_and_Board():
     #-----------------------------------------------
-    StatusMsg_UserForm.ShowDialog(M09.Get_Language_Str('Überprüfe Bibliotheken und Boards'), '')
+    F00.StatusMsg_UserForm.ShowDialog(M09.Get_Language_Str('Überprüfe Bibliotheken und Boards'), '')
     __Update_General_Versions()
     __Get_All_Library_States()()
     if __Select_Missing() > 0:
         Install_Selected()
-    #U01.Unload(StatusMsg_UserForm)
+    P01.Unload(F00.StatusMsg_UserForm)
 
 def OpenSketchbookPath():
     Name = String()

@@ -49,6 +49,7 @@ from locale import getdefaultlocale
 #from collections import OrderedDict
 from ExcelAPI.P01_Workbook import create_workbook
 import proggen.M02_Public as M02
+import proggen.M08_ARDUINO as M08
 
 import ExcelAPI.P01_Workbook as P01
 
@@ -385,10 +386,12 @@ class Prog_GeneratorPage(tk.Frame):
                 except BaseException as e:
                     logging.debug(e)
                     logging.debug("ERROR: Write_stdout_to_text_window: %s",output)
+                    
                     pass            
             
             if self.process.poll() is not None:
                 self.continue_loop=False
+                M08.Stop_Compile_Time_Display()
                 self.rc = self.process.poll()
                 if self.rc==1:
                     self.arduinoMonitorPage.add_text_to_textwindow("\n******** "+self.ARDUINO_message3+" ********\n",highlight="Error")
@@ -396,12 +399,15 @@ class Prog_GeneratorPage(tk.Frame):
                 else:
                     self.arduinoMonitorPage.add_text_to_textwindow("\n"+self.ARDUINO_message2+"\n*******************************************************\n",highlight="OK")
                     error_flag=False
+                ResFile = 'Start_Arduino_Result.txt'    
+                if P01.Dir(ResFile) != '':
+                    error_flag = True
                 self.upload_to_ARDUINO_end(error_flag)
                 
         #print(P01.Format(int(time.time()), 'hh:mm:ss')," write_stdout-end")
     
         if self.continue_loop:
-            self.after(10,self.write_stdout_to_text_window)
+            self.after(50,self.write_stdout_to_text_window)
             
     def EndProg(self):
         #-------------------
@@ -421,6 +427,7 @@ class Prog_GeneratorPage(tk.Frame):
         if self.Start_Compile_Time != 0 or Start:
             if Start:
                 self.Start_Compile_Time = int(time.time())
+                F00.StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(int(time.time()) - self.Start_Compile_Time, 'hh:mm:ss'))
             else:
                 F00.StatusMsg_UserForm.Set_ActSheet_Label(P01.Format(int(time.time()) - self.Start_Compile_Time, 'hh:mm:ss'))
             P01.Application.OnTime(1000, self.Update_Compile_Time)
@@ -431,7 +438,7 @@ class Prog_GeneratorPage(tk.Frame):
         global Start_Compile_Time
         self.upload_duration = int(time.time()) - self.Start_Compile_Time
         self.Start_Compile_Time = 0
-        #P01.Unload(F00.StatusMsg_UserForm)
+        P01.Unload(F00.StatusMsg_UserForm)
         
     def ClearStatusbar(self):
         #--------------------------
@@ -450,8 +457,9 @@ class Prog_GeneratorPage(tk.Frame):
     def upload_to_ARDUINO_end(self,error_flag):
         pass
         if error_flag:
+            self.Stop_Compile_Time_Display()
             P01.MsgBox(M09.Get_Language_Str('Es ist ein Fehler aufgetreten ;-(' + vbCr + vbCr + 'Zur Fehlersuche kann man die letzten Änderungen wieder rückgängig machen und es noch mal versuchen. ' + vbCr + vbCr + 'Kommunikationsprobleme erkennt man an dieser Meldung: ' + vbCr + '   avrdude: ser_open(): can\'t open device "\\\\.\\COM') + '":' + vbCr + M09.Get_Language_Str('   Das System kann die angegebene Datei nicht finden.' + vbCr + 'In diesem Fall müssen die Verbindungen überprüft und der Arduino durch einen neuen ersetzt werden.' + vbCr + vbCr + 'Der Fehler kann auch auftreten wenn der DCC/Selextrix Arduino noch nicht programmiert wurde.' + vbCr + 'Am besten man steckt den rechten Arduino erst dann ein wenn er benötigt wird.' + vbCr + vbCr + 'Wenn der Fehler nicht zu finden ist und immer wieder auftritt, dann kann ein Screenshot des ' + 'vorangegangenen Bildschirms (Nach oben scrollen so dass die erste Meldung nach dem Arduino Bild zu sehen ist) ' + 'zusammen mit dem Excel Programm und einer ausführlichen Beschreibung an ' + vbCr + '  MobaLedLib@gmx.de' + vbCr + 'geschickt werden.'), vbInformation, M09.Get_Language_Str('Fehler beim Hochladen des Programms'))
-            self.EndProg()
+            #self.EndProg()
         else:
             self.Stop_Compile_Time_Display()
             #Debug.Print('Compile and upload duration: ' + P01.Format(P01.Time() - Start, 'hh:mm:ss'))

@@ -725,6 +725,9 @@ from vb2py.vbdebug import *
 # 12.03.22: - add 64bit support for LED simulator
 # 15.03.22: - fix issue that back to PatternConfiguration" didn't work anymore
 #           - add ColorPicker for Const Makro
+# 17.03.22: - Simulator may switch between RGB and Single-LED view with doubelclick
+# 24.03.22: - fix DCC Offset bug with simulator
+#           - third simulator view displaying combined and single LED
 #
 # ToDo:
 # ~~~~~

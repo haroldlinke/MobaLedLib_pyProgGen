@@ -4,3 +4,6 @@ Python/logfile.log
 *.pyc
 Python/logfile.log
 *.pyc
+*.pyc
+Python/logfile.log
+temp_workbook.table_PyProgramWorkbook

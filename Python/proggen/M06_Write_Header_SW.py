@@ -940,6 +940,8 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         if SwitchA_InpCnt >  ( UBound(Ana_But_Pin_Array) + 1 )  * 10:
             P01.MsgBox(M09.Get_Language_Str('Fehler: Es wurden mehr analoge Taster verwendet als möglich sind. ' + 'Es müssen weitere analoge Eingänge zum einlesen definiert werden.' + vbCr + 'Das wird mit dem Befehl \'Set_SwitchA_InpLst()\' in der Makro Spalte gemacht.'), vbCritical, M09.Get_Language_Str('Fehler: Nicht genügend analoge Eingänge zum einlesen der Taster definiert'))
             return _ret, Channel
+        
+        VBFiles.writeText(fp, '#ifndef CONFIG_ONLY', '\n')
         VBFiles.writeText(fp, '//*** Analog switches ***', '\n')
         VBFiles.writeText(fp, '', '\n')
         if M02.Get_BoardTyp() == 'AM328':
@@ -963,6 +965,9 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         if Read_LDR:
             VBFiles.writeText(fp, '#include "Read_LDR.h"     // Darkness sensor', '\n')
             VBFiles.writeText(fp, '', '\n')
+            
+        VBFiles.writeText(fp, '#endif //CONFIG_ONLY', '\n')
+            
         Channel = __Make_sure_that_Channel_is_divisible_by_4(Channel)
         Start_AButtons = Channel
         TmpChannel = Channel
@@ -1008,7 +1013,11 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         VBFiles.writeText(fp, '#define CLK_PIN           ' + M30.AddSpaceToLen(CLK_Pin_Number, 41) + '// Pin number used for the CD4017 clock', '\n')
         VBFiles.writeText(fp, '#define RESET_PIN         ' + M30.AddSpaceToLen(RST_Pin_Number, 41) + '// Pin number used for the CD4017 reset', '\n')
         VBFiles.writeText(fp, '', '\n')
+        
+        VBFiles.writeText(fp, '#ifndef CONFIG_ONLY', '\n')
         VBFiles.writeText(fp, '#include <Keys_4017.h>                                             // Keyboard library which uses the CD4017 counter to save Arduino pins. Attention: The pins (CLK_PIN, ...) must be defined prior.', '\n')
+        VBFiles.writeText(fp, '#endif //CONFIG_ONLY', '\n')
+        
         VBFiles.writeText(fp, '', '\n')
         VBFiles.writeText(fp, '#define START_SWITCHES_1  ' + M30.AddSpaceToLen(StartSwitches1, 41) + '// Define the start number for the first keyboard.', '\n')
         VBFiles.writeText(fp, '#define START_SWITCHES_2  ' + M30.AddSpaceToLen(StartSwitches2, 41) + '// Define the start number for the second keyboard.', '\n')
@@ -1063,7 +1072,10 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
         VBFiles.writeText(fp, '//--------------------------', '\n')
         VBFiles.writeText(fp, '{', '\n')
         PinList=""
+        
         if SwitchA_InpCnt > 0 or Read_LDR:
+            
+            VBFiles.writeText(fp, '#ifndef CONFIG_ONLY', '\n')
             if SwitchA_InpCnt > 0:
                 PinList = Replace(Trim(SwitchA_InpLst), ' ', ',') + ','
             if Read_LDR:
@@ -1083,9 +1095,14 @@ def Write_Switches_Header_File_Part_A(fp, Channel):
                 if Read_LDR:
                     VBFiles.writeText(fp, '  Init_DarknessSensor(' + str(LDR_Pin_Number) + ', 50, 50); // Attention: The analogRead() function can\'t be used together with the darkness sensor !', '\n')
                     VBFiles.writeText(fp, '  scanner.setCallback(' + str(LDR_Pin_Number) + ', Darkness_Detection_Callback);', '\n')
-            VBFiles.writeText(fp, '', '\n')
+            
+            VBFiles.writeText(fp, '#endif //CONFIG_ONLY', '\n')
+            
         if __Channel1InpCnt > 0:
+            VBFiles.writeText(fp, '#ifndef CONFIG_ONLY', '\n')
             VBFiles.writeText(fp, '  Keys_4017_Setup(); // Initialize the keyboard scanning process', '\n')
+            VBFiles.writeText(fp, '#endif //CONFIG_ONLY', '\n')
+            
         if SwitchD_InpCnt > 0:
             VBFiles.writeText(fp, '', '\n')
             VBFiles.writeText(fp, '  for (uint8_t i = 0; i < SWITCH_D_INP_CNT; i++)', '\n')
