@@ -37,7 +37,7 @@ Open Issues:
   Unfortunately the ProgrammGenerator code is using only the ComPortNumber as Integer and is using a negative number to signal a blocked ComPort by another program.
   This needs to be adapted to the way the "old"parts of the ColorCheckprogram access the ARDUINO.
   The paramaters from the "ARDUINO"-Configuration Page are NOT synchronised with the ProgrammGenerator part as both parts of the prohram use 
-  a different way of handling USB-Ports.
+  a different way of handling USB-Ports. (With VLX4.17 this issue should be solved)
   
 - All paths need to be checked and adapted to the LINUX/MAC path rules (replace \ with /)
 - all generated batch files need to be adapted from Windows cmds to Linux shell commands
