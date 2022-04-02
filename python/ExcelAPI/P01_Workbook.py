@@ -34,6 +34,7 @@
 # 2021-12-23 v4.01 HL: - Inital Version converted by VB2PY based on MLL V3.1.0
 # 2022-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
 # 2022-01-08 V4.03 HL: - added Workbook Save and Load
+# 2022-04-02 LX4.18 HL: update to MLL V3.1.0F4, removed keyword "exit_on_error" and annotation for global variables
 
 import logging
 import locale
