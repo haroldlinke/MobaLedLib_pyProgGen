@@ -12,6 +12,7 @@ import time
 import os
 import sys
 from operator import itemgetter
+import logging
 
 
 # noinspection PyPep8Naming
@@ -150,6 +151,7 @@ class _DebugClass:
         """Print debugging output"""
         if self._logger:
             self._logger.debug("\t".join([str(arg) for arg in args]))
+        logging.debug("\t".join([str(arg) for arg in args]))
 
 
 Debug = _DebugClass()

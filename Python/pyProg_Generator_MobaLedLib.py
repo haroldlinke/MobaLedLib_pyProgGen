@@ -2631,14 +2631,14 @@ def main_entry():
     
     global COMMAND_LINE_ARG_DICT
     
-    if sys.hexversion < 0x30700F0:
-        tk.messagebox.showerror("Wrong Python Version","You need Python Version > 3.7 to run this Program")
+    if sys.hexversion < 0x030900F0:
+        tk.messagebox.showerror("Wrong Python Version"+sys.version,"You need Python Version > 3.9 to run this Program")
         exit()
         
     
     COMMAND_LINE_ARG_DICT = {}
     
-    parser = argparse.ArgumentParser(description='Generate MLL Programs',exit_on_error=False)
+    parser = argparse.ArgumentParser(description='Generate MLL Programs') #,exit_on_error=False) seems to create a problem in some python versions
     parser.add_argument('--loglevel',choices=["DEBUG","INFO","WARNING","ERROR","CRITICAL"],help="Logginglevel to be printed into the logfile")
     parser.add_argument('--logfile',help="Logfilename")
     parser.add_argument('--startpage',choices=['StartPage', 'ColorCheckPage', 'Prog_GeneratorPage', 'SoundCheckPage', 'DCCKeyboardPage', 'ServoTestPage', 'Z21MonitorPage', 'SerialMonitorPage', 'ARDUINOMonitorPage', 'ConfigurationPage'],help="Name of the first page shown after start")
