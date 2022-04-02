@@ -269,13 +269,13 @@ def __Show_USB_Port_Dialog(ComPortColumn, ComPort):
     #if ComPort > 255:                       # 03.03.22: Juergen avoid overrun error
     #    ComPort = 0
     if (ComPortColumn == M25.COMPort_COL):
-        Picture = 'LED_Image'
+        Picture = 'LED_image'
         ArduName = 'LED'
     elif (ComPortColumn == M25.COMPrtR_COL):
-        Picture = 'DCC_Image'
+        Picture = 'DCC_image'
         ArduName = M25.Page_ID
     elif (ComPortColumn == M25.COMPrtT_COL):
-        Picture = 'Tiny_Image'
+        Picture = 'Tiny_image'
         ArduName = 'ISP'
     else:
         P01.MsgBox('Internal Error: Unsupported  ComPortColumn=' + ComPortColumn + ' in \'USB_Port_Dialog()\'', vbCritical, 'Internal Error')
