@@ -466,7 +466,7 @@ def GetAsyncKeyState(key):
         return keyboard.is_pressed("crtl")
     if key==__VK_SHIFT:
         Debug.Print("Check Shift Key")
-        fn_return_value = keyboard.is_pressed("shift") or shift_key
+        fn_return_value = shift_key #or keyboard.is_pressed("shift")
         shift_key=False
         return fn_return_value
     return

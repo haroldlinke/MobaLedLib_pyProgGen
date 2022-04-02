@@ -354,8 +354,11 @@ class CSelect_COM_Port_UserForm:
         filedir = os.path.dirname(os.path.realpath(__file__))
         self.filedir2 = os.path.dirname(filedir)
         filepath = self.filedir2 + filename
-        img = tk.PhotoImage(file=filepath)        
-                
+        
+        Debug.Print("ComPort_ShowDialog - Image:"+filepath)
+        img = tk.PhotoImage(file=filepath)
+        Debug.Print("ComPort_ShowDialog - Image:"+filepath+" -OK-")
+        
         self.Image_Label = ttk.Label(self.top, image=img,relief=tk.FLAT, borderwidth=1)
         self.Image_Label.grid(row=0,column=2,rowspan=7,sticky="nesw",padx=10,pady=10)
         
