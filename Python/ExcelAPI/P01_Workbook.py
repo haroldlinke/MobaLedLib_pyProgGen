@@ -1625,15 +1625,15 @@ def rgbtohex(r,g,b):
 
 # global variables
 
-ActiveWorkbook:CWorkbook = None
-
-ActiveSheet:CWorksheet = None
+ActiveWorkbook = None # :CWorkbook
+ 
+ActiveSheet = None #:CWorksheet
 
 #WorksheetFunction = CWorksheetFunction()
 
-Application:CApplication = CApplication()
+Application = CApplication() #:CApplication
 
-CellDict:CCellDict = CCellDict()
+CellDict = CCellDict() # :CCellDict
 
 Selection = CSelection(CCell(""))
 
