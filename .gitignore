@@ -1,11 +1,4 @@
 
 *.pyc
-Python/logfile.log
-*.pyc
-Python/logfile.log
-*.pyc
-*.pyc
-Python/logfile.log
-temp_workbook.table_PyProgramWorkbook
-Python/proggen/__pycache__/D07_Userform_Other.cpython-39.pyc
-*.pyc
+python/logfile.log
+
