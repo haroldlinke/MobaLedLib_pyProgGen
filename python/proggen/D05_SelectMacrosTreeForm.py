@@ -107,6 +107,7 @@ class SelectMacrosTreeform:
         self.res = False
 
     def Start(self):
+        Debug.Print("Start")
         self.entry1_input = tk.StringVar(self.controller)
         self.top = tk.Toplevel(self.controller)
         self.top.transient(self.controller)
@@ -177,6 +178,7 @@ class SelectMacrosTreeform:
         return
     
     def CreateMacroTree(self, Tree, Parent, Filter, Dictionary):
+        Debug.Print("CreateMacroTree")
         #self.__InitializeTreeFrom_Lib_Macros_Sheet(Parent,Filter)  #Filter)
         #return
     
@@ -214,6 +216,7 @@ class SelectMacrosTreeform:
                         Tree.insert(Parent, 'end', uid, text=key, value=(description,str(row)),tags=(str(row)))
                 
     def selectItem(self,a):
+        Debug.Print("selectItem")
         curItem = self.tree.focus()
         selectedItem_dict = self.tree.item(curItem)
         if selectedItem_dict != {}:
@@ -224,6 +227,7 @@ class SelectMacrosTreeform:
         
     
     def clickItem(self,a):
+        Debug.Print("clickItem")
         curItem = self.tree.focus()
         item = self.tree.item(curItem)
         #record = item['#0']
@@ -249,6 +253,7 @@ class SelectMacrosTreeform:
        
     
     def create_treeframe(self,parent):
+        Debug.Print("create_treeframe")
         # Setup Data
         self.max_value_width = 0
         self.max_key_width = 0
@@ -309,6 +314,7 @@ class SelectMacrosTreeform:
     
     
     def item_selected(self,event):
+        Debug.Print("item_selected")
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             #record = item['#0']
@@ -337,6 +343,7 @@ class SelectMacrosTreeform:
             self.top.update()        
 
     def __UserForm_Initialize(self):
+        Debug.Print("__UserForm_Initialize")
         self.__InitializeTreeView()
     
     def __userform_terminate(self):
@@ -345,6 +352,7 @@ class SelectMacrosTreeform:
         self.ClassCounts()   
     
     def __Add_Node(self,c):
+        Debug.Print("__Add_Node")
 
         #-------------------------------
         Sh = c.Parent
@@ -368,9 +376,11 @@ class SelectMacrosTreeform:
             PicNamesArr[i] = M30.NoExt(Trim(PicNamesArrInp(i)))
         iconimagename = PicNamesArrInp[len(PicNamesArrInp)-1]
         if iconimagename !="":
-            iconfilename = P01.ThisWorkbook.pyProgPath + '\\' + "icons\\"+Trim(iconimagename)+".png"
+            iconfilename = P01.ThisWorkbook.pyProgPath + '/' + "icons/"+Trim(iconimagename)+".png"
             #pic1 = Image.open(iconfilename)           # Open the image like this first
+            Debug.Print("MacroTree-addNode - iconFilename:"+iconfilename)
             self.pic2 = tk.PhotoImage(file=iconfilename)      # Then with PhotoImage. NOTE: self.root_pic2 =     and not     root_pic2 =
+            Debug.Print("MacroTree-addNode - iconFilename:"+iconfilename+" -OK-")
         else:
             self.pic2=None
         
@@ -405,6 +415,7 @@ class SelectMacrosTreeform:
 
     
     def __InitializeTreeFrom_Lib_Macros_Sheet(self,Parent,Filter):
+        Debug.Print("__InitializeTreeFrom_Lib_Macros_Sheet")
         fn_return_value = None
         
         self.macro_dict ={}
@@ -471,6 +482,7 @@ class SelectMacrosTreeform:
     
     
     def __InitializeTreeView():
+        Debug.Print("__InitializeTreeView")
 
         #-------------------------------------------------------------------------
         # Procedure : Initialize
@@ -509,6 +521,7 @@ class SelectMacrosTreeform:
         #    __mcTree.TerminateTree()
     
     def __GetIcons(self,colImages, ImageNames=[]):
+        Debug.Print("__GetIcons")
         fn_return_value = None
         v = Variant()
     
@@ -542,6 +555,7 @@ class SelectMacrosTreeform:
             __mcTree.EnterExit(True)
     
     def Set_Description(self,Txt):
+        Debug.Print("Set_Description")
         #ActFocus = Variant()
         #-----------------------------------------
         # VB2PY (UntranslatedCode) On Error Resume Next
@@ -666,6 +680,7 @@ class SelectMacrosTreeform:
             self.SelectMacro_Res = ''
     
     def __Abort_Button_Click():
+        Debug.Print("__Abort_Button_Click")
         #-------------------------------
         UnhookFormScroll()
         Me.Hide()
@@ -673,6 +688,7 @@ class SelectMacrosTreeform:
         #Enable_Listbox_Changed = False
     
     def Select_Button_Click(self):
+        Debug.Print("Select_Button_Click")
         #--------------------------------
         #UnhookFormScroll()
         self.Calc_SelectMacro_Res()
@@ -743,6 +759,8 @@ class SelectMacrosTreeform:
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: key - ByVal 
     def __Find_Node(self,key):
+        Debug.Print("__Find_Node")
+        
         fn_return_value = None
         #---------------------------------------------------------
         # VB2PY (UntranslatedCode) On Error GoTo ErrProc
@@ -754,6 +772,7 @@ class SelectMacrosTreeform:
         #return fn_return_value
     
     def searchTree(self,searchvalue):
+        Debug.Print("searchTree")
 
         selections = self.tree.tag_has(str(searchvalue))
         print(searchvalue, selections)
@@ -768,6 +787,7 @@ class SelectMacrosTreeform:
         return selections
     
     def open_child(self,child):
+        Debug.Print("Open_child")
         self.tree.item(child, open=True)  # open
         parent = self.tree.parent(child)
         if parent !="":
@@ -776,6 +796,7 @@ class SelectMacrosTreeform:
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: SelectName - ByVal 
     def Show_SelectMacros_TreeView(self,SelectName):
+        Debug.Print("Show_SelectMocros_TreeView")
 
         #Row = int()
         #----------------------------------------------------------------
