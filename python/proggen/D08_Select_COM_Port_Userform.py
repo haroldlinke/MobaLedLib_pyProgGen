@@ -183,10 +183,11 @@ class CSelect_COM_Port_UserForm:
     
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: DefaultPort - ByVal 
     def Update_SpinButton(self, DefaultPort):
-        #return #*HL
+
         global COM_Port_Label,PortNames,LocalPrintDebug,LocalComPorts,__OldSpinButton,OldL_ComPorts
         #------------------------------------------------------
         # Is also called by the OnTime proc which checks the available ports
+        Debug.Print("Select_Com_Port_UserForm-Update_SpinButton")
         
         if self.isInitialised == False:
             return
@@ -256,6 +257,7 @@ class CSelect_COM_Port_UserForm:
     
     def Show_Status(self,ErrBox, Msg):
         global Error_Label,Status_Label
+        Debug.Print("Select_Com_Port_UserForm-Show_Status")
         #-------------------------------------------------------
         if self.isInitialised == False:
             return
@@ -281,7 +283,9 @@ class CSelect_COM_Port_UserForm:
     # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: ComPort_IO - ByRef 
     def ShowDialog(self, Caption, Title, Text, Picture, Buttons, FocusButton, Show_ComPort, Red_Hint, ComPort_IO, PrintDebug=False):
         global COM_Port_Label,PortNames,LocalPrintDebug,LocalComPorts,__LocalPrintDebug, __OldSpinButton,__LocalShow_ComPort,Pressed_Button
+        Debug.Print("Select_Com_Port_UserForm-Showdialog")
         if  not PG.dialog_parent.getConfigData("UseCOM_Port_UserForm"):
+            Debug.Print("UseCOM_Port_UserForm=True")
             fn_return_value = 3
             serportname = PG.dialog_parent.getConfigData("serportname")
 
@@ -348,10 +352,13 @@ class CSelect_COM_Port_UserForm:
         self.Error_Label.grid(row=2,column=1,rowspan=3,sticky="ne",padx=10,pady=10)        
                 
         self.AvailPortsTxt_Label = ttk.Label(self.top, text="",font=("Tahoma", 8),width=15, wraplength=100,relief=tk.FLAT, borderwidth=1)
-        self.AvailPortsTxt_Label.grid(row=4,column=0,columnspan=2,sticky="new",padx=10,pady=10)        
+        self.AvailPortsTxt_Label.grid(row=4,column=0,columnspan=2,sticky="new",padx=10,pady=10)
+        
+        Debug.Print("ComPort_ShowDialog - Define Imagepath")
 
         filename = r"/images/"+ Picture+".png"
         filedir = os.path.dirname(os.path.realpath(__file__))
+        Debug.Print("ComPort_ShowDialog - Image fileDir:"+filedir)
         self.filedir2 = os.path.dirname(filedir)
         filepath = self.filedir2 + filename
         

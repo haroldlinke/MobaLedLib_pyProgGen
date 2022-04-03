@@ -56,7 +56,7 @@
 # * License: http://creativecommons.org/licenses/by-sa/3.0/
 # ***************************************************************************
 
-PROG_VERSION ="LX4.18 02.04.2022"
+PROG_VERSION ="LX4.19 03.04.2022"
 LARGE_FONT= ("Verdana", 12)
 VERY_LARGE_FONT = ("Verdana", 14)
 NORMAL_FONT = ("Verdana", 10)
@@ -88,7 +88,7 @@ TEMP_LEDEFFECTTABLE_FILENAME = "temp_ledeffect_table.json"
 InoName_DCC = "23_A.DCC_Interface.ino"
 InoName__SX = "23_A.Selectrix_Interface.ino"
 
-Ino_Dir_LED = "LEDs_AutoProg\\"
+Ino_Dir_LED = "LEDs_AutoProg/"
 InoName_LED = "LEDs_AutoProg.ino"
 
 FINISH_FILE = "Finished.txt"                                                 # 03.12.19:

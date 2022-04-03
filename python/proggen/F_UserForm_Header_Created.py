@@ -68,7 +68,7 @@ def __OpenPath_Click():
     #---------------------------
     Me.Hide()
     #Call ShellExecute(0, "open", "Explorer", "/e,""" & ThisWorkbook.Path & """", "", SW_NORMAL)
-    Name = ThisWorkbook.Path + '\\' + Ino_Dir_LED + Include_FileName
+    Name = ThisWorkbook.Path + '/' + Ino_Dir_LED + Include_FileName
     if Dir(Name) != FileNameExt(Name):
         Shell('Explorer /root,"' + FilePath(Name) + '"', vbNormalFocus)
         Shell('Explorer /Select,"' + Name + '"', vbNormalFocus)

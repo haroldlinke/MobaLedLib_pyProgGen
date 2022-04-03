@@ -39,6 +39,7 @@ import tkinter as tk
 import proggen.M06_Write_Header as M06
 import proggen.M03_Dialog as M03
 import proggen.M01_Gen_Release_Version as M01
+import proggen.M02_Public as M02
 import ExcelAPI.P01_Workbook as P01
 import proggen.Prog_Generator as PG
 import proggen.M22_Hide_UnHide as M22
@@ -206,6 +207,16 @@ def __Worksheet_Calculate():
         
 def workbook_init(workbook):
     M01.__Release_or_Debug_Version(True)
+    if P01.checkplatform("Windows"):
+        M02.AppLoc_Ardu = '\\AppData\\Local\\Arduino15\\'
+        logging.debug("Workbook_init - AppLoc_Ardu:"+M02.AppLoc_Ardu)
+        M02.Env_USERPROFILE = 'USERPROFILE'
+        logging.debug("Workbook_init - Env_USERPROFILE:"+M02.Env_USERPROFILE)
+    else:
+        M02.AppLoc_Ardu = "/.arduino15/"
+        logging.debug("Workbook_init - AppLoc_Ardu:"+M02.AppLoc_Ardu)
+        M02.Env_USERPROFILE = 'HOME'
+        logging.debug("Workbook_init - Env_USERPROFILE:"+M02.Env_USERPROFILE)
     init_UserForms()
     for sheet in workbook.sheets:
         worksheet_init(sheet)
@@ -216,6 +227,7 @@ def worksheet_init(worksheet):
     return
 
     first_call=True
+
     if worksheet.Datasheet:
         P01.ActiveSheet=worksheet
         for row in range(3,M30.LastUsedRow()):
@@ -263,7 +275,7 @@ def port_is_available(port):
     if type(port)==int:
         return port > 0
     elif type(port)==str or type(port)==P01.CCell:
-        return not (port.startswith("*") or port=="COM?" or port==" ")
+        return not (port.startswith("*") or port=="COM?" or port==" " or port=="NO DEVICE")
     return False
     
 def port_reset(port):

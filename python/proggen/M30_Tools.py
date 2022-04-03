@@ -45,6 +45,7 @@ from vb2py.vbconstants import *
 
 import subprocess
 import zipfile
+import platform
 
 from ExcelAPI.X01_Excel_Consts import *
 #from proggen.M02_Public import Get_BoardTyp
@@ -794,7 +795,7 @@ def Test_InsertElementAt():
 
 def GetPathOnly(sPath):
     #------------------------------------------------------
-    fn_return_value = Left(sPath, InStrRev(sPath, '\\', Len(sPath)) - 1)
+    fn_return_value = Left(sPath, InStrRev(sPath, '/', Len(sPath)) - 1)
     return fn_return_value
 
 def CreateFolder(sFolder):
@@ -803,6 +804,7 @@ def CreateFolder(sFolder):
     # http://www.freevbcode.com/ShowCode.asp?ID=257
     # sFolder must have an "\" at the end
     # VB2PY (UntranslatedCode) On Error GoTo ErrorHandler
+    logging.debug("Create_Folder:"+sFolder)
     s = GetPathOnly(sFolder)
     if P01.Dir(s) == r'':
         s = CreateFolder(s)
@@ -1223,7 +1225,11 @@ def Del_Folder(DirName, ShowError=True):
     return fn_return_value
 
 def Get_OperatingSystem():
-    return "Microsoft Windows 10 Home         10.0.18362" #*HL
+    teststr = platform.platform()
+    logging.debug("Get_OperatingSystem: "+teststr)
+    return teststr
+
+    # return "Microsoft Windows 10 Home         10.0.18362" #*HL
     localHost = String()
 
     objWMIService = Variant()
@@ -1465,9 +1471,9 @@ def CreateHeaderFile(Platform, SheetName):
         P01.MsgBox('The platform ' + Platform + ' is not supported')
         return
     if M06.Create_HeaderFile(True):
-        FileCopy_with_Check(P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED, Platform + '_Header_' + SheetName + '.h', P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED + M02.Include_FileName)
+        FileCopy_with_Check(P01.ThisWorkbook.Path + '/' + M02.Ino_Dir_LED, Platform + '_Header_' + SheetName + '.h', P01.ThisWorkbook.Path + '/' + M02.Ino_Dir_LED + M02.Include_FileName)
     else:
-        TargetName = P01.ThisWorkbook.Path + '\\' + M02.Ino_Dir_LED + Platform + '_Header_' + SheetName + '.h'
+        TargetName = P01.ThisWorkbook.Path + '/' + M02.Ino_Dir_LED + Platform + '_Header_' + SheetName + '.h'
         if Dir(TargetName) != '':
             Kill(TargetName)
     P01.Cells[M02.SH_VARS_ROW, M25.BUILDOP_COL] = OriginalPlatform

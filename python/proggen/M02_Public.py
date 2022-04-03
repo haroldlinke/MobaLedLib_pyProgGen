@@ -89,34 +89,35 @@ DEBUG_DCCSEND = False
 InoName_DCC = '23_A.DCC_Interface.ino'
 InoName__SX = '23_A.Selectrix_Interface.ino'
 
-Ino_Dir_LED = 'LEDs_AutoProg\\'
+Ino_Dir_LED = 'LEDs_Autoprog/'
 InoName_LED = 'LEDs_AutoProg.ino'
-Cfg_Dir_LED = "Configuration\\"
+Cfg_Dir_LED = "Configuration/"
 CfgName_LED = "Configuration.cpp"
 CfgBuild_Script = "build.cmd"
 
 USE_SKETCHBOOK_DIR = True
 
-SrcDirInLib = '\\libraries\\MobaLedLib\\extras\\'
-DestDir_All = '\\MobaLedLib\\Ver_' + Lib_Version_Nr + '\\'
-MobaUserDir = '\\'
-Ardu_LibDir = '\\libraries\\'
-SrcDirExamp = '\\libraries\\MobaLedLib\\examples\\'
+SrcDirInLib = '/libraries/MobaLedLib/extras/'
+DestDir_All = '/MobaLedLib/Ver_' + Lib_Version_Nr + '/'
+MobaUserDir = '/'
+Ardu_LibDir = '/libraries/'
+SrcDirExamp = '/libraries/MobaLedLib/examples/'
 
 MyExampleDir = 'Prog_Generator_Data'
-AppLoc_Ardu = '\\AppData\\Local\\Arduino15\\'
+
+AppLoc_Ardu = '/AppData/Local/Arduino15/'
 
 DestDir_LED = DestDir_All + 'LEDs_AutoProg'
 
 INTPROGNAME = 'Prog_Generator'
 DSKLINKNAME = 'Prog_Generator MobaLedLib'
-DefaultIcon = 'Icons\\05_Gerald_Prog.ico'
+DefaultIcon = 'Icons/05_Gerald_Prog.ico'
 
 SECOND_PROG = 'Pattern_Configurator'
 SECOND_LINK = 'MobaLedLib Pattern_Configurator'
-SECOND_ICON = 'Icons\\05_Gerald_Patt.ico'
+SECOND_ICON = 'Icons/05_Gerald_Patt.ico'
 
-WikiPg_Icon = 'Icons\\WikiMLL_v5.ico'
+WikiPg_Icon = 'Icons/WikiMLL_v5.ico'
 WikiPg_Link = 'https://wiki.mobaledlib.de/'
 
 Env_USERPROFILE = 'USERPROFILE'
@@ -246,6 +247,7 @@ MB_LED_PIN_NR = '0  1  2  3  4  5  6  7  8  9  10  11  12  13  14 15 16'
 
 def Read_Sketchbook_Path_from_preferences_txt():
     global Sketchbook_Path
+        
     Name = String()
 
     FileStr = String()
@@ -256,6 +258,7 @@ def Read_Sketchbook_Path_from_preferences_txt():
     FileStr = M30.Read_File_to_String(Name)
     if FileStr != '#ERROR#':
         Sketchbook_Path = M30.Get_Ini_Entry(FileStr, 'sketchbook.path=')
+        logging.debug("Sketchbookpath="+Sketchbook_Path)
         #*HL Sketchbook_Path = M30.ConvertUTF8Str(M30.Get_Ini_Entry(FileStr, 'sketchbook.path='))
         #ThisWorkbook.Sheets(LIBRARYS__SH).Range("Sketchbook_Path") = Sketchbook_Path
         if Sketchbook_Path == '#ERROR#':
@@ -264,7 +267,7 @@ def Read_Sketchbook_Path_from_preferences_txt():
         if Left(Sketchbook_Path, 2) == '\\\\':
             P01.MsgBox(M09.Get_Language_Str('Fehler: Der Arduino \'sketchbook.path\' darf kein Netzlaufwerk sein:') + vbCr + '  \'' + Sketchbook_Path + '\'', vbCritical, M09.Get_Language_Str('Ungültiger Arduino \'sketchbook.path\''))
             return fn_return_value
-        M30.CreateFolder(Sketchbook_Path + '\\')
+        M30.CreateFolder(Sketchbook_Path + '/')
         fn_return_value = True
     return fn_return_value
 

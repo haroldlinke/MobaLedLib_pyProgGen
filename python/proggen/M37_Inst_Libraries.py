@@ -690,7 +690,7 @@ def __Correct_Temp_Adrduino_nr_Dirs():
     # Unfortunately an update with a new version is not possible
     if CheckArduinoHomeDir() == False: # also sets Sketchbook_Path variable  02.12.21: Juergen
         return
-    P01.ChDrive(M02.Sketchbook_Path)
+    #P01.ChDrive(M02.Sketchbook_Path)
     ChDir(M02.Sketchbook_Path)
     print(os.getcwd())
     #dirpath = M02.Sketchbook_Path+'\\libraries\\Arduino_*.'
@@ -709,12 +709,14 @@ def CheckArduinoHomeDir():
     #------------------------------------------
     fn_return_value = False
     if M02.Read_Sketchbook_Path_from_preferences_txt() == False:
+        Debug.Print("CheckArduinoHomeDir: ERROR")
         return fn_return_value
     # VB2PY (UntranslatedCode) On Error GoTo DirError
-    P01.ChDrive(M02.Sketchbook_Path)
+    #P01.ChDrive(M02.Sketchbook_Path)
     try:
         ChDir(M02.Sketchbook_Path)
         fn_return_value = True
+        Debug.Print("CheckArduinoHomeDir: "+ M02.Sketchbook_Path)
         return fn_return_value
     # VB2PY (UntranslatedCode) On Error GoTo 0
     except:

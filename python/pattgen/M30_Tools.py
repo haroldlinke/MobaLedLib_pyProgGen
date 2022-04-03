@@ -377,7 +377,7 @@ def __Protect_Sheet(Sh):
 def __GetPathOnly(sPath):
     fn_return_value = None
     #------------------------------------------------------
-    fn_return_value = Left(sPath, InStrRev(sPath, '\\', Len(sPath)) - 1)
+    fn_return_value = Left(sPath, InStrRev(sPath, '/', Len(sPath)) - 1)
     return fn_return_value
 
 def CreateFolder(sFolder):

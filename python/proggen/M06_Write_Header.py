@@ -474,7 +474,7 @@ def Generate_Config_Line(LEDNr, Channel_or_define, r, Config_Col, Addr):
                 P01.Cells(r, M25.Config__Col).Select()
                 return fn_return_value
             
-        if Right(RTrim(Cmd), 1) == '\\':
+        if Right(RTrim(Cmd), 1) == '/':
             Add_Backslash_to_End = True
             Cmd = RTrim(Cmd)
             Cmd = Left(Cmd, Len(Cmd) - 1)
@@ -490,7 +490,7 @@ def Generate_Config_Line(LEDNr, Channel_or_define, r, Config_Col, Addr):
         Cmd = M30.AddSpaceToLen(Cmd, 300) + ' */'
         
         if Add_Backslash_to_End:
-            Cmd = Cmd + ' \\'
+            Cmd = Cmd + ' /'
             # 25.11.19:
             
         AddDescription = False
@@ -1022,7 +1022,7 @@ def Write_Header_File_and_Upload_to_Arduino(CreateFilesOnly=False): #20.12.21: J
     Store_ValuesTxt=DelTailingEmptyLines(Store_ValuesTxt)
     InChTxt=DelTailingEmptyLines(InChTxt)
     InChTxt, Channel = M06SW.Create_Loc_InCh_Defines(InChTxt, Channel, LocInChNr)
-    p = InStrRev(P01.ThisWorkbook.Path, '\\')
+    p = InStrRev(P01.ThisWorkbook.Path, '/')
     if p == 0:
         p = InStrRev(P01.ThisWorkbook.Path, '/')
     if p > 0:

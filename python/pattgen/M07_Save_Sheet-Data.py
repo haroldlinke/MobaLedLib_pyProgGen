@@ -495,8 +495,8 @@ def Get_MyExampleDir():
     fn_return_value = None
     Dir = String()
     #-------------------------------------------
-    Dir() = Environ('USERPROFILE') + '\\Documents\\' + MyExampleDir
-    CreateFolder(Dir() + '\\')
+    Dir() = Environ('USERPROFILE') + '/Documents/' + MyExampleDir
+    CreateFolder(Dir() + '/')
     fn_return_value = Dir()
     return fn_return_value
 

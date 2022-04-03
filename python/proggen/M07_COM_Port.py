@@ -394,16 +394,18 @@ def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
     Ports = vbObjectInitialize((50,), Byte)
     ESP_Inst = ( M02.Get_BoardTyp() == 'ESP32' )
     PICO_Inst = ( M02.Get_BoardTyp() == 'PICO' )
-         
 
     temp_comports_list = portlist.comports(include_links=False)
+    
+    Debug.Print("EnumComPorts:"+repr(temp_comports_list))
 
     NumberOfPorts = len(temp_comports_list)
     Ports = [] #vbObjectInitialize((NumberOfPorts - 1,), Variant)
     ResNames = [] #vbObjectInitialize((NumberOfPorts - 1,), Variant)    
     idx=0
     for comport in temp_comports_list:
-        if Show_Unknown or ( ESP_Inst == False and PICO_Inst == False and  (InStr(comport.description, 'CH340') > 0 or InStr(comport.description, 'Arduino') > 0 or InStr(comport.description, 'USB Serial Port') > 0 ) ) or ( ESP_Inst == True and InStr(comport.description, 'Silicon Labs CP210x') > 0 )  or  ( PICO_Inst == True and InStr(comport.description, 'USB\\\\VID_2E8A&PID_000A\\') > 0 ):
+        Debug.Print("EnumComPorts:"+repr(comport.description)+" "+repr(comport.device))
+        if Show_Unknown or ( ESP_Inst == False and PICO_Inst == False and  (InStr(comport.description, 'CH340') > 0 or InStr(comport.description, 'Arduino') > 0 or InStr(comport.description, 'USB Serial Port') > 0  or InStr(comport.description, 'tty') > 0 ) ) or ( ESP_Inst == True and InStr(comport.description, 'Silicon Labs CP210x') > 0 )  or  ( PICO_Inst == True and InStr(comport.description, 'USB\\\\VID_2E8A&PID_000A\\') > 0 ):
             Ports.append(comport.device)
             ResNames.append(comport.description)
             idx=idx+1
@@ -413,6 +415,7 @@ def EnumComPorts(Show_Unknown, ResNames, PrintDebug=True):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: PortNr - ByVal 
 def Check_If_Port_is_Available(PortNr):
+    Debug.Print("Check_If_Port_is_Available:"+PortNr)
     fn_return_value = None
     Ports = vbObjectInitialize(objtype=Byte)
 
@@ -424,6 +427,7 @@ def Check_If_Port_is_Available(PortNr):
 
 # VB2PY (UntranslatedCode) Argument Passing Semantics / Decorators not supported: PortNr - ByVal 
 def Check_If_Port_is_Available_And_Get_Name(PortNr):
+    Debug.Print("Check_If_Port_is_Available_And_Get_Name:"+PortNr)
     fn_return_value = ""
     Ports = vbObjectInitialize(objtype=Byte)
 

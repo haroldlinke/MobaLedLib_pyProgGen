@@ -192,7 +192,7 @@ def New_Sheet():
     Name = InputBox(Get_Language_Str('Name des neuen Blattes?'), Get_Language_Str('Neues Blatt anlegen'), Unic_SheetName(CopyFormSheet, '_'))
     if Name != '':
         if CopyFormSheet != '':
-            TempName = ThisWorkbook.Path + '\\' + ExampleDir + '\\TempExample.MLL_pcf'
+            TempName = ThisWorkbook.Path + '/' + ExampleDir + '/TempExample.MLL_pcf'
             Save_One_Sheet(Sheets(CopyFormSheet), TempName, False, Unic_SheetName(Name, '_'))
             Load_Sheets(TempName, '', AfterSheetName=CopyFormSheet)
             __Translate_Standard_Description_Box()
@@ -422,7 +422,7 @@ def Load_Picture(Line, SourceDir):
     Edges = Split(CorrectKomma(Params(0)), ';')
     PicName = SourceDir + Params(1)
     if Dir(PicName) == '':
-        SecondDir = ThisWorkbook.Path + '\\' + ExampleDir + '\\'
+        SecondDir = ThisWorkbook.Path + '/' + ExampleDir + '/'
         PicName = SecondDir + Params(1)
         if UCase(SecondDir) != UCase(SourceDir):
             SecondDir = vbCr + '  ' + SecondDir
@@ -598,7 +598,7 @@ def Load_AllExamples_Sheets():
         StatusMsg_UserForm.Show()
         Application.StatusBar = Get_Language_Str('Lade Beispielseiten...')
         for Example in Split(ExampleList, vbTab):
-            Load_Sheets(ThisWorkbook.Path + '\\' + ExampleDir + '\\' + Example + '.MLL_pcf', Loaded_Sheets, '<<LASTSHEET>>')
+            Load_Sheets(ThisWorkbook.Path + '/' + ExampleDir + '/' + Example + '.MLL_pcf', Loaded_Sheets, '<<LASTSHEET>>')
         if Left(Application.StatusBar, Len(Get_Language_Str('Lade Beispielseiten...'))) == Get_Language_Str('Lade Beispielseiten...'):
             Application.StatusBar = Get_Language_Str('Beispiele geladen')
         fn_return_value = True
@@ -656,7 +656,7 @@ def Del_All_Sheets_which_contain_Copy_in_their_Name():
 def __Test_Load_One_Sheet():
     #UT------------------------------
     Application.Calculation = xlCalculationAutomatic
-    Load_Sheets(ThisWorkbook.Path + '\\' + ExampleDir + '\\TestExample.MLL_pcf', '', AfterSheetName=MAIN_SH)
+    Load_Sheets(ThisWorkbook.Path + '/' + ExampleDir + '/TestExample.MLL_pcf', '', AfterSheetName=MAIN_SH)
     Application.Calculation = xlCalculationAutomatic
 
 # VB2PY (UntranslatedCode) Option Explicit

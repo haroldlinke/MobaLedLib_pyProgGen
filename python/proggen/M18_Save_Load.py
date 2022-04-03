@@ -571,8 +571,8 @@ def Get_MyExampleDir():
     fn_return_value = None
     Dir = [] 
     #-------------------------------------------
-    Dir = Environ('USERPROFILE') + '\\Documents\\' + M02.MyExampleDir
-    M30.CreateFolder(Dir + '\\')
+    Dir = Environ('USERPROFILE') + '/Documents/' + M02.MyExampleDir
+    M30.CreateFolder(Dir + '/')
     fn_return_value = Dir
     return fn_return_value
 

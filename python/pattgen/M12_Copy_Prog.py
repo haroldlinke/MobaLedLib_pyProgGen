@@ -74,7 +74,7 @@ def FileCopy_with_Check(DestDir, Name, SourceName=VBMissingArgument):
     # Could also copy a whole folder with all sub directories
     # If SourceName is empty the file/directory "Name" is copied from the program dir to DestDir
     # If a SourceName is given the file the source dir is extracted from the name.
-    SrcPath = ThisWorkbook.Path + '\\'
+    SrcPath = ThisWorkbook.Path + '/'
     SrcName = Name
     if SourceName != '':
         if FilePath(SourceName) != '':
@@ -134,7 +134,7 @@ def Copy_Prog_If_in_LibDir():
     CopyMsg = String()
     #--------------------------------------------------
     # Return true if the programm was stored in the LibDir
-    if InStr(UCase(ThisWorkbook.Path + '\\'), UCase(Get_SrcDirInLib())) == 0:
+    if InStr(UCase(ThisWorkbook.Path + '/'), UCase(Get_SrcDirInLib())) == 0:
         return fn_return_value
     fn_return_value = True
     # 30.05.20: Disabled
@@ -142,17 +142,17 @@ def Copy_Prog_If_in_LibDir():
     #UserProfile = Environ(Env_USERPROFILE)
     #If UserProfile = "" Then
     #   MsgBox Get_Language_Str("Fehler: Die Variable 'USERPROFILE' ist nicht definiert ;-(" & vbCr & _
-'            vbCr & _
-'            "Das Programm wird nach 'C:") & Get_DestDir_All() & Get_Language_Str("' kopiert."), vbInformation, _
-'          Get_Language_Str("Fehler beim kopieren des LED Programmiertool")
+    #         vbCr & _
+    #         "Das Programm wird nach 'C:") & Get_DestDir_All() & Get_Language_Str("' kopiert."), vbInformation, _
+    #       Get_Language_Str("Fehler beim kopieren des LED Programmiertool")
     #   UserProfile = "C:"
     #End If
     # Create the destination directory if it doesn't exist
     FullDestDir = Get_DestDir_All()
     # VB2PY (UntranslatedCode) On Error Resume Next
-    Parts = Split(FullDestDir, '\\')
+    Parts = Split(FullDestDir, '/')
     for p in Parts:
-        ActDir = ActDir + p + '\\'
+        ActDir = ActDir + p + '/'
         if Len(ActDir) > 3:
             MkDir(ActDir)
     # VB2PY (UntranslatedCode) On Error GoTo 0

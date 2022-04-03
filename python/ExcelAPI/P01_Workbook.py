@@ -35,9 +35,12 @@
 # 2022-01-07 v4.02 HL: - Else:, ByRef check done - first PoC release
 # 2022-01-08 V4.03 HL: - added Workbook Save and Load
 # 2022-04-02 LX4.18 HL: update to MLL V3.1.0F4, removed keyword "exit_on_error" and annotation for global variables
+# 2022-04-03 LX4.19 HL: added platformcheck
 
 import logging
 import locale
+import platform
+import pathlib
 
 from tkintertable import TableCanvas, TableModel
 import tkinter as tk
@@ -247,6 +250,17 @@ sheetdict_PatternGEN={"Main":
             }
         }
 
+def checkplatform(checkstr):
+    teststr = platform.system()
+    logging.debug("Checkplatform: "+teststr+"-"+checkstr)
+    return teststr==checkstr
+
+def get_home_dir():
+    logging.debug("get_home_dir")
+    homedir = pathlib.Path.home()
+    logging.debug("HomeDir:"+homedir)
+    return homedir
+
 def Dir(filepath,dummy=None):
     if os.path.isfile(filepath):
         return filepath
@@ -370,8 +384,10 @@ def Unload(UserForm):
 
 def ChDrive(srcdir):
     #print("ChDrive:", srcdir)
-    drive = srcdir[0:2]
-    os.chdir(drive)
+    
+    if checkplatform=="Windows":
+        drive = srcdir[0:2]
+        os.chdir(drive)
     return
 
 def Format(value,formatstring):
