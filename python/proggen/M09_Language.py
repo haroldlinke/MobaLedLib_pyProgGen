@@ -376,6 +376,7 @@ def __Activate_Language_in_Active_Sheet():
     __Activate_Language_in_Example_Sheet(P01.ActiveSheet)
 
 def __Update_Language_in_All_Sheets():
+    return #*HL
     OldEvents = Boolean()
 
     OldUpdate = Boolean()

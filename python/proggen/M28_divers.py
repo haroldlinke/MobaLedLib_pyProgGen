@@ -233,7 +233,7 @@ def Set_Bool_Config_Var(Name, val):
     #if confsheet.find_in_col_set_col_val(Name,4,3,val_str,cache=True):
     #    return True
     #else:
-    if _with3:    
+    if _with3!=None:    
         if val:
             _with3.Value = M09.Get_Language_Str('Ja')
         else:

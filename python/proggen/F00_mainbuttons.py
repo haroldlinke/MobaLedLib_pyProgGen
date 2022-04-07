@@ -40,13 +40,21 @@ import proggen.M06_Write_Header as M06
 import proggen.M03_Dialog as M03
 import proggen.M01_Gen_Release_Version as M01
 import proggen.M02_Public as M02
+import proggen.M09_Language as M09
+import proggen.M12_Copy_Prog as M12
+import proggen.M17_Import_old_Data as M17
 import ExcelAPI.P01_Workbook as P01
 import proggen.Prog_Generator as PG
 import proggen.M22_Hide_UnHide as M22
 import proggen.M23_Add_Move_Del_Row as M23
 import proggen.M20_PageEvents_a_Functions as M20
+import proggen.M28_divers as M28
 import proggen.M30_Tools as M30
 import proggen.M32_DCC as M32
+import proggen.M37_Inst_Libraries as M37
+import proggen.M38_Extensions as M38
+import proggen.M39_Simulator as M39
+
 
 import proggen.D02_Userform_Select_Typ_DCC as D02
 import proggen.D02_Userform_Select_Typ_SX as D02SX
@@ -205,8 +213,54 @@ def __Worksheet_Calculate():
     if Cells.Parent.Name == ActiveSheet.Name:
         Global_Worksheet_Calculate()
         
+        
+
+def Workbook_Open():
+    DidCopy = Boolean()
+    #-------------------------
+    P01.Application.ScreenUpdating = False
+    #P01.EnableAllButtons()
+    P01.Application.EnableEvents = False
+    #Cleare_Mouse_Hook()
+    Debug.Print('Workbook_Open() called')
+    P01.ThisWorkbook.Sheets(M02.LANGUAGES_SH).Visible = False
+    P01.ThisWorkbook.Sheets(M02.LIBMACROS_SH).Visible = False
+    P01.ThisWorkbook.Sheets(M02.PAR_DESCR_SH).Visible = False
+    P01.ThisWorkbook.Sheets(M02.LIBRARYS__SH).Visible = False
+    P01.ThisWorkbook.Sheets(M02.PLATFORMS_SH).Visible = False
+    M30.Check_Version()
+    if P01.ActiveSheet.Name == M02.ConfigSheet:
+        P01.Sheets(M02.START_SH).Select()
+        # 30.05.20: In case one of the hidden sheets was active before
+    M37.Init_Libraries_Page()
+    M09.__Update_Language_in_All_Sheets()
+    M28.Clear_COM_Port_Check_and_Set_Cursor_in_all_Sheets(False)
+    M01.Set_Config_Default_Values_at_Program_Start()
+    M37.Install_Missing_Libraries_and_Board()
+    M38.__Load_Extensions()
+    P01.Application.ScreenUpdating = True
+    #if ENABLE_CRITICAL_EVENTS_WB:
+    #    # Generate events for special actions
+    #    # VB2PY (UntranslatedCode) On Error GoTo ErrorDetectEvents
+    #    Application.CommandBars['row'].FindControl[Id= 883].OnAction = 'myHideRows_Event'
+    #    Application.CommandBars['row'].FindControl[Id= 884].OnAction = 'myUnhideRows_Event'
+    #    # VB2PY (UntranslatedCode) On Error GoTo 0
+    #else:
+    #    Remove_Special_Events()
+    DidCopy = False
+    if M12.Copy_Prog_If_in_LibDir_WithResult(DidCopy):
+        M17.Import_from_Old_Version_If_exists(( not DidCopy ))
+    if M28.Get_Num_Config_Var_Range('SimAutostart', 0, 3, 0) == 1:
+        M39.OpenSimulator()
+    P01.Application.EnableEvents = True
+    return
+    MsgBox('Interner Fehler: Die Event Routinen wurden nicht gefunden', vbCritical, 'Interner Fehler')
+
+
+        
 def workbook_init(workbook):
     M01.__Release_or_Debug_Version(True)
+    
     if P01.checkplatform("Windows"):
         M02.AppLoc_Ardu = '\\AppData\\Local\\Arduino15\\'
         logging.debug("Workbook_init - AppLoc_Ardu:"+M02.AppLoc_Ardu)
@@ -220,7 +274,7 @@ def workbook_init(workbook):
     init_UserForms()
     for sheet in workbook.sheets:
         worksheet_init(sheet)
-        
+    Workbook_Open()    
     P01.Application.set_canvas_leftclickcmd(M32.DCCSend)    
     
 def worksheet_init(worksheet):

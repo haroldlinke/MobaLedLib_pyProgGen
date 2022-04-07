@@ -42,8 +42,8 @@ SimOffset;Config;3;25
 SimOnTop;Config;3;27
 SimPosX;Config;3;23
 SimPosY;Config;3;24
-Sketchbook_Path;Libraries!;I;2
-SortByTreeView;Lib_Macros!;L;1
+Sketchbook_Path;Libraries;9;2
+SortByTreeView;Lib_Macros;12;1
 Start;[Pattern_Configurator1]Main;5;34
 Startkanal;[Pattern_Configurator1]Main;5;3
 StCh_FreeBits_BpC;[Pattern_Configurator1]Main;5;36

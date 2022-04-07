@@ -1,6 +1,7 @@
-;;;;Last update:;;Arduino IDE:;1.8.13;Sketchbook_Path: 'C:\Users\Harold\Documents\Arduino';
-;;;;19.1.22 9:55;;Std. Boards (Nano, Uno, Â…): ;1.8.3;;
-;;;;;;;;
+;;;;;;;;;
+;;;;Last update:;;Arduino IDE:;1.8.19;Sketchbook_Path: 'C:\Users\Harold\Documents\Arduino';
+;;;;5.4.22 16:29;;Std. Boards (Nano, Uno, …): ;1.8.3;;
+;;;;;;;;;
 ;;;;;;;;;
 ;;;;;;;;;
 ;;;;;;;;;
@@ -8,7 +9,7 @@
 ;;1;L;MobaLedLib;MobaLedLib.h;;3.1.0;;Installation aus Arduino Datenbank
 ;;1;L*;MobaLedLib;MobaLedLib.h;;3.1.0;https://github.com/Hardi-St/MobaLedLib/archive/master.zip;Manuelle Installation von GitHub
 ;;1;L*;MobaLedLib;MobaLedLib.h;;3.1.0;https://github.com/Hardi-St/MobaLedLib_Docu/raw/master/Betatest/MobaLedLib-master.zip;Manuelle Beta Test Installation von GitHub
-;;1;L;FastLED;FastLED.h;;3.3.3;;
+;;1;L;FastLED;FastLED.h;;3.5.0;;
 ;;1;L;NmraDcc;NmraDcc.h;2.0.10;2.0.10;;
 ;;1;L;AnalogScanner;AnalogScanner.h;;?;https://github.com/merose/AnalogScanner/archive/master.zip;
 ;;1;L;ATtinySerialOut;ATtinySerialOut.h;;1.2.0;;
@@ -17,7 +18,7 @@
 ;;1;L;MobaTools;MobaTools.h;;2.3.0;;Servo
 ;;1;L;TimerOne;TimerOne.h;;1.1;;
 ;;1;B;ATTinyCore:avr;ATTinyCore\src\ATTinyCore.h; ;1.3.3;http://drazzy.com/package_drazzy.com_index.json;Servo, Charliplexing
-;;1;B;arduino:avr;cores\arduino\Arduino.h;1.8.2;1.8.3;;Standard library for Nano, Uno, Â…
+;;1;B;arduino:avr;cores\arduino\Arduino.h;1.8.2;1.8.3;;Standard library for Nano, Uno, …
 ;;1;B;esp32:esp32;ESP32\src\dummy.h;1.0.4;1.0.4;https://dl.espressif.com/dl/package_esp32_index.json;"Board for ESP32
 Use the actual FastLed library from
   https://github.com/FastLED/FastLED
@@ -32,8 +33,8 @@ until a newer oficial version than 3.3.3 is released because here the flicker du
 ;;;;;;;;;
 ;;;;;;;;;
 ;;The following lines are not used. Additional lines could be inserted above. There must be at least one empty line.;;;;;;;
-;;;B;arduino;"megaavr:Wire\src\Wire.h""";;1.6.26;;Nano every, Â…
-;;;L*;LocoNetStream;LocoNetStream.h;;;;Not released version from JÃ¼rgen (Actually in the MLL)
+;;;B;arduino;"megaavr:Wire\src\Wire.h""";;1.6.26;;Nano every, …
+;;;L*;LocoNetStream;LocoNetStream.h;;;;Not released version from Jürgen (Actually in the MLL)
 ;;;;;;;;
 ;;;;;;;;
 ;;;;;;;;

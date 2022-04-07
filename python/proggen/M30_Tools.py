@@ -46,6 +46,7 @@ from vb2py.vbconstants import *
 import subprocess
 import zipfile
 import platform
+import shutil
 
 from ExcelAPI.X01_Excel_Consts import *
 #from proggen.M02_Public import Get_BoardTyp
@@ -1216,7 +1217,8 @@ def Test_VersionStr_is_Greater():
 def Del_Folder(DirName, ShowError=True):
     #---------------------------------------------------------------------------------------------------
     # VB2PY (UntranslatedCode) On Error GoTo ErrMsg
-    CreateObject(r'Scripting.FileSystemObject').DeleteFolder(DirName)
+    #*HLCreateObject(r'Scripting.FileSystemObject').DeleteFolder(DirName)
+    shutil.rmtree(DirName) #*HL
     # VB2PY (UntranslatedCode) On Error GoTo 0
     fn_return_value = True
     return fn_return_value

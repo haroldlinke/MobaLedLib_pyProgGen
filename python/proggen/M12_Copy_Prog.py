@@ -183,7 +183,7 @@ def Copy_Prog_If_in_LibDir_WithResult(DidCopy):
     CopyMsg = String()
     #--------------------------------------------------
     # Return true if the programm was stored in the LibDir
-    if InStr(UCase(P01.ThisWorkbook.Path + '\\'), UCase(M02.Get_SrcDirInLib())) == 0:
+    if InStr(UCase(P01.ThisWorkbook.Path + '/'), UCase(M02.Get_SrcDirInLib())) == 0:
         return fn_return_value
     fn_return_value = True
     DidCopy = False
@@ -197,9 +197,9 @@ def Copy_Prog_If_in_LibDir_WithResult(DidCopy):
     # Create the destination directory if it doesn't exist
     FullDestDir = M02.Get_DestDir_All()
     # VB2PY (UntranslatedCode) On Error Resume Next
-    Parts = Split(FullDestDir, '\\')
+    Parts = Split(FullDestDir, '/')
     for p in Parts:
-        ActDir = ActDir + p + '\\'
+        ActDir = ActDir + p + '/'
         if Len(ActDir) > 3:
             MkDir(ActDir)
     # VB2PY (UntranslatedCode) On Error GoTo 0
@@ -278,6 +278,36 @@ def __TestCreateWikiDesktopShortcut():
 def CreateDesktopShortcut(LinkName, BookFullName, IconName=M02.DefaultIcon):
     print("CreateDesktopShortcut not implemented:", LinkName)
     return False
+
+    import winshell
+    from pathlib import Path
+    
+    #example:
+    # Define all the file paths needed for the shortcut
+    # Assumes default miniconda install
+    desktop = Path(winshell.desktop())
+    miniconda_base = Path(
+        winshell.folder('CSIDL_LOCAL_APPDATA')) / 'Continuum' / 'miniconda3'
+    win32_cmd = str(Path(winshell.folder('CSIDL_SYSTEM')) / 'cmd.exe')
+    icon = str(miniconda_base / "Menu" / "Iconleak-Atrous-Console.ico")
+    
+    # This will point to My Documents/py_work. Adjust to your preferences
+    my_working = str(Path(winshell.folder('CSIDL_PERSONAL')) / "py_work")
+    link_filepath = str(desktop / "python_working.lnk")
+    
+    # Build up all the arguments to cmd.exe
+    # Use /K so that the command prompt will stay open
+    arg_str = "/K " + str(miniconda_base / "Scripts" / "activate.bat") + " " + str(
+        miniconda_base / "envs" / "work")
+    
+    # Create the shortcut on the desktop
+    with winshell.shortcut(link_filepath) as link:
+        link.path = win32_cmd
+        link.description = "Python(work)"
+        link.arguments = arg_str
+        link.icon_location = (icon, 0)
+    link.working_directory = my_working
+
     fn_return_value = None
     location = 'Desktop'
 

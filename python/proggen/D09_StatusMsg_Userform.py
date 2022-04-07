@@ -183,7 +183,7 @@ class CStatusMsg_UserForm():
         self.top.update()
         self.top.focus()
         self.label_txt = Msg
-        P01.set_statusmessage(self.label_txt +" "+ self.text)
+        #P01.set_statusmessage(self.label_txt +" "+ self.text)
     
     def Set_ActSheet_Label(self,Txt):
         #-------------------------------------------
@@ -193,7 +193,7 @@ class CStatusMsg_UserForm():
         self.top.update()
         self.top.focus()
         #P01.DoEvents()
-        P01.set_statusmessage(self.label_txt +" "+ self.text)
+        #P01.set_statusmessage(self.label_txt +" "+ self.text)
     
     def ShowDialog(self, Label, Txt):
         #----------------------------------------------------
@@ -203,7 +203,7 @@ class CStatusMsg_UserForm():
         self.Show()
         self.text=Txt
         self.label_txt = Label
-        P01.set_statusmessage(Label+" "+Txt)
+        #P01.set_statusmessage(Label+" "+Txt)
     
     # VB2PY (UntranslatedCode) Option Explicit
 

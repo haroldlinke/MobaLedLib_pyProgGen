@@ -179,7 +179,7 @@ class Prog_GeneratorPage(tk.Frame):
         #self.workbook_frame.grid_rowconfigure(0,weight=1)
         #self.workbook_frame.grid_columnconfigure(0,weight=1)        
         
-        self.workbook = create_workbook(frame=self.workbook_frame,path=self.filedir5, pyProgPath=filedir2)
+        self.workbook = create_workbook(frame=self.workbook_frame,path=filedir2, pyProgPath=filedir2)
         
         for sheet in self.workbook.sheets:
             sheet.SetChangedCallback(self.wschangedcallback)
